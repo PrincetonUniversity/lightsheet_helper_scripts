@@ -15,7 +15,6 @@ def correct_kwargs(src):
     '''Temporary adjustment to correct kwargs after setting up folders in step 0 locally.
     
     Input: source path of output directory
-    FIXME: do not include / at the end of src in this funcion
     NEED TO ADJUST THIS IN THE MAIN PIPELINE?
     '''
     #import kwargs
