@@ -9,6 +9,7 @@ Created on Tue Oct 31 11:08:42 2017
 #to register aba to ls
 import shutil, numpy as np, cv2
 import subprocess as sp
+import pandas as pd
 from tools.registration.register import elastix_command_line_call, transformix_command_line_call
 from tools.utils.io import convert_to_mhd, listdirfull, makedir #<-not using now but consider using
 
