@@ -10,6 +10,7 @@ from tools.utils.io import load_kwargs, save_kwargs
 import matplotlib.pyplot as plt; plt.ion()
 from skimage.external import tifffile
 import numpy as np
+from matplotlib.backends.backend_pdf import PdfPages
 
 
 def correct_kwargs(src): 
@@ -17,7 +18,7 @@ def correct_kwargs(src):
     
     Input: source path of output directory
     NEED TO ADJUST THIS IN THE MAIN PIPELINE?
-    '''
+    '''from matplotlib.backends.backend_pdf import PdfPages
     #import kwargs
     kwargs=load_kwargs(src) 
     
@@ -46,35 +47,40 @@ def cerebellum_injection(src):
         src = Directory containing processed data (in lab bucket)
     '''
     #load kwargs
-    kwargs=load_kwargs(src)
+    dct = load_kwargs(src)    
     
     #set output directory
-    outdr = kwargs['outputdirectory']
+    outdr = dct['outputdirectory']
+    
+    #set atlas file path
+    atl = tifffile.imread(dct['AtlasFile'])
     
     #determine elastix output path
     elastix_out = os.path.join(outdr, 'elastix')
         
     #set registration channel file path
-    reg = os.path.join(elastix_out, 'result.1.tif')
+    reg = tifffile.imread(os.path.join(elastix_out, 'result.1.tif'))
     
-    #determine injection transform path
-    transform_out = os.path.join(elastix_out, [zz for zz in os.listdir(elastix_out) if zz.endswith('resized_ch01')][0])
+    vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0]
+
+    im = tifffile.imread(os.path.dirname(vol.ch_to_reg_to_atlas)+'/result.tif')#.astype('uint8')
     
-    #find transformix result tif
-    transform_vol = os.path.join(transform_out, [xx for xx in os.listdir(transform_out) if xx == 'result.tif'][0])
+    with PdfPages('/home/wanglab/Desktop/20180831_christina_cerebellum.pdf') as pdf:
+        #plot the result and atlas next to each other
+        figs = plt.figure(figsize = (8, 6))
+        plt.subplot(131)
+        plt.imshow(atl[300], cmap = 'gray'); plt.axis('off'); plt.title('Atlas', fontsize = 10)
+        
+        plt.subplot(132)
+        plt.imshow(reg[300], cmap = 'gray'); plt.axis('off'); plt.title('Registered cerebellum', fontsize = 10)
+        
+        plt.subplot(133)
+        a = np.max(im.astype('uint16'), axis = 0)
+        plt.imshow(a, cmap = 'plasma', alpha = 1); plt.axis('off'); plt.title('Injection site', fontsize = 10)
+        #FIXME: normalise intensity of figure; find stack with highest % of high intensity pixel
     
-    #plot the result and atlas next to each other
-    plt.figure() 
-    plt.subplot(121) #1 = row; 2 = columns; plot 1
-    arr = tifffile.imread(transform_vol)
-    a = np.max(arr.astype('uint16'), axis = 0)
-    plt.imshow(a, cmap = 'plasma', alpha = 1); plt.axis('off')
-    #FIXME: normalise intensity of figure; find stack with highest % of high intensity pixels
-    
-    plt.subplot(122)
-    plt.imshow(tifffile.imread(reg)[250], cmap='gray'); plt.axis('off')
-    
-    plt.savefig(os.path.join(outdr,'combined_registered_volumes_inj.pdf'), transparent=True)
+        pdf.savefig(dpi = 300, bbox_inches = 'tight')
+        plt.close()
     
         
     
