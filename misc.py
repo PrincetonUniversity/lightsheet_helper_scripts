@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt; plt.ion()
 from skimage.external import tifffile
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
+import re
 
 
 def correct_kwargs(src): 
@@ -39,48 +40,68 @@ def correct_kwargs(src):
     #return kwargs to check
     return kwargs
 
-def cerebellum_injection(src):
+def check_registration_injection(pth, inputs, cerebellum_only = True, axis = 0):
     '''Function to output registered cerebellum images from processed directories, along with injection channel transformix.
     Useful to determine 'bad' registration and fix individual parameters.
     
     Inputs:
-        src = Directory containing processed data (in lab bucket)
+        pth = pdf file path; based on experiment being analyzed
+        inputs = Directories containing processed data (in lab bucket)
     '''
-    #load kwargs
-    dct = load_kwargs(src)    
+    pdf_pages = PdfPages(pth) #compiles into multiple pdfs
     
-    #set output directory
-    outdr = dct['outputdirectory']
-    
-    #set atlas file path
-    atl = tifffile.imread(dct['AtlasFile'])
-    
-    #determine elastix output path
-    elastix_out = os.path.join(outdr, 'elastix')
+    #iterate through inputs
+    for src in inputs:
         
-    #set registration channel file path
-    reg = tifffile.imread(os.path.join(elastix_out, 'result.1.tif'))
+        #load kwargs
+        dct = load_kwargs(src)    
+        
+        #set output directory
+        outdr = dct['outputdirectory']
+        
+        #set atlas file path
+        atl = tifffile.imread(dct['AtlasFile'])
+        
+        #determine elastix output path
+        elastix_out = os.path.join(outdr, 'elastix')
+            
+        #set registration channel file path
+        reg = tifffile.imread(os.path.join(elastix_out, 'result.1.tif'))
+        
+        vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0] #find injection volume
     
-    vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0]
-
-    im = tifffile.imread(os.path.dirname(vol.ch_to_reg_to_atlas)+'/result.tif')#.astype('uint8')
-    
-    with PdfPages('/home/wanglab/Desktop/20180831_christina_cerebellum.pdf') as pdf:
+        #read transformed injch image
+        im = tifffile.imread(os.path.dirname(vol.ch_to_reg_to_atlas)+'/result.tif')#.astype('uint8')
+         
+        figs = plt.figure(figsize=(8.27, 11.69))
+        #starting to plot figures
+        plt.subplot(131)        
         #plot the result and atlas next to each other
-        figs = plt.figure(figsize = (8, 6))
-        plt.subplot(131)
-        plt.imshow(atl[300], cmap = 'gray'); plt.axis('off'); plt.title('Atlas', fontsize = 10)
-        
+        plt.imshow(atl[200], cmap = 'gray'); plt.axis('off'); plt.title('Atlas', fontsize = 10)        
         plt.subplot(132)
-        plt.imshow(reg[300], cmap = 'gray'); plt.axis('off'); plt.title('Registered cerebellum', fontsize = 10)
+        plt.imshow(reg[200], cmap = 'gray'); plt.axis('off'); plt.title('Registered brain', fontsize = 10)
         
+        #plot the max intensity zplane for the injection channel
         plt.subplot(133)
-        a = np.max(im.astype('uint16'), axis = 0)
+        a = np.max(im, axis = axis) # coronal view = 1; saggital view = 0
         plt.imshow(a, cmap = 'plasma', alpha = 1); plt.axis('off'); plt.title('Injection site', fontsize = 10)
-        #FIXME: normalise intensity of figure; find stack with highest % of high intensity pixel
-    
-        pdf.savefig(dpi = 300, bbox_inches = 'tight')
-        plt.close()
+        
+        if cerebellum_only:
+            #fix title
+            brainname = re.search(r"[an]+\d+", vol.brainname)
+            #add title to page
+            plt.text(0.5,0.65, brainname.group(0), transform = figs.transFigure, size = 16) #.group(0)
+        else:
+            #fix title
+            brainname = re.search('(?<=_)(\w+\d+)(?=_488|_4x)', vol.brainname)
+            #add title to page
+            plt.text(0.1,0.70, brainname.group(0), transform = figs.transFigure, size = 16) 
+        
+        #done with the page
+        pdf_pages.savefig(dpi = 300, bbox_inches = 'tight') 
+        
+    #write PDF document contain composite of all brains
+    pdf_pages.close()
     
         
     
