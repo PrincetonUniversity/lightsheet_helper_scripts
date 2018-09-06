@@ -13,18 +13,38 @@ import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 import re
 
+inputs = [ '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an1_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an2_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an3_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an4_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an5_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an6_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an7_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an8_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an9_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an10_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an11_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
+            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an12_crus_iDisco_488_647_025na_1hfds_z10um_250msec'
+        ]
+pth = '/home/wanglab/Desktop/test.pdf'
 
+# export overview file
+if __name__ == '__main__':
+    check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
+    # axis: 0 = saggital; 1 = coronal
+
+#%%
 def correct_kwargs(src): 
     '''Temporary adjustment to correct kwargs after setting up folders in step 0 locally.
     
     Input: source path of output directory
     NEED TO ADJUST THIS IN THE MAIN PIPELINE?
-    '''from matplotlib.backends.backend_pdf import PdfPages
+    '''
     #import kwargs
     kwargs=load_kwargs(src) 
     
     #change packagedirectory (which defaults to my lightsheet_copy for some reason???)
-    kwargs['packagedirectory']=os.path.join(src,'lightsheet')
+    kwargs['packagedirectory'] = os.path.join(src,'lightsheet')
     
     #change parameterfolder
 #    if src[14:18] == 'Jess': #if these are Jess's cerebellum's
@@ -32,7 +52,7 @@ def correct_kwargs(src):
 #    elif src[24:33] == 'rat-brody': #if these are rat images - need more stringent registration
 #        kwargs['parameterfolder']=src+'/lightsheet/parameterfolder_rat'
 #    else:
-    kwargs['parameterfolder']=os.path.join(src,'lightsheet/parameterfolder')
+    kwargs['parameterfolder'] = os.path.join(src,'lightsheet/parameterfolder')
     
     #save kwargs
     save_kwargs(src+'/param_dict.p', **kwargs)
@@ -40,7 +60,8 @@ def correct_kwargs(src):
     #return kwargs to check
     return kwargs
 
-def check_registration_injection(pth, inputs, cerebellum_only = True, axis = 0):
+
+def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0):
     '''Function to output registered cerebellum images from processed directories, along with injection channel transformix.
     Useful to determine 'bad' registration and fix individual parameters.
     
@@ -68,7 +89,7 @@ def check_registration_injection(pth, inputs, cerebellum_only = True, axis = 0):
         #set registration channel file path
         reg = tifffile.imread(os.path.join(elastix_out, 'result.1.tif'))
         
-        vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0] #find injection volume
+        vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0] #get injection volume
     
         #read transformed injch image
         im = tifffile.imread(os.path.dirname(vol.ch_to_reg_to_atlas)+'/result.tif')#.astype('uint8')
