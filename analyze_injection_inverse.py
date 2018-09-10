@@ -11,7 +11,7 @@ from skimage.external import tifffile
 import matplotlib as mpl
 from tools.imageprocessing.orientation import fix_orientation
 from tools.registration.transform import count_structure_lister, transformed_pnts_to_allen_helper_func
-from tools.analysis.analyze_injection import orientation_crop_check, optimize_inj_detect, find_site
+from tools.analysis.analyze_injection import orientation_crop_check, find_site
 from tools.registration.register import make_inverse_transform, point_transform_due_to_resizing, point_transformix
 from tools.utils.io import load_kwargs, listdirfull, makedir
 from natsort import natsorted
@@ -23,42 +23,41 @@ from scipy.ndimage import zoom
 if __name__ == '__main__':
     
     #check if reorientation is necessary
-    src = '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an3_crus_iDisco_488_647_025na_1hfds_z10um_250msec/elastix/lawrence_an3_crus_iDisco_488_647_025na_1hfds_z10um_250msec_resized_ch01/result.tif'
+    src = '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg01/20180418_rbdg01_488_555_050na_1hfds_z7d5um_50msec_10povlp_resized_ch01_resampledforelastix.tif'
     src = orientation_crop_check(src, axes = ('2','1','0'), crop = '[:,390:,:]') #'[:,390:,:]'
     
     #optimize detection parameters for inj det
-    #optimize_inj_detect(src, threshold=4, filter_kernel = (4,4,4))
+    optimize_inj_detect(src, threshold = 10, filter_kernel = (5,5,5))
 
     #run
     #suggestion: save_individual=True,
-    #then inspect individual brains, which you can then remove bad brains from list and rerun function
     inputlist = [
-            '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg01',
-            '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg02',
-            '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg03',
-            '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg04',
-            '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg05',
-            '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg06',
-            '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg07'
-            ]
+        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg01',
+        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg02',
+        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg03',
+        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg04',
+        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg05',
+        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg06',
+        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg07'
+        ]
     
     kwargs = {'inputlist': inputlist,
-              'channel': '01',
-              'channel_type': 'injch',
-              'filter_kernel': (5,5,5), #rbdg = (5,5,5)
-              'threshold': 10, #rbdg = 10 NOTE: thresholding is different than analyze_injection.py
-              'num_sites_to_keep': 1,
-              'injectionscale': 45000, 
-              'imagescale': 2,
-              'reorientation': ('2','0','1'),
-              'crop': '[:,390:,:]', #limits injection site search to cerebellum
-              'dst': '/home/wanglab/Downloads/test',
-              'save_individual': True, 
-              'colormap': 'plasma', 
-              'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif',
-              'annotation': '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif',
-              'id_table': '/jukebox/LightSheetTransfer/atlas/allen_id_table.xlsx'
-            }
+          'channel': '01',
+          'channel_type': 'injch',
+          'filter_kernel': (5,5,5), #rbdg = (5,5,5)
+          'threshold': 10, #rbdg = 10 NOTE: thresholding is different than analyze_injection.py
+          'num_sites_to_keep': 1,
+          'injectionscale': 45000, 
+          'imagescale': 2,
+          'reorientation': ('2','0','1'),
+          'crop': '[:,390:,:]', #limits injection site search to cerebellum
+          'dst': '/home/wanglab/Downloads/test',
+          'save_individual': True, 
+          'colormap': 'plasma', 
+          'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif',
+          'annotation': '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif',
+          'id_table': '/jukebox/LightSheetTransfer/atlas/allen_id_table.xlsx'
+        }
     
     df = pool_injections_inversetransform(**kwargs)
     
@@ -66,7 +65,7 @@ if __name__ == '__main__':
 def pool_injections_inversetransform(**kwargs):
     '''Function to pool several injection sites. 
     Assumes that the basic registration AND inverse transform using elastix has been run. 
-    If not, runs inverse transform. Additions to analyze_injection.py and pool_injections_for_analysis.
+    If not, runs inverse transform. Additions to analyze_injection.py and pool_injections_for_analysis().
 
     Inputs
     -----------
@@ -74,8 +73,8 @@ def pool_injections_inversetransform(**kwargs):
       'inputlist': inputlist, #list of folders generated previously from software
       'channel': '01', 
       'channel_type': 'injch',
-      'filter_kernel': (3,3,3), #gaussian blur in pixels (if registered to ABA then 1px likely is 25um)
-      'threshold': 3 (int, value to use for thresholding, this value represents the number of stand devs above the mean of the gblurred image)
+      'filter_kernel': (5,5,5), #gaussian blur in pixels (if registered to ABA then 1px likely is 25um)
+      'threshold': 10 (int, value to use for thresholding, this value represents the number of stand devs above the mean of the gblurred image)
       'num_sites_to_keep': #int, number of injection sites to keep, useful if multiple distinct sites
       'injectionscale': 45000, #use to increase intensity of injection site visualizations generated - DOES NOT AFFECT DATA
       'imagescale': 2, #use to increase intensity of background  site visualizations generated - DOES NOT AFFECT DATA
@@ -91,8 +90,7 @@ def pool_injections_inversetransform(**kwargs):
       'dst': '/home/wanglab/Downloads/test', #save location
       'save_individual': True, #optional to save individual images, useful to inspect brains, which you can then remove bad brains from list and rerun function
       'colormap': 'plasma', 
-      'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif', #whole brain atlas, not used in this verson
-                                                                                #since injection site is extracted from resized volume, not registered volume
+      'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif', #whole brain atlas
       
       Optional:
           ----------
@@ -117,7 +115,7 @@ def pool_injections_inversetransform(**kwargs):
     save_tif = kwargs['save_tif'] if 'save_tif' in kwargs else False
     num_sites_to_keep = kwargs['num_sites_to_keep'] if 'num_sites_to_keep' in kwargs else 1
     ann = sitk.GetArrayFromImage(sitk.ReadImage(kwargs['annotation']))
-    #if kwargs['crop']: 
+    #if kwargs['crop']: (from original analyze injection function, no functionality here if points file exist)
     #    ann = eval('ann{}'.format(kwargs['crop']))
     nonzeros = []
     #not needed as mapped points from point_transformix used
@@ -133,7 +131,7 @@ def pool_injections_inversetransform(**kwargs):
         if kwargs['crop']: im = eval('im{}'.format(kwargs['crop']))#; print im.shape
         
         print('  loading:\n     {}'.format(pth))
-        #run find site function to segment inj site using non-registered resampled for elastix volume - pulled directly from analyze_injection.py
+        #run find site function to segment inj site using non-registered resampled for elastix volume - pulled directly from tools.registration.register.py and tools.analysis.analyze_injection.py
         array = find_site(im, thresh=kwargs['threshold'], filter_kernel=kwargs['filter_kernel'], num_sites_to_keep = num_sites_to_keep)*injscale
         if save_array: np.save(os.path.join(dst,'{}'.format(os.path.basename(pth))+'.npy'), array.astype('float32'))
         if save_tif: tifffile.imsave(os.path.join(dst,'{}'.format(os.path.basename(pth))+'.tif'), array.astype('float32'))
@@ -149,39 +147,39 @@ def pool_injections_inversetransform(**kwargs):
             plt.close()
         
         #find all nonzero pixels in resampled for elastix volume
-        print('   finding nonzero pixels for voxel counts...')      
+        print('   finding nonzero pixels for voxel counts...\n')      
         nz = np.nonzero(array)
         nonzeros.append(zip(*nz)) #<-for pooled image 
 
-        #find elastix inverse transform folder in outdr
-        if os.path.exists(os.path.join(outdr, 'elastix_inverse_transform')): 
-            svlc = os.path.join(outdr, 'elastix_inverse_transform') 
-            svlc = os.path.join(svlc, '{}_{}'.format(inj_vol.ch_type, inj_vol.brainname))
-            if os.path.exists(svlc): #if injection inverse transform ran
-                atlas2reg2sig = os.path.join(svlc, inj_vol.resampled_for_elastix_vol[inj_vol.resampled_for_elastix_vol.rfind('/')+1:-4]+'_atlas2reg2sig')
-                posttransformix = os.path.join(atlas2reg2sig, 'posttransformix')
-                points_file = os.path.join(posttransformix, 'outputpoints.txt') #find post transformed points file path
-            else: #next few lines pulled directly from register.py - runs injection site inverse.
-                transformfile = make_inverse_transform([xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0], cores = 6, **dct)        
-                #not necessary; already done in line 130
-                #detect injection site  
-                #inj = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0]
-                #array = find_site(inj.ch_to_reg_to_atlas+'/result.1.tif', thresh=10, filter_kernel=(5,5,5))         
-                #array = find_site(inj.resampled_for_elastix_vol, thresh=10, filter_kernel=(5,5,5)).astype(int)           
-                #apply resizing point transform
-                txtflnm = point_transform_due_to_resizing(array, chtype = 'injch', **dct)    
-                #run transformix on points
-                points_file = point_transformix(txtflnm, transformfile)
-                
+        #name paths in elastix inverse transform folder in outdr
+        svlc = os.path.join(outdr, 'elastix_inverse_transform') 
+        svlc = os.path.join(svlc, '{}_{}'.format(inj_vol.ch_type, inj_vol.brainname))
+        atlas2reg2sig = os.path.join(svlc, inj_vol.resampled_for_elastix_vol[inj_vol.resampled_for_elastix_vol.rfind('/')+1:-4]+'_atlas2reg2sig') #if injection inverse transform ran
+        posttransformix = os.path.join(atlas2reg2sig, 'posttransformix')
+        #find post transformed points file path
+        points_file = os.path.join(posttransformix, 'outputpoints.txt') 
+        
         if os.path.exists(points_file): #if transformed points exist
+            print('Inverse transform exists. Points file found. \n')
             tdf = transformed_pnts_to_allen(points_file, ann, ch_type = 'injch', point_or_index = None, **dct) #map to allen atlas
             if i == 0: 
                 df = tdf.copy()
                 countcol = 'count' if 'count' in df.columns else 'cell_count'
                 df.drop([countcol], axis=1, inplace=True)
             df[os.path.basename(pth)] = tdf[countcol]
+
         else:
-            print ('Points file not found. Make sure param_dict.p is set correctly, and basic registration is completed.')           
+            print('Points file not found. Running elastix inverse transform... \n')
+            transformfile = make_inverse_transform([xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0], cores = 6, **dct)        
+            #not necessary; already done in line 130
+            #detect injection site  
+            #inj = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0]
+            #array = find_site(inj.ch_to_reg_to_atlas+'/result.1.tif', thresh=10, filter_kernel=(5,5,5))         
+            #array = find_site(inj.resampled_for_elastix_vol, thresh=10, filter_kernel=(5,5,5)).astype(int)           
+            #apply resizing point transform
+            txtflnm = point_transform_due_to_resizing(array, chtype = 'injch', **dct)    
+            #run transformix on points
+            points_file = point_transformix(txtflnm, transformfile)           
          
     #cell counts to csv                           
     df.to_csv(os.path.join(dst,'voxel_counts.csv'))
@@ -203,7 +201,7 @@ def pool_injections_inversetransform(**kwargs):
     #load atlas and generate final figure
     print('Generating final figure...')      
     atlas = tifffile.imread(kwargs['atlas']) #reads atlas
-    print('Zooming atlas...') #necessary to have a representative heat map as these segmentations are done from the resized volume, diff dimensions than atlas
+    print('Zooming in atlas...') #necessary to have a representative heat map as these segmentations are done from the resized volume, diff dimensions than atlas
     zoomed_atlas = zoom(atlas, 1.3) #zooms atlas; different than original analyze_injection.py
     sites = fix_orientation(arr, axes=axes)
     
@@ -227,6 +225,25 @@ def pool_injections_inversetransform(**kwargs):
     return df
     
 #%%
+def optimize_inj_detect(src, threshold=10, filter_kernel = (5,5,5), dst=False):
+    '''Function to test detection parameters
+    
+    src: path to resized resampled for elastix injection channel volume
+    'dst': (optional) path+extension to save image
+    
+    '''
+    if type(src) == str: src = tifffile.imread(src)
+    arr = find_site(src, thresh=threshold, filter_kernel=filter_kernel)*45000
+    fig = plt.figure()
+    fig.add_subplot(1,2,1)
+    plt.imshow(np.max(arr, axis=0));  plt.axis('off')
+    fig.add_subplot(1,2,2)
+    plt.imshow(np.max(src, axis=0), cmap='jet');  plt.axis('off')
+    
+    if dst: plt.savefig(dst, dpi=300)
+    
+    return 
+
 
 def transformed_pnts_to_allen(points_file, ann, ch_type = 'injch', point_or_index=None, allen_id_table_pth=False, **kwargs):
     '''function to take elastix point transform file and return anatomical locations of those points
