@@ -18,6 +18,7 @@ from natsort import natsorted
 from collections import Counter
 import SimpleITK as sitk, pandas as pd
 import matplotlib.pyplot as plt; plt.ion()
+from scipy.ndimage import zoom
 
 if __name__ == '__main__':
     
@@ -123,13 +124,11 @@ def pool_injections_inversetransform(**kwargs):
     #id_table = kwargs['id_table'] if 'id_table' in kwargs else '/jukebox/temp_wang/pisano/Python/lightsheet/supp_files/allen_id_table.xlsx'
     #allen_id_table = pd.read_excel(id_table)
     
-    
     for i in range(len(inputlist)): #to iteratre through brains
         pth = inputlist[i] #path of each processed brain
         dct = load_kwargs(inputlist[i]) #load kwargs of brain as dct
         outdr = dct['outputdirectory'] #set output directory of processed brain
         inj_vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0] #set injection channel volume
-        reg_vol = [xx for xx in dct['volumes'] if xx.ch_type == 'regch'][0] #set registration channel volume
         im = tifffile.imread(inj_vol.resampled_for_elastix_vol) #load inj_vol as numpy array
         if kwargs['crop']: im = eval('im{}'.format(kwargs['crop']))#; print im.shape
         
@@ -203,19 +202,21 @@ def pool_injections_inversetransform(**kwargs):
         
     #load atlas and generate final figure
     print('Generating final figure...')      
-    fake_atlas = tifffile.imread(reg_vol.resampled_for_elastix_vol) #FIXME: uses the last brains registration volume in place of 'atlas'; can change this
+    atlas = tifffile.imread(kwargs['atlas']) #reads atlas
+    print('Zooming atlas...') #necessary to have a representative heat map as these segmentations are done from the resized volume, diff dimensions than atlas
+    zoomed_atlas = zoom(atlas, 1.3) #zooms atlas; different than original analyze_injection.py
     sites = fix_orientation(arr, axes=axes)
     
     #cropping
-    if kwargs['crop']: fake_atlas = eval('fake_atlas{}'.format(kwargs['crop']))
-    fake_atlas = fix_orientation(fake_atlas, axes=axes)
+    if kwargs['crop']: zoomed_atlas = eval('zoomed_atlas{}'.format(kwargs['crop']))
+    zoomed_atlas = fix_orientation(zoomed_atlas, axes=axes)
     
     my_cmap = eval('plt.cm.{}(np.arange(plt.cm.RdBu.N))'.format(cmap))
     my_cmap[:1,:4] = 0.0  
     my_cmap = mpl.colors.ListedColormap(my_cmap)
     my_cmap.set_under('w')
     plt.figure()
-    plt.imshow(np.max(fake_atlas, axis=0), cmap='gray')
+    plt.imshow(np.max(zoomed_atlas, axis=0), cmap='gray')
     plt.imshow(np.max(sites, axis=0), alpha=0.99, cmap=my_cmap); plt.colorbar(); plt.axis('off')
     dpi = int(kwargs['dpi']) if 'dpi' in kwargs else 300
     plt.savefig(os.path.join(dst,'heatmap.pdf'), dpi=dpi, transparent=True);
