@@ -11,7 +11,7 @@ from skimage.external import tifffile
 import matplotlib as mpl
 from tools.imageprocessing.orientation import fix_orientation
 from tools.registration.transform import count_structure_lister, transformed_pnts_to_allen_helper_func
-from tools.analysis.analyze_injection import orientation_crop_check, optimize_inj_detect
+from tools.analysis.analyze_injection import orientation_crop_check, optimize_inj_detect, find_site
 from tools.registration.register import make_inverse_transform, point_transform_due_to_resizing, point_transformix
 from tools.utils.io import load_kwargs, listdirfull, makedir
 from natsort import natsorted
@@ -23,10 +23,10 @@ if __name__ == '__main__':
     
     #check if reorientation is necessary
     src = '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an3_crus_iDisco_488_647_025na_1hfds_z10um_250msec/elastix/lawrence_an3_crus_iDisco_488_647_025na_1hfds_z10um_250msec_resized_ch01/result.tif'
-    src = orientation_crop_check(src, axes = ('2','1','0'), crop = False) #'[:,390:,:]'
+    src = orientation_crop_check(src, axes = ('2','1','0'), crop = '[:,390:,:]') #'[:,390:,:]'
     
     #optimize detection parameters for inj det
-    optimize_inj_detect(src, threshold=4, filter_kernel = (4,4,4))
+    #optimize_inj_detect(src, threshold=4, filter_kernel = (4,4,4))
 
     #run
     #suggestion: save_individual=True,
@@ -44,19 +44,19 @@ if __name__ == '__main__':
     kwargs = {'inputlist': inputlist,
               'channel': '01',
               'channel_type': 'injch',
-              'filter_kernel': (5,5,5),
-              'threshold': 10,
+              'filter_kernel': (5,5,5), #rbdg = (5,5,5)
+              'threshold': 10, #rbdg = 10 NOTE: thresholding is different than analyze_injection.py
               'num_sites_to_keep': 1,
               'injectionscale': 45000, 
-              'imagescale': 1,
+              'imagescale': 2,
               'reorientation': ('2','0','1'),
-              'crop': '[:,390:,:]',
+              'crop': '[:,390:,:]', #limits injection site search to cerebellum
               'dst': '/home/wanglab/Downloads/test',
               'save_individual': True, 
               'colormap': 'plasma', 
               'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif',
-#              'annotation': '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif',
-#              'id_table': '/jukebox/LightSheetTransfer/atlas/allen_id_table.xlsx'
+              'annotation': '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif',
+              'id_table': '/jukebox/LightSheetTransfer/atlas/allen_id_table.xlsx'
             }
     
     df = pool_injections_inversetransform(**kwargs)
@@ -64,8 +64,9 @@ if __name__ == '__main__':
 #%%
 def pool_injections_inversetransform(**kwargs):
     '''Function to pool several injection sites. 
-    Assumes that the basic registration AND inverse transform using elastix has been run. If not, runs inverse transform.
-   
+    Assumes that the basic registration AND inverse transform using elastix has been run. 
+    If not, runs inverse transform. Additions to analyze_injection.py and pool_injections_for_analysis.
+
     Inputs
     -----------
     kwargs:
@@ -74,7 +75,7 @@ def pool_injections_inversetransform(**kwargs):
       'channel_type': 'injch',
       'filter_kernel': (3,3,3), #gaussian blur in pixels (if registered to ABA then 1px likely is 25um)
       'threshold': 3 (int, value to use for thresholding, this value represents the number of stand devs above the mean of the gblurred image)
-      'num_sites_to_keep': int, number of injection sites to keep, useful if multiple distinct sites
+      'num_sites_to_keep': #int, number of injection sites to keep, useful if multiple distinct sites
       'injectionscale': 45000, #use to increase intensity of injection site visualizations generated - DOES NOT AFFECT DATA
       'imagescale': 2, #use to increase intensity of background  site visualizations generated - DOES NOT AFFECT DATA
       'reorientation': ('2','0','1'), #use to change image orientation for visualization only
@@ -89,9 +90,8 @@ def pool_injections_inversetransform(**kwargs):
       'dst': '/home/wanglab/Downloads/test', #save location
       'save_individual': True, #optional to save individual images, useful to inspect brains, which you can then remove bad brains from list and rerun function
       'colormap': 'plasma', 
-      'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif', #whole brain atlas
-      'annotation':'/jukebox/LightSheetTransfer/atlas/allenatlas/annotation_sagittal_atlas_20um_iso.tif',
-      'id_table': '/jukebox/LightSheetTransfer/atlas/allen_id_table.xlsx',
+      'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif', #whole brain atlas, not used in this verson
+                                                                                #since injection site is extracted from resized volume, not registered volume
       
       Optional:
           ----------
@@ -112,30 +112,35 @@ def pool_injections_inversetransform(**kwargs):
     imagescale = kwargs['imagescale'] if 'imagescale' in kwargs else 1
     axes = kwargs['reorientation'] if 'reorientation' in kwargs else ('0','1','2')
     cmap = kwargs['colormap'] if 'colormap' in kwargs else 'plasma'
-#    id_table = kwargs['id_table'] if 'id_table' in kwargs else '/jukebox/temp_wang/pisano/Python/lightsheet/supp_files/allen_id_table.xlsx'
     save_array = kwargs['save_array'] if 'save_array' in kwargs else False
     save_tif = kwargs['save_tif'] if 'save_tif' in kwargs else False
     num_sites_to_keep = kwargs['num_sites_to_keep'] if 'num_sites_to_keep' in kwargs else 1
+    ann = sitk.GetArrayFromImage(sitk.ReadImage(kwargs['annotation']))
+    #if kwargs['crop']: 
+    #    ann = eval('ann{}'.format(kwargs['crop']))
     nonzeros = []
-#    ann = sitk.GetArrayFromImage(sitk.ReadImage(kwargs['annotation']))
-#    allen_id_table = pd.read_excel(id_table)
+    #not needed as mapped points from point_transformix used
+    #id_table = kwargs['id_table'] if 'id_table' in kwargs else '/jukebox/temp_wang/pisano/Python/lightsheet/supp_files/allen_id_table.xlsx'
+    #allen_id_table = pd.read_excel(id_table)
     
     
     for i in range(len(inputlist)): #to iteratre through brains
         pth = inputlist[i] #path of each processed brain
-        dct = load_kwargs(inputlist[i]) #load kwargs of brain
+        dct = load_kwargs(inputlist[i]) #load kwargs of brain as dct
         outdr = dct['outputdirectory'] #set output directory of processed brain
         inj_vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0] #set injection channel volume
+        reg_vol = [xx for xx in dct['volumes'] if xx.ch_type == 'regch'][0] #set registration channel volume
+        im = tifffile.imread(inj_vol.resampled_for_elastix_vol) #load inj_vol as numpy array
+        if kwargs['crop']: im = eval('im{}'.format(kwargs['crop']))#; print im.shape
         
         print('  loading:\n     {}'.format(pth))
         #run find site function to segment inj site using non-registered resampled for elastix volume - pulled directly from analyze_injection.py
-        array = find_site(inj_vol.resampled_for_elastix_vol, thresh=kwargs['threshold'], filter_kernel=kwargs['filter_kernel'], num_sites_to_keep = num_sites_to_keep)*injscale
+        array = find_site(im, thresh=kwargs['threshold'], filter_kernel=kwargs['filter_kernel'], num_sites_to_keep = num_sites_to_keep)*injscale
         if save_array: np.save(os.path.join(dst,'{}'.format(os.path.basename(pth))+'.npy'), array.astype('float32'))
         if save_tif: tifffile.imsave(os.path.join(dst,'{}'.format(os.path.basename(pth))+'.tif'), array.astype('float32'))
         
         #optional 'save_individual'
         if kwargs['save_individual']:
-            im = tifffile.imread(inj_vol.resampled_for_elastix_vol)
             im = im*imagescale
             a = np.concatenate((np.max(im, axis=0), np.max(array.astype('uint16'), axis=0)), axis=1)
             b = np.concatenate((np.fliplr(np.rot90(np.max(fix_orientation(im, axes=axes), axis=0),k=3)), np.fliplr(np.rot90(np.max(fix_orientation(array.astype('uint16'), axes=axes), axis=0),k=3))), axis=1)
@@ -144,21 +149,23 @@ def pool_injections_inversetransform(**kwargs):
             plt.savefig(os.path.join(dst,'{}'.format(os.path.basename(pth))+'.pdf'), dpi=300, transparent=True)
             plt.close()
         
-        #cell counts to csv
+        #find all nonzero pixels in resampled for elastix volume
         print('   finding nonzero pixels for voxel counts...')      
         nz = np.nonzero(array)
-        nonzeros.append(zip(*nz)) #<-for pooled image
+        nonzeros.append(zip(*nz)) #<-for pooled image 
 
-        if os.path.exists(os.path.join(outdr, 'elastix_inverse_transform')): #find elastix inverse transform folder in outdr
+        #find elastix inverse transform folder in outdr
+        if os.path.exists(os.path.join(outdr, 'elastix_inverse_transform')): 
             svlc = os.path.join(outdr, 'elastix_inverse_transform') 
             svlc = os.path.join(svlc, '{}_{}'.format(inj_vol.ch_type, inj_vol.brainname))
             if os.path.exists(svlc): #if injection inverse transform ran
                 atlas2reg2sig = os.path.join(svlc, inj_vol.resampled_for_elastix_vol[inj_vol.resampled_for_elastix_vol.rfind('/')+1:-4]+'_atlas2reg2sig')
                 posttransformix = os.path.join(atlas2reg2sig, 'posttransformix')
                 points_file = os.path.join(posttransformix, 'outputpoints.txt') #find post transformed points file path
-            else: #next few lines pulled directly from register.py - runs injection site inverse!!!!!!!
+            else: #next few lines pulled directly from register.py - runs injection site inverse.
                 transformfile = make_inverse_transform([xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0], cores = 6, **dct)        
-                #detect injection site  ##FIXME need to define image and pass in appropriate thresh/filter-kernels
+                #not necessary; already done in line 130
+                #detect injection site  
                 #inj = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0]
                 #array = find_site(inj.ch_to_reg_to_atlas+'/result.1.tif', thresh=10, filter_kernel=(5,5,5))         
                 #array = find_site(inj.resampled_for_elastix_vol, thresh=10, filter_kernel=(5,5,5)).astype(int)           
@@ -168,16 +175,16 @@ def pool_injections_inversetransform(**kwargs):
                 points_file = point_transformix(txtflnm, transformfile)
                 
         if os.path.exists(points_file): #if transformed points exist
-            tdf = transformed_pnts_to_allen(points_file, ch_type = 'injch', point_or_index = None, **dct)
+            tdf = transformed_pnts_to_allen(points_file, ann, ch_type = 'injch', point_or_index = None, **dct) #map to allen atlas
             if i == 0: 
                 df = tdf.copy()
                 countcol = 'count' if 'count' in df.columns else 'cell_count'
                 df.drop([countcol], axis=1, inplace=True)
             df[os.path.basename(pth)] = tdf[countcol]
         else:
-            print 'Points file not found. Make sure param_dict.p is set correctly, and basic registration is completed.'           
+            print ('Points file not found. Make sure param_dict.p is set correctly, and basic registration is completed.')           
          
-                               
+    #cell counts to csv                           
     df.to_csv(os.path.join(dst,'voxel_counts.csv'))
     print('\n\nCSV file of cell counts, saved as {}\n\n\n'.format(os.path.join(dst,'voxel_counts.csv')))                
                 
@@ -196,16 +203,20 @@ def pool_injections_inversetransform(**kwargs):
         
     #load atlas and generate final figure
     print('Generating final figure...')      
-    atlas = tifffile.imread(kwargs['atlas'])
-    array = fix_orientation(arr, axes=axes)
+    fake_atlas = tifffile.imread(reg_vol.resampled_for_elastix_vol) #FIXME: uses the last brains registration volume in place of 'atlas'; can change this
+    sites = fix_orientation(arr, axes=axes)
+    
+    #cropping
+    if kwargs['crop']: fake_atlas = eval('fake_atlas{}'.format(kwargs['crop']))
+    fake_atlas = fix_orientation(fake_atlas, axes=axes)
     
     my_cmap = eval('plt.cm.{}(np.arange(plt.cm.RdBu.N))'.format(cmap))
     my_cmap[:1,:4] = 0.0  
     my_cmap = mpl.colors.ListedColormap(my_cmap)
     my_cmap.set_under('w')
     plt.figure()
-    plt.imshow(np.max(atlas, axis=0), cmap='gray')
-    plt.imshow(np.max(arr, axis=0), alpha=0.99, cmap=my_cmap); plt.colorbar(); plt.axis('off')
+    plt.imshow(np.max(fake_atlas, axis=0), cmap='gray')
+    plt.imshow(np.max(sites, axis=0), alpha=0.99, cmap=my_cmap); plt.colorbar(); plt.axis('off')
     dpi = int(kwargs['dpi']) if 'dpi' in kwargs else 300
     plt.savefig(os.path.join(dst,'heatmap.pdf'), dpi=dpi, transparent=True);
     plt.close()
@@ -214,67 +225,24 @@ def pool_injections_inversetransform(**kwargs):
         
     return df
     
-    
-    
-    
-    
-    
-    
-    
 #%%
-def find_site(im, thresh=10, filter_kernel=(5,5,5), num_sites_to_keep=1):
-    """Find a connected area of high intensity, using a basic filter + threshold + connected components approach
-    
-    by: bdeverett
-    Parameters
-    ----------
-    img : np.ndarray
-        3D stack in which to find site (technically need not be 3D, so long as filter parameter is adjusted accordingly)
-    thresh: float
-        threshold for site-of-interest intensity, in number of standard deviations above the mean
-    filter_kernel: tuple
-        kernel for filtering of image before thresholding
-    num_sites_to_keep: int, number of injection sites to keep, useful if multiple distinct sites
-    
-    Returns
-    --------
-    bool array of volume where coordinates where detected
-    """
-    from scipy.ndimage.filters import gaussian_filter as gfilt
-    from scipy.ndimage import label
-    if type(im) == str: im = tifffile.imread(im)
 
-    filtered = gfilt(im, filter_kernel)
-    thresholded = filtered > filtered.mean() + thresh*filtered.std() 
-    labelled,nlab = label(thresholded)
-
-    if nlab == 0:
-        raise Exception('Site not detected, try a lower threshold?')
-    elif nlab == 1:
-        return labelled.astype(bool)
-    elif num_sites_to_keep == 1:
-        sizes = [np.sum(labelled==i) for i in range(1,nlab+1)]
-        return labelled == np.argmax(sizes)+1
-    else:
-        sizes = [np.sum(labelled==i) for i in range(1,nlab+1)]
-        vals = [i+1 for i in np.argsort(sizes)[-num_sites_to_keep:][::-1]]
-	return np.in1d(labelled, vals).reshape(labelled.shape)   
-    
-
-def transformed_pnts_to_allen(points_file, ch_type = 'injch', point_or_index=None, allen_id_table_pth=False, **kwargs):
+def transformed_pnts_to_allen(points_file, ann, ch_type = 'injch', point_or_index=None, allen_id_table_pth=False, **kwargs):
     '''function to take elastix point transform file and return anatomical locations of those points
     point_or_index=None/point/index: determines which transformix output to use: point is more accurate, index is pixel value(?)
     Elastix uses the xyz convention rather than the zyx numpy convention
+    NOTE: this modification does not output out a single excel file, but a data frame
     
     Inputs
     -----------
     points_file = 
     ch_type = 'injch' or 'cellch'
     allen_id_table_pth (optional) pth to allen_id_table
+    ann = annotation file
     
     Returns
     -----------
-    excelfl = path to excel file
+    df = data frame containing voxel counts
     
     '''   
     kwargs = load_kwargs(**kwargs)
@@ -297,7 +265,7 @@ def transformed_pnts_to_allen(points_file, ch_type = 'injch', point_or_index=Non
         allen_id_table=pd.read_excel(os.path.join(reg_vol.packagedirectory, 'supp_files/allen_id_table.xlsx')) ##use for determining neuroanatomical locations according to allen
     else:
         allen_id_table = pd.read_excel(allen_id_table_pth)
-    ann=sitk.GetArrayFromImage(sitk.ReadImage(kwargs['annotationfile'])) ###zyx
+    #ann = ann ###zyx
     with open(points_file, "rb") as f:                
         lines=f.readlines()
         f.close()

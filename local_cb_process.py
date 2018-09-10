@@ -18,21 +18,21 @@ from tools.utils.io import load_kwargs
 
 #cerebellums to process
 inputs = [
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an1_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_14-02-57',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an2_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_14-23-00',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an3_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-48-57',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an4_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-30-06',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an5_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_17-08-41',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an6_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_17-26-10',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an7_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_17-46-09',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an8_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-04-57',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an9_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-22-57',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an10_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-41-49',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an11_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-54-07',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an12_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-08-04',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an13_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-24-57',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an14_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-42-03',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an15_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-57-24',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an1_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_14-02-57',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an2_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_14-23-00',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an3_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-48-57',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an4_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-30-06',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an5_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_17-08-41',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an6_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_17-26-10',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an7_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_17-46-09',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an8_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-04-57',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an9_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-22-57',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an10_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-41-49',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an11_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-54-07',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an12_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-08-04',
+        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an13_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-24-57',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an14_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-42-03',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an15_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-57-24',
         '/jukebox/LightSheetTransfer/Jess/cruslat/180611_an16_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-57-24_12-48-21',
         '/jukebox/LightSheetTransfer/Jess/cruslat/180611_an17_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-57-24_13-02-00',
         '/jukebox/LightSheetTransfer/Jess/cruslat/180611_an18_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-57-24_13-16-29',
@@ -42,7 +42,7 @@ inputs = [
         '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an22_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_15-33-27',
         '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an23_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_15-51-18',
         '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an24_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-20-03',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an25_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-37-16
+        '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an25_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-37-16'
         ]
 
 #%%
@@ -57,18 +57,18 @@ for brain in inputs: #for loop that processes each brain one by one
     'objectdetection': 'edgedetection', # 'edgedetection', 'convnet', 'clearmap', 'all'; clearmap setting uses their SpotDetection method
     'systemdirectory':  '/jukebox/', #don't need to touch
     'inputdictionary': inputdictionary, #don't need to touch
-    'outputdirectory': '/jukebox/wang/willmore/lightsheet/'+brainname,
+    'outputdirectory': '/jukebox/wang/Jess/DREADD_3WYFP_Pcp2_2017/Injection Analysis/Lightsheet/dreadds_pc/DREADD_3W84_YFP_Pcp2',
     'xyz_scale': (5,5,10), #(5.0,5.0,3), #micron/pixel: 5.0um/pix for 1.3x; 1.63um/pix for 4x; The third number, Z, is the size of the z-step
     'tiling_overlap': 0.00, #percent overlap taken during tiling
     'stitchingmethod': 'blending', #'terastitcher', blending see below for details
-    'AtlasFile' : '/jukebox/LightSheetTransfer/atlas/cb_sagittal_atlas_20um_iso.tif',
-    'annotationfile' : '/jukebox/LightSheetTransfer/atlas/cb_annotation_sagittal_atlas_20um_iso.tif', ###path to annotation file for structures
+    'AtlasFile' : '/jukebox/wang/pisano/Python/allenatlas/average_template_25_sagittal_forDVscans_cb_only.tif',
+    'annotationfile' : '/jukebox/wang/pisano/Python/allenatlas/annotation_25_ccf2015_forDVscans_cb_only.tif', ###path to annotation file for structures
     'blendtype' : 'sigmoidal', #False/None, 'linear', or 'sigmoidal' blending between tiles, usually sigmoidal; False or None for images where blending would be detrimental
     'intensitycorrection' : True, #True = calculate mean intensity of overlap between tiles shift higher of two towards lower - useful for images where relative intensity is not important (i.e. tracing=True, cFOS=False)
     'resizefactor': 3, ##in x and y #normally set to 5 for 4x objective, 3 for 1.3x obj
-    'rawdata' : True, # set to true if raw data is taken from scope and images need to be flattened; functionality for rawdata =False has not been tested**
-    'finalorientation' :  ('2','-1','0'), #Used to account for different orientation between brain and atlas. Assumes XYZ ('0','1','2) orientation. Pass strings NOT ints. '-0' = reverse the order of the xaxis. For better description see docstring from tools.imageprocessing.orientation import fix_orientation; ('2','1','0') for horizontal to sagittal, Order of operations is reversing of axes BEFORE swapping axes.
-    'slurmjobfactor': 900, #number of array iterations per arrayjob since max job array on SPOCK is 1000
+    'rawdata' : False, # set to true if raw data is taken from scope and images need to be flattened; functionality for rawdata =False has not been tested**
+    'finalorientation' :  ('2','1','0'), #Used to account for different orientation between brain and atlas. Assumes XYZ ('0','1','2) orientation. Pass strings NOT ints. '-0' = reverse the order of the xaxis. For better description see docstring from tools.imageprocessing.orientation import fix_orientation; ('2','1','0') for horizontal to sagittal, Order of operations is reversing of axes BEFORE swapping axes.
+    'slurmjobfactor': 600, #number of array iterations per arrayjob since max job array on SPOCK is 1000
     'transfertype': 'copy', #to protect original data
     'secondary_registration': False #to prevent morphing of signal channel image with unnecessary registration
     } 
