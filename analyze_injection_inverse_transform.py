@@ -38,7 +38,7 @@ if __name__ == '__main__':
         '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg04',
         '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg05',
         '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg06',
-        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg07'
+        #'/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg07'
         ]
     
     kwargs = {'inputlist': inputlist,
@@ -50,7 +50,7 @@ if __name__ == '__main__':
           'injectionscale': 45000, 
           'imagescale': 2,
           'reorientation': ('2','0','1'),
-          'crop': '[:,390:,:]', #limits injection site search to cerebellum
+          'crop': '[:,600:,:]', #limits injection site search to cerebellum
           'dst': '/home/wanglab/Downloads/test',
           'save_individual': True, 
           'colormap': 'plasma', 
@@ -81,7 +81,7 @@ def pool_injections_inversetransform(**kwargs):
       'reorientation': ('2','0','1'), #use to change image orientation for visualization only
       'crop': #use to crop volume, values below assume horizontal imaging and sagittal atlas
                 False
-                cerebellum: '[:,390:,:]'
+                cerebellum: '[:,600:,:]'
                 caudal midbrain: '[:,300:415,:]'
                 midbrain: '[:,215:415,:]'
                 thalamus: '[:,215:345,:]'
@@ -171,7 +171,7 @@ def pool_injections_inversetransform(**kwargs):
         else:
             print('Points file not found. Running elastix inverse transform... \n')
             transformfile = make_inverse_transform([xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0], cores = 6, **dct)        
-            #not necessary; already done in line 130
+            #not necessary; already done in line 135
             #detect injection site  
             #inj = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0]
             #array = find_site(inj.ch_to_reg_to_atlas+'/result.1.tif', thresh=10, filter_kernel=(5,5,5))         

@@ -30,7 +30,7 @@ pth = '/home/wanglab/Desktop/test.pdf'
 
 # export overview file
 if __name__ == '__main__':
-    check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
+    check_registration_injection(pth, inputs, cerebellum_only = True, axis = 1)
     # axis: 0 = saggital; 1 = coronal
 
 #%%
@@ -38,7 +38,6 @@ def correct_kwargs(src):
     '''Temporary adjustment to correct kwargs after setting up folders in step 0 locally.
     
     Input: source path of output directory
-    NEED TO ADJUST THIS IN THE MAIN PIPELINE?
     '''
     #import kwargs
     kwargs=load_kwargs(src) 
@@ -92,8 +91,10 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
         vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0] #get injection volume
     
         #read transformed injch image
+        print('Reading registered injection channel image\n     {}'.format(pth))
         im = tifffile.imread(os.path.dirname(vol.ch_to_reg_to_atlas)+'/result.tif')#.astype('uint8')
          
+        print('Plotting images...\n')
         figs = plt.figure(figsize=(8.27, 11.69))
         #starting to plot figures
         plt.subplot(131)        
@@ -124,6 +125,7 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
     #write PDF document contain composite of all brains
     pdf_pages.close()
     
+    print('Saved as {}'.format(pth))
         
     
     
