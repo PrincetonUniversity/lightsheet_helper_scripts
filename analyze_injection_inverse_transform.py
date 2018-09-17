@@ -24,7 +24,7 @@ if __name__ == '__main__':
     
     #check if reorientation is necessary
     src = '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg01/20180418_rbdg01_488_555_050na_1hfds_z7d5um_50msec_10povlp_resized_ch01_resampledforelastix.tif'
-    src = orientation_crop_check(src, axes = ('2','1','0'), crop = '[:,390:,:]') #'[:,390:,:]'
+    src = orientation_crop_check(src, axes = ('2','1','0'), crop = '[:,600:,:]') #'[:,390:,:]'
     
     #optimize detection parameters for inj det
     optimize_inj_detect(src, threshold = 10, filter_kernel = (5,5,5))
@@ -32,12 +32,12 @@ if __name__ == '__main__':
     #run
     #suggestion: save_individual=True,
     inputlist = [
-        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg01',
+        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg01_inj',
         '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg02',
         '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg03',
         '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg04',
         '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg05',
-        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg06',
+        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg06_inj',
         #'/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg07'
         ]
     
@@ -56,7 +56,7 @@ if __name__ == '__main__':
           'colormap': 'plasma', 
           'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif',
           'annotation': '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif',
-          'id_table': '/jukebox/LightSheetTransfer/atlas/allen_id_table.xlsx'
+          'id_table': '/jukebox/wang/zahra/lightsheet_copy/supp_files/ls_id_table_w_voxelcounts.xlsx'#if using allen for registration, need to specify allen id table - path defaults to PMA id table
         }
     
     df = pool_injections_inversetransform(**kwargs)
@@ -119,8 +119,8 @@ def pool_injections_inversetransform(**kwargs):
     #    ann = eval('ann{}'.format(kwargs['crop']))
     nonzeros = []
     #not needed as mapped points from point_transformix used
-    #id_table = kwargs['id_table'] if 'id_table' in kwargs else '/jukebox/temp_wang/pisano/Python/lightsheet/supp_files/allen_id_table.xlsx'
-    #allen_id_table = pd.read_excel(id_table)
+    id_table = kwargs['id_table'] if 'id_table' in kwargs else '/jukebox/wang/zahra/lightsheet_copy/supp_files/ls_id_table_w_voxelcounts.xlsx'
+    id_table = pd.read_excel(id_table)
     
     for i in range(len(inputlist)): #to iteratre through brains
         pth = inputlist[i] #path of each processed brain
@@ -161,7 +161,7 @@ def pool_injections_inversetransform(**kwargs):
         
         if os.path.exists(points_file): #if transformed points exist
             print('Inverse transform exists. Points file found. \n')
-            tdf = transformed_pnts_to_allen(points_file, ann, ch_type = 'injch', point_or_index = None, **dct) #map to allen atlas
+            tdf = transformed_pnts_to_pma(points_file, ann, ch_type = 'injch', point_or_index = None, **dct) #map to allen atlas
             if i == 0: 
                 df = tdf.copy()
                 countcol = 'count' if 'count' in df.columns else 'cell_count'
@@ -245,7 +245,7 @@ def optimize_inj_detect(src, threshold=10, filter_kernel = (5,5,5), dst=False):
     return 
 
 
-def transformed_pnts_to_allen(points_file, ann, ch_type = 'injch', point_or_index=None, allen_id_table_pth=False, **kwargs):
+def transformed_pnts_to_pma(points_file, ann, ch_type = 'injch', point_or_index=None, id_table_pth=False, **kwargs):
     '''function to take elastix point transform file and return anatomical locations of those points
     point_or_index=None/point/index: determines which transformix output to use: point is more accurate, index is pixel value(?)
     Elastix uses the xyz convention rather than the zyx numpy convention
@@ -279,10 +279,10 @@ def transformed_pnts_to_allen(points_file, ann, ch_type = 'injch', point_or_inde
     reg_vol=[xx for xx in vols if xx.ch_type == 'regch'][0]
 
     ####load files
-    if not allen_id_table_pth:
-        allen_id_table=pd.read_excel(os.path.join(reg_vol.packagedirectory, 'supp_files/allen_id_table.xlsx')) ##use for determining neuroanatomical locations according to allen
+    if not id_table_pth:
+        id_table = pd.read_excel('/jukebox/wang/zahra/lightsheet_copy/supp_files/ls_id_table_w_voxelcounts.xlsx') ##use for determining neuroanatomical locations according to allen
     else:
-        allen_id_table = pd.read_excel(allen_id_table_pth)
+        id_table = pd.read_excel(id_table_pth)
     #ann = ann ###zyx
     with open(points_file, "rb") as f:                
         lines=f.readlines()
@@ -297,7 +297,7 @@ def transformed_pnts_to_allen(points_file, ann, ch_type = 'injch', point_or_inde
     #optional save out of points
     np.save(kwargs['outputdirectory']+'/injection/zyx_voxels.npy', np.asarray([(z,y,x) for x,y,z in arr]))
         
-    pnts=transformed_pnts_to_allen_helper_func(arr, ann); pnt_lst=[xx for xx in pnts if xx != 0]
+    pnts = transformed_pnts_to_allen_helper_func(arr, ann); pnt_lst=[xx for xx in pnts if xx != 0]
     
     #check to see if any points where found
     if len(pnt_lst)==0:
@@ -306,7 +306,7 @@ def transformed_pnts_to_allen(points_file, ann, ch_type = 'injch', point_or_inde
         sys.stdout.write('\nlen of pnt_lst({})\n\n'.format(len(pnt_lst)))
     
     #generate dataframe with column
-    df = count_structure_lister(allen_id_table, *pnt_lst) 
+    df = count_structure_lister(id_table, *pnt_lst) 
     
     return df
     

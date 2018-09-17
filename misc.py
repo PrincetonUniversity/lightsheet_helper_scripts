@@ -107,15 +107,13 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
         plt.subplot(133)
         a = np.max(im, axis = axis) # coronal view = 1; saggital view = 0
         plt.imshow(a, cmap = 'plasma', alpha = 1); plt.axis('off'); plt.title('Injection site', fontsize = 10)
+        #fix title
+        brainname = re.search('(?<=_)(\w+)(?=_488|_iDisco|_4x)', vol.brainname)
         
         if cerebellum_only:
-            #fix title
-            brainname = re.search(r"[an]+\d+", vol.brainname)
             #add title to page
             plt.text(0.5,0.65, brainname.group(0), transform = figs.transFigure, size = 16) #.group(0)
         else:
-            #fix title
-            brainname = re.search('(?<=_)(\w+\d+)(?=_488|_4x)', vol.brainname)
             #add title to page
             plt.text(0.1,0.70, brainname.group(0), transform = figs.transFigure, size = 16) 
         
