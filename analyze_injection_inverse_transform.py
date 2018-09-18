@@ -32,12 +32,12 @@ if __name__ == '__main__':
     #run
     #suggestion: save_individual=True,
     inputlist = [
-        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg01_inj',
-        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg02',
-        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg03',
-        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg04',
-        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg05',
-        '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg06_inj',
+        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg01_inj',
+        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg02_inj',
+        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg03',
+        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg04',
+        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg05',
+        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg06_inj',
         #'/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg07'
         ]
     
@@ -161,7 +161,7 @@ def pool_injections_inversetransform(**kwargs):
         
         if os.path.exists(points_file): #if transformed points exist
             print('Inverse transform exists. Points file found. \n')
-            tdf = transformed_pnts_to_pma(points_file, ann, ch_type = 'injch', point_or_index = None, **dct) #map to allen atlas
+            tdf = transformed_pnts_to_atlas(points_file, ann, ch_type = 'injch', point_or_index = None, id_table_pth = id_table, **dct) #map to whichever atlas you registered to atlas
             if i == 0: 
                 df = tdf.copy()
                 countcol = 'count' if 'count' in df.columns else 'cell_count'
@@ -170,16 +170,18 @@ def pool_injections_inversetransform(**kwargs):
 
         else:
             print('Points file not found. Running elastix inverse transform... \n')
-            transformfile = make_inverse_transform([xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0], cores = 6, **dct)        
-            #not necessary; already done in line 135
-            #detect injection site  
-            #inj = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0]
-            #array = find_site(inj.ch_to_reg_to_atlas+'/result.1.tif', thresh=10, filter_kernel=(5,5,5))         
-            #array = find_site(inj.resampled_for_elastix_vol, thresh=10, filter_kernel=(5,5,5)).astype(int)           
+            transformfile = make_inverse_transform([xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0], cores = 6, **dct)                 
             #apply resizing point transform
             txtflnm = point_transform_due_to_resizing(array, chtype = 'injch', **dct)    
             #run transformix on points
-            points_file = point_transformix(txtflnm, transformfile)           
+            points_file = point_transformix(txtflnm, transformfile)
+            #map transformed points to atlas
+            tdf = transformed_pnts_to_atlas(points_file, ann, ch_type = 'injch', point_or_index = None, id_table_pth = id_table, **dct) #map to whichever atlas you registered to atlas
+            if i == 0: 
+                df = tdf.copy()
+                countcol = 'count' if 'count' in df.columns else 'cell_count'
+                df.drop([countcol], axis=1, inplace=True)
+            df[os.path.basename(pth)] = tdf[countcol
          
     #cell counts to csv                           
     df.to_csv(os.path.join(dst,'voxel_counts.csv'))
@@ -245,7 +247,7 @@ def optimize_inj_detect(src, threshold=10, filter_kernel = (5,5,5), dst=False):
     return 
 
 
-def transformed_pnts_to_pma(points_file, ann, ch_type = 'injch', point_or_index=None, id_table_pth=False, **kwargs):
+def transformed_pnts_to_atlas(points_file, ann, ch_type = 'injch', point_or_index=None, id_table_pth=False, **kwargs):
     '''function to take elastix point transform file and return anatomical locations of those points
     point_or_index=None/point/index: determines which transformix output to use: point is more accurate, index is pixel value(?)
     Elastix uses the xyz convention rather than the zyx numpy convention
