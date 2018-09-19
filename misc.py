@@ -13,24 +13,21 @@ import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 import re
 
-inputs = [ '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an1_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an2_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an3_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an4_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an5_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an6_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an7_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an8_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an9_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an10_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an11_crus_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/lawrence/lawrence_an12_crus_iDisco_488_647_025na_1hfds_z10um_250msec'
-        ]
-pth = '/home/wanglab/Desktop/test.pdf'
+
+inputs = [
+    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg01_inj',
+    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg02_inj',
+    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg03',
+    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg04',
+    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg05',
+    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg06_inj',
+    ]
+
+pth = '/home/wanglab/Downloads/test.pdf'
 
 # export overview file
 if __name__ == '__main__':
-    check_registration_injection(pth, inputs, cerebellum_only = True, axis = 1)
+    check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
     # axis: 0 = saggital; 1 = coronal
 
 #%%
@@ -61,12 +58,12 @@ def correct_kwargs(src):
 
 
 def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0):
-    '''Function to output registered cerebellum images from processed directories, along with injection channel transformix.
-    Useful to determine 'bad' registration and fix individual parameters.
+    '''Function to output registered brain images from processed directories.
+    Useful to determine 'bad' registration.
     
     Inputs:
-        pth = pdf file path; based on experiment being analyzed
-        inputs = Directories containing processed data (in lab bucket)
+        pth = pdf file path
+        inputs = Directories containing processed data
     '''
     pdf_pages = PdfPages(pth) #compiles into multiple pdfs
     
@@ -91,10 +88,10 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
         vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0] #get injection volume
     
         #read transformed injch image
-        print('Reading registered injection channel image\n     {}'.format(pth))
+        print('Reading registered injection channel image\n     {}'.format(outdr))
         im = tifffile.imread(os.path.dirname(vol.ch_to_reg_to_atlas)+'/result.tif')#.astype('uint8')
          
-        print('Plotting images...\n')
+        print('\nPlotting images...\n')
         figs = plt.figure(figsize=(8.27, 11.69))
         #starting to plot figures
         plt.subplot(131)        
@@ -108,7 +105,7 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
         a = np.max(im, axis = axis) # coronal view = 1; saggital view = 0
         plt.imshow(a, cmap = 'plasma', alpha = 1); plt.axis('off'); plt.title('Injection site', fontsize = 10)
         #fix title
-        brainname = re.search('(?<=_)(\w+)(?=_488|_iDisco|_4x)', vol.brainname)
+        brainname = re.search('(?<=_)(\w+)(?=_488)', vol.brainname)
         
         if cerebellum_only:
             #add title to page
@@ -125,5 +122,27 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
     
     print('Saved as {}'.format(pth))
         
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
