@@ -30,14 +30,15 @@ if __name__ == '__main__':
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
     inputlist = [
-            #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an1_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an2_iDisco_488_647_026na_1hfds_z10um_250msec',
+                '/jukebox/wang/zahra/ymaze_cfos_an15_cb'
+           #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an1_iDisco_488_647_025na_1hfds_z10um_250msec',
+#            '/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an2_iDisco_488_647_026na_1hfds_z10um_250msec',
             #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an3_iDisco_488_647_025na_1hfds_z10um_250msec',
             #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an5_iDisco_488_647_025na_1hfds_z10um_250msec',
             #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an6_iDisco_488_647_025na_1hfds_z10um_250msec',
             #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an7_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an8_iDisco_488_647_025na_1hfds_z10um_250msec',
-            '/jukebox/wang/Jess/Christina/lightsheet/processed/crusI/christina_an9_iDisco_488_647_025na_1hfds_z10um_250msec',
+#            '/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an8_iDisco_488_647_025na_1hfds_z10um_250msec',
+#            '/jukebox/wang/Jess/Christina/lightsheet/processed/crusI/christina_an9_iDisco_488_647_025na_1hfds_z10um_250msec',
             #'/jukebox/wang/Jess/Christina/lightsheet/processed/crusI/christina_an10_iDisco_488_647_025na_1hfds_z10um_250msec'
             ]
             
@@ -47,17 +48,17 @@ if __name__ == '__main__':
               'channel': '01',
               'channel_type': 'injch',
               'filter_kernel': (5,5,5), #mli(4,4,4)
-              'threshold': 2, #mli(4)
-              'injectionscale': 100000, 
+              'threshold': 4, #mli(4)
+              'injectionscale': 10000, 
               'imagescale': 5,
               'reorientation': ('2','0','1'),
               'crop': False,
-              'dst': '/home/wanglab/Documents/cerebellum_pooled_analysis/crusI/test',
+              'dst': '/home/wanglab/Desktop/test',
               'save_individual': True, 
               'colormap': 'plasma', 
               'atlas': '/jukebox/LightSheetTransfer/atlas/cb_sagittal_atlas_20um_iso.tif',
               'annotation':'/jukebox/LightSheetTransfer/atlas/cb_annotation_sagittal_atlas_20um_iso.tif',
-              'id_table': '/jukebox/LightSheetTransfer/atlas/allen_id_table.xlsx'
+              'id_table': '/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx'
             }              
               
     

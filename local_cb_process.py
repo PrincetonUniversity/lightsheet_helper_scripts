@@ -6,43 +6,31 @@ Created on Wed Aug 29 11:27:50 2018
 @author: wanglab
 """
 
-import os, sys, shutil, re
+import os, shutil, re
 from xvfbwrapper import Xvfb; vdisplay = Xvfb(); vdisplay.start()
 from tools.imageprocessing import preprocessing
 from tools.registration.register import elastix_wrapper
-from tools.utils.directorydeterminer import directorydeterminer
-from tools.utils.io import load_kwargs
 
-#mimic of run_tracing file with cerebellum-specific parameters to register locally.
+#mimics run_tracing file with cerebellum-specific parameters to register locally.
 #does not perform elastix inverse transform; registration primarily for using analyze_injection function on injection site data.
 
 #cerebellums to process
 inputs = [
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an1_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_14-02-57',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an2_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_14-23-00',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an3_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-48-57',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an4_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-30-06',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an5_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_17-08-41',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an6_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_17-26-10',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an7_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_17-46-09',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an8_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-04-57',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an9_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-22-57',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an10_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-41-49',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an11_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_18-54-07',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an12_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-08-04',
-        #'/jukebox/LightSheetTransfer/Jess/cruslat/180607_an13_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-24-57',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an14_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-42-03',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180607_an15_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-57-24',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180611_an16_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-57-24_12-48-21',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180611_an17_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-57-24_13-02-00',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180611_an18_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_19-57-24_13-16-29',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an19_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_14-51-03',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an20_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_15-04-41',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an21_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_15-17-40',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an22_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_15-33-27',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an23_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_15-51-18',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an24_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-20-03',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/180614_an25_ymaze_latcrus_iDisco_488_647_025na_1hfds_z10um_240msec_16-37-16'
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an1_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_12-11-04',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an2_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_12-33-54',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an3_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_13-03-25',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an4_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_13-30-49',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an5_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_13-58-34',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an6_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_14-21-42',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an7_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_14-58-12',
+        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an8_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_15-25-43',
+        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an9_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_15-54-18',
+        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an10_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_16-32-58',
+        '/jukebox/LightSheetTransfer/Jess/cruslat/',
+        '/jukebox/LightSheetTransfer/Jess/cruslat/',
+        '/jukebox/LightSheetTransfer/Jess/cruslat/',
+        '/jukebox/LightSheetTransfer/Jess/cruslat/',
+        '/jukebox/LightSheetTransfer/Jess/cruslat/'
         ]
 
 #%%
@@ -50,12 +38,12 @@ for brain in inputs: #for loop that processes each brain one by one
     
     inputdictionary = { brain: [['regch', '00'],['injch', '01']] } #makes input directory 
     
-    brainname = re.search('(?<=_)(\w+)(?=_488|_4x)', brain) #sets basename of output directory based on clearing label
+    brainname = re.search('(?<=_)(\w+)(?=_488|_4x|_1d3x)', brain) #sets basename of output directory based on clearing label
     
     params={
     'labeltype': 'CTB555', #'h129', 'prv', 'cfos'
     'objectdetection': 'edgedetection', # 'edgedetection', 'convnet', 'clearmap', 'all'; clearmap setting uses their SpotDetection method
-    'systemdirectory':  '/jukebox/', #don't need to touch
+    'systemdirectory':  '/jukebox/', #changed for local processing by zmd - confuses file paths less
     'inputdictionary': inputdictionary, #don't need to touch
     'outputdirectory': '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/'+brainname.group(0),
     'xyz_scale': (5,5,10), #(5.0,5.0,3), #micron/pixel: 5.0um/pix for 1.3x; 1.63um/pix for 4x; The third number, Z, is the size of the z-step
@@ -66,9 +54,9 @@ for brain in inputs: #for loop that processes each brain one by one
     'blendtype' : 'sigmoidal', #False/None, 'linear', or 'sigmoidal' blending between tiles, usually sigmoidal; False or None for images where blending would be detrimental
     'intensitycorrection' : True, #True = calculate mean intensity of overlap between tiles shift higher of two towards lower - useful for images where relative intensity is not important (i.e. tracing=True, cFOS=False)
     'resizefactor': 3, ##in x and y #normally set to 5 for 4x objective, 3 for 1.3x obj
-    'rawdata' : False, # set to true if raw data is taken from scope and images need to be flattened; functionality for rawdata =False has not been tested**
-    'finalorientation' :  ('2','-1','0'), #Used to account for different orientation between brain and atlas. Assumes XYZ ('0','1','2) orientation. Pass strings NOT ints. '-0' = reverse the order of the xaxis. For better description see docstring from tools.imageprocessing.orientation import fix_orientation; ('2','1','0') for horizontal to sagittal, Order of operations is reversing of axes BEFORE swapping axes.
-    'slurmjobfactor': 500, #number of array iterations per arrayjob since max job array on SPOCK is 1000
+    'rawdata' : True, # set to true if raw data is taken from scope and images need to be flattened; functionality for rawdata =False has not been tested**
+    'finalorientation' :  ('2','1','0'), #Used to account for different orientation between brain and atlas. Assumes XYZ ('0','1','2) orientation. Pass strings NOT ints. '-0' = reverse the order of the xaxis. For better description see docstring from tools.imageprocessing.orientation import fix_orientation; ('2','1','0') for horizontal to sagittal, Order of operations is reversing of axes BEFORE swapping axes.
+    'slurmjobfactor': 700, #number of array iterations per arrayjob since max job array on SPOCK is 1000
     'transfertype': 'copy', #to protect original data
     'secondary_registration': False #to prevent morphing of signal channel image with unnecessary registration
     } 
@@ -84,7 +72,6 @@ for brain in inputs: #for loop that processes each brain one by one
 
             if not os.path.exists(os.path.join(params['outputdirectory'], 'lightsheet')): shutil.copytree(os.getcwd(), os.path.join(params['outputdirectory'], 'lightsheet'), ignore=shutil.ignore_patterns(*('.pyc','CVS','.git','tmp','.svn', 'TeraStitcher-Qt4-standalone-1.10.11-Linux'))) #copy run folder into output to save run info
             
-            #kwargs = load_kwargs(params['outputdirectory'])#re-load incorrect kwargs
             #then, re-run step 0 like you would do on the cluster to set up the proper param_dict file based on outputdirectory
             preprocessing.generateparamdict(os.path.join(params['outputdirectory'], 'lightsheet'), **params)  #re-run this as if you would do on the cluster
                     
