@@ -15,19 +15,38 @@ import re
 
 
 inputs = [
-    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg01_inj',
-    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg02_inj',
-    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg03',
-    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg04',
-    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg05',
-    '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg06_inj',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an1_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an2_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an3_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an4_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an5_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an6_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an7_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an8_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an9_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an10_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an11_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an12_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an13_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an14_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an15_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an16_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an17_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an18_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an19_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an20_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an21_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an22_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an23_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an24_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an25_cb_1d3x'
     ]
 
 pth = '/home/wanglab/Downloads/test.pdf'
 
 # export overview file
 if __name__ == '__main__':
-    check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
+    check_registration_injection(pth, inputs, cerebellum_only = True, axis = 1)
     # axis: 0 = saggital; 1 = coronal
 
 #%%
@@ -105,7 +124,7 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
         a = np.max(im, axis = axis) # coronal view = 1; saggital view = 0
         plt.imshow(a, cmap = 'plasma', alpha = 1); plt.axis('off'); plt.title('Injection site', fontsize = 10)
         #fix title
-        brainname = re.search('(?<=_)(\w+)(?=_488)', vol.brainname)
+        brainname = re.search('(?<=_)(\w+)(?=_1d3x)', vol.brainname)
         
         if cerebellum_only:
             #add title to page

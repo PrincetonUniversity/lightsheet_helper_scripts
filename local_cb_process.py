@@ -16,21 +16,21 @@ from tools.registration.register import elastix_wrapper
 
 #cerebellums to process
 inputs = [
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an1_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_12-11-04',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an2_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_12-33-54',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an3_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_13-03-25',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an4_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_13-30-49',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an5_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_13-58-34',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an6_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_14-21-42',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an7_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_14-58-12',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an8_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_15-25-43',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an9_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_15-54-18',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/181002_ymaze_cfos_an10_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_16-32-58',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/',
-        '/jukebox/LightSheetTransfer/Jess/cruslat/'
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181003_ymaze_cfos_an11_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_17-12-51',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an12_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_10-15-07',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an13_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_10-52-03',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an14_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_11-19-51',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an15_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_12-28-33',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an16_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_12-56-04',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an17_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_13-34-02',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an18_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_14-01-18',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an19_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_14-30-27',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an20_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_15-02-54',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an21_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_15-52-59',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an22_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_16-28-06',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an23_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_16-59-42',
+#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an24_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_17-26-57'
+        '/jukebox/LightSheetTransfer/Jess/cruslat/181005_ymaze_cfos_an25_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_11-14-04'
         ]
 
 #%%

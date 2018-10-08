@@ -30,27 +30,44 @@ if __name__ == '__main__':
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
     inputlist = [
-                '/jukebox/wang/zahra/ymaze_cfos_an15_cb'
-           #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an1_iDisco_488_647_025na_1hfds_z10um_250msec',
-#            '/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an2_iDisco_488_647_026na_1hfds_z10um_250msec',
-            #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an3_iDisco_488_647_025na_1hfds_z10um_250msec',
-            #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an5_iDisco_488_647_025na_1hfds_z10um_250msec',
-            #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an6_iDisco_488_647_025na_1hfds_z10um_250msec',
-            #'/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an7_iDisco_488_647_025na_1hfds_z10um_250msec',
-#            '/jukebox/wang/Jess/lightsheet_output/christina_dreadds/christina_an8_iDisco_488_647_025na_1hfds_z10um_250msec',
-#            '/jukebox/wang/Jess/Christina/lightsheet/processed/crusI/christina_an9_iDisco_488_647_025na_1hfds_z10um_250msec',
-            #'/jukebox/wang/Jess/Christina/lightsheet/processed/crusI/christina_an10_iDisco_488_647_025na_1hfds_z10um_250msec'
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an1_cb_1d3x', #left
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an3_cb_1d3x', #left 
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an6_cb_1d3x', #left
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an8_cb_1d3x', #left
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an12_cb_1d3x', #left
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an14_cb_1d3x', #left
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an15_cb_1d3x', #left
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an17_cb_1d3x', #left
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an19_cb_1d3x', #left
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an22_cb_1d3x', #left
+                '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an24_cb_1d3x' #left
             ]
             
+    inputlist = [
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an2_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an4_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an5_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an7_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an9_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an10_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an11_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an13_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an16_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an18_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an20_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an21_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an23_cb_1d3x', #right
+            '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an25_cb_1d3x' #right
+            ]
 
             
     kwargs = {'inputlist': inputlist,
               'channel': '01',
               'channel_type': 'injch',
-              'filter_kernel': (5,5,5), #mli(4,4,4)
-              'threshold': 4, #mli(4)
-              'injectionscale': 10000, 
-              'imagescale': 5,
+              'filter_kernel': (3,3,3), #mli(4,4,4)
+              'threshold': 3, #mli(4)
+              'injectionscale': 45000, 
+              'imagescale': 2,
               'reorientation': ('2','0','1'),
               'crop': False,
               'dst': '/home/wanglab/Desktop/test',
@@ -89,9 +106,6 @@ def orientation_crop_check(src, axes = ('0','1','2'), crop = False):
     plt.imshow(np.max(fix_orientation(im, axes=axes), axis=0))
     plt.title('After reorientation')
     return
-
-
-
 
 def pool_injections_for_analysis(**kwargs):
     '''Function to pool several injection sites. Assumes that the basic registration using this software has been run.
