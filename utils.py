@@ -13,43 +13,6 @@ import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 import re
 
-
-inputs = [
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an1_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an2_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an3_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an4_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an5_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an6_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an7_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an8_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an9_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an10_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an11_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an12_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an13_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an14_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an15_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an16_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an17_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an18_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an19_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an20_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an21_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an22_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an23_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an24_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an25_cb_1d3x'
-    ]
-
-pth = '/home/wanglab/Downloads/test.pdf'
-
-# export overview file
-if __name__ == '__main__':
-    check_registration_injection(pth, inputs, cerebellum_only = True, axis = 1)
-    # axis: 0 = saggital; 1 = coronal
-
-#%%
 def correct_kwargs(src): 
     '''Temporary adjustment to correct kwargs after setting up folders in step 0 locally.
     
@@ -61,16 +24,10 @@ def correct_kwargs(src):
     #change packagedirectory (which defaults to my lightsheet_copy for some reason???)
     kwargs['packagedirectory'] = os.path.join(src,'lightsheet')
     
-    #change parameterfolder
-#    if src[14:18] == 'Jess': #if these are Jess's cerebellum's
-#        kwargs['parameterfolder']=src+'/lightsheet/parameterfolder_cb'
-#    elif src[24:33] == 'rat-brody': #if these are rat images - need more stringent registration
-#        kwargs['parameterfolder']=src+'/lightsheet/parameterfolder_rat'
-#    else:
     kwargs['parameterfolder'] = os.path.join(src,'lightsheet/parameterfolder')
     
     #save kwargs
-    save_kwargs(src+'/param_dict.p', **kwargs)
+    save_kwargs(os.path.join(src, 'param_dict.p'), **kwargs)
     
     #return kwargs to check
     return kwargs
@@ -141,27 +98,40 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
     
     print('Saved as {}'.format(pth))
         
+#%%
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+inputs = [
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an1_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an2_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an3_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an4_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an5_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an6_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an7_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an8_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an9_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an10_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an11_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an12_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an13_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an14_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an15_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an16_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an17_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an18_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an19_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an20_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an21_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an22_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an23_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an24_cb_1d3x',
+    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an25_cb_1d3x'
+    ]
+
+pth = '/home/wanglab/Downloads/test.pdf'
+
+# export overview file
+if __name__ == '__main__':
+    check_registration_injection(pth, inputs, cerebellum_only = True, axis = 1)
+    # axis: 0 = saggital; 1 = coronal
+       
