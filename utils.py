@@ -5,13 +5,11 @@ Created on Mon Aug 20 08:21:27 2018
 
 @author: wanglab
 """
-import os
+import numpy as np, os, re
 from tools.utils.io import load_kwargs, save_kwargs
 import matplotlib.pyplot as plt; plt.ion()
 from skimage.external import tifffile
-import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
-import re
 
 def correct_kwargs(src): 
     '''Temporary adjustment to correct kwargs after setting up folders in step 0 locally.

@@ -72,15 +72,11 @@ params={
 #####################################################################################################################################################
 #####################################################################################################################################################
 
-#to run locally:
-#from ClearMap.cluster.process_local import run_brain_locally
-#run_brain_locally(steps = [4,5,6], **params)
-
-
-#run scipt portions        arrayjob(jobid, cores=5, compression=1, **params) #process zslice numbers equal to slurmjobfactor*jobid thru (jobid+1)*slurmjobfactor
+#run scipt portions        
+#this particular cell only stitches (by blending) and resamples the data
 
 if __name__ == '__main__':
-
+    
     #######################STEP 0 #######################
     #####################################################
     ###make parameter dictionary and pickle file:
@@ -110,17 +106,17 @@ if __name__ == '__main__':
 ##add way to easily test cell detection parameters. Just select a 'jobid': e.g. jobid = 22
     #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
     #for first pass at cell detection
-    for jobid in range(259):
+    for jobid in range(4): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
         try:
             #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
-            sweep_parameters_cluster(jobid, **params)
+            sweep_parameters_cluster(jobid, pth = '/jukebox/wang/Jess/lightsheet_output/201810_cfos/parameter_sweep/dadult_pc_crusi_7', cleanup = False)
         except:
             try:
                 ###make parameter dictionary and pickle file:
                 updateparams(os.getcwd(), **params) # e.g. single job assuming directory_determiner function has been properly set
                 #copy folder into output for records
                 if not os.path.exists(os.path.join(params['outputdirectory'], 'clearmap_cluster')): shutil.copytree(os.getcwd(), os.path.join(params['outputdirectory'], 'clearmap_cluster'), ignore=shutil.ignore_patterns('^.git')) #copy run folder into output to save run info
-                sweep_parameters_cluster(jobid, cleanup = False , **params)
+                sweep_parameters_cluster(jobid, **params)
             except Exception, e:
                 print('Jobid {}, Error given {}'.format(jobid, e))
 
@@ -144,6 +140,7 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
 
     from itertools import product
     from ClearMap.cluster.preprocessing import makedir, listdirfull, removedir
+    from ClearMap.cluster.utils import load_kwargs
     import tifffile, numpy as np, os
 #    from scipy.ndimage.interpolation import zoom
     from skimage.exposure import rescale_intensity#, equalize_hist
@@ -152,18 +149,18 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
     ######################################################################################################
     #NOTE: To adjust parameter sweep, modify ranges below
     ######################################################################################################
-    #first - with cleanup=True
-    rBP_size_r = range(5,19,2) #[5, 11] #range(5,19,2) ###evens seem to not be good <-- IMPORTANT TO SWEEP
+#    #first - with cleanup=True
+#    rBP_size_r = range(3,9,2) #[5, 11] #range(5,19,2) ###evens seem to not be good <-- IMPORTANT TO SWEEP
     fEMP_hmax_r = [None]#[None, 5, 10, 20, 40]
     fEMP_size_r = [5]#range(3,8)
     fEMP_threshold_r = [None] #range(0,10)
     fIP_method_r = ['Max'] #['Max, 'Mean']
     fIP_size_r = [5]#range(1,5)
-    dCSP_threshold_r = range(30,400,10) #<-- IMPORTANT TO SWEEP
+#    dCSP_threshold_r = range(280,390,10) #<-- IMPORTANT TO SWEEP
     
     #second cleanup=False
-#    rBP_size_r = [5] #zmd commented out
-#    dCSP_threshold_r = [95,110,125,140,155]
+    rBP_size_r = [3] #zmd commented out
+    dCSP_threshold_r = [255,260,265,275]
     ######################################################################################################
     ######################################################################################################
     ######################################################################################################
@@ -175,7 +172,11 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
         tick +=1
 
     sys.stdout.write('\n\nNumber of iterations is {}:'.format(tick))
-
+    
+    #if pth is set - zmd added
+    if pth:
+        kwargs = load_kwargs(pth)
+        
     #make folder for final output:
     opt = kwargs['outputdirectory']; makedir(opt)
     out = opt+'/parameter_sweep'; makedir(out)
