@@ -56,7 +56,7 @@ if __name__ == '__main__':
           'colormap': 'plasma', 
           'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif',
           'annotation': '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif',
-          'id_table': '/jukebox/wang/zahra/lightsheet_copy/supp_files/ls_id_table_w_voxelcounts.xlsx'#if using allen for registration, need to specify allen id table - path defaults to PMA id table
+          'id_table': '/jukebox/wang/zahra/lightsheet_copy/supp_files/ls_id_table_w_voxelcounts.xlsx'#if using allen for registration, need to specify allen id table - path defaults to PMA id tables
         }
     
     df = pool_injections_inversetransform(**kwargs)
