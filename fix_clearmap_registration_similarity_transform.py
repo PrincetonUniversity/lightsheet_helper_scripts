@@ -7,15 +7,15 @@ Created on Fri Oct 26 10:14:44 2018
 """
 
 import os
-from ClearMap.Alignment.Elastix import alignData
 from ClearMap.cluster.utils import load_kwargs
 from ClearMap.cluster.preprocessing import makedir
+os.chdir('/jukebox/wang/zahra/lightsheet_copy')
 from tools.registration.registration_using_similarity_mask import mask_similarity_transformed_atlas
-from tools.utils.io import listdirfull, removedir, chunkit, writer, load_kwargs, convert_to_mhd
+from tools.utils.io import listdirfull, removedir, chunkit, writer, convert_to_mhd
 import subprocess as sp
 
-ann = '/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans.tif'
-atlas = '/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif'
+ann = '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif'
+atlas = '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif'
 src = '/jukebox/wang/Jess/lightsheet_output/201810_cfos/processed/dadult_pc_crus1_1'
 
 def elastix_command_line_call(fx, mv, out, parameters, fx_mask=False):
@@ -59,9 +59,7 @@ def elastix_command_line_call(fx, mv, out, parameters, fx_mask=False):
 #%%
 def registration_fix(src, atlas, ann):
 
-    #set paths    
-    kwargs = load_kwargs(src)  
-    
+    #set paths        
     dst = os.path.join(src, 'clearmap_cluster_output') 
     auto = os.path.join(dst, 'autofluo_resampled.tif')     
     parameters = [os.path.join(src, 'clearmap_cluster/parameterfolder/Order1_Par0000affine.txt'),
