@@ -7,11 +7,10 @@ Created on Fri Oct 26 10:14:44 2018
 """
 
 import os
-from ClearMap.cluster.utils import load_kwargs
 from ClearMap.cluster.preprocessing import makedir
 os.chdir('/jukebox/wang/zahra/lightsheet_copy')
 from tools.registration.registration_using_similarity_mask import mask_similarity_transformed_atlas
-from tools.utils.io import listdirfull, removedir, chunkit, writer, convert_to_mhd
+from tools.utils.io import writer
 import subprocess as sp
 
 ann = '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif'
