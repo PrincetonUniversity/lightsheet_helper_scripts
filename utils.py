@@ -70,23 +70,24 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
         #starting to plot figures
         plt.subplot(131)        
         #plot the result and atlas next to each other
-        plt.imshow(atl[200], cmap = 'gray'); plt.axis('off'); plt.title('Atlas', fontsize = 10)        
+        plt.imshow(atl[300], cmap = 'gray'); plt.axis('off'); plt.title('Atlas', fontsize = 10)        
         plt.subplot(132)
-        plt.imshow(reg[200], cmap = 'gray'); plt.axis('off'); plt.title('Registered brain', fontsize = 10)
+        plt.imshow(reg[300], cmap = 'gray'); plt.axis('off'); plt.title('Registered brain', fontsize = 10)
         
         #plot the max intensity zplane for the injection channel
         plt.subplot(133)
         a = np.max(im, axis = axis) # coronal view = 1; saggital view = 0
         plt.imshow(a, cmap = 'plasma', alpha = 1); plt.axis('off'); plt.title('Injection site', fontsize = 10)
         #fix title
-        brainname = re.search('(?<=_)(\w+)(?=_1d3x)', vol.brainname)
+
+#        brainname = re.search('(?<=_)(\w+)(?=_1d3x)', vol.brainname)
         
         if cerebellum_only:
             #add title to page
-            plt.text(0.5,0.65, brainname.group(0), transform = figs.transFigure, size = 16) #.group(0)
+            plt.text(0.5,0.65, os.path.basename(src), transform = figs.transFigure, size = 16) #.group(0)
         else:
             #add title to page
-            plt.text(0.1,0.70, brainname.group(0), transform = figs.transFigure, size = 16) 
+            plt.text(0.1,0.70, os.path.basename(src), transform = figs.transFigure, size = 16) 
         
         #done with the page
         pdf_pages.savefig(dpi = 300, bbox_inches = 'tight') 
@@ -97,36 +98,11 @@ def check_registration_injection(pth, inputs, cerebellum_only = False, axis = 0)
     print('Saved as {}'.format(pth))
         
 #%%
+src = '/jukebox/wang/Jess/lightsheet_output/201812_development/cerebellum'
 
-inputs = [
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an1_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an2_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an3_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an4_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an5_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an6_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an7_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an8_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an9_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an10_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an11_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an12_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an13_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an14_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an15_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an16_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an17_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an18_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an19_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an20_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an21_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an22_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an23_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an24_cb_1d3x',
-    '/jukebox/wang/Jess/DREADD_cruslateralization/lightsheet/processed/ymaze_cfos_an25_cb_1d3x'
-    ]
+inputs = [os.path.join(src, xx) for xx in os.listdir(src) if not xx == 'an_19_crus1' and xx[-4:] == 'lob6']; inputs.sort()
 
-pth = '/home/wanglab/Downloads/test.pdf'
+pth = '/home/wanglab/Downloads/201812_development_cerebellum_lobule6.pdf'
 
 # export overview file
 if __name__ == '__main__':

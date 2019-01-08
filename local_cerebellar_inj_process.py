@@ -16,21 +16,7 @@ from tools.registration.register import elastix_wrapper
 
 #cerebellums to process
 inputs = [
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181003_ymaze_cfos_an11_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_17-12-51',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an12_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_10-15-07',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an13_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_10-52-03',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an14_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_11-19-51',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an15_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_12-28-33',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an16_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_12-56-04',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an17_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_13-34-02',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an18_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_14-01-18',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an19_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_14-30-27',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an20_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_15-02-54',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an21_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_15-52-59',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an22_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_16-28-06',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an23_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_16-59-42',
-#        '/jukebox/LightSheetTransfer/Jess/cruslat/181004_ymaze_cfos_an24_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_17-26-57'
-        '/jukebox/LightSheetTransfer/Jess/cruslat/181005_ymaze_cfos_an25_cb_1d3x_488_647_026na_z10um_1hfsds_200msec_11-14-04'
+        '/jukebox/LightSheetTransfer/Jess/181221_pcdev_lob6_2_cb_488_75p_647_1d3x_026na_1hfds_z10um_250msec_15-14-26'
         ]
 
 #%%
@@ -38,7 +24,7 @@ for brain in inputs: #for loop that processes each brain one by one
     
     inputdictionary = { brain: [['regch', '00'],['injch', '01']] } #makes input directory 
     
-    brainname = re.search('(?<=_)(\w+)(?=_488|_4x|_1d3x)', brain) #sets basename of output directory based on clearing label
+    brainname = re.search('(?<=_)(\w+)(?=_488)', brain) #sets basename of output directory based on clearing label
     
     params={
     'labeltype': 'CTB555', #'h129', 'prv', 'cfos'
