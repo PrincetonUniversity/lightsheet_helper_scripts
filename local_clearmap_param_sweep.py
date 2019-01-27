@@ -24,7 +24,7 @@ systemdirectory=directorydeterminer()
 #'##' = when taking a multi channel scan following regexpression, the channel corresponding to the reg/cell/inj channel. I.e. name_of_scan_channel00_Z#### then use '00'
 #e.g.: inputdictionary={path_1: [['regch', '00']], path_2: [['cellch', '00'], ['injch', '01']]} ###create this dictionary variable BEFORE params
 inputdictionary={
-os.path.join(systemdirectory, 'LightSheetTransfer/Jess/181227_pcdev_lob6_1_forebrain_488_647_1d3x_017na_1hfds_z10um_200msec_12-31-29'): [['regch', '00'],['cellch', '01']]}
+os.path.join(systemdirectory, 'LightSheetTransfer/Jess/adult_cfos/190125_dadult_pc_lob6_18_052518_488_647_1d3x_017na_1hfds_z10um_150msec_16-44-56'): [['regch', '00'],['cellch', '01']]}
 
 ####Required inputs
 
@@ -34,7 +34,7 @@ os.path.join(systemdirectory, 'LightSheetTransfer/Jess/181227_pcdev_lob6_1_foreb
 
 params={
 'inputdictionary': inputdictionary, #don't need to touch
-'outputdirectory': os.path.join(systemdirectory, 'wang/Jess/lightsheet_output/201812_development/forebrain/parameter_sweep/an_01_lob6'),
+'outputdirectory': os.path.join(systemdirectory, 'wang/Jess/lightsheet_output/201810_cfos/parameter_sweep/dadult_pc_lob6_18'),
 'resample' : False, #False/None, float(e.g: 0.4), amount to resize by: >1 means increase size, <1 means decrease
 'xyz_scale': (5.0, 5.0, 10), #micron/pixel; 1.3xobjective w/ 1xzoom 5um/pixel; 4x objective = 1.63um/pixel
 'tiling_overlap': 0.00, #percent overlap taken during tiling
@@ -51,7 +51,7 @@ params={
 'findExtendedMaximaParameter_threshold': 0, # (float or None)     include only maxima larger than a threshold, if None keep all local maxima
 'findIntensityParameter_method': 'Max', # (str, func, None)   method to use to determine intensity (e.g. "Max" or "Mean") if None take intensities at the given pixels
 'findIntensityParameter_size': (3,3,3), # (tuple)             size of the search box on which to perform the *method*
-'detectCellShapeParameter_threshold': 295 # (float or None)      threshold to determine mask. Pixels below this are background if None no mask is generated
+'detectCellShapeParameter_threshold': 350 # (float or None)      threshold to determine mask. Pixels below this are background if None no mask is generated
 }
 
 #####################################################################################################################################################
@@ -105,10 +105,10 @@ if __name__ == '__main__':
     ##add way to easily test cell detection parameters. Just select a 'jobid': e.g. jobid = 22
     #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
     #for first pass at cell detection
-    for jobid in range(8): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
+    for jobid in range(21): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
         try:
             #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
-            sweep_parameters_cluster(jobid, pth = '/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/parameter_sweep/an_01_lob6', cleanup = False)
+            sweep_parameters_cluster(jobid, pth = '/jukebox/wang/Jess/lightsheet_output/201810_cfos/parameter_sweep/dadult_pc_lob6_18', cleanup = True)
         except:
             try:
                 ###make parameter dictionary and pickle file:
@@ -149,17 +149,17 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
     #NOTE: To adjust parameter sweep, modify ranges below
     ######################################################################################################
 #    #first - with cleanup=True
-#    rBP_size_r = range(3,9,2) #[5, 11] #range(5,19,2) ###evens seem to not be good <-- IMPORTANT TO SWEEP
+    rBP_size_r = range(3,9,2) #[5, 11] #range(5,19,2) ###evens seem to not be good <-- IMPORTANT TO SWEEP
     fEMP_hmax_r = [None]#[None, 5, 10, 20, 40]
     fEMP_size_r = [5]#range(3,8)
     fEMP_threshold_r = [None] #range(0,10)
     fIP_method_r = ['Max'] #['Max, 'Mean']
     fIP_size_r = [5]#range(1,5)
-#    dCSP_threshold_r = range(200,375,25) #<-- IMPORTANT TO SWEEP
+    dCSP_threshold_r = range(250,425,25) #<-- IMPORTANT TO SWEEP
     
     #second cleanup=False
-    rBP_size_r = [3] #zmd commented out
-    dCSP_threshold_r = [320, 330, 340, 360, 370, 380, 390, 400]
+#    rBP_size_r = [3] #zmd commented out
+#    dCSP_threshold_r = [320, 330, 340, 360, 370, 380, 390, 400]
     ######################################################################################################
     ######################################################################################################
     ######################################################################################################
