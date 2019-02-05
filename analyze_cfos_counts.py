@@ -5,20 +5,30 @@ Created on Fri Jan  4 13:07:25 2019
 
 @author: wanglab
 """
+
 import os, numpy as np
+os.chdir("/jukebox/wang/zahra/lightsheet_copy")
 from skimage.external import tifffile
 import seaborn as sns, pandas as pd, matplotlib.pyplot as plt
 import scipy, itertools
+from skimage.exposure import equalize_hist, adjust_gamma
 from tools.utils.io import listdirfull
 from tools.analysis.network_analysis import make_structure_objects
+from tools.utils.overlay import tile
+os.chdir("/jukebox/wang/zahra/clearmap_cluster_copy")
+from ClearMap.cluster.utils import load_kwargs
+import ClearMap.IO.IO as io
+import ClearMap.Analysis.Statistics as stat
+import ClearMap.Alignment.Resampling as rsp
 
 sns.set_style('white')
 
 #make inputs
-src = "/jukebox/wang/Jess/lightsheet_output/201812_development/pooled_analysis/lobuleVI_cfos"
+src = "/jukebox/wang/Jess/lightsheet_output/201812_development/pooled_analysis/lobuleVI_cfos/eroded_annotations_analysis"
 flds = '/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/processed'
 #get files
-lst = [fld for fld in listdirfull(flds) if os.path.exists(os.path.join(fld, 'Annotated_counts.csv')) and fld[-4:] == "lob6"]; lst.sort()
+lst = [fld for fld in listdirfull(flds) if os.path.exists(os.path.join(fld, 'Annotated_counts.csv')) and fld[-4:] == "lob6" 
+       or fld[-5:] == "noinj"]; lst.sort()
 #conditions
 nms = ['an_01_lob6',
          'an_02_lob6',
@@ -27,13 +37,24 @@ nms = ['an_01_lob6',
          'an_05_lob6',
          'an_06_lob6',
          'an_07_lob6',
-         'an_09_lob6'
+         'an_09_lob6',
+         'an_13_noinj',
+         'an_14_noinj',
+         'an_15_noinj',
+         'an_16_noinj'
          ]
 
-cond = ['Vector Control', 'DREADDs', 'Vector Control', 'DREADDs', 'Vector Control', 'DREADDs', 'DREADDs','Vector Control']
+cond = ['Vector Control', 'DREADDs', 'Vector Control', 'DREADDs', 'Vector Control', 'DREADDs', 'DREADDs','Vector Control', 'No Injection Control',
+        'No Injection Control', 'No Injection Control', 'No Injection Control']
 
 conditions = {n:c for n,c in zip(nms, cond)}
-pth = '/home/wanglab/mounts/wang/Jess/lightsheet_output/201812_development/pooled_analysis/lobuleVI_cfos/cell_counts_dataframe.csv'
+pth = '/jukebox/wang/Jess/lightsheet_output/201812_development/pooled_analysis/lobuleVI_cfos/eroded_annotations_analysis/cell_counts_dataframe.csv'
+
+df_pth = '/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx'
+ann_pth = '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_erosion.tif'
+atl_pth = '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif'
+
+#%%
 
 def generate_data_frame(conditions, lst, pth):
     """ 
@@ -49,7 +70,7 @@ def generate_data_frame(conditions, lst, pth):
         #extract out info
         nm = os.path.basename(fl)
         #make dataframe
-        df = pd.read_csv(fl+'/Annotated_counts.csv', header = None, names = ['acronym', 
+        df = pd.read_csv(fl+'/Annotated_counts_eroded.csv', header = None, names = ['acronym', 
                                                                              'Count', 'Index', 'Structure', 'parent_acronym',
                                                                              'parent_name', 'Total Voxels'])[1:] #remove previous headers
         print(nm, df.shape)
@@ -115,7 +136,7 @@ def generate_paired_statistics(src, csv_pth):
                                               'Control count', 'Control mean', 'Control std','tstat', 'pval', 'mannwhit', 'wilcoxrank'])
         tdf.sort_values('mannwhit')
         tdf.to_csv(os.path.join(src, 'df_with_stats_{}-{}.csv'.format(c1,c2)))
-        print("saved to: {}".format(os.path.join(dst, 'df_with_stats_{}-{}.csv'.format(c1,c2))))
+        print("saved to: {}".format(os.path.join(src, 'df_with_stats_{}-{}.csv'.format(c1,c2))))
         tdf_dct['{} vs {}'.format(c1,c2)]=tdf #this vs is important down the road
         sigs = tdf[tdf.pval<0.05].Structure.tolist()
         
@@ -146,10 +167,7 @@ def correct_sturctures_to_cm(struc):
     return struc  
 
 #################################################################################################################################################################
-    
 
-df_pth = '/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx'
-ann_pth = '/jukebox/wang/pisano/Python/atlas/annotation_sagittal_atlas_20um_iso.tif'
 
 def generate_normalised_structures_list(df_pth, ann_pth, csv_pth):
     """
@@ -322,12 +340,6 @@ normalise_counts_by(src, tdf)
 
 ###################################################################DONE##########################################################################################        
 #%% #look at cross sections
-cwd = os.getcwd()
-os.chdir('/jukebox/wang/pisano/Python/clearmap_cluster')
-from ClearMap.cluster.utils import load_kwargs
-os.chdir(cwd)
-from tools.utils.overlay import tile
-from skimage.exposure import equalize_hist, equalize_adapthist, adjust_gamma
 
 def check_registration_cross_sections(out):
     for z in [100,200,300,400,500]:
@@ -363,4 +375,66 @@ def check_registration_cross_sections(out):
 #run
 out = '/jukebox/wang/Jess/lightsheet_output/201812_development/pooled_analysis/images'
 check_registration_cross_sections(out)
+###################################################################DONE##########################################################################################        
+#%%
+#pooled analysis to make p-value maps 
+
+def generate_p_value_maps(src):
     
+    """ 
+    generates p-value maps as per ClearMap/analysis.py
+    #TODO: generalise function
+    """
+    #Load the data (heat maps generated previously )
+    #make groups
+    groupC = [fld for fld in listdirfull(flds) if fld[-4:] == "lob6" and conditions[os.path.basename(fld)] == "DREADDs"]; groupC.sort()
+    groupD = [fld for fld in listdirfull(flds) if fld[-4:] == "lob6" and conditions[os.path.basename(fld)] == "Vector Control"]; groupD.sort()
+    groupE = [fld for fld in listdirfull(flds) if fld[-5:] == "noinj"]; groupE.sort() 
+    
+    group_c = [xx+'/cells_heatmap.tif' for xx in groupC]  
+    group_d = [xx+'/cells_heatmap.tif' for xx in groupD]  
+    group_e = [xx+'/cells_heatmap.tif' for xx in groupE]  
+    
+    grp_c = stat.readDataGroup(group_c)
+    grp_d = stat.readDataGroup(group_d)
+    grp_e = stat.readDataGroup(group_e)
+    
+    #Generated average and standard deviation maps
+    ##############################################
+    grp_ca = np.mean(grp_c, axis = 0)
+    grp_cs = np.std(grp_c, axis = 0)
+    
+    grp_da = np.mean(grp_d, axis = 0)
+    grp_ds = np.std(grp_d, axis = 0)
+    
+    grp_ea = np.mean(grp_e, axis = 0)
+    grp_es = np.std(grp_e, axis = 0)
+    
+    io.writeData(os.path.join(src, 'group_c_mean.raw'), rsp.sagittalToCoronalData(grp_ca))
+    io.writeData(os.path.join(src, 'group_c_std.raw'), rsp.sagittalToCoronalData(grp_cs))
+    
+    io.writeData(os.path.join(src, 'group_d_mean.raw'), rsp.sagittalToCoronalData(grp_da))
+    io.writeData(os.path.join(src, 'group_d_std.raw'), rsp.sagittalToCoronalData(grp_ds))
+    
+    io.writeData(os.path.join(src, 'group_e_mean.raw'), rsp.sagittalToCoronalData(grp_ea))
+    io.writeData(os.path.join(src, 'group_e_std.raw'), rsp.sagittalToCoronalData(grp_es))
+    
+    #Generate the p-values map
+    ##########################
+    #first comparison
+    #pcutoff: only display pixels below this level of significance
+    pvals, psign = stat.tTestVoxelization(grp_c.astype('float'), grp_d.astype('float'), signed = True, pcutoff = 0.05)
+    
+    #color the p-values according to their sign (defined by the sign of the difference of the means between the 2 groups)
+    pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0]);
+    io.writeData(os.path.join(src, 'pvalues_groupCvsD.tif'), rsp.sagittalToCoronalData(pvalsc.astype('float32')));
+    
+    #second comparison
+    pvals, psign = stat.tTestVoxelization(grp_c.astype('float'), grp_e.astype('float'), signed = True, pcutoff = 0.05)
+    pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0]);
+    io.writeData(os.path.join(src, 'pvalues_groupCvsE.tif'), rsp.sagittalToCoronalData(pvalsc.astype('float32')))
+
+#run
+generate_p_value_maps(src)
+###################################################################DONE##########################################################################################        
+

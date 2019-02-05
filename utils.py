@@ -193,11 +193,11 @@ if __name__ == '__main__':
 #
 #    check_registration_injection(pth, inputs, cerebellum_only = True, axis = 1)
     # axis: 0 = saggital; 1 = coronal
-    src = '/jukebox/wang/Jess/lightsheet_output/201812_development/cerebellum'
+    src = '/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/processed'
 
-    inputs = [os.path.join(src, xx) for xx in os.listdir(src) if xx[-5:] == 'crus1']; inputs.sort()
+    inputs = [os.path.join(src, xx) for xx in os.listdir(src) if xx[-4:] == "lob6"]; inputs.sort()
     
-    pth = '/jukebox/wang/Jess/lightsheet_output/201812_development/201812_development_cerebellum_crus1.pdf'
+    pth = '/jukebox/wang/Jess/lightsheet_output/201812_development/201812_development_cfos_lobule6.pdf'
     
-    check_registration_injection(pth, inputs, axis = 1)
+    check_clearmap_cfos_output(pth, inputs, axis = 1)
     # axis: 0 = saggital; 1 = coronal
