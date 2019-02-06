@@ -10,22 +10,19 @@ import os, shutil, numpy as np
 from skimage.external import tifffile
 import skimage
 import matplotlib.gridspec as gridspec
-import pandas as pd
 from scipy.ndimage.interpolation import zoom
 from collections import Counter
 os.chdir("/jukebox/wang/zahra/lightsheet_copy")
-from tools.utils.io import makedir, load_dictionary, load_np, listdirfull,load_memmap_arr, listall
+from tools.utils.io import makedir, load_dictionary, load_np, listdirfull, load_memmap_arr, listall
 from tools.registration.transform_list_of_points import create_text_file_for_elastix, point_transformix, modify_transform_files, unpack_pnts
-from tools.registration.transform import transformix_command_line_call
 from tools.registration.register import change_transform_parameter_initial_transform
-from tools.imageprocessing.orientation import fix_contour_orientation, fix_dimension_orientation
-from tools.registration.register import elastix_command_line_call, jacobian_command_line_call, change_interpolation_order, transformix_command_line_call
+from tools.imageprocessing.orientation import fix_dimension_orientation
 from tools.registration.transform_cell_counts import points_resample, get_fullsizedims_from_kwargs
 os.chdir("/jukebox/wang/zahra/clearmap_cluster_copy")
 from ClearMap.cluster.utils import load_kwargs
 
 
-def generate_transformed_cellcount(dataframe, dst, transformfiles, lightsheet_parameter_dictionary, verbose=False):
+def generate_transformed_cellcount(dataframe, dst, transformfiles, dct, verbose=False):
     '''Function to take a csv file and generate an input to transformix
     
     Inputs
@@ -42,10 +39,10 @@ def generate_transformed_cellcount(dataframe, dst, transformfiles, lightsheet_pa
     zyx = dataframe
     
     #adjust for reorientation THEN rescaling, remember full size data needs dimension change releative to resample
-    kwargs = load_dictionary(lightsheet_parameter_dictionary)
-    vol = [xx for xx in kwargs['volumes'] if xx.ch_type =='cellch'][0]
+    kwargs = load_dictionary(dct)
+    zyx = zyx[:, [2, 1, 0]] #fix orientation  
     fullsizedimensions = get_fullsizedims_from_kwargs(kwargs) #don't get from kwargs['volumes'][0].fullsizedimensions it's bad! use this instead
-    zyx = points_resample(zyx, original_dims = fullsizedimensions, 
+    zyx = points_resample(zyx, original_dims = (fullsizedimensions[2], fullsizedimensions[1], fullsizedimensions[0]), 
                           resample_dims = tifffile.imread(os.path.join(fld, "clearmap_cluster_output/cfos_resampled.tif")).shape, 
                           verbose = verbose)[:, :3]
    
@@ -76,9 +73,7 @@ if __name__ == '__main__':
     for fld in lst:
         try:
             print fld
-            kwargs = load_kwargs(fld)
-            regvol = [xx for xx in kwargs['volumes'] if xx.ch_type == 'regch'][0]
-            cellvol = [xx for xx in kwargs['volumes'] if xx.ch_type == 'cellch'][0]
+            kwargs = load_kwargs(fld)        
             dst0 = os.path.join(dst, os.path.basename(fld)); makedir(dst0)
             dst1 = os.path.join(dst0, 'elastix'); makedir(dst1)
             
@@ -101,34 +96,21 @@ if __name__ == '__main__':
             transformfiles = modify_transform_files(transformfiles, dst = dst1)
             
             #convert points
-            converted_points = generate_transformed_cellcount(dataframe, dst1, transformfiles, lightsheet_parameter_dictionary=os.path.join(fld, 'param_dict.p'), verbose=verbose)
+            converted_points = generate_transformed_cellcount(dataframe, dst1, transformfiles, 
+                                                              dct = os.path.join(fld, 'param_dict.p'), verbose=verbose)
             
             #load and convert to single voxel loc
             zyx = np.asarray([str((int(xx[0]), int(xx[1]), int(xx[2]))) for xx in load_np(converted_points)])
             zyx_cnt = Counter(zyx)
-            
-            #manually call transformix..
-            transformed_dst = os.path.join(dst1, 'transformed_points'); makedir(transformed_dst)
-            if transform == 'all':
-                tp0 = [xx for xx in listall(os.path.dirname(cellvol.ch_to_reg_to_atlas), 'TransformParameters.0.txt') if 'sig_to_reg' in xx and 'regtoatlas' not in xx][0]
-                tp1 = [xx for xx in listall(os.path.dirname(cellvol.ch_to_reg_to_atlas), 'TransformParameters.1.txt') if 'sig_to_reg' in xx and 'regtoatlas' not in xx][0]
-                transformfiles = [tp0, tp1, os.path.join(fld, 'elastix/TransformParameters.0.txt'), os.path.join(fld, 'elastix/TransformParameters.1.txt')]
-            elif transform == 'single':
-                transformfiles = [os.path.join(fld, 'elastix/TransformParameters.0.txt'), os.path.join(fld, 'elastix/TransformParameters.1.txt')]
-            elif transform == 'affine_only_reg_to_sig':    
-                tp0 = [xx for xx in listall(os.path.dirname(cellvol.ch_to_reg_to_atlas), 'TransformParameters.0.txt') if 'sig_to_reg' in xx and 'regtoatlas' not in xx][0]
-                transformfiles = [tp0, os.path.join(fld, 'elastix/TransformParameters.0.txt'), os.path.join(fld, 'elastix/TransformParameters.1.txt')]
-            transformfiles = modify_transform_files(transformfiles, dst = dst1)
-            transformix_command_line_call(cellvol.resampled_for_elastix_vol, transformed_dst, transformfiles[-1])
-            
-            #cell_registered channel
-            cell_reg = tifffile.imread(os.path.join(transformed_dst, 'result.tif'))
-            cell_cnn = np.zeros_like(cell_reg)
+                                
+            #atlas
+            atl = tifffile.imread("/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif")
+            atl_cnn = np.zeros_like(atl)
             errors = []
             for zyx,v in zyx_cnt.iteritems():
                 z,y,x = [int(xx) for xx in zyx.replace('(','',).replace(')','').split(',')]
                 try:
-                    cell_cnn[z,y,x] = v*100
+                    atl[z,y,x] = v*100
                 except Exception, e:
                     print e
                     errors.append(e)
@@ -137,7 +119,7 @@ if __name__ == '__main__':
                     for err in errors:
                         flll.write(str(err)+'\n')
                     flll.close()
-            merged = np.stack([cell_cnn, cell_reg, np.zeros_like(cell_reg)], -1)
+            merged = np.stack([atl_cnn, atl, np.zeros_like(atl)], -1)
             #reorient to horizontal
             merged = np.swapaxes(merged, 0,2)
             tifffile.imsave(os.path.join(dst, '{}_points_merged.tif'.format(os.path.basename(fld))), merged)
