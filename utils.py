@@ -88,7 +88,7 @@ def check_clearmap_cfos_output(pth, inputs, axis = 0):
         print('Reading autofluo image\n     {}'.format(outdr))
         auto = tifffile.imread(os.path.join(outdr, 'clearmap_cluster_output/autofluo_for_cfos_resampled.tif'))#.astype('uint8')
 
-        print('Reading cfos image\n     {}'.format(outdr))
+        print('Reading signal channel image\n     {}'.format(outdr))
         cfos = tifffile.imread(os.path.join(outdr, 'clearmap_cluster_output/cfos_resampled.tif'))#.astype('uint8')
          
         print('\nPlotting images...\n')
@@ -98,10 +98,10 @@ def check_clearmap_cfos_output(pth, inputs, axis = 0):
         #plot the result and atlas next to each other
         plt.imshow(auto[350], cmap = 'gray'); plt.axis('off'); plt.title('Autofluorescent image', fontsize = 10)        
         plt.subplot(132)
-        plt.imshow(auto_2_atl[300], cmap = 'gray'); plt.axis('off'); plt.title('Registered Atlas', fontsize = 10)
+        plt.imshow(auto_2_atl[221], cmap = 'gray'); plt.axis('off'); plt.title('Registered Atlas', fontsize = 10)
         plt.subplot(133)
         a = np.max(cfos, axis = axis) # coronal view = 1; saggital view = 0
-        plt.imshow(a, cmap = 'plasma', alpha = 1); plt.axis('off'); plt.title('Cfos', fontsize = 10)
+        plt.imshow(a, cmap = 'plasma', alpha = 1); plt.axis('off'); plt.title('Viral Spread', fontsize = 10)
 
         #add title to page
         plt.text(0.1,0.70, os.path.basename(src), transform = figs.transFigure, size = 16) 
@@ -193,11 +193,11 @@ if __name__ == '__main__':
 #
 #    check_registration_injection(pth, inputs, cerebellum_only = True, axis = 1)
     # axis: 0 = saggital; 1 = coronal
-    src = '/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/processed'
+    src = '/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed'
 
-    inputs = [os.path.join(src, xx) for xx in os.listdir(src) if xx[-4:] == "lob6"]; inputs.sort()
+    inputs = [os.path.join(src, xx) for xx in os.listdir(src)]; inputs.sort()
     
-    pth = '/jukebox/wang/Jess/lightsheet_output/201812_development/201812_development_cfos_lobule6.pdf'
+    pth = '/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/201902_promoter_exp_6mo_overview.pdf'
     
-    check_clearmap_cfos_output(pth, inputs, axis = 1)
+    check_clearmap_cfos_output(pth, inputs, axis = 0)
     # axis: 0 = saggital; 1 = coronal
