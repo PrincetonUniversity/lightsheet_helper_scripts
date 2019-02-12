@@ -15,7 +15,7 @@ def resize_merged_stack(pth, dst, dtype = "uint16", resizef = 6):
     """ 
     resize function for large image stacks using cv2
     inputs:
-        pth = 3d stack or memmap array or numpy array
+        pth = 4d stack, memmap array or numpy array
         dst = path of tif file to save
         dtype = default uint16
         resizef = default 6
