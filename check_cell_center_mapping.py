@@ -31,7 +31,7 @@ def resize_merged_stack(pth, dst, dtype = "uint16", resizef = 6):
     
     for i in range(z):
         for j in range(ch):
-            #make the factors
+            #make the factors - have to resize both image and cell center array
             xr = int(img[i, :, :, j].shape[1] / resizef); yr =  int(img[i, :, :, j].shape[0] / resizef)
             im = cv2.resize(img[i, :, :, j], (xr, yr), interpolation=cv2.INTER_LINEAR)
             resz_img[i, :, :, j] = im.astype(dtype)
@@ -48,18 +48,19 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
         zstart = beginning of zslice
         zstop = end of zslice
         dst = path of tif stack to save
-    NOTE: ONLY WORKS FOR 5 Z PLANES AT A TIME (#FIXME)
+    NOTE: 20+ PLANES CAN OVERLOAD MEMORY
     """
     start = time.time()
     
+    #doing things without loading parameter dict
     data = os.listdir(os.path.join(brain, "full_sizedatafld")); data.sort()
-    cellch = os.path.join(brain, "full_sizedatafld/"+data[2])
+    if len(data) < 3: cellch = os.path.join(brain, "full_sizedatafld/"+data[1])
+    else: cellch = os.path.join(brain, "full_sizedatafld/"+data[2])
     
-    #really messy way to do things, also only limited to 5 planes    
-    src = [os.path.join(cellch, xx) for xx in os.listdir(cellch) if xx[-9:-4] == "Z0"+str(zstart) or xx[-9:-4] == "Z0"+str(zstart+1) or
-           xx[-9:-4] == "Z0"+str(zstart+2) or xx[-9:-4] == "Z0"+str(zstart+3) or xx[-9:-4] == "Z0"+str(zstop)]
+    #not the greatest way to do things, but works    
+    src = [os.path.join(cellch, xx) for xx in os.listdir(cellch) if xx[-3:] == "tif" and int(xx[-7:-4]) in range(zstart, zstop)]; src.sort()
     
-    raw = np.zeros((len(src), tifffile.imread(src[0]).shape[0], tifffile.imread(src[0]).shape[1]))
+    raw = np.zeros((len(src), tifffile.imread(src[0]).shape[0], tifffile.imread(src[0]).shape[1])) 
     
     for i in range(len(src)):
         raw[i, :, :] = tifffile.imread(src[i])
@@ -68,7 +69,7 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
     cells = pd.read_csv(pth)
     
     plt.imshow(raw[0,:,:])
-    cells = cells[(cells["z"] >= zstart) & (cells["z"] <= zstop)]
+    cells = cells[(cells["z"] >= zstart) & (cells["z"] <= zstop-1)] #-1 to account for range
     
     cell_centers = np.zeros(raw.shape)
     
@@ -82,10 +83,26 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
     
     print("took {} seconds to make merged maps".format(time.time() - start))
     
+#%%    
 if __name__ == "__main__":
-
-    brain = "/jukebox/wang/pisano/tracing_output/antero_4x/20180612_jg77"
-    zstart = 400; zstop = 404
-    dst = "/home/wanglab/Desktop"
     
-    check_cell_center_to_fullsizedata(brain, zstart, zstop, dst)
+    ids = ['20160822_tp_bl6_crii_1250r_05',
+             '20161203_tp_bl6_lob7_1000r_06',
+             '20170419_db_bl6_cri_mid_53hr',
+             '20160823_tp_bl6_cri_250r_01',
+             '20170410_tp_bl6_lob6a_ml_repro_03',
+             '20170411_db_bl6_crii_mid_53hr',
+             '20160801_db_l7_cri_01_mid_64hr',
+             '20160823_tp_bl6_cri_500r_02',
+             '20160622_db_bl6_unk_01',
+             '20160801_db_cri_02_1200rlow_52hr',
+             '20160822_tp_bl6_crii_1500r_06',
+             '20161207_db_bl6_lob6a_850r_53hr',
+             '20160622_db_bl6_crii_52hr_01']
+    
+    for i in ids:
+        brain = "/jukebox/wang/pisano/tracing_output/antero_4x/"+i
+        zstart = 430; zstop = 440
+        dst = "/home/wanglab/Desktop"
+        
+        check_cell_center_to_fullsizedata(brain, zstart, zstop, dst)
