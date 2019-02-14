@@ -21,7 +21,7 @@ from ClearMap.cluster.utils import load_kwargs
 
 
 def generate_transformed_cellcount(dataframe, dst, transformfiles, dct, verbose=False):
-    '''Function to take a csv file and generate an input to transformix
+    """Function to take a csv file and generate an input to transformix
     
     Inputs
     ----------------
@@ -29,9 +29,9 @@ def generate_transformed_cellcount(dataframe, dst, transformfiles, dct, verbose=
     dst = destination to save files
     transformfiles = list of all elastix transform files used, and in order of the original transform****
     lightsheet_parameter_file = .p file generated from lightsheet package
-    '''
+    """
     #set up locations
-    transformed_dst = os.path.join(dst, 'transformed_points'); makedir(transformed_dst)
+    transformed_dst = os.path.join(dst, "transformed_points"); makedir(transformed_dst)
     
     #make zyx numpy arry
     zyx = dataframe
@@ -39,7 +39,7 @@ def generate_transformed_cellcount(dataframe, dst, transformfiles, dct, verbose=
     #adjust for reorientation THEN rescaling, remember full size data needs dimension change releative to resample
     kwargs = load_dictionary(dct)
     zyx = zyx[:, [2, 1, 0]] #fix orientation  
-    fullsizedimensions = get_fullsizedims_from_kwargs(kwargs) #don't get from kwargs['volumes'][0].fullsizedimensions it's bad! use this instead
+    fullsizedimensions = get_fullsizedims_from_kwargs(kwargs) #don"t get from kwargs["volumes"][0].fullsizedimensions it"s bad! use this instead
     zyx = points_resample(zyx, original_dims = (fullsizedimensions[2], fullsizedimensions[1], fullsizedimensions[0]), 
                           resample_dims = tifffile.imread(os.path.join(fld, "clearmap_cluster_output/cfos_resampled.tif")).shape, 
                           verbose = verbose)[:, :3]
@@ -49,7 +49,7 @@ def generate_transformed_cellcount(dataframe, dst, transformfiles, dct, verbose=
         
     #copy over elastix files
     transformfiles = modify_transform_files(transformfiles, transformed_dst) 
-    change_transform_parameter_initial_transform(transformfiles[0], 'NoInitialTransform')
+    change_transform_parameter_initial_transform(transformfiles[0], "NoInitialTransform")
    
     #run transformix on points
     points_file = point_transformix(pretransform_text_file, transformfiles[-1], transformed_dst)
@@ -59,46 +59,48 @@ def generate_transformed_cellcount(dataframe, dst, transformfiles, dct, verbose=
     
     return converted_points
 #%%
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     #set up
-    dst = '/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/qc'; makedir(dst)
-    lst = [xx for xx in listdirfull('/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/processed')]
-    transform = 'all';#both for regwatlas, and only affine for sig adn reg #'all', 'single': don't consider reg with sig at all
+    dst = "/jukebox/LightSheetData/pni_viral_vector_core/201808_promoter_exp/qc"; makedir(dst)
+    #make logs dir
+    makedir(os.path.join(dst, "errors"))
+    lst = [xx for xx in listdirfull("/jukebox/LightSheetData/pni_viral_vector_core/201808_promoter_exp/processed")]
+    transform = "all";#both for regwatlas, and only affine for sig adn reg #"all", "single": don"t consider reg with sig at all
     verbose = True
-    #fld = '/home/wanglab/wang/pisano/tracing_output/antero_4x/20170130_tp_bl6_sim_1750r_03'    
+    #fld = "/home/wanglab/wang/pisano/tracing_output/antero_4x/20170130_tp_bl6_sim_1750r_03"    
     #loop
     for fld in lst:
         start = time.time()
-        print fld
+        print(fld)
         kwargs = load_kwargs(fld)        
         
         #####check cell transform
         #clearmap transformed to atlas cell dataframe
-        dataframe = load_np(os.path.join(fld, 'clearmap_cluster_output/cells_transformed_to_Atlas.npy'))
+        dataframe = load_np(os.path.join(fld, "clearmap_cluster_output/cells_transformed_to_Atlas.npy"))
         
         #load and convert to single voxel loc
         zyx = np.asarray([str((int(xx[2]), int(xx[1]), int(xx[0]))) for xx in load_np(dataframe)])
         zyx_cnt = Counter(zyx)
                             
         #atlas
-        atl = tifffile.imread("/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif")
+        atl = tifffile.imread("/jukebox/LightSheetData/pni_viral_vector_core/201808_promoter_exp/atlas/average_template_25_sagittal_forDVscans_z_thru_240.tif")
         atl_cnn = np.zeros_like(atl)
         errors = []
         for zyx,v in zyx_cnt.iteritems():
-            z,y,x = [int(xx) for xx in zyx.replace('(','',).replace(')','').split(',')]
+            z,y,x = [int(xx) for xx in zyx.replace("(","",).replace(")","").split(",")]
             try:
                 atl_cnn[z,y,x] = v
             except Exception, e:
                 print e
                 errors.append(e)
         if len(errors)>0:
-            with open(os.path.join(dst, '{}_errors.txt'.format(os.path.basename(fld))), 'a') as flll:
+            with open(os.path.join(dst, "errors/{}_errors.txt".format(os.path.basename(fld))), "a") as flll:
                 for err in errors:
-                    flll.write(str(err)+'\n')
+                    flll.write(str(err)+"\n")
                 flll.close()
         merged = np.stack([atl, atl_cnn, np.zeros_like(atl)], -1)
         #reorient to horizontal
         merged = np.swapaxes(merged, 0, 2)
-        tifffile.imsave(os.path.join(dst, '{}_points_merged.tif'.format(os.path.basename(fld))), merged)
+        tifffile.imsave(os.path.join(dst, "{}_points_merged.tif".format(os.path.basename(fld))), merged)
         print("\ntook {} seconds to make merged maps\n".format(time.time()-start))

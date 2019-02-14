@@ -86,23 +86,11 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
 #%%    
 if __name__ == "__main__":
     
-    ids = ['20160822_tp_bl6_crii_1250r_05',
-             '20161203_tp_bl6_lob7_1000r_06',
-             '20170419_db_bl6_cri_mid_53hr',
-             '20160823_tp_bl6_cri_250r_01',
-             '20170410_tp_bl6_lob6a_ml_repro_03',
-             '20170411_db_bl6_crii_mid_53hr',
-             '20160801_db_l7_cri_01_mid_64hr',
-             '20160823_tp_bl6_cri_500r_02',
-             '20160622_db_bl6_unk_01',
-             '20160801_db_cri_02_1200rlow_52hr',
-             '20160822_tp_bl6_crii_1500r_06',
-             '20161207_db_bl6_lob6a_850r_53hr',
-             '20160622_db_bl6_crii_52hr_01']
+    ids = ['20180601_jg66']
     
     for i in ids:
         brain = "/jukebox/wang/pisano/tracing_output/antero_4x/"+i
-        zstart = 430; zstop = 440
+        zstart = 410; zstop = 420
         dst = "/home/wanglab/Desktop"
         
         check_cell_center_to_fullsizedata(brain, zstart, zstop, dst)
