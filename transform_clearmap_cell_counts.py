@@ -30,7 +30,7 @@ def make_table_of_transformed_cells(src):
         intensities = np.load(os.path.join(src, "clearmap_cluster_output/intensities.npy"))
         
         #LUT
-        ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_erosion.tif"
+        ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
         ann_lut = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
         
         #open LUT excel sheet
@@ -59,7 +59,7 @@ def make_table_of_transformed_cells(src):
         table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:]]
         table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:]]
         
-        pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities_eroded.csv"))
+        pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities.csv"))
             
         #Without weigths (pure cell number):
         ids, counts = countPointsInRegions(points, labeledImage = ann, intensities = None)
@@ -74,7 +74,7 @@ def make_table_of_transformed_cells(src):
         table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:]]
         table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:]]
         
-        pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_eroded.csv"))
+        pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts.csv"))
             
         print ("Analysis Completed") 
     else:
@@ -85,8 +85,10 @@ def make_table_of_transformed_cells(src):
 if __name__ == "__main__":
     #goal is to transform cooridnates, voxelize based on number of cells and overlay with reigstered cell signal channel...
     #inputs
-#    src = "/jukebox/wang/Jess/lightsheet_output/201810_cfos/processed/dadult_pc_crus1_3"
-    pth = "/jukebox/wang/Jess/lightsheet_output/201810_cfos/processed"
+    src = "/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/processed/an_04_lob6"
+    make_table_of_transformed_cells(src)
+
+#    pth = "/jukebox/wang/Jess/lightsheet_output/201810_cfos/processed"
     
-    for src in os.listdir(pth):
-        make_table_of_transformed_cells(os.path.join(pth, src))
+#    for src in os.listdir(pth):
+#        make_table_of_transformed_cells(os.path.join(pth, src))

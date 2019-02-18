@@ -8,12 +8,15 @@ Created on Wed Oct 17 12:31:42 2018
 
 #Modifications of Tom's clearmap cluster code to parameter sweep an unprocessed brain locally
 
-import os, sys, shutil
-from xvfbwrapper import Xvfb; vdisplay = Xvfb(); vdisplay.start()
+import os, sys, shutil, tifffile, numpy as np
+from skimage.exposure import rescale_intensity
+from itertools import product
 from ClearMap.cluster.preprocessing import updateparams, arrayjob, process_planes_completion_checker
 from ClearMap.cluster.directorydeterminer import directorydeterminer
 from ClearMap.cluster.par_tools import resampling_operations, celldetection_operations
-#%%
+from ClearMap.cluster.preprocessing import makedir, listdirfull, removedir
+from ClearMap.cluster.utils import load_kwargs
+
 
 systemdirectory=directorydeterminer()
 ###set paths to data
@@ -24,7 +27,8 @@ systemdirectory=directorydeterminer()
 #'##' = when taking a multi channel scan following regexpression, the channel corresponding to the reg/cell/inj channel. I.e. name_of_scan_channel00_Z#### then use '00'
 #e.g.: inputdictionary={path_1: [['regch', '00']], path_2: [['cellch', '00'], ['injch', '01']]} ###create this dictionary variable BEFORE params
 inputdictionary={
-os.path.join(systemdirectory, 'LightSheetTransfer/Jess/adult_cfos/190125_dadult_pc_lob6_18_052518_488_647_1d3x_017na_1hfds_z10um_150msec_16-44-56'): [['regch', '00'],['cellch', '01']]}
+os.path.join(systemdirectory, 'LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/raw_data/190123_buffer_retroorb_488_647_017na_1hfsrs_z10um_75ms_14-57-55'): [['regch', '00'],['cellch', '01']]
+ }
 
 ####Required inputs
 
@@ -34,24 +38,24 @@ os.path.join(systemdirectory, 'LightSheetTransfer/Jess/adult_cfos/190125_dadult_
 
 params={
 'inputdictionary': inputdictionary, #don't need to touch
-'outputdirectory': os.path.join(systemdirectory, 'wang/Jess/lightsheet_output/201810_cfos/parameter_sweep/dadult_pc_lob6_18'),
+'outputdirectory': os.path.join(systemdirectory, 'LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/parameter_sweep/buffer'),
 'resample' : False, #False/None, float(e.g: 0.4), amount to resize by: >1 means increase size, <1 means decrease
 'xyz_scale': (5.0, 5.0, 10), #micron/pixel; 1.3xobjective w/ 1xzoom 5um/pixel; 4x objective = 1.63um/pixel
 'tiling_overlap': 0.00, #percent overlap taken during tiling
-'AtlasFile' : os.path.join(systemdirectory, 'LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif'), ###it is assumed that input image will be a horizontal scan with anterior being 'up'; USE .TIF!!!!
-'annotationfile' :   os.path.join(systemdirectory, 'LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif'), ###path to annotation file for structures
+'AtlasFile' : os.path.join(systemdirectory, 'LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/average_template_25_sagittal_forDVscans_z_thru_240.tif'), ###it is assumed that input image will be a horizontal scan with anterior being 'up'; USE .TIF!!!!
+'annotationfile' :   os.path.join(systemdirectory, 'LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/annotation_25_ccf2015_forDVscans_z_thru_240.nrrd'), ###path to annotation file for structures
 'blendtype' : 'sigmoidal', #False/None, 'linear', or 'sigmoidal' blending between tiles, usually sigmoidal; False or None for images where blending would be detrimental;
 'intensitycorrection' : False, #True = calculate mean intensity of overlap between tiles shift higher of two towards lower - useful for images where relative intensity is not important (i.e. tracing=True, cFOS=False)
 'rawdata' : True, # set to true if raw data is taken from scope and images need to be flattened; functionality for rawdata =False has not been tested**
 'FinalOrientation': (3, 2, 1), #Orientation: 1,2,3 means the same orientation as the reference and atlas files; #Flip axis with - sign (eg. (-1,2,3) flips x). 3D Rotate by swapping numbers. (eg. (2,1,3) swaps x and y); USE (3,2,1) for DVhorizotnal to sagittal. NOTE (TP): -3 seems to mess up the function and cannot seem to figure out why. do not use.
-'slurmjobfactor': 700, #number of array iterations per arrayjob since max job array on SPOCK is 1000
+'slurmjobfactor': 50, #number of array iterations per arrayjob since max job array on SPOCK is 1000
 'removeBackgroundParameter_size': (5,5), #Remove the background with morphological opening (optimised for spherical objects), e.g. (7,7)
 'findExtendedMaximaParameter_hmax': None, # (float or None)     h parameter (for instance 20) for the initial h-Max transform, if None, do not perform a h-max transform
 'findExtendedMaximaParameter_size': 5, # size in pixels (x,y) for the structure element of the morphological opening
 'findExtendedMaximaParameter_threshold': 0, # (float or None)     include only maxima larger than a threshold, if None keep all local maxima
 'findIntensityParameter_method': 'Max', # (str, func, None)   method to use to determine intensity (e.g. "Max" or "Mean") if None take intensities at the given pixels
 'findIntensityParameter_size': (3,3,3), # (tuple)             size of the search box on which to perform the *method*
-'detectCellShapeParameter_threshold': 350 # (float or None)      threshold to determine mask. Pixels below this are background if None no mask is generated
+'detectCellShapeParameter_threshold': 125 # (float or None)      threshold to determine mask. Pixels below this are background if None no mask is generated
 }
 
 #####################################################################################################################################################
@@ -72,54 +76,6 @@ params={
 #####################################################################################################################################################
 #####################################################################################################################################################
 
-#run scipt portions        
-#this particular cell only stitches (by blending) and resamples the data
-
-if __name__ == '__main__':
-    
-    #######################STEP 0 #######################
-    #####################################################
-    ###make parameter dictionary and pickle file:
-    updateparams(os.getcwd(), **params) # e.g. single job assuming directory_determiner function has been properly set
-    #copy folder into output for records
-    if not os.path.exists(os.path.join(params['outputdirectory'], 'clearmap_cluster')): shutil.copytree(os.getcwd(), os.path.join(params['outputdirectory'], 'clearmap_cluster'), ignore=shutil.ignore_patterns('^.git')) #copy run folder into output to save run info
-
-    #re-run update params like you would on the cluster
-    updateparams(os.path.join(params['outputdirectory'], 'clearmap_cluster'), **params)
-
-    #######################STEP 1 #######################
-    #####################################################
-    ###stitch, resample, and save files
-    arrayjob(0, cores=8, compression=1, **params) #process zslice numbers equal to slurmjobfactor*jobid thru (jobid+1)*slurmjobfactor
-    arrayjob(1, cores=8, compression=1, **params)
-        
-    #######################STEP 2 #######################
-    #####################################################
-    ###check to make sure all step 1 jobs completed properly
-    process_planes_completion_checker(**params)
-    #clearmap: load the parameters:
-    resampling_operations(0, **params)
-    resampling_operations(1, **params)
-
-
-    ##add way to easily test cell detection parameters. Just select a 'jobid': e.g. jobid = 22
-    #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
-    #for first pass at cell detection
-    for jobid in range(21): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
-        try:
-            #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
-            sweep_parameters_cluster(jobid, pth = '/jukebox/wang/Jess/lightsheet_output/201810_cfos/parameter_sweep/dadult_pc_lob6_18', cleanup = True)
-        except:
-            try:
-                ###make parameter dictionary and pickle file:
-                updateparams(os.getcwd(), **params) # e.g. single job assuming directory_determiner function has been properly set
-                #copy folder into output for records
-                if not os.path.exists(os.path.join(params['outputdirectory'], 'clearmap_cluster')): shutil.copytree(os.getcwd(), os.path.join(params['outputdirectory'], 'clearmap_cluster'), ignore=shutil.ignore_patterns('^.git')) #copy run folder into output to save run info
-                sweep_parameters_cluster(jobid, **params)
-            except Exception, e:
-                print('Jobid {}, Error given {}'.format(jobid, e))
-
-#%%
 #sweep parameters copy & modifications - run before running above cell                
 def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=False, cleanup=True, **kwargs):
     '''Function to sweep parameters
@@ -137,29 +93,21 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
         kwargs (if not pth): 'params' from run_clearmap_cluster.py
     '''
 
-    from itertools import product
-    from ClearMap.cluster.preprocessing import makedir, listdirfull, removedir
-    from ClearMap.cluster.utils import load_kwargs
-    import tifffile, numpy as np, os
-#    from scipy.ndimage.interpolation import zoom
-    from skimage.exposure import rescale_intensity#, equalize_hist
-#    import matplotlib.pyplot as plt
-
     ######################################################################################################
     #NOTE: To adjust parameter sweep, modify ranges below
     ######################################################################################################
 #    #first - with cleanup=True
-    rBP_size_r = range(3,9,2) #[5, 11] #range(5,19,2) ###evens seem to not be good <-- IMPORTANT TO SWEEP
+#    rBP_size_r = range(3,9,2) #[5, 11] #range(5,19,2) ###evens seem to not be good <-- IMPORTANT TO SWEEP
     fEMP_hmax_r = [None]#[None, 5, 10, 20, 40]
     fEMP_size_r = [5]#range(3,8)
     fEMP_threshold_r = [None] #range(0,10)
-    fIP_method_r = ['Max'] #['Max, 'Mean']
+    fIP_method_r = ["Max"] #["Max, "Mean"]
     fIP_size_r = [5]#range(1,5)
-    dCSP_threshold_r = range(250,425,25) #<-- IMPORTANT TO SWEEP
-    
+#    dCSP_threshold_r = range(325,450,25) #<-- IMPORTANT TO SWEEP
+#    
     #second cleanup=False
-#    rBP_size_r = [3] #zmd commented out
-#    dCSP_threshold_r = [320, 330, 340, 360, 370, 380, 390, 400]
+    rBP_size_r = [3] #zmd commented out
+    dCSP_threshold_r = [440, 450, 460, 470, 480, 490, 500]
     ######################################################################################################
     ######################################################################################################
     ######################################################################################################
@@ -245,3 +193,42 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
                 fl.close
 
     return
+
+#%%
+#run scipt portions        
+#this particular cell only stitches (by blending) and resamples the data
+
+if __name__ == '__main__':
+    
+    #######################STEP 0 #######################
+    #####################################################
+    ###make parameter dictionary and pickle file:
+    updateparams(os.getcwd(), **params) # e.g. single job assuming directory_determiner function has been properly set
+    #copy folder into output for records
+    if not os.path.exists(os.path.join(params['outputdirectory'], 'clearmap_cluster')): shutil.copytree(os.getcwd(), os.path.join(params['outputdirectory'], 'clearmap_cluster'), ignore=shutil.ignore_patterns('^.git')) #copy run folder into output to save run info
+
+    #re-run update params like you would on the cluster
+    updateparams(os.path.join(params['outputdirectory'], 'clearmap_cluster'), **params)
+
+    #######################STEP 1 #######################
+    #####################################################
+    ###stitch, resample, and save files
+    arrayjob(0, cores=8, compression=1, **params) #process zslice numbers equal to slurmjobfactor*jobid thru (jobid+1)*slurmjobfactor
+    arrayjob(1, cores=8, compression=1, **params)
+        
+    #######################STEP 2 #######################
+    #####################################################
+    ###check to make sure all step 1 jobs completed properly
+    process_planes_completion_checker(**params)
+    #clearmap: load the parameters:
+    resampling_operations(0, **params)
+    resampling_operations(1, **params)
+
+
+    ##add way to easily test cell detection parameters. Just select a 'jobid': e.g. jobid = 22
+    #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
+    #for first pass at cell detection
+    for jobid in range(7): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
+        
+        sweep_parameters_cluster(jobid, **params)
+            

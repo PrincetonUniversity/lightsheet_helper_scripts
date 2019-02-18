@@ -62,13 +62,13 @@ def generate_transformed_cellcount(dataframe, dst, transformfiles, dct, verbose=
 if __name__ == "__main__":
 
     #set up
-    dst = "/jukebox/LightSheetData/pni_viral_vector_core/201808_promoter_exp/qc"; makedir(dst)
+    dst = "/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/qc"; makedir(dst)
     #make logs dir
     makedir(os.path.join(dst, "errors"))
-    lst = [xx for xx in listdirfull("/jukebox/LightSheetData/pni_viral_vector_core/201808_promoter_exp/processed")]
+    lst = [xx for xx in listdirfull("/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/processed")]
     transform = "all";#both for regwatlas, and only affine for sig adn reg #"all", "single": don"t consider reg with sig at all
     verbose = True
-    #fld = "/home/wanglab/wang/pisano/tracing_output/antero_4x/20170130_tp_bl6_sim_1750r_03"    
+    atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
     #loop
     for fld in lst:
         start = time.time()
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         zyx_cnt = Counter(zyx)
                             
         #atlas
-        atl = tifffile.imread("/jukebox/LightSheetData/pni_viral_vector_core/201808_promoter_exp/atlas/average_template_25_sagittal_forDVscans_z_thru_240.tif")
+        atl = tifffile.imread(atl)
         atl_cnn = np.zeros_like(atl)
         errors = []
         for zyx,v in zyx_cnt.iteritems():

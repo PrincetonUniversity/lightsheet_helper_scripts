@@ -86,11 +86,11 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
 #%%    
 if __name__ == "__main__":
     
-    ids = ['20180601_jg66']
+    ids = ['20160801_db_cri_02_1200rlow_52hr']
     
     for i in ids:
         brain = "/jukebox/wang/pisano/tracing_output/antero_4x/"+i
-        zstart = 410; zstop = 420
-        dst = "/home/wanglab/Desktop"
+        zstart = 320; zstop = 340
+        dst = "/jukebox/wang/zahra/cnn_validation"
         
         check_cell_center_to_fullsizedata(brain, zstart, zstop, dst)
