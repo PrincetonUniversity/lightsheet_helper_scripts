@@ -62,13 +62,13 @@ def generate_transformed_cellcount(dataframe, dst, transformfiles, dct, verbose=
 if __name__ == "__main__":
 
     #set up
-    dst = "/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/qc"; makedir(dst)
+    dst = "/home/wanglab/mounts/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/qc"; makedir(dst)
     #make logs dir
     makedir(os.path.join(dst, "errors"))
-    lst = [xx for xx in listdirfull("/jukebox/wang/Jess/lightsheet_output/201812_development/forebrain/processed")]
+    lst = [xx for xx in listdirfull("/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed")]
     transform = "all";#both for regwatlas, and only affine for sig adn reg #"all", "single": don"t consider reg with sig at all
     verbose = True
-    atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+    atl_pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/average_template_25_sagittal_forDVscans_z_thru_240.tif"
     #loop
     for fld in lst:
         start = time.time()
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         zyx_cnt = Counter(zyx)
                             
         #atlas
-        atl = tifffile.imread(atl)
+        atl = tifffile.imread(atl_pth)
         atl_cnn = np.zeros_like(atl)
         errors = []
         for zyx,v in zyx_cnt.iteritems():
