@@ -18,7 +18,7 @@ from ClearMap.cluster.preprocessing import makedir, listdirfull, removedir
 
 
 #sweep parameters copy & modifications 
-def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=False, cleanup=True, **kwargs):
+def sweep_parameters_cluster(dst, jobid, optimization_chunk=12, pth=False, rescale=False, cleanup=True, **kwargs):
     """Function to sweep parameters
     
     final outputs will be saved in outputdirectory/parameter_sweep
@@ -44,11 +44,11 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
     fEMP_threshold_r = [None] #range(0,10)
     fIP_method_r = ["Max"] #["Max, "Mean"]
     fIP_size_r = [5]#range(1,5)
-#    dCSP_threshold_r = range(325,450,25) #<-- IMPORTANT TO SWEEP
+#    dCSP_threshold_r = range(10, 105, 20) #<-- IMPORTANT TO SWEEP
 #    
     #second cleanup=False
-    rBP_size_r = [3] #zmd commented out
-    dCSP_threshold_r = [440, 450, 460, 470, 480, 490, 500]
+    rBP_size_r = [5] #zmd commented out
+    dCSP_threshold_r = [35]
     ######################################################################################################
     ######################################################################################################
     ######################################################################################################
@@ -66,7 +66,7 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
         kwargs = load_kwargs(pth)
         
     #make folder for final output:
-    opt = kwargs["outputdirectory"]; makedir(opt)
+    opt = dst; makedir(opt)
     out = opt+"/parameter_sweep"; makedir(out)
     out0 = opt+"/parameter_sweep_jobid_{}".format(str(jobid).zfill(4)); makedir(out0)
 
@@ -144,11 +144,11 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
 
 #%%
 
-brain = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/parameter_sweep/v144_3"
+brain = "/jukebox/wang/pisano/tracing_output/cfos/201902_reim_201701_cfos/201701_mk06"
 kwargs = load_kwargs(brain)
-
+dst = "/jukebox/wang/pisano/tracing_output/cfos/201902_reim_201701_cfos_analysis/parameter_sweep/201701_mk06"
 #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
 #for first pass at cell detection
-for jobid in range(7): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
+for jobid in range(1): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
     
-    sweep_parameters_cluster(jobid, cleanup = False, **kwargs)
+    sweep_parameters_cluster(dst, jobid, cleanup = False, **kwargs)

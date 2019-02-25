@@ -68,7 +68,6 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
     pth = os.path.join(brain, "3dunet_output/pooled_cell_measures/"+os.path.basename(brain)+"_cell_measures.csv")
     cells = pd.read_csv(pth)
     
-    plt.imshow(raw[0,:,:])
     cells = cells[(cells["z"] >= zstart) & (cells["z"] <= zstop-1)] #-1 to account for range
     
     cell_centers = np.zeros(raw.shape)
@@ -86,11 +85,20 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
 #%%    
 if __name__ == "__main__":
     
-    ids = ['20160801_db_cri_02_1200rlow_52hr']
+    ids = ['20161205_tp_bl6_lob45_1000r_01',
+             '20161205_tp_bl6_sim_1750r_05',
+             '20161207_db_bl6_lob6a_50rml_53d5hr',
+             '20161203_tp_bl6_lob7_1500r_07',
+             '20161207_db_bl6_lob6a_500r_53hr',
+             '20161205_tp_bl6_sim_1250r_04',
+             '20161205_tp_bl6_sim_250r_02',
+             '20161203_tp_bl6_crii_750r_09',
+             '20161129_db_bl6_lob6b_ml50r_53hr',
+             '20161205_tp_bl6_sim_750r_03']
     
     for i in ids:
         brain = "/jukebox/wang/pisano/tracing_output/antero_4x/"+i
-        zstart = 320; zstop = 340
+        zstart = 470; zstop = 490
         dst = "/jukebox/wang/zahra/cnn_validation"
         
         check_cell_center_to_fullsizedata(brain, zstart, zstop, dst)
