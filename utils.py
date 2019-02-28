@@ -5,18 +5,17 @@ Created on Mon Aug 20 08:21:27 2018
 
 @author: wanglab
 """
-import numpy as np, os, re, sys, cPickle as pickle
 
-sys.path.append('/jukebox/wang/zahra/lightsheet_copy/')
-from tools.utils.io import load_kwargs, save_kwargs
-
-sys.path.append('/jukebox/wang/zahra/clearmap_cluster_copy/')
-from ClearMap.cluster.preprocessing import pth_update
-
+import numpy as np, os, cPickle as pickle
 import matplotlib.pyplot as plt; plt.ion()
 from skimage.external import tifffile
 from matplotlib.backends.backend_pdf import PdfPages
+os.chdir('/jukebox/wang/zahra/lightsheet_copy/')
+from tools.utils.io import load_kwargs, save_kwargs
+os.chdir('/jukebox/wang/zahra/clearmap_cluster_copy/')
+from ClearMap.cluster.preprocessing import pth_update
 
+########################################################################RUNS IN PYTHON 2###############################################################
 def load_clearmap_kwargs(outdr=None, **kwargs):
     '''simple function to load kwargs given an 'outdr'
     
