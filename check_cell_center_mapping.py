@@ -82,23 +82,48 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
     
     print("took {} seconds to make merged maps".format(time.time() - start))
     
+def check_cell_center_to_resampled(brain, zstart, zstop, dst):
+    """ 
+    maps cnn cell center coordinates to resampled stack
+    inputs:
+        brain = path to lightsheet processed directory
+        zstart = beginning of zslice
+        zstop = end of zslice
+        dst = path of tif stack to save
+    NOTE: 20+ PLANES CAN OVERLOAD MEMORY
+    """
+    start = time.time()
+    
+    #doing things without loading parameter dict, could become a problem
+    tifs = [xx for xx in os.listdir(brain) if xx[-4:] == ".tif"]; tifs.sort()
+    raw = tifffile.imread(tifs[len(tifs)-1])
+        
+    pth = os.path.join(brain, "3dunet_output/pooled_cell_measures/"+os.path.basename(brain)+"_cell_measures.csv")
+    cells = pd.read_csv(pth)
+    
+    cells = cells[(cells["z"] >= zstart) & (cells["z"] <= zstop-1)] #-1 to account for range
+    
+    cell_centers = np.zeros(raw.shape)
+    
+    for i, r in cells.iterrows():
+        cell_centers[r["z"]-zstart, r["y"]-5:r["y"]+5, r["x"]-5:r["x"]+5] = 1
+        
+    rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), np.zeros_like(raw)], -1)
+
+    resize_merged_stack(rbg, os.path.join(dst, "{}_raw_cell_centers_resized_z{}-{}.tif".format(os.path.basename(brain), 
+                                          zstart, zstop)), "uint16", 6)
+    
+    print("took {} seconds to make merged maps".format(time.time() - start))
+    
 #%%    
 if __name__ == "__main__":
     
-    ids = ['20161205_tp_bl6_lob45_1000r_01',
-             '20161205_tp_bl6_sim_1750r_05',
-             '20161207_db_bl6_lob6a_50rml_53d5hr',
-             '20161203_tp_bl6_lob7_1500r_07',
-             '20161207_db_bl6_lob6a_500r_53hr',
-             '20161205_tp_bl6_sim_1250r_04',
-             '20161205_tp_bl6_sim_250r_02',
-             '20161203_tp_bl6_crii_750r_09',
-             '20161129_db_bl6_lob6b_ml50r_53hr',
-             '20161205_tp_bl6_sim_750r_03']
+    ids = ['20160920_tp_bl6_lob7_ml_01']
     
     for i in ids:
         brain = "/jukebox/wang/pisano/tracing_output/antero_4x/"+i
-        zstart = 470; zstop = 490
-        dst = "/jukebox/wang/zahra/cnn_validation"
+        zstart = 550; zstop = 570
+        dst = "/jukebox/wang/zahra/cnn_validation/201903"
+        if not os.path.exists(dst): os.mkdir(dst)
         
         check_cell_center_to_fullsizedata(brain, zstart, zstop, dst)

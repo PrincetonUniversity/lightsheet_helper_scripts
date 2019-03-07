@@ -7,9 +7,9 @@ Created on Wed Feb 20 12:43:10 2019
 """
 
 from skimage.external import tifffile as tif
-from scipy.ndimage import zoom, grey_dilation
-import matplotlib.pyplot as plt, numpy as np, cv2, os
-from matplotlib.axes import Axes
+from skimage.morphology import ball
+from scipy.ndimage.interpolation import zoom
+import matplotlib.pyplot as plt, numpy as np, cv2, os, pandas as pd
 from collections import Counter
 import matplotlib.colors
 from matplotlib.backends.backend_pdf import PdfPages
@@ -25,7 +25,8 @@ class Sagittal():
         self.saggital = tif.imread(src)
         self.coronal = np.transpose(self.saggital, [1, 0, 2])
         self.horizontal = np.transpose(self.saggital, [2, 1, 0])
-        self.cells = np.load(cells)
+        if cells[-4:] == ".npy": self.cells = np.load(cells)
+        elif cells[-4:] == ".csv": self.cells = pd.read_csv(cells)
         self.dst = dst
         print(os.path.dirname(os.path.dirname(src)))
         
@@ -52,6 +53,8 @@ class Sagittal():
     def makeCoronalSections(self, save = False): 
         """
         making coronal volume from sagittal volumes
+        inputs:
+            save = T/F
         """
 
         print(self.coronal.shape)
@@ -75,6 +78,8 @@ class Sagittal():
     def makeHorizontalSections(self, save = False):
         """
         making horizontal volume from sagittal volumes
+        inputs:
+            save = T/F
         """
 
         print(self.horizontal.shape)
@@ -96,9 +101,12 @@ class Sagittal():
         if save: plt.savefig(os.path.join(self.dst, "{}_horizontal.pdf".format(os.path.basename(os.path.dirname(os.path.dirname(self.src))))), dpi = 300)
         else: plt.show()
         
-    def makeCellOverlayHorizontalSections(self, save = True):
+        
+    def makeClearMapCellOverlayHorizontalSections(self, save = True):
         """
         making horizontal volumes with cells detected from sagittal volumes
+        inputs:
+            save = T/F
         """
 
         print("\nhorizontal resampled image shape: {}\n".format(self.horizontal.shape))
@@ -107,54 +115,37 @@ class Sagittal():
         #make overlay
         alpha = 0.6 #determines transparency, don't need to alter
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "lime"]) #lime color makes cells pop
+#        cmap.set_under("white", alpha = 0)
         
         #first, make a map of cells
-        zyx = np.asarray([str((int(xx[2]), int(xx[1]), int(xx[0]))) for xx in self.cells]) #cells are counted in horizontal volumes
-        zyx_cnt = Counter(zyx)
-        #FIXME
+        zyx = np.asarray([(int(xx[2]), int(xx[1]), int(xx[0])) for xx in self.cells]) #cells are counted in horizontal volumes
+            
         #get full size dimensions - have to do this without importing pickle
         fullszflds = [os.path.join(os.path.join(os.path.dirname(os.path.dirname(self.src)), "full_sizedatafld"), xx) 
                         for xx in os.listdir(os.path.join(os.path.dirname(os.path.dirname(self.src)), "full_sizedatafld"))]
         y,x = tif.imread(os.path.join(fullszflds[0], os.listdir(fullszflds[0])[0])).shape
         
-        #not sure how to solve this issue of rounding in zoom, so this is possibly temporary
-        try:
-            z = len(os.listdir(fullszflds[0]))-1  
-            self.fullszdims = (z,y,x)
-            cell_map = np.zeros(self.fullszdims) 
-            for zyx,v in zyx_cnt.items():
-                z,y,x = [int(xx) for xx in zyx.replace("(","",).replace(")","").split(",")]
-                try:
-                    cell_map[z,y-1:y+1,x-1:x+1] = v*100
-                except Exception as e:
-                    print(e)
+        z = len(os.listdir(fullszflds[0])) 
+        self.fullszdims = (z,y,x)
+        cell_map = np.zeros(self.fullszdims, dtype = "bool") 
+        for z,y,x in zyx:
+            try:
+                cell_map[z-1:z+1,y,x] = True
+            except Exception as e:
+                print(e)
                 
-            #resampling cells
-            resizef = (1/1.6, 1/3.2, 1/3.2) #in z,y,x, depends on resampling, maybe better not to be hardcoded; always resampled this way in ClearMap
-            print("resizing by factors (z,y,x): {}\n this can take some time...\n".format(resizef))
-            resz_cell_map = zoom(cell_map, resizef, order = 1) #right now only linear interpolation
-            print("horizontal resampled cell map shape: {}\n".format(resz_cell_map.shape))
-            #initialise overlay
-            merged = np.stack([self.horizontal.astype("uint16"), resz_cell_map.astype("uint16"), np.zeros_like(self.horizontal)], -1)
-        except:
-            z = len(os.listdir(fullszflds[0]))  
-            self.fullszdims = (z,y,x)
-            cell_map = np.zeros(self.fullszdims) 
-            for zyx,v in zyx_cnt.items():
-                z,y,x = [int(xx) for xx in zyx.replace("(","",).replace(")","").split(",")]
-                try:
-                    cell_map[z,y-1:y+1,x-1:x+1] = v*100
-                except Exception as e:
-                    print(e)
-                
-            #resampling cells
-            resizef = (1/1.6, 1/3.2, 1/3.2) #in z,y,x, depends on resampling, maybe better not to be hardcoded; always resampled this way in ClearMap
-            print("resizing by factors (z,y,x): {}\n this can take some time...\n".format(resizef))
-            resz_cell_map = zoom(cell_map, resizef, order = 1) #right now only linear interpolation
-            print("horizontal resampled cell map shape: {}\n".format(resz_cell_map.shape))
-            #initialise overlay
-            merged = np.stack([self.horizontal.astype("uint16"), resz_cell_map.astype("uint16"), np.zeros_like(self.horizontal)], -1)
-            
+        #apply x y dilation
+        r = 4
+        selem = ball(r)[int(r/2)]
+        cell_map = cell_map.astype("uint8")
+        cell_map = np.asarray([cv2.dilate(cell_map[i], selem, iterations = 1) for i in range(cell_map.shape[0])])
+        
+        #resampling cells
+        resizef = (1/1.6, 1/3.2, 1/3.2) #in z,y,x, depends on resampling, maybe better not to be hardcoded; always resampled this way in ClearMap
+        print("resizing by factors (z,y,x): {}\n this can take some time...\n".format(resizef))
+        resz_cell_map = zoom(cell_map, resizef, order = 1) #right now only linear interpolation
+        print("horizontal resampled cell map shape: {}\n".format(resz_cell_map.shape))
+                    
         #compiles into multiple pdfs
         pdf_pages = PdfPages(os.path.join(self.dst, "{}_cell_overlay_horizontal.pdf".format(os.path.basename(os.path.dirname(os.path.dirname(self.src)))))) 
         
@@ -164,8 +155,8 @@ class Sagittal():
         for n in range(6):
             #open figure
             plt.figure(figsize=(8.27, 11.69))
-            a = np.max(merged[slice-chunk:slice, :, :, 0]*5, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
-            b = np.max(merged[slice-chunk:slice, :, :, 1]*5,axis = 0)
+            a = np.max(self.horizontal[slice-chunk:slice, :, :]*10, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
+            b = np.max(resz_cell_map[slice-chunk:slice, :, :]*3,axis = 0)
             plt.imshow(a, "gist_yarg")
             plt.imshow(b, cmap, alpha = alpha)
             plt.axis("off")
@@ -179,22 +170,21 @@ class Sagittal():
         if save: pdf_pages.close()
         
         print("done!\n*********************************************************************")
-        
+    
+    
 #%%
 if __name__ == "__main__":
     #grabbing sagittal volume
-    dst = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/analysis/images/slices"
+    dst = "/home/wanglab/Desktop/Jess_cfos"
     if not os.path.exists(dst): os.mkdir(dst)
+#    
+#    pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201812_development/forebrain/processed"
+#    
+#    for fld in os.listdir(pth):
+#        src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
+#        cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
+#        sagittal = Sagittal(src, dst, cells)
+#        sagittal.makeCellOverlayHorizontalSections(True)
+#    
     
-    lst = ['buffer',
-         'v144_3',
-         'v190_4',
-         'v145_3',
-         'v145_4']
-    
-    for i in lst:
-        src = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed/"+i+"/clearmap_cluster_output/cfos_resampled.tif"        
-        cells = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed/"+i+"/clearmap_cluster_output/cells.npy"
-        sag = Sagittal(src, dst, cells)
-        sag.makeCellOverlayHorizontalSections(True)
         
