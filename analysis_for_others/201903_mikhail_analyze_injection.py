@@ -29,14 +29,14 @@ if __name__ == '__main__':
     #run
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
-    inputlist = ['/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_50270_4',
-                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49167_1043',
+    inputlist = [#'/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_50270_4',
+                 #'/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49167_1043',
                  '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_31',
                  '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_33',
                  '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_32',
-                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_51115_1053',
-                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_23',
-                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49824_1107']
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_51115_1053',
+                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_23']
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49824_1107']
 
     kwargs = {'inputlist': inputlist,
               'channel': '01',
@@ -48,7 +48,7 @@ if __name__ == '__main__':
               'imagescale': 2,
               'reorientation': ('2','0','1'),
               'crop': '[:,410:,:]',
-              'dst': '/home/wanglab/Desktop/test2',
+              'dst': '/home/wanglab/Desktop/test2/cntnap2',
               'save_individual': True, 
               'colormap': 'plasma', 
               'atlas': "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif",
