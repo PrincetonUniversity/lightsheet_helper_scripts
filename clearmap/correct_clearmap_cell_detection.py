@@ -39,9 +39,9 @@ def save_kwargs(pckloc = None, verbose = False, **kwargs):
 
     return pckloc
 #%%        
-pth = "/jukebox/wang/pisano/tracing_output/cfos/201902_reim_201701_cfos"
+pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed"
 
-flds = ["201701_tp02"]
+flds = os.listdir(pth)
 
 for fld in flds:
     brain = os.path.join(pth, fld)
@@ -57,7 +57,8 @@ for fld in flds:
     
     #changing cell detection param
     dct = pth_update(set_parameters_for_clearmap(testing = False, **params))
-    dct["ImageProcessingParameter"]["detectSpotsParameter"]["detectCellShapeParameter"]["threshold"] = 35
+    dct["ImageProcessingParameter"]["detectSpotsParameter"]["removeBackgroundParameter"]["size"] = (5, 5)
+    dct["ImageProcessingParameter"]["detectSpotsParameter"]["detectCellShapeParameter"]["threshold"] = 350
     
 #########################################################################STEP 4##############################################################################
     

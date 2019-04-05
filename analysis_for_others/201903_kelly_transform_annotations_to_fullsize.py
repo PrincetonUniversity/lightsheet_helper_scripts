@@ -45,7 +45,7 @@ r2s0 = [xx for xx in listall(cellvol.inverse_elastixfld) if "reg2sig_TransformPa
 r2s1 = [xx for xx in listall(cellvol.inverse_elastixfld) if "reg2sig_TransformParameters.1" in xx and "cellch" in xx][0]
 
 #set destination directory
-if os.path.dirname(brain) == "/jukebox/wang/seagravesk/lightsheet/cfos_201810_ventral_up/cfos_201810_ventral_up": 
+if os.path.dirname(brain) == "/jukebox/wang/seagravesk/lightsheet/cfos_201810_ventral_up": 
     braindst = os.path.join(scratch_dir, os.path.basename(brain)+"_ventral")
     makedir(braindst)
 else: 

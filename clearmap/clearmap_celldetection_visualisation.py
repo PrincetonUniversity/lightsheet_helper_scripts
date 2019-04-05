@@ -135,7 +135,7 @@ class Sagittal():
                 print(e)
                 
         #apply x y dilation
-        r = 4
+        r = 2
         selem = ball(r)[int(r/2)]
         cell_map = cell_map.astype("uint8")
         cell_map = np.asarray([cv2.dilate(cell_map[i], selem, iterations = 1) for i in range(cell_map.shape[0])])
@@ -155,7 +155,7 @@ class Sagittal():
         for n in range(6):
             #open figure
             plt.figure(figsize=(8.27, 11.69))
-            a = np.max(self.horizontal[slice-chunk:slice, :, :]*10, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
+            a = np.max(self.horizontal[slice-chunk:slice, :, :]*3, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
             b = np.max(resz_cell_map[slice-chunk:slice, :, :]*3,axis = 0)
             plt.imshow(a, "gist_yarg")
             plt.imshow(b, cmap, alpha = alpha)
@@ -175,16 +175,31 @@ class Sagittal():
 #%%
 if __name__ == "__main__":
     #grabbing sagittal volume
-    dst = "/home/wanglab/Desktop/Jess_cfos"
+    dst = "/home/wanglab/Desktop/test"
     if not os.path.exists(dst): os.mkdir(dst)
 #    
 #    pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201812_development/forebrain/processed"
 #    
 #    for fld in os.listdir(pth):
-#        src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
-#        cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
-#        sagittal = Sagittal(src, dst, cells)
-#        sagittal.makeCellOverlayHorizontalSections(True)
-#    
+    pth = "/home/wanglab/mounts/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed"
+    flds = ["buffer",
+     "control",
+     "v143_3",
+     "v143_4",
+     "v144_3",
+     "v144_4",
+     "v145_3",
+     "v145_4",
+     "v190_3",
+     "v190_4",
+     "v75_3",
+     "v75_4"]
     
+    for fld in flds:
+        src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
+        cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
+        sagittal = Sagittal(src, dst, cells)
+        sagittal.makeClearMapCellOverlayHorizontalSections(True)
+
+
         

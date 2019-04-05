@@ -17,49 +17,7 @@ from tools.registration.transform import count_structure_lister, transformed_pnt
 from tools.utils.io import load_kwargs, makedir
 from collections import Counter
 
-if __name__ == '__main__':
-    
-    #check if reorientation is necessary
-    src = '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_31/elastix/20190130_mk_cntnap2_31_1d3x_488_647_017na_1hfds_z10um_100msec_resized_ch01/result.tif'
-    src = orientation_crop_check(src, crop = '[:,400:,:]')
-    
-    #optimize detection parameters for inj det
-    optimize_inj_detect(src, threshold=4, filter_kernel = (4,4,4))
-    
-    #run
-    #suggestion: save_individual=True,
-    #then inspect individual brains, which you can then remove bad brains from list and rerun function
-    inputlist = [#'/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_50270_4',
-                 #'/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49167_1043',
-                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_31',
-                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_33',
-                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_32',
-#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_51115_1053',
-                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_23']
-#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49824_1107']
 
-    kwargs = {'inputlist': inputlist,
-              'channel': '01',
-              'channel_type': 'cellch',
-              'filter_kernel': (4,4,4),
-              'threshold': 4,
-              'num_sites_to_keep': 1,
-              'injectionscale': 40000, 
-              'imagescale': 2,
-              'reorientation': ('2','0','1'),
-              'crop': '[:,410:,:]',
-              'dst': '/home/wanglab/Desktop/test2/cntnap2',
-              'save_individual': True, 
-              'colormap': 'plasma', 
-              'atlas': "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif",
-              'annotation':"/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans.tif",
-              'id_table': "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/allen_id_table.xlsx"
-            }              
-              
-    
-    df = pool_injections_for_analysis(**kwargs)
-              
-#%%
 def orientation_crop_check(src, axes = ('0','1','2'), crop = False, dst=False):
     '''Function to check orientation and cropping. MaxIPs along 0 axis.
     
@@ -93,14 +51,14 @@ def orientation_crop_check(src, axes = ('0','1','2'), crop = False, dst=False):
     if dst: plt.savefig(dst, dpi=300)
     return src
 
-def optimize_inj_detect(src, threshold=3, filter_kernel = (3,3,3), dst=False):
+def optimize_inj_detect(src, threshold=3, filter_kernel = (3,3,3),num_sites_to_keep = 4, dst=False):
     '''Function to test detection parameters
     
     'dst': (optional) path+extension to save image
     
     '''
     if type(src) == str: src = tifffile.imread(src)
-    arr = find_site(src, thresh=threshold, filter_kernel=filter_kernel)*45000
+    arr = find_site(src, thresh=threshold, filter_kernel=filter_kernel, num_sites_to_keep = 4)*40000
     fig = plt.figure()
     fig.add_subplot(1,2,1)
     plt.imshow(np.max(arr, axis=0));  plt.axis('off')
@@ -178,7 +136,10 @@ def pool_injections_for_analysis(**kwargs):
         pth = inputlist[i]
         print('\n\n_______\n{}'.format(os.path.basename(pth)))
         dct = load_kwargs(pth); #print dct['AtlasFile']
-        vol = [xx for xx in dct['volumes'] if xx.ch_type == kwargs['channel_type'] and xx.channel == kwargs['channel']][0]
+        try:
+            vol = [xx for xx in dct['volumes'] if xx.ch_type == kwargs['channel_type'] and xx.channel == kwargs['channel']][0]
+        except:
+            vol = [xx for xx in dct['volumes'] if xx.ch_type == "cellch" and xx.channel == kwargs['channel']][0]
         #done to account for different versions
         if os.path.exists(vol.ch_to_reg_to_atlas+'/result.1.tif'):
             impth = vol.ch_to_reg_to_atlas+'/result.1.tif'
@@ -309,3 +270,57 @@ def find_site(im, thresh=10, filter_kernel=(5,5,5), num_sites_to_keep=1):
         sizes = [np.sum(labelled==i) for i in range(1,nlab+1)]
         vals = [i+1 for i in np.argsort(sizes)[-num_sites_to_keep:][::-1]]
         return np.in1d(labelled, vals).reshape(labelled.shape)
+    
+    
+#%%
+
+if __name__ == '__main__':
+    
+    #check if reorientation is necessary
+#    src = "/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_i/elastix/20190130_mk_ai148_47018_i_1d3x_488_647_008na_1hfds_z10um_200msec_resized_ch01/result.tif"
+#    src = orientation_crop_check(src, ('2','0','1'), crop = '[:,400:,:]')
+#    
+#    #optimize detection parameters for inj det
+#    optimize_inj_detect(src, threshold=2, filter_kernel = (4,4,4), num_sites_to_keep = 4)
+    
+    #run
+    #suggestion: save_individual=True,
+    #then inspect individual brains, which you can then remove bad brains from list and rerun function
+#    inputlist = ['/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_41',
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_i',
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_iv',
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_ii',
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_29',
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47']
+    
+    inputlist = [#'/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_50270_4',
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49167_1043',
+                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_31',
+                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_33',
+                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_32',
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_51115_1053',
+                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_23']
+#                 '/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49824_1107']
+    
+    
+
+    kwargs = {'inputlist': inputlist,
+              'channel': '01',
+              'channel_type': 'injch',
+              'filter_kernel': (4,4,4),
+              'threshold': 4,
+              'num_sites_to_keep': 4,
+              'injectionscale': 40000, 
+              'imagescale': 2,
+              'reorientation': ('0','1','2'),
+              'crop': '[:,410:,:]',
+              'dst': '/home/wanglab/Desktop/test',
+              'save_individual': False, 
+              'colormap': 'plasma', 
+              'atlas': "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif",
+              'annotation':"/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans.tif",
+              'id_table': "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+            }              
+              
+    
+    df = pool_injections_for_analysis(**kwargs)
