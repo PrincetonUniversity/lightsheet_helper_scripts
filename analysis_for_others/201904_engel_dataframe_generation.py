@@ -53,7 +53,7 @@ path_per_condition = {n:c for n,c in zip(pths, cond)}
 pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/analysis/cell_detection/cell_counts_dataframe.csv"
 
 df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
-ann_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans.tif"
+ann_pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/annotation_25_ccf2015_forDVscans_z_thru_240.nrrd"
 atl_pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/average_template_25_sagittal_forDVscans_z_thru_240.tif"
 
 #%%
@@ -74,17 +74,26 @@ def generate_data_frame(conditions, lst, pth):
         #extract out info
         nm = os.path.basename(fl)
         #make dataframe
-        df = pd.read_csv(fl+"/Annotated_counts_w_all_structures.csv" , error_bad_lines=False, index_col = None)
-        df = df.drop(columns = ["Unnamed: 0"])
+        df = pd.read_csv(fl+'/Annotated_counts.csv' , error_bad_lines=False, names=['Index', 'Count', 'struct', 'sub', 'layer'])
         print(nm, df.shape)
-        
-        #fix formatting
-        df = df.replace(np.nan, "", regex=True)
-        
-        #add brain and condition
-        df["Brain"] = nm
-        df["Condition"] = conditions[nm]
-        
+        df = df.replace(np.nan, '', regex=True)
+        f1 = df.struct.values
+        f2 = df['sub'].values
+        f3 = df.layer.values
+        def remove(l, item):
+            while item in l:
+                l.remove(item)
+            return l
+        structures = [','.join(remove(list(l),'')) for l in zip(f1,f2,f3)]
+        structures = [xx.replace('\xef\xbf\xbd', 'e') for xx in structures]
+        structures = [xx[1:] for xx in structures] #remove space from the beginning of each name this is important
+        df['Structure'] = structures
+        df['Brain'] = nm
+        df['Condition'] = conditions[nm]
+        #df['Stim_source'] = source[nm]
+        del df['struct']
+        del df['sub']
+        del df['layer']
         bglst.append(df)
     
     df = pd.concat(bglst)
@@ -117,17 +126,19 @@ def correct_sturctures_to_cm(struc):
 #################################################################################################################################################################
 
 
-def generate_normalised_structures_list(df_pth, ann_pth, csv_pth):
+def generate_progenitors_normalised_structures_list(df_pth, ann_pth, csv_pth):
     """
     generates counts normalised by volume, correct some errors in look up table
     #TODO (zahra): ask tom if this is necessary for PMA
     """
-    #structures
+    #build structures class
     structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
     
-    #run
+    #set variables
     df = pd.read_csv(csv_pth)
-    sois = ["Cortical subplate", "Cortical plate", "Cerebral nuclei", "Thalamus", "Hypothalamus", "Midbrain", "Hindbrain", "Cerebellum", "fiber tracts", "ventricular systems", "grooves"]
+    sois = ["Cerebral cortex", "Thalamus", "Hypothalamus", "Midbrain", "Hindbrain", 
+            "Cerebellum", "Striatum", "Pallidum", "fiber tracts", "Olfactory areas"
+            ]
 
     #add in progenitor column and add in volumes for area cell counts
     vols = pd.read_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx")[["voxels_in_structure", "name"]]
@@ -140,79 +151,161 @@ def generate_normalised_structures_list(df_pth, ann_pth, csv_pth):
         soi = [s for s in structures if s.name==soi][0]
         print(soi.name)
         progeny = [str(xx.name) for xx in soi.progeny]
-        for progen in progeny:
-            progen = correct_sturctures_to_cm(progen)
-            tdf.loc[tdf["name"]==progen,"progenitor"]=soi.name
-            if len(vols[vols["name"]==progen]["voxels_in_structure"])>0:
-                tdf.loc[tdf["name"]==progen,"Volume"]=vols[vols["name"]==progen]["voxels_in_structure"].values[0]*scale_factor
+        if len(progeny) > 0:
+            for progen in progeny:
+                print(progen)
+                progen = correct_sturctures_to_cm(progen)
+                tdf.loc[tdf["Structure"] == progen,"progenitor"]=soi.name
+                if len(vols[vols["name"] == progen]["voxels_in_structure"])>0:
+                    tdf.loc[tdf["Structure"] == progen,"Volume"] = vols[vols["name"] == progen]["voxels_in_structure"].values[0]*scale_factor
+        else:
+            tdf.loc[tdf["Structure"] == soi.name,"progenitor"] = soi.name
+            if len(vols[vols["name"] == soi.name]["voxels_in_structure"])>0:
+                tdf.loc[tdf["Structure"] == soi.name,"Volume"] = vols[vols["name"] == soi.name]["voxels_in_structure"].values[0]*scale_factor
+            
     
     #drop non progen
     tdf = tdf[(tdf["progenitor"] != "empty") & (tdf["Volume"] != 0.0)]
     
     #add normalised column
-    tdf["count_normalized_by_volume"] = tdf.apply(lambda x:x["counts"]/float(x["Volume"]), 1)
+    tdf["count_normalized_by_volume"] = tdf.apply(lambda x:x["Count"]/float(x["Volume"]), 1)
     
+    #drop unnamed
+    tdf = tdf.drop(columns = ["Index"])
     #save both as csv and pickle for visualisation
     tdf.to_pickle(os.path.join(src, "cell_counts_dataframe_with_progenitors.p"))
-    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_progenitors.csv"))
+    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_progenitors.csv"), header = True, index = None)
     
     print("saved in :{}".format(src))
     
     return tdf
 
 #run
-tdf = generate_normalised_structures_list(df_pth, ann_pth, csv_pth)
+tdf = generate_progenitors_normalised_structures_list(df_pth, ann_pth, csv_pth)
 
 #%%
 #############################################################CUSTOM SCRIPT#####################################################################################
 
-#structures
-structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = False, ann_pth = ann_pth)
-
-#set variables
-df = pd.read_csv(csv_pth, index_col = None)
-sois = ["Hippocampal formation", "Hypothalamus", "Midbrain", "Hindbrain", "Cerebellum", "fiber tracts", 
-        "Striatum", "Pallidum", "Cerebral cortex", "Olfactory areas", "Ammon's horn", "Dentate gyrus",
-        "Midbrain, sensory related", "Midbrain, motor related", "Midbrain, behavioral state related",
-        "Cerebellar cortex", "Cerebellar nuclei", "Caudoputamen", "Nucleus accumbens", 
-        "corpus callosum", "mammillothalamic tract", "Somatomotor areas", "Somatosensory areas", "Posterior parietal association areas", 
-        "Visual areas"]
-
-#add in progenitor column and add in volumes for area cell counts
-vols = pd.read_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx")[["voxels_in_structure", "name"]]
-tdf = pd.DataFrame()
-
-for soi in sois:
-    soi = [s for s in structures if s.name==soi][0]
-    print(soi.name)
-    #if the structure has progeny
-    if len(soi.progeny)!=0:
-        progeny = [str(xx.name) for xx in soi.progeny]
-        for progen in progeny:
-            #get progenitor structures
-            s_vals = df[df.name == soi.name]
-            if s_vals.shape[0] == 0: s_vals = df[df.parent_name == soi.name]
-            #make sure its not zero
-            if not s_vals.shape[0] == 0:
-                prog_df_vals = df[df.name == progen]
-                if not prog_df_vals.shape[0] == 0:
-                    #pandas magic
-                    s_vals = s_vals[s_vals.Brain.isin(list(prog_df_vals.Brain))]
-                    print(len(s_vals), len(prog_df_vals), progen)
-                    sums = np.asarray(s_vals.counts) + np.asarray(prog_df_vals.counts)
-                    s_vals.counts = sums  
-                    #update original dataframe
-                    tdf = tdf.append(s_vals, ignore_index = True)
-    else:
-        tdf = tdf.append(df[df.name == soi.name])
-        #if dataframe is 0, look in parent_name
-        if len(df[df.name == soi.name]) == 0:
-            tdf = tdf.append(df[df.parent_name == soi.name])
-
 #aggregate counts
-df_new = tdf.groupby(["name", "Brain"])['counts'].sum()
+df_new = tdf.groupby(["progenitor", "Brain"])['Count'].sum()
 
 #save as csv 
-df_new.to_csv(os.path.join(src, "summed_cell_counts_dataframe.csv"), header = True)
+df_new.to_csv(os.path.join(src, "summed_projenitor_cell_counts_dataframe.csv"), header = True)
+
+print("saved in :{}".format(src))
+
+#%%
+def generate_parents_normalised_structures_list(df_pth, ann_pth, csv_pth):
+    """
+    generates counts normalised by volume, correct some errors in look up table
+    #TODO (zahra): ask tom if this is necessary for PMA
+    """
+    #build structures class
+    structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
+    
+    #set variables
+    df = pd.read_csv(csv_pth)
+    sois = ["Hippocampal formation", "Ammon's horn", "Dentate gyrus", "Midbrain, sensory related", "Midbrain, motor related", 
+            "Midbrain, behavioral state related", "Cerebellar cortex", "Cerebellar nuclei", "Primary motor area",
+            "Secondary motor area", "Primary somatosensory area", "Supplemental somatosensory area", "Visual areas"]
+
+    #add in progenitor column and add in volumes for area cell counts
+    vols = pd.read_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx")[["voxels_in_structure", "name"]]
+    tdf = df.copy()
+    tdf["parent"] = "empty"
+    tdf["Volume"] = 0.0
+    scale_factor = .025 #mm/voxel
+    
+    for soi in sois:
+        soi = [s for s in structures if s.name==soi][0]
+        print(soi.name)
+        progeny = [str(xx.name) for xx in soi.progeny]
+        if len(progeny) > 0:
+            for progen in progeny:
+                progen = correct_sturctures_to_cm(progen)
+                tdf.loc[tdf["Structure"] == progen,"parent"]=soi.name
+                if len(vols[vols["name"] == progen]["voxels_in_structure"])>0:
+                    tdf.loc[tdf["Structure"] == progen,"Volume"] = vols[vols["name"] == progen]["voxels_in_structure"].values[0]*scale_factor
+            
+    
+    #drop non progen
+    tdf = tdf[(tdf["parent"] != "empty") & (tdf["Volume"] != 0.0)]
+    
+    #add normalised column
+    tdf["count_normalized_by_volume"] = tdf.apply(lambda x:x["Count"]/float(x["Volume"]), 1)
+    
+    #drop unnamed
+    tdf = tdf.drop(columns = ["Index"])
+    #save as csv 
+    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_parents.csv"), header = True, index = None)
+    
+    print("saved in :{}".format(src))
+    
+    return tdf
+
+#run
+tdf = generate_parents_normalised_structures_list(df_pth, ann_pth, csv_pth)
+
+#%%
+#############################################################CUSTOM SCRIPT#####################################################################################
+
+#aggregate counts
+df_new = tdf.groupby(["parent", "Brain"])['Count'].sum()
+
+#save as csv 
+df_new.to_csv(os.path.join(src, "summed_parents_cell_counts_dataframe.csv"), header = True)
+
+print("saved in :{}".format(src))
+
+#%%
+def generate_children_normalised_structures_list(df_pth, ann_pth, csv_pth):
+    """
+    generates counts normalised by volume, correct some errors in look up table
+    #TODO (zahra): ask tom if this is necessary for PMA
+    """
+    #build structures class
+    structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
+    
+    #set variables
+    df = pd.read_csv(csv_pth)
+    sois = ["Caudoputamen", "corpus callosum", "Nucleus accumbens"]
+
+    #add in progenitor column and add in volumes for area cell counts
+    vols = pd.read_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx")[["voxels_in_structure", "name"]]
+    tdf = df.copy()
+    tdf["child"] = "empty"
+    tdf["Volume"] = 0.0
+    scale_factor = .025 #mm/voxel
+    
+    for soi in sois:
+        soi = [s for s in structures if s.name==soi][0]
+        print(soi.name)
+        tdf.loc[tdf["Structure"] == soi.name, "child"] = soi.name
+        if len(vols[vols["name"] == soi.name]["voxels_in_structure"])>0:
+            tdf.loc[tdf["Structure"] == soi.name,"Volume"] = vols[vols["name"] == soi.name]["voxels_in_structure"].values[0]*scale_factor
+            
+    
+    #drop non progen
+    tdf = tdf[(tdf["child"] != "empty")]
+    
+    #drop unnamed
+    tdf = tdf.drop(columns = ["Index"])
+    #save as csv 
+    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_children.csv"), header = True, index = None)
+    
+    print("saved in :{}".format(src))
+    
+    return tdf
+
+#run
+tdf = generate_children_normalised_structures_list(df_pth, ann_pth, csv_pth)
+#%%
+#############################################################CUSTOM SCRIPT#####################################################################################
+
+#aggregate counts
+df_new = tdf.groupby(["child", "Brain"])['Count'].sum()
+
+#save as csv 
+df_new.to_csv(os.path.join(src, "summed_children_cell_counts_dataframe.csv"), header = True)
 
 print("saved in :{}".format(src))

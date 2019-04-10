@@ -27,8 +27,8 @@ systemdirectory=directorydeterminer()
 #'##' = when taking a multi channel scan following regexpression, the channel corresponding to the reg/cell/inj channel. I.e. name_of_scan_channel00_Z#### then use '00'
 #e.g.: inputdictionary={path_1: [['regch', '00']], path_2: [['cellch', '00'], ['injch', '01']]} ###create this dictionary variable BEFORE params
 inputdictionary={
-os.path.join(systemdirectory, 'LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/raw_data/190123_buffer_retroorb_488_647_017na_1hfsrs_z10um_75ms_14-57-55'): [['regch', '00'],['cellch', '01']]
- }
+os.path.join(systemdirectory, 'LightSheetTransfer/Jess/201903_cfos/190407_an19_ymazefos_020719_1d3x_488_008na_1hfds_z10um_100msec_15-25-29'): [['regch', '00']],
+os.path.join(systemdirectory, 'LightSheetTransfer/Jess/201903_cfos/190407_an19_ymazefos_020719_1d3x_647_008na_1hfds_z10um_400msec_15-07-22'): [['cellch', '00']]}
 
 ####Required inputs
 
@@ -38,12 +38,12 @@ os.path.join(systemdirectory, 'LightSheetData/pni_viral_vector_core/201902_promo
 
 params={
 'inputdictionary': inputdictionary, #don't need to touch
-'outputdirectory': os.path.join(systemdirectory, 'LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/parameter_sweep/buffer'),
+'outputdirectory': os.path.join(systemdirectory, 'wang/Jess/lightsheet_output/201904_ymaze_cfos/parameter_sweep/an19'),
 'resample' : False, #False/None, float(e.g: 0.4), amount to resize by: >1 means increase size, <1 means decrease
 'xyz_scale': (5.0, 5.0, 10), #micron/pixel; 1.3xobjective w/ 1xzoom 5um/pixel; 4x objective = 1.63um/pixel
 'tiling_overlap': 0.00, #percent overlap taken during tiling
-'AtlasFile' : os.path.join(systemdirectory, 'LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/average_template_25_sagittal_forDVscans_z_thru_240.tif'), ###it is assumed that input image will be a horizontal scan with anterior being 'up'; USE .TIF!!!!
-'annotationfile' :   os.path.join(systemdirectory, 'LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/annotation_25_ccf2015_forDVscans_z_thru_240.nrrd'), ###path to annotation file for structures
+'AtlasFile' : os.path.join(systemdirectory, 'LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif'), ###it is assumed that input image will be a horizontal scan with anterior being 'up'; USE .TIF!!!!
+'annotationfile' :   os.path.join(systemdirectory, 'LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif'), ###path to annotation file for structures
 'blendtype' : 'sigmoidal', #False/None, 'linear', or 'sigmoidal' blending between tiles, usually sigmoidal; False or None for images where blending would be detrimental;
 'intensitycorrection' : False, #True = calculate mean intensity of overlap between tiles shift higher of two towards lower - useful for images where relative intensity is not important (i.e. tracing=True, cFOS=False)
 'rawdata' : True, # set to true if raw data is taken from scope and images need to be flattened; functionality for rawdata =False has not been tested**
@@ -55,7 +55,7 @@ params={
 'findExtendedMaximaParameter_threshold': 0, # (float or None)     include only maxima larger than a threshold, if None keep all local maxima
 'findIntensityParameter_method': 'Max', # (str, func, None)   method to use to determine intensity (e.g. "Max" or "Mean") if None take intensities at the given pixels
 'findIntensityParameter_size': (3,3,3), # (tuple)             size of the search box on which to perform the *method*
-'detectCellShapeParameter_threshold': 125 # (float or None)      threshold to determine mask. Pixels below this are background if None no mask is generated
+'detectCellShapeParameter_threshold': 75 # (float or None)      threshold to determine mask. Pixels below this are background if None no mask is generated
 }
 
 #####################################################################################################################################################
@@ -97,17 +97,17 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
     #NOTE: To adjust parameter sweep, modify ranges below
     ######################################################################################################
 #    #first - with cleanup=True
-#    rBP_size_r = range(3,9,2) #[5, 11] #range(5,19,2) ###evens seem to not be good <-- IMPORTANT TO SWEEP
+    rBP_size_r = range(3,9,2) #[5, 11] #range(5,19,2) ###evens seem to not be good <-- IMPORTANT TO SWEEP
     fEMP_hmax_r = [None]#[None, 5, 10, 20, 40]
     fEMP_size_r = [5]#range(3,8)
     fEMP_threshold_r = [None] #range(0,10)
     fIP_method_r = ["Max"] #["Max, "Mean"]
     fIP_size_r = [5]#range(1,5)
-#    dCSP_threshold_r = range(325,450,25) #<-- IMPORTANT TO SWEEP
+    dCSP_threshold_r = range(25,300,25) #<-- IMPORTANT TO SWEEP
 #    
     #second cleanup=False
-    rBP_size_r = [3] #zmd commented out
-    dCSP_threshold_r = [440, 450, 460, 470, 480, 490, 500]
+#    rBP_size_r = [3] #zmd commented out
+#    dCSP_threshold_r = [440, 450, 460, 470, 480, 490, 500]
     ######################################################################################################
     ######################################################################################################
     ######################################################################################################
@@ -196,7 +196,6 @@ def sweep_parameters_cluster(jobid, optimization_chunk=7, pth=False, rescale=Fal
 
 #%%
 #run scipt portions        
-#this particular cell only stitches (by blending) and resamples the data
 
 if __name__ == '__main__':
     
@@ -225,10 +224,9 @@ if __name__ == '__main__':
     resampling_operations(1, **params)
 
 
-    ##add way to easily test cell detection parameters. Just select a 'jobid': e.g. jobid = 22
     #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
     #for first pass at cell detection
-    for jobid in range(7): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
+    for jobid in range(33): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
         
         sweep_parameters_cluster(jobid, **params)
             
