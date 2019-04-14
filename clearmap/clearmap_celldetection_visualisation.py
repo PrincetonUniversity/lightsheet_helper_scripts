@@ -155,7 +155,7 @@ class Sagittal():
         for n in range(6):
             #open figure
             plt.figure(figsize=(8.27, 11.69))
-            a = np.max(self.horizontal[slice-chunk:slice, :, :]*3, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
+            a = np.max(self.horizontal[slice-chunk:slice, :, :]*10, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
             b = np.max(resz_cell_map[slice-chunk:slice, :, :]*3,axis = 0)
             plt.imshow(a, "gist_yarg")
             plt.imshow(b, cmap, alpha = alpha)
@@ -181,25 +181,34 @@ if __name__ == "__main__":
 #    pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201812_development/forebrain/processed"
 #    
 #    for fld in os.listdir(pth):
-    pth = "/home/wanglab/mounts/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed"
-    flds = ["buffer",
-     "control",
-     "v143_3",
-     "v143_4",
-     "v144_3",
-     "v144_4",
-     "v145_3",
-     "v145_4",
-     "v190_3",
-     "v190_4",
-     "v75_3",
-     "v75_4"]
+    pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed"
+    flds = ['an25',
+             'an6',
+             'an3',
+             'an8',
+             'an9',
+             'an26',
+             'an23',
+             'an5',
+             'an4',
+             'an22',
+             'an7',
+             'an12',
+             'an11',
+             'an19',
+             'an1',
+             'an10',
+             'an20',
+             'an21',
+             'an24',
+             'an2']
     
     for fld in flds:
         src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
         cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
-        sagittal = Sagittal(src, dst, cells)
-        sagittal.makeClearMapCellOverlayHorizontalSections(True)
+        if os.path.exists(cells):
+            sagittal = Sagittal(src, dst, cells)
+            sagittal.makeClearMapCellOverlayHorizontalSections(True)
 
 
         
