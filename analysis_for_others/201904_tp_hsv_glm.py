@@ -35,11 +35,11 @@ def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
         return cleaned_filename[:char_limit] 
 
 #custom
-inj_pth = "/home/wanglab/mounts/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
-atl_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/cb_sagittal_atlas_20um_iso.tif"
-ann_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/cb_annotation_sagittal_atlas_20um_iso.tif"
-cells_pth = "/home/wanglab/mounts/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_coordinate_only_including_structure"
-cells_regions_pth = '/home/wanglab/mounts/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_region/nc_dataframe.p'
+inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
+atl_pth = "/jukebox/LightSheetTransfer/atlas/cb_sagittal_atlas_20um_iso.tif"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/cb_annotation_sagittal_atlas_20um_iso.tif"
+cells_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_coordinate_only_including_structure"
+cells_regions_pth = '/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_region/nc_dataframe.p'
 
 #making dictionary of injection sites
 injections = {}
@@ -144,6 +144,7 @@ cell_counts_per_brain = np.asarray(cell_counts_per_brain)
         
 injp = expr_all_as_frac_of_lob
 
+#from badura et al.
 ##  glm
 mat = []
 pmat = []

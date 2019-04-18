@@ -18,7 +18,7 @@ from ClearMap.cluster.preprocessing import makedir, listdirfull, removedir
 
 
 #sweep parameters copy & modifications 
-def sweep_parameters_cluster(dst, jobid, optimization_chunk=12, pth=False, rescale=False, cleanup=True, **kwargs):
+def sweep_parameters_cluster(dst, jobid, optimization_chunk=7, pth=False, rescale=False, cleanup=True, **kwargs):
     """Function to sweep parameters
     
     final outputs will be saved in outputdirectory/parameter_sweep
@@ -48,7 +48,7 @@ def sweep_parameters_cluster(dst, jobid, optimization_chunk=12, pth=False, resca
 #    
     #second cleanup=False
     rBP_size_r = [5] #zmd commented out
-    dCSP_threshold_r = [35]
+    dCSP_threshold_r = [150, 175, 200, 225]
     ######################################################################################################
     ######################################################################################################
     ######################################################################################################
@@ -144,11 +144,11 @@ def sweep_parameters_cluster(dst, jobid, optimization_chunk=12, pth=False, resca
 
 #%%
 
-brain = "/jukebox/wang/pisano/tracing_output/cfos/201902_reim_201701_cfos/201701_mk06"
+brain = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed/an30"
 kwargs = load_kwargs(brain)
-dst = "/jukebox/wang/pisano/tracing_output/cfos/201902_reim_201701_cfos_analysis/parameter_sweep/201701_mk06"
+dst = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/parameter_sweep/an30"
 #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
 #for first pass at cell detection
-for jobid in range(1): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
+for jobid in range(4): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
     
     sweep_parameters_cluster(dst, jobid, cleanup = False, **kwargs)
