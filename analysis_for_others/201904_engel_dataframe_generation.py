@@ -28,7 +28,7 @@ src = "/home/wanglab/mounts/LightSheetData/pni_viral_vector_core/201902_promoter
 flds = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed"
 
 #get files
-lst = [fld for fld in listdirfull(flds) if os.path.exists(os.path.join(fld, "Annotated_counts.csv"))]
+lst = [fld for fld in listdirfull(flds) if os.path.exists(os.path.join(fld, "Annotated_counts_75um_erosion.csv"))]
 
 #conditions
 nms = ["buffer",
@@ -50,58 +50,91 @@ cond = ["Buffer", "Control", "v143", "v143", "v144", "v144", "v145", "v145", "v1
 conditions = {n:c for n,c in zip(nms, cond)}
 path_per_condition = {n:c for n,c in zip(pths, cond)}
 
-pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/analysis/cell_detection/cell_counts_dataframe.csv"
-
-df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+df_pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/ARA2_annotation_info_w_voxel_counts.csv"
 ann_pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/annotation_25_ccf2015_forDVscans_z_thru_240.nrrd"
 atl_pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/average_template_25_sagittal_forDVscans_z_thru_240.tif"
 
 #%%
 
-def generate_data_frame(conditions, lst, pth):
-    """ 
-    used to make a pooled csv file of all cell counts in an experiment
-    inputs:
-        conditions: zip of file names + condition
-        lst: list of file names run through analysis
-        pth: path to save csv output
-    """
-    
-    #generate data frame
-    bglst=[]
-    
-    for fl in lst:
-        #extract out info
-        nm = os.path.basename(fl)
-        #make dataframe
-        df = pd.read_csv(fl+'/Annotated_counts.csv' , error_bad_lines=False, names=['Index', 'Count', 'struct', 'sub', 'layer'])
-        print(nm, df.shape)
-        df = df.replace(np.nan, '', regex=True)
-        f1 = df.struct.values
-        f2 = df['sub'].values
-        f3 = df.layer.values
-        def remove(l, item):
-            while item in l:
-                l.remove(item)
-            return l
-        structures = [','.join(remove(list(l),'')) for l in zip(f1,f2,f3)]
-        structures = [xx.replace('\xef\xbf\xbd', 'e') for xx in structures]
-        structures = [xx[1:] for xx in structures] #remove space from the beginning of each name this is important
-        df['Structure'] = structures
-        df['Brain'] = nm
-        df['Condition'] = conditions[nm]
-        #df['Stim_source'] = source[nm]
-        del df['struct']
-        del df['sub']
-        del df['layer']
-        bglst.append(df)
-    
-    df = pd.concat(bglst)
-    df.to_csv(pth, index = None)
-    
-    return pth
-#run
-csv_pth = generate_data_frame(conditions, lst, pth)
+#redo cell counts dataframe
+#generate data frame
+bglst=[]
+for fl in lst:
+    #extract out info
+    nm = os.path.basename(fl)
+    #make dataframe
+    df = pd.read_csv(fl+'/Annotated_counts_75um_erosion.csv' , error_bad_lines = False)
+    print(nm, df.shape)
+    df = df.replace(np.nan, '', regex=True)
+    f1 = df.struct.values
+    f2 = df['sub'].values
+    f3 = df.layer.values
+    def remove(l, item):
+        while item in l:
+            l.remove(item)
+        return l
+    structures = [','.join(remove(list(l),'')) for l in zip(f1,f2,f3)]
+    structures = [xx.replace('\xef\xbf\xbd', 'e') for xx in structures]
+    structures = [xx[1:] for xx in structures] #remove space from the beginning of each name this is important
+    df['Structure'] = structures
+    df['Brain'] = nm
+    df['Condition'] = conditions[nm]
+    #df['Stim_source'] = source[nm]
+    del df['struct']
+    del df['sub']
+    del df['layer']
+    bglst.append(df)
+
+df = pd.concat(bglst)
+df['Count'] = df['Count'].apply(int)
+df.to_csv('/home/wanglab/LightSheetData/pni_viral_vector_core/201808_promoter_exp/analysis/cell_detection/cell_counts_dataframe.csv')
+
+
+#%%
+#make percent counts per brain FOR BOTH COHORTS
+csv_pth = '/home/wanglab/mounts/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/analysis/cell_detection/cell_counts_dataframe.csv'
+src = "/home/wanglab/mounts/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/analysis/cell_detection"
+lut_pth = "/home/wanglab/mounts/wang/zahra/clearmap_cluster_copy/ClearMap/Data/ARA2_annotation_info_w_voxel_counts.csv"
+ann_pth = '/home/wanglab/mounts/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/annotation_25_ccf2015_forDVscans.nrrd'
+
+#read csv
+df = pd.read_csv(csv_pth)
+lut = pd.read_csv(lut_pth)
+
+#make voxel counts column
+structs = df.Structure.values
+
+#initialise
+df["voxels_in_structure"] = 0
+
+for nm in structs:
+    if not len(lut.loc[lut.name == nm, "voxels_in_structure"].values) == 0:
+        df.loc[df.Structure == nm, "voxels_in_structure"] = lut.loc[lut.name == nm, "voxels_in_structure"].values[0]
+
+#set resolution of atlas
+scale = 0.025 ##mm/voxel
+
+#get all brain names
+brains = np.unique(df.Brain.values)
+
+#save total counts in dict
+total_counts = {}
+percents = {}
+
+#for each brain, get total counts
+for brain in brains:
+    total_counts[brain] = df[df.Brain == brain].Count.sum(0)    
+       
+percents = [df[df.Brain == brain].Count.apply(lambda x: (x/total_counts[brain])*100).astype("float64") for brain in brains]
+
+#concantenate together
+df_percent = pd.concat(percents)
+
+df["percent"] = df_percent
+df["volume"] = df[df.voxels_in_structure > 0].apply(lambda x: x.voxels_in_structure*(scale**3), 1)
+df["density"] = df[df.voxels_in_structure > 0].apply(lambda x:x.Count/(float(x.voxels_in_structure*(scale**3))), 1)
+#export
+df.to_csv(os.path.join(src, "cell_counts_dataframe_w_percents_density.csv"))
 
 #%%
 #helper functions
@@ -141,7 +174,7 @@ def generate_progenitors_normalised_structures_list(df_pth, ann_pth, csv_pth):
             ]
 
     #add in progenitor column and add in volumes for area cell counts
-    vols = pd.read_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx")[["voxels_in_structure", "name"]]
+    vols = pd.read_csv("/jukebox/wang/zahra/clearmap_cluster_copy/ClearMap/Data/ARA2_annotation_info_w_voxel_counts.csv")[["voxels_in_structure", "name"]]
     tdf = df.copy()
     tdf["progenitor"] = "empty"
     tdf["Volume"] = 0.0
@@ -173,8 +206,7 @@ def generate_progenitors_normalised_structures_list(df_pth, ann_pth, csv_pth):
     #drop unnamed
     tdf = tdf.drop(columns = ["Index"])
     #save both as csv and pickle for visualisation
-    tdf.to_pickle(os.path.join(src, "cell_counts_dataframe_with_progenitors.p"))
-    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_progenitors.csv"), header = True, index = None)
+    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_progenitors_w_percents_density.csv"), header = True, index = None)
     
     print("saved in :{}".format(src))
     
@@ -187,10 +219,10 @@ tdf = generate_progenitors_normalised_structures_list(df_pth, ann_pth, csv_pth)
 #############################################################CUSTOM SCRIPT#####################################################################################
 
 #aggregate counts
-df_new = tdf.groupby(["progenitor", "Brain"])['Count'].sum()
+df_new = tdf.groupby(["progenitor", "Brain"])["Count", 'percent', 'density'].sum()
 
 #save as csv 
-df_new.to_csv(os.path.join(src, "summed_projenitor_cell_counts_dataframe.csv"), header = True)
+df_new.to_csv(os.path.join(src, "summed_projenitor_cell_counts_dataframe_w_percents_density.csv"), header = True)
 
 print("saved in :{}".format(src))
 
@@ -210,7 +242,7 @@ def generate_parents_normalised_structures_list(df_pth, ann_pth, csv_pth):
             "Secondary motor area", "Primary somatosensory area", "Supplemental somatosensory area", "Visual areas"]
 
     #add in progenitor column and add in volumes for area cell counts
-    vols = pd.read_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx")[["voxels_in_structure", "name"]]
+    vols = pd.read_csv("/jukebox/wang/zahra/clearmap_cluster_copy/ClearMap/Data/ARA2_annotation_info_w_voxel_counts.csv")[["voxels_in_structure", "name"]]
     tdf = df.copy()
     tdf["parent"] = "empty"
     tdf["Volume"] = 0.0
@@ -237,7 +269,7 @@ def generate_parents_normalised_structures_list(df_pth, ann_pth, csv_pth):
     #drop unnamed
     tdf = tdf.drop(columns = ["Index"])
     #save as csv 
-    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_parents.csv"), header = True, index = None)
+    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_parents_w_percents_density.csv"), header = True, index = None)
     
     print("saved in :{}".format(src))
     
@@ -250,10 +282,10 @@ tdf = generate_parents_normalised_structures_list(df_pth, ann_pth, csv_pth)
 #############################################################CUSTOM SCRIPT#####################################################################################
 
 #aggregate counts
-df_new = tdf.groupby(["parent", "Brain"])['Count'].sum()
+df_new = tdf.groupby(["parent", "Brain"])["Count", 'percent', 'density'].sum()
 
 #save as csv 
-df_new.to_csv(os.path.join(src, "summed_parents_cell_counts_dataframe.csv"), header = True)
+df_new.to_csv(os.path.join(src, "summed_parents_cell_counts_dataframe_w_percents_density.csv"), header = True)
 
 print("saved in :{}".format(src))
 
@@ -271,7 +303,7 @@ def generate_children_normalised_structures_list(df_pth, ann_pth, csv_pth):
     sois = ["Caudoputamen", "corpus callosum", "Nucleus accumbens"]
 
     #add in progenitor column and add in volumes for area cell counts
-    vols = pd.read_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx")[["voxels_in_structure", "name"]]
+    vols = pd.read_csv("/jukebox/wang/zahra/clearmap_cluster_copy/ClearMap/Data/ARA2_annotation_info_w_voxel_counts.csv")[["voxels_in_structure", "name"]]
     tdf = df.copy()
     tdf["child"] = "empty"
     tdf["Volume"] = 0.0
@@ -291,7 +323,7 @@ def generate_children_normalised_structures_list(df_pth, ann_pth, csv_pth):
     #drop unnamed
     tdf = tdf.drop(columns = ["Index"])
     #save as csv 
-    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_children.csv"), header = True, index = None)
+    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_children_w_percents_density.csv"), header = True, index = None)
     
     print("saved in :{}".format(src))
     

@@ -67,7 +67,7 @@ if __name__ == "__main__":
                 cv2.addWeighted(cells, alpha, output[z, :, :], 1-alpha, 0, output[z, :, :]) #green is cells (axis 1)
                 
             #makes grayscale image of cells overlaid on atlas
-            tifffile.imsave(os.path.join(dst, "{}_points_merged.tif".format(os.path.basename(fld))), output)      
+            tifffile.imsave(os.path.join(dst, "{}_points_merged_to_atlas.tif".format(os.path.basename(fld))), output)      
             
             print("\ntook {} seconds to make merged maps\n".format(time.time()-start))
             

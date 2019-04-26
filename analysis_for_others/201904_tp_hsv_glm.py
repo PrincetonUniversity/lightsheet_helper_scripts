@@ -10,7 +10,7 @@ from scipy.stats import spearmanr
 import statsmodels.api as sm
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np, os, pickle as pckl, pandas as pd
+import numpy as np, os, pickle as pckl
 from skimage.external import tifffile
 from scipy import ndimage
 import unicodedata

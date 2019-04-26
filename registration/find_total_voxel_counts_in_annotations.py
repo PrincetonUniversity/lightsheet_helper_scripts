@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import multiprocessing as mp
 from collections import Counter
+import SimpleITK as sitk
 
 def transformed_pnts_to_allen_helper_func(arr, ann, order = 'XYZ'):
     '''Function to transform given array of indices and return the atlas pixel ID from the annotation file
@@ -42,7 +43,10 @@ def count_structure_lister(allen_id_table, args):
     '''
     #set dataframe
     #generate df + empty column
-    if type(allen_id_table) == str: allen_id_table = pd.read_excel(allen_id_table)
+    if type(allen_id_table) == str and allen_id_table[-5:] == ".xlsx": 
+        allen_id_table = pd.read_excel(allen_id_table)
+    elif type(allen_id_table) == str and allen_id_table[-4:] == ".csv":
+        allen_id_table = pd.read_csv(allen_id_table)
     df = allen_id_table
     df['voxels_in_structure'] = 0
         
@@ -94,3 +98,36 @@ if __name__ == "__main__":
     df.to_csv('/home/wanglab/Desktop/allen_id_table_w_voxel_counts.csv')
     df = df.drop(columns = ["cell_count", "Unnamed: 0"])
     df.to_excel('/home/wanglab/Desktop/allen_id_table_w_voxel_counts.xlsx')
+    
+#%%   
+    #do for clearmap LUT with half brain atlas
+    
+    ann = '/home/wanglab/mounts/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/annotation_25_ccf2015_forDVscans_z_thru_240.nrrd'
+    id_table = '/home/wanglab/mounts/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/ARA2_annotation_info.csv'
+    
+    ann = sitk.GetArrayFromImage(sitk.ReadImage(ann))
+    
+    structs = np.unique(ann)
+    
+    areas = {}
+    
+    #heavy
+    for struct in structs:
+        areas[struct] = np.where(ann == struct)
+        
+    ##test
+    #nz = areas[1085.0]    
+    #pos = transformed_pnts_to_allen_helper_func(np.asarray(zip(*[nz[0], nz[1], nz[2]])), ann, "ZYX")    
+    #
+    #tdf = count_structure_lister(id_table, *pos)
+    
+    #heavy
+    pos = {}
+    for area in areas:
+        nz = areas[area]
+        pos[area] = transformed_pnts_to_allen_helper_func(zip(nz[0], nz[1], nz[2]), ann, "ZYX")
+        
+    
+    df = count_structure_lister(id_table, pos)
+    
+    df.to_csv('/home/wanglab/Desktop/ARA2_annotation_info_w_voxel_counts.csv', index = None)

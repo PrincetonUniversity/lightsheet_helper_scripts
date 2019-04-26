@@ -14,11 +14,14 @@ from collections import Counter
 import matplotlib.colors
 from matplotlib.backends.backend_pdf import PdfPages
 
-%matplotlib inline
+#%matplotlib inline
 
 ##########################################################################RUNS IN PYTHON 3###############################################################
 class Sagittal():
-    """ accepts sagittal volumes and can make z projected sections for visualisation """
+    """ 
+    accepts sagittal volumes and can make z projected sections and overlay volumes for quality control and visualisation
+    NOTE: cells destination must be .npy (z,y,x) for now
+    """
     
     def __init__(self, src, dst, cells):
         self.src = src
@@ -102,7 +105,7 @@ class Sagittal():
         else: plt.show()
         
         
-    def makeClearMapCellOverlayHorizontalSections(self, save = True):
+    def makeClearMapCellOverlayHorizontalSections(self, volume = False, save = True):
         """
         making horizontal volumes with cells detected from sagittal volumes
         inputs:
@@ -145,7 +148,25 @@ class Sagittal():
         print("resizing by factors (z,y,x): {}\n this can take some time...\n".format(resizef))
         resz_cell_map = zoom(cell_map, resizef, order = 1) #right now only linear interpolation
         print("horizontal resampled cell map shape: {}\n".format(resz_cell_map.shape))
-                    
+         
+        #if selected to save volumteric RBG image:
+        if volume: 
+            if self.horizontal.shape[2] > resz_cell_map.shape[2]: #messy way to do this but have to to adjust for scipy zoom
+                self.horizontal = self.horizontal[:, :, :(self.horizontal.shape[2]-1)]
+                print("horizontal resampled image shape: {}\n".format(self.horizontal.shape))
+            elif self.horizontal.shape[2] < resz_cell_map.shape[2]:
+                resz_cell_map = resz_cell_map[:, :, :(resz_cell_map.shape[2]-1)]
+                print("horizontal resampled cell map shape: {}\n".format(resz_cell_map.shape))
+            if self.horizontal.shape[0] < resz_cell_map.shape[0]:
+                resz_cell_map = resz_cell_map[:(resz_cell_map.shape[0]-1), :, :]
+                print("horizontal resampled cell map shape: {}\n".format(resz_cell_map.shape))
+            elif self.horizontal.shape[0] > resz_cell_map.shape[0]:
+                self.horizontal = self.horizontal[:(self.horizontal.shape[0]-1), :, :]
+                print("horizontal resampled image shape: {}\n".format(self.horizontal.shape))
+            
+            merged = np.stack([self.horizontal, resz_cell_map, np.zeros_like(self.horizontal)], -1)
+            tif.imsave(os.path.join(self.dst, "{}_points_merged.tif".format(os.path.basename(os.path.dirname(os.path.dirname(self.src))))), merged)
+            
         #compiles into multiple pdfs
         pdf_pages = PdfPages(os.path.join(self.dst, "{}_cell_overlay_horizontal.pdf".format(os.path.basename(os.path.dirname(os.path.dirname(self.src)))))) 
         
@@ -175,52 +196,18 @@ class Sagittal():
 #%%
 if __name__ == "__main__":
     #grabbing sagittal volume
-    dst = "/home/wanglab/Desktop/test"
+    dst = "/jukebox/LightSheetData/pni_viral_vector_core/promoter_exp_qc"
     if not os.path.exists(dst): os.mkdir(dst)
-#    
-#    pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201812_development/forebrain/processed"
-#    
-#    for fld in os.listdir(pth):
-    pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed"
-    flds = ['an25',
-             'an16',
-             'an6',
-             'an3',
-             'an8',
-             'an28',
-             'an29',
-             'an32',
-             'an14',
-             'an9',
-             'an26',
-             'an23',
-             'an31',
-             'an30',
-             'an5',
-             'an4',
-             'an22',
-             'an7',
-             'an12',
-             'an18',
-             'an27',
-             'an33',
-             'an11',
-             'an19',
-             'an1',
-             'an15',
-             'an10',
-             'an20',
-             'an21',
-             'an24',
-             'an13',
-             'an2']
+
+    pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed"
+    flds = os.listdir(pth)
     
     for fld in flds:
         src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
         cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
         if os.path.exists(cells):
             sagittal = Sagittal(src, dst, cells)
-            sagittal.makeClearMapCellOverlayHorizontalSections(True)
+            sagittal.makeClearMapCellOverlayHorizontalSections(volume = True, save = True)
 
 
         

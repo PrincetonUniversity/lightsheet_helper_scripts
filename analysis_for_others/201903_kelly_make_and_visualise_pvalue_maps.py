@@ -378,46 +378,46 @@ if __name__ == "__main__":
 ##########################################################################END OF SCRIPT THAT MAKES P-VALUE MAPS###########################################################
 #%%
 ##########################################################################LOOK AT P-VALUE MAPS IN 2D###########################################################
-    #set destination of p value map you want to analyze
-    allen_id_table = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
-    dorsal = "/home/wanglab/mounts/wang/seagravesk/lightsheet/cfos_raw_images/pooled_analysis/pvalue_maps/dorsal_up"
-    ventral = "/home/wanglab/mounts/wang/seagravesk/lightsheet/cfos_raw_images/pooled_analysis/pvalue_maps/ventral_up"
-    
-    #first dorsal
-    for pth in os.listdir(dorsal):
-        if pth == "demonstrator_v_control":
-            src = os.path.join(dorsal, pth+"/pvalues_demonstrator_v_control.tif")
-            save_dst = os.path.join(dorsal, pth)
-            #make parent list and 2d overlays
-            make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
-        elif pth == "observer_v_control":
-            src = os.path.join(dorsal, pth+"/pvalues_observer_v_control.tif")
-            save_dst = os.path.join(dorsal, pth)
-            #make parent list and 2d overlays
-            make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
-        elif pth == "demonstrator_v_observer":
-            src = os.path.join(dorsal, pth+"/pvalues_demonstrator_v_observer.tif")
-            save_dst = os.path.join(dorsal, pth)
-            #make parent list and 2d overlays
-            make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
-    
-    #ventral
-    for pth in os.listdir(ventral):
-        if pth == "demonstrator_v_control":
-            src = os.path.join(ventral, pth+"/pvalues_demonstrator_v_control.tif")
-            save_dst = os.path.join(ventral, pth)
-            #make parent list and 2d overlays
-            make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
-        elif pth == "observer_v_control":
-            src = os.path.join(ventral, pth+"/pvalues_observer_v_control.tif")
-            save_dst = os.path.join(ventral, pth)
-            #make parent list and 2d overlays
-            make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
-        elif pth == "demonstrator_v_observer":
-            src = os.path.join(ventral, pth+"/pvalues_demonstrator_v_observer.tif")
-            save_dst = os.path.join(ventral, pth)
-            #make parent list and 2d overlays
-            make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
+#set destination of p value map you want to analyze
+allen_id_table = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+dorsal = "/home/wanglab/mounts/wang/seagravesk/lightsheet/cfos_raw_images/pooled_analysis/pvalue_maps/dorsal_up"
+ventral = "/home/wanglab/mounts/wang/seagravesk/lightsheet/cfos_raw_images/pooled_analysis/pvalue_maps/ventral_up"
+
+#first dorsal
+for pth in os.listdir(dorsal):
+    if pth == "demonstrator_v_control":
+        src = os.path.join(dorsal, pth+"/pvalues_demonstrator_v_control.tif")
+        save_dst = os.path.join(dorsal, pth)
+        #make parent list and 2d overlays
+        make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
+    elif pth == "observer_v_control":
+        src = os.path.join(dorsal, pth+"/pvalues_observer_v_control.tif")
+        save_dst = os.path.join(dorsal, pth)
+        #make parent list and 2d overlays
+        make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
+    elif pth == "demonstrator_v_observer":
+        src = os.path.join(dorsal, pth+"/pvalues_demonstrator_v_observer.tif")
+        save_dst = os.path.join(dorsal, pth)
+        #make parent list and 2d overlays
+        make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
+
+#ventral
+for pth in os.listdir(ventral):
+    if pth == "demonstrator_v_control":
+        src = os.path.join(ventral, pth+"/pvalues_demonstrator_v_control.tif")
+        save_dst = os.path.join(ventral, pth)
+        #make parent list and 2d overlays
+        make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
+    elif pth == "observer_v_control":
+        src = os.path.join(ventral, pth+"/pvalues_observer_v_control.tif")
+        save_dst = os.path.join(ventral, pth)
+        #make parent list and 2d overlays
+        make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
+    elif pth == "demonstrator_v_observer":
+        src = os.path.join(ventral, pth+"/pvalues_demonstrator_v_observer.tif")
+        save_dst = os.path.join(ventral, pth)
+        #make parent list and 2d overlays
+        make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst, positive = True, negative = True)
     
     
 #%%    

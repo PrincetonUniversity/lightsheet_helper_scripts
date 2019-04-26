@@ -7,78 +7,81 @@ Created on Mon Apr 15 18:17:23 2019
 """
 
 from __future__ import division
-import os, numpy as np
-os.chdir("/jukebox/wang/zahra/lightsheet_copy")
+import os, numpy as np, sys
+from scipy.stats import zscore
+sys.path.append("/jukebox/wang/zahra/lightsheet_copy")
 from skimage.external import tifffile
 import seaborn as sns, pandas as pd, matplotlib.pyplot as plt
 import scipy, itertools
 from skimage.exposure import equalize_hist, adjust_gamma
 from tools.utils.io import listdirfull
 from tools.analysis.network_analysis import make_structure_objects
+from tools.registration.allen_structure_json_to_pandas import annotation_location_to_structure
 from tools.utils.overlay import tile
-os.chdir("/jukebox/wang/zahra/clearmap_cluster_copy")
+sys.path.append("/jukebox/wang/zahra/clearmap_cluster_copy")
 from ClearMap.cluster.utils import load_kwargs
 import ClearMap.IO.IO as io
 import ClearMap.Analysis.Statistics as stat
 import ClearMap.Alignment.Resampling as rsp
 
-sns.set_style('white')
+sns.set_style("white")
 
 #make inputs
-src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis"
-flds = '/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed'
+src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis"
+flds = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed"
 #get files
-lst = [fld for fld in listdirfull(flds) if os.path.exists(os.path.join(fld, 'Annotated_counts.csv'))]; lst.sort()
+lst = [os.path.join(flds, fld) for fld in os.listdir(flds) if os.path.exists(os.path.join(os.path.join(flds, fld), "Annotated_counts_60um_erosion.csv"))]; lst.sort()
 #conditions
-nms = ['an1',
-         'an2',
-         'an3',
-         'an4',
-         'an5',
-         'an6',
-         'an7',
-         'an8',
-         'an9',
-         'an10',
-         'an11',
-         'an12',
-         'an13',
-         'an14',
-         'an15',
-         'an16',
-         'an18',
-         'an19',
-         'an20',
-         'an21',
-         'an22',
-         'an23',
-         'an24',
-         'an25',
-         'an26',
-         'an27',
-         'an28',
-         'an29',
-         'an30',
-         'an31',
-         'an32',
-         'an33'
+nms = ["an1",
+         "an2",
+         "an3",
+         "an4",
+         "an5",
+         "an6",
+         "an7",
+         "an8",
+         "an9",
+         "an10",
+         "an11",
+         "an12",
+         "an13",
+         "an14",
+         "an15",
+         "an16",
+         "an17",
+         "an18",
+         "an19",
+         "an20",
+         "an21",
+         "an22",
+         "an23",
+         "an24",
+         "an25",
+         "an26",
+         "an27",
+         "an28",
+         "an29",
+         "an30",
+         "an31",
+         "an32",
+         "an33"
      ]
 
-cond = ['CNO_control_no_reversal', 'CNO_control_no_reversal', 'CNO_control_no_reversal', 
-        'CNO_control_no_reversal', 'CNO_control_no_reversal', 'CNO_control_no_reversal',
-        'CNO_control_no_reversal', 'CNO_control_no_reversal', 
+cond = ["CNO_control_no_reversal", "CNO_control_no_reversal", "CNO_control_no_reversal", 
+        "CNO_control_no_reversal", "CNO_control_no_reversal", "CNO_control_no_reversal",
+        "CNO_control_no_reversal", "CNO_control_no_reversal", 
         "CNO_control_reversal", "CNO_control_reversal", "CNO_control_reversal", "CNO_control_reversal",
         "CNO_control_reversal", "CNO_control_reversal", "CNO_control_reversal", "CNO_control_reversal",
-        "CNO_control_reversal", "DREADDs",
+        "CNO_control_reversal", "CNO_control_reversal", "DREADDs",
         "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", 
         "homecage_control", "homecage_control", "homecage_control", "homecage_control", "homecage_control"]
 
 conditions = {n:c for n,c in zip(nms, cond)}
-pth = os.path.join(src, 'cell_counts_dataframe.csv')
+pth = os.path.join(src, "cell_counts_dataframe.csv")
 
-df_pth = '/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx'
-ann_pth = '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_erosion.tif'
-atl_pth = '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif'
+df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_erosion.tif"
+atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 
 #%%
 
@@ -96,22 +99,22 @@ def generate_data_frame(conditions, lst, pth):
         #extract out info
         nm = os.path.basename(fl)
         #make dataframe
-        df = pd.read_csv(fl+'/Annotated_counts.csv')[1:] #remove previous headers
+        df = pd.read_csv(fl+"/Annotated_counts_60um_erosion.csv")[1:] #remove previous headers
         print(nm, df.shape)
-        df = df.replace(np.nan, '', regex=True)
-        df['Brain'] = nm
-        df['Condition'] = conditions[nm]
-        bglst.append(df.drop(['acronym', 'parent_acronym', 'parent_name'], axis = 1))
+        df = df.replace(np.nan, "", regex=True)
+        df["Brain"] = nm
+        df["Condition"] = conditions[nm]
+        bglst.append(df.drop(["acronym", "parent_acronym", "parent_name"], axis = 1))
     
     df = pd.concat(bglst)
-    df['counts'] = df['counts'].apply(int)
+    df["counts"] = df["counts"].apply(int)
     df.drop(columns = ["Unnamed: 0"]).to_csv(pth, index = None)
     
     return pth
 
 #run
 csv_pth = generate_data_frame(conditions, lst, pth)
-###################################################################DONE##########################################################################################
+####################################################################DONE##########################################################################################
 #%%
 
 def generate_paired_statistics(src, csv_pth):
@@ -125,43 +128,43 @@ def generate_paired_statistics(src, csv_pth):
     df = pd.read_csv(csv_pth)
     tdf_dct={}
     
-    for c1,c2 in itertools.combinations(df['Condition'].unique(), 2):    
+    for c1,c2 in itertools.combinations(df["Condition"].unique(), 2):    
         df = pd.read_csv(csv_pth)
-        df = df[df['Condition'].isin([c1,c2])]                                                                                                             
+        df = df[df["Condition"].isin([c1,c2])]                                                                                                             
         structure_list = df.name.unique()
         brains = df.Brain.unique()
         
-        print '*************'
-        print c1,c2, 'len of brains: {}'.format(len(brains))
+        print "*************"
+        print c1,c2, "len of brains: {}".format(len(brains))
         lst = []
         for structure in structure_list:
-            scount = df.loc[((df.name == structure) & (df.Condition == c1)), 'counts'].sum()
-            smean = np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), 'counts'].mean())
-            sstd = np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), 'counts'].std())
-            ccount = df.loc[((df.name == structure) & (df.Condition == c2)), 'counts'].sum()
-            cmean = np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), 'counts'].mean())
-            cstd = np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), 'counts'].std())
-            pval = scipy.stats.ttest_ind(np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), 'counts']), 
-                                                 np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), 'counts']))
+            scount = df.loc[((df.name == structure) & (df.Condition == c2)), "counts"].sum()
+            smean = np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), "counts"].mean())
+            sstd = np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), "counts"].std())
+            ccount = df.loc[((df.name == structure) & (df.Condition == c1)), "counts"].sum()
+            cmean = np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), "counts"].mean())
+            cstd = np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), "counts"].std())
+            pval = scipy.stats.ttest_ind(np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), "counts"]), 
+                                                 np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), "counts"]))
             try:
-                mannwhit = scipy.stats.mannwhitneyu(np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), 'counts']), 
-                                                     np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), 'counts']), alternative = 'two-sided')
+                mannwhit = scipy.stats.mannwhitneyu(np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), "counts"]), 
+                                                     np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), "counts"]), alternative = "two-sided")
             except ValueError:
                 mannwhit = [0.0,1.0]
             
-            wilcoxrank = scipy.stats.ranksums(np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), 'counts']), 
-                                                 np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), 'counts']))
+            wilcoxrank = scipy.stats.ranksums(np.float32(df.loc[((df.name == structure) & (df.Condition == c1)), "counts"]), 
+                                                 np.float32(df.loc[((df.name == structure) & (df.Condition == c2)), "counts"]))
             lst.append((structure, scount, smean, sstd, ccount, cmean, cstd, pval[0], pval[1], mannwhit[1], wilcoxrank[1]))
             
     
         #print lst
         #make tmp df
-        tdf = pd.DataFrame(data=lst, columns=['name', 'Stimulation count', 'Stimulation mean', 'Stimulation std', 
-                                              'Control count', 'Control mean', 'Control std','tstat', 'pval', 'mannwhit', 'wilcoxrank'])
-        tdf.sort_values('mannwhit')
-        tdf.to_csv(os.path.join(src, 'df_with_stats_{}-{}.csv'.format(c1,c2)))
-        print("saved to: {}".format(os.path.join(src, 'df_with_stats_{}-{}.csv'.format(c1,c2))))
-        tdf_dct['{} vs {}'.format(c1,c2)]=tdf #this vs is important down the road
+        tdf = pd.DataFrame(data=lst, columns=["name", "Stimulation count", "Stimulation mean", "Stimulation std", 
+                                              "Control count", "Control mean", "Control std","tstat", "pval", "mannwhit", "wilcoxrank"])
+        tdf.sort_values("mannwhit")
+        tdf.to_csv(os.path.join(src, "df_with_stats_{}-{}.csv".format(c1,c2)))
+        print("saved to: {}".format(os.path.join(src, "df_with_stats_{}-{}.csv".format(c1,c2))))
+        tdf_dct["{} vs {}".format(c1,c2)]=tdf #this vs is important down the road
         sigs = tdf[tdf.pval<0.05].name.tolist()
         
     return tdf_dct, sigs
@@ -173,21 +176,21 @@ tdf_dct, sigs = generate_paired_statistics(src, csv_pth)
 #
 ##helper functions
 #def correct_cm_to_sturctures(struc):
-#    '''function to correct naming issues
-#    '''
-#    if struc == 'Anterior cingulate area, ventral part, layer 6a': struc = 'Anterior cingulate area, ventral part, 6a'
-#    if struc == 'Anterior cingulate area, ventral part, layer 6b': struc = 'Anterior cingulate area, ventral part, 6b'
-#    if struc == 'Simple lobule': struc = 'Simplex lobule'
-#    if struc == 'Primary somatosensory area, barrel field, layer 5 ': struc = 'Primary somatosensory area, barrel field, layer 5'
+#    """function to correct naming issues
+#    """
+#    if struc == "Anterior cingulate area, ventral part, layer 6a": struc = "Anterior cingulate area, ventral part, 6a"
+#    if struc == "Anterior cingulate area, ventral part, layer 6b": struc = "Anterior cingulate area, ventral part, 6b"
+#    if struc == "Simple lobule": struc = "Simplex lobule"
+#    if struc == "Primary somatosensory area, barrel field, layer 5 ": struc = "Primary somatosensory area, barrel field, layer 5"
 #    return struc
 #
 #def correct_sturctures_to_cm(struc):
-#    '''function to correct naming issues
-#    '''
-#    if struc == 'Anterior cingulate area, ventral part, 6a': struc = 'Anterior cingulate area, ventral part, layer 6a'
-#    if struc == 'Anterior cingulate area, ventral part, 6b': struc = 'Anterior cingulate area, ventral part, layer 6b'
-#    if struc == 'Simplex lobule': struc = 'Simple lobule'
-#    if struc == 'Primary somatosensory area, barrel field, layer 5': struc = 'Primary somatosensory area, barrel field, layer 5 '
+#    """function to correct naming issues
+#    """
+#    if struc == "Anterior cingulate area, ventral part, 6a": struc = "Anterior cingulate area, ventral part, layer 6a"
+#    if struc == "Anterior cingulate area, ventral part, 6b": struc = "Anterior cingulate area, ventral part, layer 6b"
+#    if struc == "Simplex lobule": struc = "Simple lobule"
+#    if struc == "Primary somatosensory area, barrel field, layer 5": struc = "Primary somatosensory area, barrel field, layer 5 "
 #    return struc  
 #
 #
@@ -202,13 +205,13 @@ tdf_dct, sigs = generate_paired_statistics(src, csv_pth)
 #    
 #    #run
 #    df = pd.read_csv(csv_pth)
-#    sois = ['Cortical subplate', 'Cortical plate', 'Cerebral nuclei', 'Thalamus', 'Hypothalamus', 'Midbrain', 'Hindbrain', 'Cerebellum', 'fiber tracts', 'ventricular systems', 'grooves']
+#    sois = ["Cortical subplate", "Cortical plate", "Cerebral nuclei", "Thalamus", "Hypothalamus", "Midbrain", "Hindbrain", "Cerebellum", "fiber tracts", "ventricular systems", "grooves"]
 #
 #    #add in progenitor column and add in volumes for area cell counts
-#    vols = pd.read_excel('/jukebox/wang/pisano/Python/lightsheet/supp_files/sample_cell_count_output.xlsx')[['voxels_in_structure', 'name']]
+#    vols = pd.read_excel("/jukebox/wang/pisano/Python/lightsheet/supp_files/sample_cell_count_output.xlsx")[["voxels_in_structure", "name"]]
 #    tdf = df.copy()
-#    tdf['progenitor'] = 'empty'
-#    tdf['Volume'] = 0.0
+#    tdf["progenitor"] = "empty"
+#    tdf["Volume"] = 0.0
 #    scale_factor = .025 #mm/voxel
 #    
 #    for soi in sois:
@@ -217,15 +220,15 @@ tdf_dct, sigs = generate_paired_statistics(src, csv_pth)
 #        progeny = [str(xx.name) for xx in soi.progeny]
 #        for progen in progeny:
 #            progen = correct_sturctures_to_cm(progen)
-#            tdf.loc[tdf['name']==progen,'progenitor']=soi.name
-#            if len(vols[vols['name']==progen]['voxels_in_structure'])>0:
-#                tdf.loc[tdf['name']==progen,'Volume']=vols[vols['name']==progen]['voxels_in_structure'].values[0]*scale_factor
+#            tdf.loc[tdf["name"]==progen,"progenitor"]=soi.name
+#            if len(vols[vols["name"]==progen]["voxels_in_structure"])>0:
+#                tdf.loc[tdf["name"]==progen,"Volume"]=vols[vols["name"]==progen]["voxels_in_structure"].values[0]*scale_factor
 #    
 #    #drop non progen
-#    tdf = tdf[(tdf['progenitor'] != 'empty') & (tdf['Volume'] != 0.0)].drop(['Unnamed: 0', 'Index'], axis = 1)
+#    tdf = tdf[(tdf["progenitor"] != "empty") & (tdf["Volume"] != 0.0)].drop(["Unnamed: 0", "Index"], axis = 1)
 #    
 #    #add normalised column
-#    tdf['count_normalized_by_volume'] = tdf.apply(lambda x:x['Count']/float(x['Volume']), 1)
+#    tdf["count_normalized_by_volume"] = tdf.apply(lambda x:x["Count"]/float(x["Volume"]), 1)
 #    
 #    #save both as csv and pickle for visualisation
 #    tdf.to_pickle(os.path.join(src, "cell_counts_dataframe_with_progenitors.p"))
@@ -249,45 +252,45 @@ tdf_dct, sigs = generate_paired_statistics(src, csv_pth)
 #    """
 #    if isinstance(tdf, basestring): tdf = pd.read_pickle(tdf)
 #    plt.figure(figsize=(16,8))
-#    g = sns.boxplot(x='progenitor', y='Count', hue='Condition', data=tdf)
-#    g.set_yscale('log')
-#    g.set_title('Cell counts boxplots by progenitor no normalization')
+#    g = sns.boxplot(x="progenitor", y="Count", hue="Condition", data=tdf)
+#    g.set_yscale("log")
+#    g.set_title("Cell counts boxplots by progenitor no normalization")
 #    plt.tight_layout()
 #    plt.savefig(os.path.join(src, "cell_counts_boxplots_by_progenitor_no_normalization.pdf"), dpi=300, transparent=True)
 #    plt.close() 
 #
 #    #with cell count norm
 #    plt.figure(figsize=(16,8))
-#    g = sns.boxplot(x='progenitor', y='count_normalized_by_volume', hue='Condition', data=tdf)
-#    g.set_yscale('log')
-#    g.set_title('Cell counts boxplots by progenitor normalized by volume')
+#    g = sns.boxplot(x="progenitor", y="count_normalized_by_volume", hue="Condition", data=tdf)
+#    g.set_yscale("log")
+#    g.set_title("Cell counts boxplots by progenitor normalized by volume")
 #    plt.tight_layout()
 #    plt.savefig(os.path.join(src, "cell_counts_boxplots_by_progenitor_normalized_by_volume.pdf"), dpi=300, transparent=True)
 #    plt.close()
 #
 #    #total counts per brain
 #    plt.figure(figsize=(16,8))
-#    g=sns.pairplot(tdf, hue='Brain')
-#    g.set(xscale='log', yscale="log")
+#    g=sns.pairplot(tdf, hue="Brain")
+#    g.set(xscale="log", yscale="log")
 #    #plt.tight_layout()
 #    plt.savefig(os.path.join(src, "pairplot_by_brain.pdf"), dpi=300, transparent=True)
 #    plt.close()
 #
 #    plt.figure(figsize=(16,8))
-#    g=sns.pairplot(tdf, hue='Condition')
-#    g.set(xscale='log', yscale="log")
+#    g=sns.pairplot(tdf, hue="Condition")
+#    g.set(xscale="log", yscale="log")
 #    #plt.tight_layout()
 #    plt.savefig(os.path.join(src, "pairplot_by_condition.pdf"), dpi=300, transparent=True)
 #    plt.close()
 #
 #    #sum
-#    #g=tdf.groupby('Condition').sum().plot(kind='bar')
-#    #g.set_yscale('log')
+#    #g=tdf.groupby("Condition").sum().plot(kind="bar")
+#    #g.set_yscale("log")
 #    plt.figure(figsize=(16,8))
-#    g = sns.boxplot(x='Brain', y='Count', data=tdf)
-#    g.set_yscale('log')
+#    g = sns.boxplot(x="Brain", y="Count", data=tdf)
+#    g.set_yscale("log")
 #    g.set_xticklabels(g.axes.get_xticklabels(), rotation=30)
-#    g.set_title('Structure total counts per brain')
+#    g.set_title("Structure total counts per brain")
 #    plt.tight_layout()
 #    plt.savefig(os.path.join(src, "sum_by_brain.pdf"), dpi=300, transparent=True)
 #    plt.close()
@@ -305,11 +308,11 @@ def check_registration_cross_sections(out):
         nm_im = {}
         for fld in lst:
             kwargs = load_kwargs(fld)
-            vol = [xx for xx in kwargs['volumes'] if xx.ch_type == 'cellch'][0]
+            vol = [xx for xx in kwargs["volumes"] if xx.ch_type == "cellch"][0]
             fl = [fl for fl in listdirfull(vol.full_sizedatafld_vol) if str(z).zfill(4) in fl][0]
             nm_im[os.path.basename(fld)] = fl
             
-        dst = os.path.join(out, 'cell_ch_z{}.png'.format(str(z).zfill(4)))
+        dst = os.path.join(out, "cell_ch_z{}.png".format(str(z).zfill(4)))
         tile(src = [adjust_gamma(tifffile.imread(xx), gamma=.6,gain=3) for xx in nm_im.values()], subtitles=[xx for xx in nm_im.keys()], dst = dst)
         
     
@@ -317,7 +320,7 @@ def check_registration_cross_sections(out):
     nm_im = {}
     for fld in lst:
         kwargs = load_kwargs(fld)
-        fl = os.path.join(fld, 'clearmap_cluster_output', 'elastix_auto_to_atlas', 'result.1.tif')
+        fl = os.path.join(fld, "clearmap_cluster_output", "elastix_auto_to_atlas", "result.1.tif")
         if os.path.exists(fl):
             nm_im[os.path.basename(fld)] = fl
             
@@ -325,7 +328,7 @@ def check_registration_cross_sections(out):
     ims = [equalize_hist(tifffile.imread(xx)) for xx in nm_im.values()]
     for z in [50,100,150,200,250,300,350,400]:
         print z
-        dst = os.path.join(out, 'regqc_z{}.png'.format(str(z).zfill(4)))
+        dst = os.path.join(out, "regqc_z{}.png".format(str(z).zfill(4)))
         tile(src = [i[z] for i in ims], subtitles=[xx for xx in nm_im.keys()], dst = dst)
         
     print("saved in : {}".format(out))
@@ -334,7 +337,7 @@ def check_registration_cross_sections(out):
 out = os.path.join(src, "images")
 if not os.path.exists(out): os.mkdir(out)
 check_registration_cross_sections(out)
-###################################################################DONE##########################################################################################        
+##################################################################DONE##########################################################################################        
 #%%
 #pooled analysis to make p-value maps 
 
@@ -346,15 +349,15 @@ def generate_p_value_maps(src):
     """
     #Load the data (heat maps generated previously )
     #make groups
-    groupA = [fld for fld in listdirfull(flds) if conditions[os.path.basename(fld)] == "homecage_control"]; groupA.sort() 
-    groupB = [fld for fld in listdirfull(flds) if conditions[os.path.basename(fld)] == "CNO_control_no_reversal"]; groupB.sort()
-    groupC = [fld for fld in listdirfull(flds) if conditions[os.path.basename(fld)] == "CNO_control_reversal"]; groupC.sort()
-    groupD = [fld for fld in listdirfull(flds) if conditions[os.path.basename(fld)] == "DREADDs"]; groupC.sort()
+    groupA = [os.path.join(flds, fld) for fld in os.listdir(flds) if conditions[os.path.basename(fld)] == "homecage_control"]; groupA.sort() 
+    groupB = [os.path.join(flds, fld) for fld in os.listdir(flds) if conditions[os.path.basename(fld)] == "CNO_control_no_reversal"]; groupB.sort()
+    groupC = [os.path.join(flds, fld) for fld in os.listdir(flds)if conditions[os.path.basename(fld)] == "CNO_control_reversal"]; groupC.sort()
+    groupD = [os.path.join(flds, fld) for fld in os.listdir(flds) if conditions[os.path.basename(fld)] == "DREADDs"]; groupC.sort()
 
-    group_a = [xx+'/cells_heatmap.tif' for xx in groupA]
-    group_b = [xx+'/cells_heatmap.tif' for xx in groupB]  
-    group_c = [xx+'/cells_heatmap.tif' for xx in groupC]  
-    group_d = [xx+'/cells_heatmap.tif' for xx in groupD]  
+    group_a = [xx+"/cells_heatmap.tif" for xx in groupA]
+    group_b = [xx+"/cells_heatmap.tif" for xx in groupB]  
+    group_c = [xx+"/cells_heatmap.tif" for xx in groupC]  
+    group_d = [xx+"/cells_heatmap.tif" for xx in groupD]  
     
     
     grp_a = stat.readDataGroup(group_a)
@@ -376,42 +379,42 @@ def generate_p_value_maps(src):
     grp_da = np.mean(grp_d, axis = 0)
     grp_ds = np.std(grp_d, axis = 0)
     
-    io.writeData(os.path.join(src, 'group_a_mean.raw'), rsp.sagittalToCoronalData(grp_aa))
-    io.writeData(os.path.join(src, 'group_a_std.raw'), rsp.sagittalToCoronalData(grp_as))
+    io.writeData(os.path.join(src, "group_a_mean.raw"), rsp.sagittalToCoronalData(grp_aa))
+    io.writeData(os.path.join(src, "group_a_std.raw"), rsp.sagittalToCoronalData(grp_as))
     
-    io.writeData(os.path.join(src, 'group_b_mean.raw'), rsp.sagittalToCoronalData(grp_ba))
-    io.writeData(os.path.join(src, 'group_b_std.raw'), rsp.sagittalToCoronalData(grp_bs))
+    io.writeData(os.path.join(src, "group_b_mean.raw"), rsp.sagittalToCoronalData(grp_ba))
+    io.writeData(os.path.join(src, "group_b_std.raw"), rsp.sagittalToCoronalData(grp_bs))
     
-    io.writeData(os.path.join(src, 'group_c_mean.raw'), rsp.sagittalToCoronalData(grp_ca))
-    io.writeData(os.path.join(src, 'group_c_std.raw'), rsp.sagittalToCoronalData(grp_cs))
+    io.writeData(os.path.join(src, "group_c_mean.raw"), rsp.sagittalToCoronalData(grp_ca))
+    io.writeData(os.path.join(src, "group_c_std.raw"), rsp.sagittalToCoronalData(grp_cs))
     
-    io.writeData(os.path.join(src, 'group_d_mean.raw'), rsp.sagittalToCoronalData(grp_da))
-    io.writeData(os.path.join(src, 'group_d_std.raw'), rsp.sagittalToCoronalData(grp_ds))
+    io.writeData(os.path.join(src, "group_d_mean.raw"), rsp.sagittalToCoronalData(grp_da))
+    io.writeData(os.path.join(src, "group_d_std.raw"), rsp.sagittalToCoronalData(grp_ds))
     
     #Generate the p-values map
     ##########################
     #first comparison
     #pcutoff: only display pixels below this level of significance
-    pvals, psign = stat.tTestVoxelization(grp_a.astype('float'), grp_d.astype('float'), signed = True, pcutoff = 0.05)
+    pvals, psign = stat.tTestVoxelization(grp_a.astype("float"), grp_d.astype("float"), signed = True, pcutoff = 0.05)
     
     #color the p-values according to their sign (defined by the sign of the difference of the means between the 2 groups)
     pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0]);
-    io.writeData(os.path.join(src, 'pvalues_homecage_control_vs_DREADDs.tif'), rsp.sagittalToCoronalData(pvalsc.astype('float32')));
+    io.writeData(os.path.join(src, "pvalues_homecage_control_vs_DREADDs.tif"), rsp.sagittalToCoronalData(pvalsc.astype("float32")));
     
     #second comparison
-    pvals, psign = stat.tTestVoxelization(grp_a.astype('float'), grp_b.astype('float'), signed = True, pcutoff = 0.05)
+    pvals, psign = stat.tTestVoxelization(grp_a.astype("float"), grp_b.astype("float"), signed = True, pcutoff = 0.05)
     pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0]);
-    io.writeData(os.path.join(src, 'pvalues_homecage_control_vs_CNO_control_no_reversal.tif'), rsp.sagittalToCoronalData(pvalsc.astype('float32')))
+    io.writeData(os.path.join(src, "pvalues_homecage_control_vs_CNO_control_no_reversal.tif"), rsp.sagittalToCoronalData(pvalsc.astype("float32")))
     
     #third comparison
-    pvals, psign = stat.tTestVoxelization(grp_b.astype('float'), grp_c.astype('float'), signed = True, pcutoff = 0.05)
+    pvals, psign = stat.tTestVoxelization(grp_b.astype("float"), grp_c.astype("float"), signed = True, pcutoff = 0.05)
     pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0]);
-    io.writeData(os.path.join(src, 'pvalues_CNO_control_no_reversal_vs_CNO_control_reversal.tif'), rsp.sagittalToCoronalData(pvalsc.astype('float32')))
+    io.writeData(os.path.join(src, "pvalues_CNO_control_no_reversal_vs_CNO_control_reversal.tif"), rsp.sagittalToCoronalData(pvalsc.astype("float32")))
     
     #fourth comparison
-    pvals, psign = stat.tTestVoxelization(grp_c.astype('float'), grp_d.astype('float'), signed = True, pcutoff = 0.05)
+    pvals, psign = stat.tTestVoxelization(grp_c.astype("float"), grp_d.astype("float"), signed = True, pcutoff = 0.05)
     pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0]);
-    io.writeData(os.path.join(src, 'pvalues_CNO_control_reversal_vs_DREADDs.tif'), rsp.sagittalToCoronalData(pvalsc.astype('float32')))
+    io.writeData(os.path.join(src, "pvalues_CNO_control_reversal_vs_DREADDs.tif"), rsp.sagittalToCoronalData(pvalsc.astype("float32")))
 
 #run
 src = os.path.join(src, "p_value_maps")
@@ -457,20 +460,20 @@ def generate_percent_counts_and_density_per_region(src, csv_pth):
 #run
 percent_density_csv_pth = generate_percent_counts_and_density_per_region(src, csv_pth)
     
-###################################################################DONE##########################################################################################        
+####################################################################DONE##########################################################################################               
 #%%
 
-def pool_regions(sois, df_pth, ann_pth, src, csv_pth):
+#build structures class
+structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
-    """ pools regions together based on progenitors """    
-    
-    #build structures class
-    structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
+#%%    
+def pool_regions(sois, cond, df_pth, ann_pth, src, percent_density_csv_pth):
+
+    """ pools regions together based on progenitors; also z scores new pooled regions and their counts and measures """    
     
     #set variables
-    df = pd.read_csv(csv_pth)
+    df = pd.read_csv(percent_density_csv_pth)
     
-
     #add in progenitor column
     tdf = df.copy()
     tdf["parent"] = "empty"
@@ -484,38 +487,256 @@ def pool_regions(sois, df_pth, ann_pth, src, csv_pth):
                 tdf.loc[tdf.name == progen,"parent"]=soi.name
     
     #drop non progen
-    tdf = tdf[(tdf["parent"] != "empty") & (tdf["volume"] != 0.0)]
+    tdf = tdf[(tdf["parent"] != "empty")]
     
  
     #drop unnamed
     tdf = tdf.drop(columns = ["Unnamed: 0"])
-    #save both as csv and pickle for visualisation
-    tdf.to_pickle(os.path.join(src, "cell_counts_dataframe_with_progenitors.p"))
+    #save as csv 
     tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_progenitors.csv"), header = True, index = None)
     
     #aggregate counts
-    df_new = tdf.groupby(["parent", "Brain", "Condition"])['counts'].sum()
+    df_new = tdf.groupby(["parent", "Brain", "Condition"])["counts"].sum()
     df_new = pd.DataFrame(df_new)
-    df_new['percent_per_total_counts (%)'] = tdf.groupby(["parent", "Brain"])['percent_per_total_counts (%)'].sum()
-    df_new['density (cells/mm3)'] = tdf.groupby(["parent", "Brain"])['density (cells/mm3)'].sum()
-    
+    df_new["percent_per_total_counts (%)"] = tdf.groupby(["parent", "Brain"])["percent_per_total_counts (%)"].sum()
+    df_new["density (cells/mm3)"] = tdf.groupby(["parent", "Brain"])["density (cells/mm3)"].sum()
+
     #save as new csv 
-    df_new.to_csv(os.path.join(src, "summed_parents_cell_counts_dataframe.csv"), header = True)
-
-
+    df_new.to_csv(os.path.join(src, "summed_parents_cell_counts_dataframe_v3.csv"), header = True)
+    
     print("saved in :{}".format(src))
     
-    return tdf
+    return os.path.join(src, "summed_parents_cell_counts_dataframe_v3.csv")
 
 #give list of structures you want to pool
-sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area", "Entorhinal area", "Thalamus, sensory-motor cortex related", 
+#sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
+#            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
+#            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
+#            "Auditory areas", "Ectorhinal area", "Perirhinal area", "Entorhinal area"]
+sois =      ["Thalamus, sensory-motor cortex related", 
             "Thalamus, polymodal association cortex related", "Periventricular zone", "Periventricular region", "Hypothalamic medial zone", 
             "Hypothalamic lateral zone", "Midbrain, sensory related", "Midbrain, motor related", "Midbrain, behavioral state related", 
-            "Hippocampal formation", "Striatum", "Pallidum", "Periaqueductal gray", "Subiculum", "Main olfactory bulb", "Olfactory areas"
-            ]
+            "Hippocampal formation", "Striatum", "Pallidum", "Periaqueductal gray", "Subiculum", "Main olfactory bulb", "Olfactory areas",
+            "Basolateral amygdalar nucleus", "Basomedial amygdalar nucleus", "Pons, sensory related", "Pons, motor related", 
+            "Pons, behavioral state related", "Superior olivary complex", "Parabrachial nucleus", "Ventral posterior complex of the thalamus",
+            "Ventral anterior-lateral complex of the thalamus", "Medial geniculate complex"]            
+sois =            ["Lateral group of the dorsal thalamus", "Anterior group of the dorsal thalamus", "Medial group of the dorsal thalamus",
+            "Intralaminar nuclei of the dorsal thalamus", "Geniculate group, ventral thalamus", "Ventral group of the dorsal thalamus",
+            "Subparafascicular area"]
 
 #run
-pool_regions(sois, df_pth, ann_pth, src, percent_density_csv_pth)
+sum_pth = pool_regions(sois, cond, df_pth, ann_pth, src, percent_density_csv_pth)
+###################################################################DONE##########################################################################################        
+#%%
+
+#anova for cell counts, percents, and density across all conditions, per structure
+from scipy.stats import f_oneway
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+from statsmodels.stats.libqsturng import psturng
+
+#do first for all structures
+df = pd.read_csv(percent_density_csv_pth, index_col = None)
+
+df_anova = pd.DataFrame()
+df_anova["name"] = np.unique(df["name"].values)
+
+for nm in np.unique(df.name.values): #only gets unique names
+    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")].counts.values, 
+                 df[(df.name == nm) & (df.Condition == "homecage_control")].counts.values,
+                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")].counts.values, 
+                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")].counts.values)
+    
+    df_anova.loc[(df_anova["name"] == nm), "anova_counts_f"] = f
+    df_anova.loc[(df_anova["name"] == nm), "anova_counts_pval"] = pval
+        
+    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["percent_per_total_counts (%)"].values, 
+                 df[(df.name == nm) & (df.Condition == "homecage_control")]["percent_per_total_counts (%)"].values,
+                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["percent_per_total_counts (%)"].values, 
+                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["percent_per_total_counts (%)"].values)
+    
+    df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_f"] = f
+    df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_pval"] = pval
+        
+    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "DREADDs")]["density (cells/mm3)"].values)], 
+                 df[(df.name == nm) & (df.Condition == "homecage_control")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "homecage_control")]["density (cells/mm3)"].values)],
+                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density (cells/mm3)"].values)], 
+                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density (cells/mm3)"].values)])
+    
+    df_anova.loc[(df_anova["name"] == nm), "anova_density_f"] = f
+    df_anova.loc[(df_anova["name"] == nm), "anova_density_pval"] = pval
+    
+        
+df_anova.to_csv(os.path.join(src, "one_way_anova_all_structures.csv"))
+
+#%%
+#pooled results
+df = pd.read_csv(sum_pth, index_col = None)
+
+df_anova = pd.DataFrame()
+df_anova["name"] = np.unique(df["parent"].values)
+df["name"] = df["parent"] #temporarily adjusting column name bc im lazy and dont want to rewrite script
+
+for nm in np.unique(df.name.values): #only gets unique names
+    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")].counts.values, 
+                 df[(df.name == nm) & (df.Condition == "homecage_control")].counts.values,
+                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")].counts.values, 
+                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")].counts.values)
+    
+    df_anova.loc[(df_anova["name"] == nm), "anova_counts_f"] = f
+    df_anova.loc[(df_anova["name"] == nm), "anova_counts_pval"] = pval
+            
+    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["percent_per_total_counts (%)"].values, 
+                 df[(df.name == nm) & (df.Condition == "homecage_control")]["percent_per_total_counts (%)"].values,
+                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["percent_per_total_counts (%)"].values, 
+                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["percent_per_total_counts (%)"].values)
+    
+    df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_f"] = f
+    df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_pval"] = pval
+
+    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "DREADDs")]["density (cells/mm3)"].values)], 
+                 df[(df.name == nm) & (df.Condition == "homecage_control")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "homecage_control")]["density (cells/mm3)"].values)],
+                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density (cells/mm3)"].values)], 
+                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density (cells/mm3)"].values)])
+    
+    df_anova.loc[(df_anova["name"] == nm), "anova_density_f"] = f
+    df_anova.loc[(df_anova["name"] == nm), "anova_density_pval"] = pval
+        
+df_anova.to_csv(os.path.join(src, "one_way_anova_pooled_structures.csv"))
+#%%
+#zscore all structures
+
+df = pd.read_csv(percent_density_csv_pth)
+
+structs = df.name.unique()
+
+for nm in structs:
+    df.loc[(df.name == nm), "z_score_percents"] = zscore(df[df.name == nm]["percent_per_total_counts (%)"])
+    df.loc[(df.name == nm), "z_score_counts"] = zscore(df[df.name == nm]["counts"])
+    
+    #setting variable bc will have to compute this myself
+    a = df[df.name == nm]["density (cells/mm3)"]
+    df.loc[(df.name == nm), "z_score_density"] = (a - a.mean())/a.std(ddof=0) #ignores nan in dataframe (because some volumes are 0)
+
+df.drop(columns = ["Unnamed: 0"]).to_csv(os.path.join(src, "cell_counts_dataframe_w_percents_density_zscores_per_structure.csv"), index = None) 
+
+###################################################################DONE########################################################################################## 
+#%%
+
+#pooled z scores, but this time z scores PER STRUCTURE instead of PER CONDITION
+df = pd.read_csv(sum_pth)
+
+structs = df.parent.unique()
+
+for nm in structs:
+    df.loc[(df.parent == nm), "z_score_percents"] = zscore(df[df.parent == nm]["percent_per_total_counts (%)"])
+    df.loc[(df.parent == nm), "z_score_counts"] = zscore(df[df.parent == nm]["counts"])
+    
+    #setting variable bc will have to compute this myself
+    a = df[df.parent == nm]["density (cells/mm3)"]
+    df.loc[(df.parent == nm), "z_score_density"] = (a - a.mean())/a.std(ddof=0) #ignores nan in dataframe (because some volumes are 0)
+
+df.to_csv(os.path.join(src, "summed_cell_counts_dataframe_w_zscores_per_structure.csv"), index = None) 
+
+#%%
+# 2 way ANOVA
+import statsmodels
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+
+#formatting
+sum_pth = '/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/summed_parents_cell_counts_dataframe.csv'
+
+df = pd.read_csv(sum_pth, index_col = None).drop(columns = ["Unnamed: 0"])
+
+df.loc[(df.Condition == "CNO_control_reversal"), "reversal"] = "reversal"
+df.loc[(df.Condition == "DREADDs"), "reversal"] = "reversal"
+df.loc[(df.Condition == "CNO_control_no_reversal"), "reversal"] = "no_reversal"
+df.loc[(df.Condition == "homecage_control"), "reversal"] = "no_reversal"
+
+#not sure about this but lets try..
+df.loc[(df.Condition == "homecage_control"), "DREADDs"] = "control"
+df.loc[(df.Condition == "CNO_control_no_reversal"), "DREADDs"] = "control"
+df.loc[(df.Condition == "CNO_control_reversal"), "DREADDs"] = "control"
+df.loc[(df.Condition == "DREADDs"), "DREADDs"] = "DREADDs"
+df["percent"] = df["percent_per_total_counts (%)"]
+
+#anova - test
+formula = "percent ~ C(reversal)"# + C(DREADDs) +  C(reversal):C(DREADDs)"
+model = ols(formula, df[df.parent == "Ventral group of the dorsal thalamus"]).fit()
+aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
+print(aov_table)
+
+#now lets do for all structures - POOLED
+structs = df.parent.unique()
+
+for nm in structs:
+    formula = "percent ~ C(reversal)"# + C(DREADDs) +  C(reversal):C(DREADDs)"
+    model = ols(formula, df[df.parent == nm]).fit()
+    aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
+    fval = np.asarray(aov_table)[0,2]
+    pval = np.asarray(aov_table)[0,3]
+    df.loc[(df.parent == nm), "two_way_F"] = fval
+    df.loc[(df.parent == nm), "two_way_pval"] = pval
+   
+    #doing post hoc on significant structures
+    if pval < 0.05:
+        res = pairwise_tukeyhsd(df[df.parent == nm]["percent"], df[df.parent == nm]["reversal"])
+        pval_tukey = psturng(np.abs(res.meandiffs / res.std_pairs), len(res.groupsunique), res.df_total)
+        df.loc[(df["parent"] == nm), "tukey"] = pval_tukey
+        
+#format df
+df = df.drop(columns = ["Brain", "Condition", "counts", "percent_per_total_counts (%)", "density (cells/mm3)",
+                   "reversal", "DREADDs", "percent"])
+df = df.drop_duplicates()
+
+df.to_csv(os.path.join(src, "two_way_anova_pooled_structures.csv"), index = None) 
+
+#%%
+#NOW FOR ALL STRUCTURES
+all_pth = '/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv'
+
+df = pd.read_csv(all_pth, index_col = None).drop(columns = ["Unnamed: 0"])
+
+df.loc[(df.Condition == "CNO_control_reversal"), "reversal"] = "reversal"
+df.loc[(df.Condition == "DREADDs"), "reversal"] = "reversal"
+df.loc[(df.Condition == "CNO_control_no_reversal"), "reversal"] = "no_reversal"
+df.loc[(df.Condition == "homecage_control"), "reversal"] = "no_reversal"
+
+#not sure about this but lets try..
+df.loc[(df.Condition == "CNO_control_reversal"), "DREADDs"] = "control"
+df.loc[(df.Condition == "DREADDs"), "DREADDs"] = "DREADDs"
+df["percent"] = df["percent_per_total_counts (%)"]
+
+#now lets do for all structures
+structs = df.name.unique()
+bad = []
+
+for nm in structs:
+    print(nm)
+    formula = "percent ~ C(reversal)"# + C(DREADDs) +  C(reversal):C(DREADDs)"
+    try:
+        model = ols(formula, df[df.name == nm]).fit()
+        aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
+        fval = np.asarray(aov_table)[0,2]
+        pval = np.asarray(aov_table)[0,3]
+        df.loc[(df.name == nm), "two_way_F"] = fval
+        df.loc[(df.name == nm), "two_way_pval"] = pval
+        
+        #doing post hoc on significant structures
+        if pval < 0.05:
+            res = pairwise_tukeyhsd(df[df.name == nm]["percent"], df[df.name == nm]["reversal"])
+            pval_tukey = psturng(np.abs(res.meandiffs / res.std_pairs), len(res.groupsunique), res.df_total)
+            df.loc[(df["name"] == nm), "tukey"] = pval_tukey
+            
+    except:
+        print("******************************************************************\n\n\
+              Structure not accepted: {}\n\
+              ******************************************************************\n\n".format(nm))
+        bad.append(nm)
+        
+#format df
+df = df.drop(columns = ["Brain", "Condition", "counts", "percent_per_total_counts (%)", "density (cells/mm3)",
+                   "reversal", "DREADDs", "percent", "id", "volume"])
+df = df.drop_duplicates()
+
+df.to_csv(os.path.join(src, "two_way_anova_all_structures.csv"), index = None) 
