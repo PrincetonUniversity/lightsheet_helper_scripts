@@ -12,9 +12,9 @@ import numpy as np, pandas as pd, tifffile
 def labelPoints(points, labeledImage, level = None, collapse = None):
    """ borrowed/modified/cleaned up from Clearmap """
    
-   x = points[:,2]; #ASSUMES TRANSFORMED CELLS ARE Z,Y,X??!?!??!
+   x = points[:,0]; #ASSUMES TRANSFORMED CELLS ARE Z,Y,X??!?!??!
    y = points[:,1];
-   z = points[:,0]; 
+   z = points[:,2]; 
     
    nPoint = x.size;    
     
