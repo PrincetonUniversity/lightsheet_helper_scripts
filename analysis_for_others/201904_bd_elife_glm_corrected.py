@@ -200,17 +200,17 @@ mat_shuf = mat_shuf[:,ordr,:]
 p_shuf = p_shuf[:,ordr,:]
 pmat = pmat[ordr,:]
 bn = bhn[ordr]
-
+#%%
 ## display
 fig = pl.figure(figsize=(4,7))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 # map 1: weights
-show = np.abs(mat) # NOTE abs
+show = mat # NOTE abs
 amax = 4.47 #computed from juvenile, so colors match for both #np.max(np.abs(mat))
 #amax = np.max(np.abs(mat))
 #vmin = -amax
-vmin = 0
+vmin = -3
 vmax = amax
 #cmap = pl.cm.RdBu_r
 cmap = pl.cm.Reds
@@ -243,8 +243,8 @@ nullmean = null.mean()
 nullstd = null.std()
 for y,x in np.argwhere(sig):
     pass
-    #ax.text(x+.5, y+.5, 'x', fontsize=15, ha='center', va='center', transform=ax.transData)
-#ax.text(.5, 1.06, "X: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) X's are expected by chance if no real effect exists".format(nullmean, nullstd), ha='center', va='center', fontsize='small', transform=ax.transAxes)
+    ax.text(x+.5, y+.5, 'x', fontsize=15, ha='center', va='center', transform=ax.transData)
+ax.text(.5, 1.06, "X: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) X's are expected by chance if no real effect exists".format(nullmean, nullstd), ha='center', va='center', fontsize='small', transform=ax.transAxes)
 
 # aesthetics
 # xticks
@@ -255,6 +255,7 @@ ax.set_yticks(np.arange(len(bhn))+.5)
 #ax.set_yticklabels(['{}\nr2adj={:0.2f}'.format(bi,ar) for ar,bi in zip(ars,bn)], fontsize='x-small')
 ax.set_yticklabels(['{}'.format(bi) for ar,bi in zip(ars,bn)], fontsize='x-small')
 
+#%%
 ## specific relevant scatter plots
 
 # juvenile

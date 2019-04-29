@@ -8,6 +8,7 @@ Created on Mon Jan  7 18:05:44 2019
 
 import os, sys, shutil
 from xvfbwrapper import Xvfb; vdisplay = Xvfb(); vdisplay.start()
+sys.path.append("/jukebox/wang/zahra/lightsheet_copy")
 from tools.imageprocessing import preprocessing
 from tools.registration.register import elastix_wrapper
 from tools.utils.directorydeterminer import directorydeterminer
@@ -21,7 +22,7 @@ systemdirectory=directorydeterminer()
 #'injch' = channels(s) to quantify injection site
 #e.g.: inputdictionary={path_1: [['regch', '00']], path_2: [['cellch', '00'], ['injch', '01']]} ###create this dictionary variable BEFORE params
 inputdictionary={
-os.path.join(systemdirectory, 'LightSheetTransfer/tp/190107_eaat4_an6_cb_647_026na_1hfls_z100um_150msec_20povlp_15-31-22'): [['cellch', '00']]}
+os.path.join(systemdirectory, 'LightSheetTransfer/tp/tracing_cfos_sample_stacks/190429_20180608_bl6_h129_jg72_4x_647_008na_1hfls_z7d5um_100msec_10povlp_sagittal_12-51-50'): [['cellch', '00']]}
 ####Required inputs
 
 params={
@@ -29,16 +30,16 @@ params={
 'objectdetection': 'convnet', # 'edgedetection', 'convnet', 'clearmap', 'all'; clearmap setting uses their SpotDetection method
 'systemdirectory':  systemdirectory, #don't need to touch
 'inputdictionary': inputdictionary, #don't need to touch
-'outputdirectory': os.path.join(systemdirectory, 'LightSheetTransfer/tp/eaat4_an6'),
-'xyz_scale': (1.63, 1.63, 100), #(5.0,5.0,3), #micron/pixel: 5.0um/pix for 1.3x; 1.63um/pix for 4x
-'tiling_overlap': 0.20, #percent overlap taken during tiling
+'outputdirectory': os.path.join(systemdirectory, 'LightSheetTransfer/tp/tracing_cfos_sample_stacks/20180608_bl6_h129_jg72_sagittal'),
+'xyz_scale': (1.63, 1.63, 7.5), #(5.0,5.0,3), #micron/pixel: 5.0um/pix for 1.3x; 1.63um/pix for 4x
+'tiling_overlap': 0.10, #percent overlap taken during tiling
 'stitchingmethod': 'terastitcher', #'terastitcher', blending see below for details
 'AtlasFile' : os.path.join(systemdirectory, 'wang/pisano/Python/atlas/sagittal_atlas_20um_iso.tif'),
 'annotationfile' : os.path.join(systemdirectory, 'wang/pisano/Python/atlas/annotation_sagittal_atlas_20um_iso.tif'), ###path to annotation file for structures
 'blendtype' : 'sigmoidal', #False/None, 'linear', or 'sigmoidal' blending between tiles, usually sigmoidal; False or None for images where blending would be detrimental
 'intensitycorrection' : True, #True = calculate mean intensity of overlap between tiles shift higher of two towards lower - useful for images where relative intensity is not important (i.e. tracing=True, cFOS=False)
 'resizefactor': 6, ##in x and y #normally set to 5 for 4x objective, 3 for 1.3x obj
-'rawdata' : False, # set to true if raw data is taken from scope and images need to be flattened; functionality for rawdata =False has not been tested**
+'rawdata' : True, # set to true if raw data is taken from scope and images need to be flattened; functionality for rawdata =False has not been tested**
 'finalorientation' :  ('2','1','0'), #Used to account for different orientation between brain and atlas. Assumes XYZ ('0','1','2) orientation. Pass strings NOT ints. '-0' = reverse the order of the xaxis. For better description see docstring from tools.imageprocessing.orientation import fix_orientation; ('2','1','0') for horizontal to sagittal, Order of operations is reversing of axes BEFORE swapping axes.
 'slurmjobfactor': 20 #number of array iterations per arrayjob since max job array on SPOCK is 1000
 }
