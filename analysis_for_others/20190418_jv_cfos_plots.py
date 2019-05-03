@@ -9,7 +9,7 @@ import pandas as pd, seaborn as sns, matplotlib.pyplot as plt
 import os
 import numpy as np
 
-sum_pth = '/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/summed_cell_counts_dataframe_w_zscores_per_structure.csv'
+sum_pth = '/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/summed_cell_counts_dataframe_w_zscores_per_structure.csv'
    
 df = pd.read_csv(sum_pth)
 
@@ -44,7 +44,7 @@ ax = sns.swarmplot(x="z_score_percents", y="parent", data=df[df.Condition == "DR
 
 ax.get_yaxis().set_visible(False)
 
-plt.savefig("/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots/summed_structures_percent_per_total_count_zscores.pdf", bbox_inches = "tight")   
+plt.savefig("/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots/summed_structures_percent_per_total_count_zscores.pdf", bbox_inches = "tight")   
 
 #%%
 sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Orbital area", 
@@ -147,7 +147,7 @@ def plot_specified_sois(df, sois, hierarchy, dst):
     
     plt.savefig(os.path.join(dst, "summed_structures_boxplot_density_zscores_{}.pdf".format(hierarchy)), bbox_inches = "tight")
 
-plot_specified_sois(df, sois, "neocortex", "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots")
+plot_specified_sois(df, sois, "neocortex", "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots")
 
 #now looking at thalamus, etc.
 sois = ["Ventral posterior complex of the thalamus", "Ventral posterolateral nucleus of the thalamus",
@@ -157,26 +157,26 @@ sois = ["Ventral posterior complex of the thalamus", "Ventral posterolateral nuc
             "Intralaminar nuclei of the dorsal thalamus", "Geniculate group, ventral thalamus", "Ventral group of the dorsal thalamus",
             "Reticular nucleus of the thalamus"]
 
-plot_specified_sois(df, sois, "thalamus", "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots")
+plot_specified_sois(df, sois, "thalamus", "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots")
 
 #amygdala
 sois = ["Basolateral amygdalar nucleus", "Basomedial amygdalar nucleus", "Posterior amygdalar nucleus", "Lateral amygdalar nucleus"]
 
-plot_specified_sois(df, sois, "amgdala", "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots")
+plot_specified_sois(df, sois, "amgdala", "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots")
 
 #hypothalamic nuclei
 sois = ["Anterior hypothalamic nucleus", "Ventromedial hypothalamic nucleus", "Posterior hypothalamic nucleus",
         "Lateral hypothalamic area"]
 
-plot_specified_sois(df, sois, "hypothalamus", "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots")
+plot_specified_sois(df, sois, "hypothalamus", "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/z_score_boxplots")
 
 #%%
 
 import math
 
 #bubble plot
-df1 = pd.read_csv('/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/summed_cell_counts_dataframe_w_zscores_per_structure.csv')
-df2 = pd.read_csv('/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/two_way_anova_pooled_structures_reversal_vs_no_reversal.csv')
+df1 = pd.read_csv('/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/summed_cell_counts_dataframe_w_zscores_per_structure.csv')
+df2 = pd.read_csv('/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/two_way_anova_pooled_structures_reversal_vs_no_reversal.csv')
 
 #look at DREADDs
 sig_str = df2[df2.two_way_pval < 0.1].parent.values

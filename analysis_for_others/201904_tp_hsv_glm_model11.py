@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Apr 30 14:58:27 2019
+Created on Wed May  1 19:39:59 2019
 
 @author: wanglab
 """
@@ -14,49 +14,39 @@ import numpy as np, os, pickle as pckl
 import tifffile
 
 #custom
-inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
+inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/injection_sites"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_200um_edges_only.tif"
-cells_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_coordinate_only_including_structure"
-cells_regions_pth = '/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_region/nc_dataframe.p'
+cells_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/cell_count_by_coordinate_only_including_structure"
+cells_regions_pth = '/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/cell_count_by_region/dataframe.p'
 
 #making dictionary of injection sites
 injections = {}
 
 #MAKE SURE THEY ARE IN THIS ORDER
-brains = ['20180409_jg46_bl6_lob6a_04', 
-          '20180608_jg75', 
-          '20170204_tp_bl6_cri_1750r_03',
-          '20180608_jg72', 
-          '20180416_jg56_bl6_lob8_04', 
-          '20170116_tp_bl6_lob45_ml_11', 
-          '20180417_jg60_bl6_cri_04', 
-          '20180410_jg52_bl6_lob7_05', 
-          '20170116_tp_bl6_lob7_1000r_10', 
-          '20180409_jg44_bl6_lob6a_02', 
-          '20180410_jg49_bl6_lob45_02', 
-          '20180410_jg48_bl6_lob6a_01', 
-          '20180612_jg80', 
-          '20180608_jg71',
-          '20170212_tp_bl6_crii_1000r_02', 
-          '20170115_tp_bl6_lob6a_rpv_03', 
-          '20170212_tp_bl6_crii_2000r_03', 
-          '20180417_jg58_bl6_sim_02',
-          '20170130_tp_bl6_sim_1750r_03', 
-          '20170115_tp_bl6_lob6b_ml_04', 
-          '20180410_jg50_bl6_lob6b_03', 
-          '20170115_tp_bl6_lob6a_1000r_02', 
-          '20170116_tp_bl6_lob45_500r_12', 
-          '20180612_jg77', 
-          '20180612_jg76', 
-          '20180416_jg55_bl6_lob8_03', 
-          '20170115_tp_bl6_lob6a_500r_01', 
-          '20170130_tp_bl6_sim_rpv_01', 
-          '20170204_tp_bl6_cri_1000r_02', 
-          '20170212_tp_bl6_crii_250r_01', 
-          '20180417_jg61_bl6_crii_05',
-          '20170116_tp_bl6_lob7_ml_08', 
-          '20180409_jg47_bl6_lob6a_05']
+brains = ['20170410_tp_bl6_lob6a_ml_repro_01',
+         '20160823_tp_bl6_cri_500r_02',
+         '20180417_jg59_bl6_cri_03',
+         '20170207_db_bl6_crii_1300r_02',
+         '20160622_db_bl6_unk_01',
+         '20161205_tp_bl6_sim_750r_03',
+         '20180410_jg51_bl6_lob6b_04',
+         '20170419_db_bl6_cri_rpv_53hr',
+         '20170116_tp_bl6_lob6b_lpv_07',
+         '20170411_db_bl6_crii_mid_53hr',
+         '20160822_tp_bl6_crii_1500r_06',
+         '20160920_tp_bl6_lob7_500r_03',
+         '20170207_db_bl6_crii_rpv_01',
+         '20161205_tp_bl6_sim_250r_02',
+         '20161207_db_bl6_lob6a_500r_53hr',
+         '20170130_tp_bl6_sim_rlat_05',
+         '20170115_tp_bl6_lob6b_500r_05',
+         '20170419_db_bl6_cri_mid_53hr',
+         '20161207_db_bl6_lob6a_850r_53hr',
+         '20160622_db_bl6_crii_52hr_01',
+         '20161207_db_bl6_lob6a_50rml_53d5hr',
+         '20161205_tp_bl6_lob45_1000r_01',
+         '20160801_db_l7_cri_01_mid_64hr']
 
 for pth in brains:
     print(pth)
@@ -143,10 +133,11 @@ structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_tab
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 #GET ONLY NEOCORTICAL POOLS
-sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
+sois = ["Ventral group of the dorsal thalamus", "Subparafascicular nucleus",
+        "Geniculate group, dorsal thalamus", "Lateral group of the dorsal thalamus",
+        "Anterior group of the dorsal thalamus", "Medial group of the dorsal thalamus",
+        "Midline group of the dorsal thalamus", "Intralaminar nuclei of the dorsal thalamus",
+        "Reticular nucleus of the thalamus", "Geniculate group, ventral thalamus"]
 
 #make new dict - for all brains
 cells_pooled_regions = {}
@@ -156,20 +147,26 @@ for brain in brains:
     pooled_regions = {}
     
     for soi in sois:
-        soi = [s for s in structures if s.name==soi][0]
-        print(soi.name)
-        counts = [] #store counts in this list
-        for k, v in cells_regions[brain].items():
-            if k == soi.name:
-                counts.append(v)
-        progeny = [str(xx.name) for xx in soi.progeny]
-        #now sum up progeny
-        if len(progeny) > 0:
-            for progen in progeny:
-                for k, v in cells_regions[brain].items():
-                    if k == progen:
-                        counts.append(v)
-        pooled_regions[soi.name] = np.sum(np.asarray(counts))
+        try:
+            soi = [s for s in structures if s.name==soi][0]
+            print(soi.name)
+            counts = [] #store counts in this list
+            for k, v in cells_regions[brain].items():
+                if k == soi.name:
+                    counts.append(v)
+            progeny = [str(xx.name) for xx in soi.progeny]
+            #now sum up progeny
+            if len(progeny) > 0:
+                for progen in progeny:
+                    for k, v in cells_regions[brain].items():
+                        if k == progen:
+                            counts.append(v)
+            pooled_regions[soi.name] = np.sum(np.asarray(counts))
+        except:
+            for k, v in cells_regions[brain].items():
+                if k == soi:
+                    counts.append(v)
+            pooled_regions[soi] = np.sum(np.asarray(counts))
                     
     #add to big dict
     cells_pooled_regions[brain] = pooled_regions
@@ -189,55 +186,6 @@ for k,v in cells_pooled_regions.items():
     #re-initialise for next
     i = []
 
-#%%
-#get density?
-import pandas as pd
-
-lut_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-lut = pd.read_excel(lut_pth, index_col = None).drop(columns = "Unnamed: 0")
-
-#make new dict - this is for EACH BRAIN
-voxels_in_structure = {}
-
-for soi in sois:
-    soi = [s for s in structures if s.name==soi][0]
-    print(soi.name)
-    voxels = [] #store voxels in this list
-    if not lut.loc[(lut.name == soi.name), 'voxels_in_structure'].values == 0:
-        voxels.append(lut.loc[(lut.name == soi.name), 'voxels_in_structure'].values)
-    progeny = [str(xx.name) for xx in soi.progeny]
-    #now sum up progeny
-    if len(progeny) > 0:
-        for progen in progeny:
-            voxels.append(lut.loc[(lut.name == progen), 'voxels_in_structure'].values)
-    voxels_in_structure[soi.name] = np.sum(np.asarray(voxels))
-
-#%%    
-#scale of atlas
-scale = 0.020 #mm/voxel
-
-#now calculate density
-density_pooled_regions = {}
-for brain, dct in cells_pooled_regions.items():
-    density = {}
-    for region, counts in dct.items():
-        density[region] = counts/((scale**3) * voxels_in_structure[region])
-    density_pooled_regions[brain] = density
-    
-#%%
-
-#making the proper array per brain where regions are removed
-density_per_brain = []
-
-#initialise dummy var
-i = []
-for k,v in density_pooled_regions.items():
-    dct = density_pooled_regions[k]
-    for j,l in dct.items():
-      i.append(l)  
-    density_per_brain.append(i)
-    #re-initialise for next
-    i = []
     
 #%%
 #VARIABLES FOR GLM   
@@ -246,32 +194,35 @@ cell_counts_per_brain = np.asarray(cell_counts_per_brain)
 injp = np.nan_to_num(expr_all_as_frac_of_lob)
 regions = np.asarray(sois)
 
-np.save("/jukebox/wang/zahra/modeling/h129/neocortex/cell_counts_per_brain.npy", cell_counts_per_brain)
+np.save("/jukebox/wang/zahra/modeling/h129/thalamus/cell_counts_per_brain.npy", cell_counts_per_brain)
 #np.save("/jukebox/wang/zahra/modeling/h129/neocortex/density_per_brain.npy", density_per_brain)
-np.save("/jukebox/wang/zahra/modeling/h129/neocortex/fraction_of_lobule_pc_layer.npy", injp)
-np.save("/jukebox/wang/zahra/modeling/h129/neocortex/neocortical_regions.npy", regions)
-np.save("/jukebox/wang/zahra/modeling/h129/neocortex/cerebellar_regions.npy", ak)
+np.save("/jukebox/wang/zahra/modeling/h129/thalamus/fraction_of_lobule_pc_layer.npy", injp)
+np.save("/jukebox/wang/zahra/modeling/h129/thalamus/thalamic_regions.npy", regions)
+np.save("/jukebox/wang/zahra/modeling/h129/thalamus/cerebellar_regions.npy", ak)
 
 
 #%%
 #VARIABLES FOR GLM   
-cell_counts_per_brain = np.load("/jukebox/wang/zahra/modeling/h129/neocortex/density_per_brain.npy")
+cell_counts_per_brain = np.load("/jukebox/wang/zahra/modeling/h129/thalamus/cell_counts_per_brain.npy")
 #
 ##remove non associated areas
 #mask = np.ones(cell_counts_per_brain[0].shape, dtype=bool)
 #mask[[0, 1, 5, 15, 16]] = False
 #cell_counts_per_brain = np.asarray([xx[mask] for xx in cell_counts_per_brain])
 
-injp = np.load("/jukebox/wang/zahra/modeling/h129/neocortex/fraction_of_lobule_pc_layer.npy")
+#LOOKING AT PERCENT CELL COUNTS
+cell_counts_per_brain = np.asarray([(xx/np.sum(xx))*100 for xx in cell_counts_per_brain])
 
-regions = np.load("/jukebox/wang/zahra/modeling/h129/neocortex/neocortical_regions.npy")
+injp = np.load("/jukebox/wang/zahra/modeling/h129/thalamus/fraction_of_lobule_pc_layer.npy")
+
+regions = np.load("/jukebox/wang/zahra/modeling/h129/thalamus/thalamic_regions.npy")
 
 ##remove non associated areas
 #mask = np.ones(regions.shape[0], dtype=bool)
 #mask[[0, 1, 5, 15, 16]] = False
 #regions = regions[mask]
 
-ak = np.load("/jukebox/wang/zahra/modeling/h129/neocortex/cerebellar_regions.npy")
+ak = np.load("/jukebox/wang/zahra/modeling/h129/thalamus/cerebellar_regions.npy")
 
 #np.random.shuffle(cell_counts_per_brain)
 
@@ -353,8 +304,8 @@ show = mat # NOTE abs
 amax = 4.7 #computed from np.max(np.abs(mat))
 #amax = np.max(np.abs(mat))
 #vmin = -amax
-vmin = -5
-vmax = amax
+vmin = np.min(mat)-0.5
+vmax = np.max(mat)+0.5
 cmap = plt.cm.RdBu_r
 #cmap = plt.cm.coolwarm
 
@@ -407,7 +358,11 @@ ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="x-small")
 plt.savefig("/home/wanglab/Desktop/weights.pdf")
 
 #%%
-#plot r squared adj
 
-plt.scatter(range(17), ars)
-plt.axhline(0, color = 'grey')
+#plot r squared adj
+fig, ax = plt.subplots()#figsize=(4,7))
+
+ax.scatter(range(10), ars)
+ax.axhline(0, color = 'grey')
+
+plt.savefig('/home/wanglab/Desktop/r2sdj.pdf')

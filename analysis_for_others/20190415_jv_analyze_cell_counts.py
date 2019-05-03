@@ -84,7 +84,10 @@ ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 
 #%%
+#build structures class
+structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
+#%%
 def generate_data_frame(conditions, lst, pth):
     """ 
     used to make a pooled csv file of all cell counts in an experiment
@@ -104,10 +107,20 @@ def generate_data_frame(conditions, lst, pth):
         df = df.replace(np.nan, "", regex=True)
         df["Brain"] = nm
         df["Condition"] = conditions[nm]
-        bglst.append(df.drop(["acronym", "parent_acronym", "parent_name"], axis = 1))
+        bglst.append(df)
     
     df = pd.concat(bglst)
     df["counts"] = df["counts"].apply(int)
+
+    #remove structures we don't care about!!!!!!!!!!!!!!!!!!!!!!
+    sois = ["Cerebellum", "ventricular systems", "fiber tracts", "grooves"]
+    for soi in sois:
+        soi = [s for s in structures if s.name==soi][0]
+        df = df[df.name != soi.name]
+        progeny = [str(xx.name) for xx in soi.progeny]
+        for progen in progeny:
+            df = df[df.name != progen]
+    
     df.drop(columns = ["Unnamed: 0"]).to_csv(pth, index = None)
     
     return pth
@@ -134,8 +147,8 @@ def generate_paired_statistics(src, csv_pth):
         structure_list = df.name.unique()
         brains = df.Brain.unique()
         
-        print "*************"
-        print c1,c2, "len of brains: {}".format(len(brains))
+        print("*************")
+        print(c1,c2, "len of brains: {}".format(len(brains)))
         lst = []
         for structure in structure_list:
             scount = df.loc[((df.name == structure) & (df.Condition == c2)), "counts"].sum()
@@ -304,7 +317,7 @@ tdf_dct, sigs = generate_paired_statistics(src, csv_pth)
 
 def check_registration_cross_sections(out):
     for z in [100,200,300,400,500]:
-        print z
+        print(z)
         nm_im = {}
         for fld in lst:
             kwargs = load_kwargs(fld)
@@ -327,7 +340,7 @@ def check_registration_cross_sections(out):
     #read once
     ims = [equalize_hist(tifffile.imread(xx)) for xx in nm_im.values()]
     for z in [50,100,150,200,250,300,350,400]:
-        print z
+        print(z)
         dst = os.path.join(out, "regqc_z{}.png".format(str(z).zfill(4)))
         tile(src = [i[z] for i in ims], subtitles=[xx for xx in nm_im.keys()], dst = dst)
         
@@ -449,9 +462,9 @@ def generate_percent_counts_and_density_per_region(src, csv_pth):
     #concantenate together
     df_percent = pd.concat(percents)
     
-    df["percent_per_total_counts (%)"] = df_percent
+    df["percent"] = df_percent
     df["volume"] = df[df.voxels_in_structure > 0].apply(lambda x: x.voxels_in_structure*(scale**3), 1)
-    df["density (cells/mm3)"] = df[df.voxels_in_structure > 0].apply(lambda x:x.counts/(float(x.voxels_in_structure*(scale**3))), 1)
+    df["density"] = df[df.voxels_in_structure > 0].apply(lambda x:x.counts/(float(x.voxels_in_structure*(scale**3))), 1)
     #export
     df.to_csv(os.path.join(src, "cell_counts_dataframe_w_percents_density.csv"))
     
@@ -461,71 +474,52 @@ def generate_percent_counts_and_density_per_region(src, csv_pth):
 percent_density_csv_pth = generate_percent_counts_and_density_per_region(src, csv_pth)
     
 ####################################################################DONE##########################################################################################               
-#%%
-
-#build structures class
-structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
-
 #%%    
-def pool_regions(sois, cond, df_pth, ann_pth, src, percent_density_csv_pth):
+def pool_regions(structures, cond, df_pth, ann_pth, src, percent_density_csv_pth):
 
-    """ pools regions together based on progenitors; also z scores new pooled regions and their counts and measures """    
+    """ pools regions together based on parent name; also z scores new pooled regions and their counts and measures """    
     
     #set variables
     df = pd.read_csv(percent_density_csv_pth)
     
-    #add in progenitor column
     tdf = df.copy()
-    tdf["parent"] = "empty"
-        
-    for soi in sois:
-        soi = [s for s in structures if s.name==soi][0]
-        print(soi.name)
-        progeny = [str(xx.name) for xx in soi.progeny]
-        if len(progeny) > 0:
-            for progen in progeny:
-                tdf.loc[tdf.name == progen,"parent"]=soi.name
-    
+   
     #drop non progen
-    tdf = tdf[(tdf["parent"] != "empty")]
-    
+    tdf = tdf[(tdf["parent_name"] != "empty")]
  
     #drop unnamed
     tdf = tdf.drop(columns = ["Unnamed: 0"])
-    #save as csv 
-    tdf.to_csv(os.path.join(src, "cell_counts_dataframe_with_progenitors.csv"), header = True, index = None)
     
     #aggregate counts
-    df_new = tdf.groupby(["parent", "Brain", "Condition"])["counts"].sum()
+    df_new = tdf.groupby(["parent_name", "Brain", "Condition"])["counts"].sum()
     df_new = pd.DataFrame(df_new)
-    df_new["percent_per_total_counts (%)"] = tdf.groupby(["parent", "Brain"])["percent_per_total_counts (%)"].sum()
-    df_new["density (cells/mm3)"] = tdf.groupby(["parent", "Brain"])["density (cells/mm3)"].sum()
+    df_new["percent"] = tdf.groupby(["parent_name", "Brain"])["percent"].sum()
 
     #save as new csv 
-    df_new.to_csv(os.path.join(src, "summed_parents_cell_counts_dataframe_v3.csv"), header = True)
+    df_new.to_csv(os.path.join(src, "summed_parents_cell_counts_dataframe.csv"), header = True)
     
     print("saved in :{}".format(src))
     
-    return os.path.join(src, "summed_parents_cell_counts_dataframe_v3.csv")
+    return os.path.join(src, "summed_parents_cell_counts_dataframe.csv")
 
 #give list of structures you want to pool
 #sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
 #            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
 #            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
 #            "Auditory areas", "Ectorhinal area", "Perirhinal area", "Entorhinal area"]
-sois =      ["Thalamus, sensory-motor cortex related", 
-            "Thalamus, polymodal association cortex related", "Periventricular zone", "Periventricular region", "Hypothalamic medial zone", 
-            "Hypothalamic lateral zone", "Midbrain, sensory related", "Midbrain, motor related", "Midbrain, behavioral state related", 
-            "Hippocampal formation", "Striatum", "Pallidum", "Periaqueductal gray", "Subiculum", "Main olfactory bulb", "Olfactory areas",
-            "Basolateral amygdalar nucleus", "Basomedial amygdalar nucleus", "Pons, sensory related", "Pons, motor related", 
-            "Pons, behavioral state related", "Superior olivary complex", "Parabrachial nucleus", "Ventral posterior complex of the thalamus",
-            "Ventral anterior-lateral complex of the thalamus", "Medial geniculate complex"]            
-sois =            ["Lateral group of the dorsal thalamus", "Anterior group of the dorsal thalamus", "Medial group of the dorsal thalamus",
-            "Intralaminar nuclei of the dorsal thalamus", "Geniculate group, ventral thalamus", "Ventral group of the dorsal thalamus",
-            "Subparafascicular area"]
+#sois =      ["Thalamus, sensory-motor cortex related", 
+#            "Thalamus, polymodal association cortex related", "Periventricular zone", "Periventricular region", "Hypothalamic medial zone", 
+#            "Hypothalamic lateral zone", "Midbrain, sensory related", "Midbrain, motor related", "Midbrain, behavioral state related", 
+#            "Hippocampal formation", "Striatum", "Pallidum", "Periaqueductal gray", "Subiculum", "Main olfactory bulb", "Olfactory areas",
+#            "Basolateral amygdalar nucleus", "Basomedial amygdalar nucleus", "Pons, sensory related", "Pons, motor related", 
+#            "Pons, behavioral state related", "Superior olivary complex", "Parabrachial nucleus", "Ventral posterior complex of the thalamus",
+#            "Ventral anterior-lateral complex of the thalamus", "Medial geniculate complex"]            
+#sois =            ["Lateral group of the dorsal thalamus", "Anterior group of the dorsal thalamus", "Medial group of the dorsal thalamus",
+#            "Intralaminar nuclei of the dorsal thalamus", "Geniculate group, ventral thalamus", "Ventral group of the dorsal thalamus",
+#            "Subparafascicular area"]
 
 #run
-sum_pth = pool_regions(sois, cond, df_pth, ann_pth, src, percent_density_csv_pth)
+sum_pth = pool_regions(structures, cond, df_pth, ann_pth, src, percent_density_csv_pth)
 ###################################################################DONE##########################################################################################        
 #%%
 
@@ -549,18 +543,18 @@ for nm in np.unique(df.name.values): #only gets unique names
     df_anova.loc[(df_anova["name"] == nm), "anova_counts_f"] = f
     df_anova.loc[(df_anova["name"] == nm), "anova_counts_pval"] = pval
         
-    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["percent_per_total_counts (%)"].values, 
-                 df[(df.name == nm) & (df.Condition == "homecage_control")]["percent_per_total_counts (%)"].values,
-                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["percent_per_total_counts (%)"].values, 
-                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["percent_per_total_counts (%)"].values)
+    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["percent"].values, 
+                 df[(df.name == nm) & (df.Condition == "homecage_control")]["percent"].values,
+                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["percent"].values, 
+                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["percent"].values)
     
     df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_f"] = f
     df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_pval"] = pval
         
-    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "DREADDs")]["density (cells/mm3)"].values)], 
-                 df[(df.name == nm) & (df.Condition == "homecage_control")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "homecage_control")]["density (cells/mm3)"].values)],
-                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density (cells/mm3)"].values)], 
-                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density (cells/mm3)"].values)])
+    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["density"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "DREADDs")]["density"].values)], 
+                 df[(df.name == nm) & (df.Condition == "homecage_control")]["density"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "homecage_control")]["density"].values)],
+                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density"].values)], 
+                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density"].values)])
     
     df_anova.loc[(df_anova["name"] == nm), "anova_density_f"] = f
     df_anova.loc[(df_anova["name"] == nm), "anova_density_pval"] = pval
@@ -573,8 +567,8 @@ df_anova.to_csv(os.path.join(src, "one_way_anova_all_structures.csv"))
 df = pd.read_csv(sum_pth, index_col = None)
 
 df_anova = pd.DataFrame()
-df_anova["name"] = np.unique(df["parent"].values)
-df["name"] = df["parent"] #temporarily adjusting column name bc im lazy and dont want to rewrite script
+df_anova["name"] = np.unique(df["parent_name"].values)
+df["name"] = df["parent_name"] #temporarily adjusting column name bc im lazy and dont want to rewrite script
 
 for nm in np.unique(df.name.values): #only gets unique names
     f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")].counts.values, 
@@ -585,21 +579,13 @@ for nm in np.unique(df.name.values): #only gets unique names
     df_anova.loc[(df_anova["name"] == nm), "anova_counts_f"] = f
     df_anova.loc[(df_anova["name"] == nm), "anova_counts_pval"] = pval
             
-    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["percent_per_total_counts (%)"].values, 
-                 df[(df.name == nm) & (df.Condition == "homecage_control")]["percent_per_total_counts (%)"].values,
-                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["percent_per_total_counts (%)"].values, 
-                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["percent_per_total_counts (%)"].values)
+    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["percent"].values, 
+                 df[(df.name == nm) & (df.Condition == "homecage_control")]["percent"].values,
+                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["percent"].values, 
+                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["percent"].values)
     
     df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_f"] = f
     df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_pval"] = pval
-
-    f, pval = f_oneway(df[(df.name == nm) & (df.Condition == "DREADDs")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "DREADDs")]["density (cells/mm3)"].values)], 
-                 df[(df.name == nm) & (df.Condition == "homecage_control")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "homecage_control")]["density (cells/mm3)"].values)],
-                 df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_no_reversal")]["density (cells/mm3)"].values)], 
-                 df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density (cells/mm3)"].values[~np.isnan(df[(df.name == nm) & (df.Condition == "CNO_control_reversal")]["density (cells/mm3)"].values)])
-    
-    df_anova.loc[(df_anova["name"] == nm), "anova_density_f"] = f
-    df_anova.loc[(df_anova["name"] == nm), "anova_density_pval"] = pval
         
 df_anova.to_csv(os.path.join(src, "one_way_anova_pooled_structures.csv"))
 #%%
@@ -610,11 +596,11 @@ df = pd.read_csv(percent_density_csv_pth)
 structs = df.name.unique()
 
 for nm in structs:
-    df.loc[(df.name == nm), "z_score_percents"] = zscore(df[df.name == nm]["percent_per_total_counts (%)"])
+    df.loc[(df.name == nm), "z_score_percents"] = zscore(df[df.name == nm]["percent"])
     df.loc[(df.name == nm), "z_score_counts"] = zscore(df[df.name == nm]["counts"])
     
     #setting variable bc will have to compute this myself
-    a = df[df.name == nm]["density (cells/mm3)"]
+    a = df[df.name == nm]["density"]
     df.loc[(df.name == nm), "z_score_density"] = (a - a.mean())/a.std(ddof=0) #ignores nan in dataframe (because some volumes are 0)
 
 df.drop(columns = ["Unnamed: 0"]).to_csv(os.path.join(src, "cell_counts_dataframe_w_percents_density_zscores_per_structure.csv"), index = None) 
@@ -625,118 +611,113 @@ df.drop(columns = ["Unnamed: 0"]).to_csv(os.path.join(src, "cell_counts_datafram
 #pooled z scores, but this time z scores PER STRUCTURE instead of PER CONDITION
 df = pd.read_csv(sum_pth)
 
-structs = df.parent.unique()
+structs = df.parent_name.unique()
 
 for nm in structs:
-    df.loc[(df.parent == nm), "z_score_percents"] = zscore(df[df.parent == nm]["percent_per_total_counts (%)"])
-    df.loc[(df.parent == nm), "z_score_counts"] = zscore(df[df.parent == nm]["counts"])
+    df.loc[(df.parent_name == nm), "z_score_percents"] = zscore(df[df.parent_name == nm]["percent"])
+    df.loc[(df.parent_name == nm), "z_score_counts"] = zscore(df[df.parent_name == nm]["counts"])
     
-    #setting variable bc will have to compute this myself
-    a = df[df.parent == nm]["density (cells/mm3)"]
-    df.loc[(df.parent == nm), "z_score_density"] = (a - a.mean())/a.std(ddof=0) #ignores nan in dataframe (because some volumes are 0)
-
-df.to_csv(os.path.join(src, "summed_cell_counts_dataframe_w_zscores_per_structure.csv"), index = None) 
+df.to_csv(os.path.join(src, "parents_w_zscores_per_structure.csv"), index = None) 
 
 #%%
-# 2 way ANOVA
-import statsmodels
-import statsmodels.api as sm
-from statsmodels.formula.api import ols
-
-#formatting
-sum_pth = '/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/summed_parents_cell_counts_dataframe.csv'
-
-df = pd.read_csv(sum_pth, index_col = None).drop(columns = ["Unnamed: 0"])
-
-df.loc[(df.Condition == "CNO_control_reversal"), "reversal"] = "reversal"
-df.loc[(df.Condition == "DREADDs"), "reversal"] = "reversal"
-df.loc[(df.Condition == "CNO_control_no_reversal"), "reversal"] = "no_reversal"
-df.loc[(df.Condition == "homecage_control"), "reversal"] = "no_reversal"
-
-#not sure about this but lets try..
-df.loc[(df.Condition == "homecage_control"), "DREADDs"] = "control"
-df.loc[(df.Condition == "CNO_control_no_reversal"), "DREADDs"] = "control"
-df.loc[(df.Condition == "CNO_control_reversal"), "DREADDs"] = "control"
-df.loc[(df.Condition == "DREADDs"), "DREADDs"] = "DREADDs"
-df["percent"] = df["percent_per_total_counts (%)"]
-
-#anova - test
-formula = "percent ~ C(reversal)"# + C(DREADDs) +  C(reversal):C(DREADDs)"
-model = ols(formula, df[df.parent == "Ventral group of the dorsal thalamus"]).fit()
-aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
-print(aov_table)
-
-#now lets do for all structures - POOLED
-structs = df.parent.unique()
-
-for nm in structs:
-    formula = "percent ~ C(reversal)"# + C(DREADDs) +  C(reversal):C(DREADDs)"
-    model = ols(formula, df[df.parent == nm]).fit()
-    aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
-    fval = np.asarray(aov_table)[0,2]
-    pval = np.asarray(aov_table)[0,3]
-    df.loc[(df.parent == nm), "two_way_F"] = fval
-    df.loc[(df.parent == nm), "two_way_pval"] = pval
-   
-    #doing post hoc on significant structures
-    if pval < 0.05:
-        res = pairwise_tukeyhsd(df[df.parent == nm]["percent"], df[df.parent == nm]["reversal"])
-        pval_tukey = psturng(np.abs(res.meandiffs / res.std_pairs), len(res.groupsunique), res.df_total)
-        df.loc[(df["parent"] == nm), "tukey"] = pval_tukey
-        
-#format df
-df = df.drop(columns = ["Brain", "Condition", "counts", "percent_per_total_counts (%)", "density (cells/mm3)",
-                   "reversal", "DREADDs", "percent"])
-df = df.drop_duplicates()
-
-df.to_csv(os.path.join(src, "two_way_anova_pooled_structures.csv"), index = None) 
-
-#%%
-#NOW FOR ALL STRUCTURES
-all_pth = '/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv'
-
-df = pd.read_csv(all_pth, index_col = None).drop(columns = ["Unnamed: 0"])
-
-df.loc[(df.Condition == "CNO_control_reversal"), "reversal"] = "reversal"
-df.loc[(df.Condition == "DREADDs"), "reversal"] = "reversal"
-df.loc[(df.Condition == "CNO_control_no_reversal"), "reversal"] = "no_reversal"
-df.loc[(df.Condition == "homecage_control"), "reversal"] = "no_reversal"
-
-#not sure about this but lets try..
-df.loc[(df.Condition == "CNO_control_reversal"), "DREADDs"] = "control"
-df.loc[(df.Condition == "DREADDs"), "DREADDs"] = "DREADDs"
-df["percent"] = df["percent_per_total_counts (%)"]
-
-#now lets do for all structures
-structs = df.name.unique()
-bad = []
-
-for nm in structs:
-    print(nm)
-    formula = "percent ~ C(reversal)"# + C(DREADDs) +  C(reversal):C(DREADDs)"
-    try:
-        model = ols(formula, df[df.name == nm]).fit()
-        aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
-        fval = np.asarray(aov_table)[0,2]
-        pval = np.asarray(aov_table)[0,3]
-        df.loc[(df.name == nm), "two_way_F"] = fval
-        df.loc[(df.name == nm), "two_way_pval"] = pval
-        
-        #doing post hoc on significant structures
-        if pval < 0.05:
-            res = pairwise_tukeyhsd(df[df.name == nm]["percent"], df[df.name == nm]["reversal"])
-            pval_tukey = psturng(np.abs(res.meandiffs / res.std_pairs), len(res.groupsunique), res.df_total)
-            df.loc[(df["name"] == nm), "tukey"] = pval_tukey
-            
-    except:
-        print("******************************************************************\n\n\
-              Structure not accepted: {}\n\
-              ******************************************************************\n\n".format(nm))
-        bad.append(nm)
-        
-#format df
-df = df.drop(columns = ["Brain", "Condition", "counts", "percent_per_total_counts (%)", "density (cells/mm3)",
-                   "reversal", "DREADDs", "percent", "id", "volume"])
-df = df.drop_duplicates()
-
-df.to_csv(os.path.join(src, "two_way_anova_all_structures.csv"), index = None) 
+## 2 way ANOVA
+#import statsmodels
+#import statsmodels.api as sm
+#from statsmodels.formula.api import ols
+#
+##formatting
+#sum_pth = '/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/summed_parents_cell_counts_dataframe.csv'
+#
+#df = pd.read_csv(sum_pth, index_col = None).drop(columns = ["Unnamed: 0"])
+#
+#df.loc[(df.Condition == "CNO_control_reversal"), "reversal"] = "reversal"
+#df.loc[(df.Condition == "DREADDs"), "reversal"] = "reversal"
+#df.loc[(df.Condition == "CNO_control_no_reversal"), "reversal"] = "no_reversal"
+#df.loc[(df.Condition == "homecage_control"), "reversal"] = "no_reversal"
+#
+##not sure about this but lets try..
+#df.loc[(df.Condition == "homecage_control"), "DREADDs"] = "control"
+#df.loc[(df.Condition == "CNO_control_no_reversal"), "DREADDs"] = "control"
+#df.loc[(df.Condition == "CNO_control_reversal"), "DREADDs"] = "control"
+#df.loc[(df.Condition == "DREADDs"), "DREADDs"] = "DREADDs"
+#
+##anova - test
+#formula = "percent ~ C(reversal)"# + C(DREADDs) +  C(reversal):C(DREADDs)"
+#model = ols(formula, df[df.parent == "Ventral group of the dorsal thalamus"]).fit()
+#aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
+#print(aov_table)
+#
+##now lets do for all structures - POOLED
+#structs = df.parent.unique()
+#
+#for nm in structs:
+#    formula = "percent ~ C(reversal)"# + C(DREADDs) +  C(reversal):C(DREADDs)"
+#    model = ols(formula, df[df.parent == nm]).fit()
+#    aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
+#    fval = np.asarray(aov_table)[0,2]
+#    pval = np.asarray(aov_table)[0,3]
+#    df.loc[(df.parent == nm), "two_way_F"] = fval
+#    df.loc[(df.parent == nm), "two_way_pval"] = pval
+#   
+#    #doing post hoc on significant structures
+#    if pval < 0.05:
+#        res = pairwise_tukeyhsd(df[df.parent == nm]["percent"], df[df.parent == nm]["reversal"])
+#        pval_tukey = psturng(np.abs(res.meandiffs / res.std_pairs), len(res.groupsunique), res.df_total)
+#        df.loc[(df["parent"] == nm), "tukey"] = pval_tukey
+#        
+##format df
+#df = df.drop(columns = ["Brain", "Condition", "counts", "percent_per_total_counts (%)", "density (cells/mm3)",
+#                   "reversal", "DREADDs", "percent"])
+#df = df.drop_duplicates()
+#
+#df.to_csv(os.path.join(src, "two_way_anova_pooled_structures.csv"), index = None) 
+#
+##%%
+##NOW FOR ALL STRUCTURES
+#all_pth = '/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv'
+#
+#df = pd.read_csv(all_pth, index_col = None).drop(columns = ["Unnamed: 0"])
+#
+#df.loc[(df.Condition == "CNO_control_reversal"), "reversal"] = "reversal"
+#df.loc[(df.Condition == "DREADDs"), "reversal"] = "reversal"
+#df.loc[(df.Condition == "CNO_control_no_reversal"), "reversal"] = "no_reversal"
+#df.loc[(df.Condition == "homecage_control"), "reversal"] = "no_reversal"
+#
+##not sure about this but lets try..
+#df.loc[(df.Condition == "CNO_control_reversal"), "DREADDs"] = "control"
+#df.loc[(df.Condition == "DREADDs"), "DREADDs"] = "DREADDs"
+#df["percent"] = df["percent_per_total_counts (%)"]
+#
+##now lets do for all structures
+#structs = df.name.unique()
+#bad = []
+#
+#for nm in structs:
+#    print(nm)
+#    formula = "percent ~ C(reversal)"# + C(DREADDs) +  C(reversal):C(DREADDs)"
+#    try:
+#        model = ols(formula, df[df.name == nm]).fit()
+#        aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
+#        fval = np.asarray(aov_table)[0,2]
+#        pval = np.asarray(aov_table)[0,3]
+#        df.loc[(df.name == nm), "two_way_F"] = fval
+#        df.loc[(df.name == nm), "two_way_pval"] = pval
+#        
+#        #doing post hoc on significant structures
+#        if pval < 0.05:
+#            res = pairwise_tukeyhsd(df[df.name == nm]["percent"], df[df.name == nm]["reversal"])
+#            pval_tukey = psturng(np.abs(res.meandiffs / res.std_pairs), len(res.groupsunique), res.df_total)
+#            df.loc[(df["name"] == nm), "tukey"] = pval_tukey
+#            
+#    except:
+#        print("******************************************************************\n\n\
+#              Structure not accepted: {}\n\
+#              ******************************************************************\n\n".format(nm))
+#        bad.append(nm)
+#        
+##format df
+#df = df.drop(columns = ["Brain", "Condition", "counts", "percent_per_total_counts (%)", "density (cells/mm3)",
+#                   "reversal", "DREADDs", "percent", "id", "volume"])
+#df = df.drop_duplicates()
+#
+#df.to_csv(os.path.join(src, "two_way_anova_all_structures.csv"), index = None) 
