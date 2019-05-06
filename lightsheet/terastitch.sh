@@ -2,7 +2,7 @@
 #
 #SBATCH -p all                # partition (queue)
 #SBATCH -c 6                      # number of cores
-#SBATCH -t 240                 # time (minutes)
+#SBATCH -t 1440                 # time (minutes)
 #SBATCH -o /scratch/zmd/logs/step1_terastitcher_%j.out        # STDOUT #add _%a to see each array job
 #SBATCH -e /scratch/zmd/logs/step1_terastitcher_%j.err        # STDERR #add _%a to see each array job
 #SBATCH --contiguous #used to try and get cpu mem to be contigous

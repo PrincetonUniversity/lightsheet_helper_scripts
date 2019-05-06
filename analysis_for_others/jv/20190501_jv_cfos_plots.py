@@ -14,9 +14,9 @@ import pandas as pd
 from scipy.stats import kruskal
 import numpy as np, os
 
-src = '/home/wanglab/Desktop'
+src = "/home/wanglab/Desktop"
 
-df_pth = '/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/summed_parents_cell_counts_dataframe.csv'
+df_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/summed_parents_cell_counts_dataframe.csv"
 df = pd.read_csv(df_pth, index_col = None)
 #temp change of column name
 df["name"] = df["parent_name"]
@@ -43,7 +43,7 @@ for nm in np.unique(df.name.values): #only gets unique names
 df_anova.to_csv(os.path.join(src, "kruskal_pooled_structures.csv"), index = None)
 
 #%%
-all_pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv"
+all_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv"
 
 df = pd.read_csv(all_pth, index_col = None)
 
@@ -78,21 +78,21 @@ import matplotlib.pyplot as plt
 from lightsheet.network_analysis import make_structure_objects
 
 #bubble plot
-df1 = pd.read_csv('/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/parents_w_zscores_per_structure.csv')
+df1 = pd.read_csv("/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/parents_w_zscores_per_structure.csv")
 df2 = pd.read_csv("/home/wanglab/Desktop/kruskal_pooled_structures.csv")
-df3 = pd.read_excel("/home/wanglab/mounts/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx")
-ann_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
+df3 = pd.read_excel("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx")
+ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
 
 #which ones not to visualise
-to_exclude = ['Nucleus of the lateral olfactory tract',
-              'Cerebral cortex', 'Cerebral nuclei', 
-              'Inferior colliculus', 'Perihypoglossal nuclei',
-              'Cortical subplate']
+to_exclude = ["Nucleus of the lateral olfactory tract",
+              "Cerebral cortex", "Cerebral nuclei", 
+              "Inferior colliculus", "Perihypoglossal nuclei",
+              "Cortical subplate"]
 #look at stuff per condition
 sig_str = df2[(df2.kruskal_percent_counts_pval < 0.05) & (~df2.name.isin(to_exclude))].name.values
 
 #get structure ontology
-structures = make_structure_objects("/home/wanglab/mounts/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
+structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 #%%
 
@@ -187,36 +187,36 @@ df_homecage_control = pd.DataFrame(dict(x=x, y=y, s=size, structures=sig_str, ac
 #%%
 import matplotlib.patches as mpatches
 
-fig, ax = plt.subplots(facecolor='w', figsize=(11.7, 8.3))
+fig, ax = plt.subplots(facecolor="w", figsize=(11.7, 8.3))
 
 for key, row in df_dreadds.iterrows():
-    ax.scatter(row['x'], row['y'], s=row['s']*5, alpha=.5, color = 'green', label = "DREADDs")
-    ax.annotate(row['acronym'], xy=(row['x'], row['y']), fontsize = 8, color = "midnightblue")
+    ax.scatter(row["x"], row["y"], s=row["s"]*5, alpha=.5, color = "green", label = "DREADDs")
+    ax.annotate(row["acronym"], xy=(row["x"], row["y"]), fontsize = 8, color = "midnightblue")
 
 for key, row in df_cno_reversal.iterrows():
-    ax.scatter(row['x'], row['y'], s=row['s']*5, alpha=.5, color = 'gold', label = "CNO reversal")
-    ax.annotate(row['acronym'], xy=(row['x'], row['y']), fontsize = 8, color = "darkred")
+    ax.scatter(row["x"], row["y"], s=row["s"]*5, alpha=.5, color = "gold", label = "CNO reversal")
+    ax.annotate(row["acronym"], xy=(row["x"], row["y"]), fontsize = 8, color = "darkred")
 
 for key, row in df_cno_no_reversal.iterrows():
-    ax.scatter(row['x'], row['y'], s=row['s']*5, alpha=.5, color = 'blue', label = "CNO no reversal")
-    ax.annotate(row['acronym'], xy=(row['x'], row['y']), fontsize = 8, color = "darkslategray")
+    ax.scatter(row["x"], row["y"], s=row["s"]*5, alpha=.5, color = "blue", label = "CNO no reversal")
+    ax.annotate(row["acronym"], xy=(row["x"], row["y"]), fontsize = 8, color = "darkslategray")
     
 #for key, row in df_homecage_control.iterrows():
-#    ax.scatter(row['x'], row['y'], s=row['s']*5, alpha=.5, color = 'red')
-#    ax.annotate(row['acronym'], xy=(row['x'], row['y']), fontsize = 5)
+#    ax.scatter(row["x"], row["y"], s=row["s"]*5, alpha=.5, color = "red")
+#    ax.annotate(row["acronym"], xy=(row["x"], row["y"]), fontsize = 5)
 #    
 # Add titles (main and on axis)
 plt.xlabel("Average Z-score")
 plt.ylabel("-log(p-value)[Kruskal–Wallis]")
 plt.title("Z-scores of Significant Structures by Kruskal–Wallis test")
 
-green_patch = mpatches.Patch(color='green', label='DREADDs')
-gold_patch = mpatches.Patch(color='gold', label='CNO reversal')
-blue_patch = mpatches.Patch(color='blue', label='CNO no reversal')
+green_patch = mpatches.Patch(color="green", label="DREADDs")
+gold_patch = mpatches.Patch(color="gold", label="CNO reversal")
+blue_patch = mpatches.Patch(color="blue", label="CNO no reversal")
 
 plt.legend(handles=[green_patch, gold_patch, blue_patch], bbox_to_anchor=(.95, 1), loc=2, borderaxespad=0.)
 
-plt.savefig("/home/wanglab/Desktop/bubble.pdf", dpi = 300, papertype = "a3")
+plt.savefig("/home/wanglab/Desktop/bubble.svg", dpi = 300, papertype = "a3")
 #%%
 
 #PCA
@@ -252,14 +252,14 @@ arr = df_PCA.loc[:, structures].values
 x = arr
 
 # Separating out the target
-y = df_PCA.loc[:,['condition']].values
+y = df_PCA.loc[:,["condition"]].values
 
 # Standardizing the features
 x = StandardScaler().fit_transform(x)
 
 #clean data
 from sklearn.preprocessing import Imputer
-imp = Imputer(missing_values='NaN', strategy='mean', axis=1)
+imp = Imputer(missing_values="NaN", strategy="mean", axis=1)
 cleaned_data = imp.fit_transform(x)
 
 from sklearn.decomposition import PCA
@@ -270,19 +270,19 @@ principalComponents = pca.fit_transform(cleaned_data)
 
 total_variance = np.sum(pca.explained_variance_ratio_)
 
-finalDf = pd.concat([pd.DataFrame(principalComponents), pd.DataFrame(df_PCA['condition'].values)], axis = 1, ignore_index = True)
+finalDf = pd.concat([pd.DataFrame(principalComponents), pd.DataFrame(df_PCA["condition"].values)], axis = 1, ignore_index = True)
 finalDf.to_csv("/home/wanglab/Desktop/pca_with_percents.csv")
 
 #%%
 #visualise
 fig = plt.figure(figsize = (11.7,8.3))
 ax = fig.add_subplot(1,1,1) 
-ax.set_xlabel('Principal Component 1', fontsize = 12)
-ax.set_ylabel('Principal Component 2', fontsize = 12)
-ax.set_title('20 component PCA', fontsize = 12)
+ax.set_xlabel("Principal Component 1", fontsize = 12)
+ax.set_ylabel("Principal Component 2", fontsize = 12)
+ax.set_title("20 component PCA", fontsize = 12)
 
-targets = ['DREADDs', 'CNO_control_reversal', 'CNO_control_no_reversal', 'homecage_control']
-colors = ['g', 'gold', 'b', 'r']
+targets = ["DREADDs", "CNO_control_reversal", "CNO_control_no_reversal", "homecage_control"]
+colors = ["g", "gold", "b", "r"]
 for target, color in zip(targets,colors):
     indicesToKeep = finalDf[10] == target
     ax.scatter(finalDf.loc[indicesToKeep, 0]
