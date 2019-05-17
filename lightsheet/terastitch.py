@@ -21,7 +21,7 @@ systemdirectory=directorydeterminer()
 #'injch' = channels(s) to quantify injection site
 #e.g.: inputdictionary={path_1: [['regch', '00']], path_2: [['cellch', '00'], ['injch', '01']]} ###create this dictionary variable BEFORE params
 inputdictionary={
-os.path.join(systemdirectory, 'LightSheetTransfer/kelly/20190415_cfos_for_microscope_tests/190430_m57206_obs_cfos_20190319_4x_647_008na_1hfds_z2um_200msec_10povlp_10-59-43'): [['cellch', '00']]}
+os.path.join(systemdirectory, 'LightSheetTransfer/kelly/20190415_cfos_for_microscope_tests/190505_m57207_dems_cfos_20190320_4x_647_008na_1hfds_z2um_200msec_10povlp_12-38-25'): [['cellch', '00']]}
 ####Required inputs
 
 params={
@@ -29,7 +29,7 @@ params={
 'objectdetection': 'convnet', # 'edgedetection', 'convnet', 'clearmap', 'all'; clearmap setting uses their SpotDetection method
 'systemdirectory':  systemdirectory, #don't need to touch
 'inputdictionary': inputdictionary, #don't need to touch
-'outputdirectory': os.path.join(systemdirectory, 'LightSheetTransfer/kelly/20190415_cfos_for_microscope_tests/m57206_obs_cfos_4x_stitched'),
+'outputdirectory': os.path.join(systemdirectory, 'LightSheetTransfer/kelly/20190415_cfos_for_microscope_tests/m57207_dems_cfos_20190320_4x_stitched'),
 'xyz_scale': (1.63, 1.63, 2), #(5.0,5.0,3), #micron/pixel: 5.0um/pix for 1.3x; 1.63um/pix for 4x
 'tiling_overlap': 0.10, #percent overlap taken during tiling
 'stitchingmethod': 'terastitcher', #'terastitcher', blending see below for details

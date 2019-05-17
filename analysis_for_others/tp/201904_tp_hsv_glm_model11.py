@@ -133,11 +133,12 @@ structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_tab
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 #GET ONLY NEOCORTICAL POOLS
-sois = ["Ventral group of the dorsal thalamus", "Subparafascicular nucleus",
+sois = ["Ventral group of the dorsal thalamus", "Subparafascicular nucleus", "Subparafasicular area",
+        "Peripeduncular nucleus",
         "Geniculate group, dorsal thalamus", "Lateral group of the dorsal thalamus",
         "Anterior group of the dorsal thalamus", "Medial group of the dorsal thalamus",
         "Midline group of the dorsal thalamus", "Intralaminar nuclei of the dorsal thalamus",
-        "Reticular nucleus of the thalamus", "Geniculate group, ventral thalamus"]
+        "Reticular nucleus of the thalamus", "Geniculate group, ventral thalamus", "Epithalamus"]
 
 #make new dict - for all brains
 cells_pooled_regions = {}

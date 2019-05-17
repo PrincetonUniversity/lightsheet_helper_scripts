@@ -243,8 +243,8 @@ nullmean = null.mean()
 nullstd = null.std()
 for y,x in np.argwhere(sig):
     pass
-    ax.text(x+.5, y+.5, 'x', fontsize=15, ha='center', va='center', transform=ax.transData)
-ax.text(.5, 1.06, "X: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) X's are expected by chance if no real effect exists".format(nullmean, nullstd), ha='center', va='center', fontsize='small', transform=ax.transAxes)
+#    ax.text(x+.5, y+.5, 'x', fontsize=15, ha='center', va='center', transform=ax.transData)
+#ax.text(.5, 1.06, "X: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) X's are expected by chance if no real effect exists".format(nullmean, nullstd), ha='center', va='center', fontsize='small', transform=ax.transAxes)
 
 # aesthetics
 # xticks

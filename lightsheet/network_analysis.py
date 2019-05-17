@@ -759,8 +759,6 @@ def make_grouped_radial_plot(inputdata, colors, titlefont = False, subtitlefont=
 
 
 #%%
-
-
 def generate_multi_radial_plots_using_levels(excelfls, substructure_name_levels_list = False, title = False, nametype='name', svlocname = False, remove_childless_structures_not_repsented_in_ABA = False, ann_pth=None, colorlst = False, acronym_name_pair_font = 14, titlefont = 20, subtitlefont = 16, legendfont = 14, labelfont = 20, excelfilekeyword=False):
     '''Function to generate multiple plots
     _______    
@@ -912,10 +910,6 @@ def variable_count(structures, substructure_name, levels, nametype='name'):
     #variable list and data (count) list:
     #variables, count = zip(*lst)
     return lst #variables, count 
-
-
-
-
 
 
 #%%

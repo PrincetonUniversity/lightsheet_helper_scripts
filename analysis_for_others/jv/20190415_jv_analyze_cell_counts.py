@@ -80,7 +80,7 @@ conditions = {n:c for n,c in zip(nms, cond)}
 pth = os.path.join(src, "cell_counts_dataframe.csv")
 
 df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx"
-ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_erosion.tif"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 
 #%%
@@ -113,7 +113,7 @@ def generate_data_frame(conditions, lst, pth):
     df["counts"] = df["counts"].apply(int)
 
     #remove structures we don't care about!!!!!!!!!!!!!!!!!!!!!!
-    sois = ["Cerebellum", "ventricular systems", "fiber tracts", "grooves"]
+    sois = ["ventricular systems", "fiber tracts", "grooves"]
     for soi in sois:
         soi = [s for s in structures if s.name==soi][0]
         df = df[df.name != soi.name]
@@ -503,20 +503,10 @@ def pool_regions(structures, cond, df_pth, ann_pth, src, percent_density_csv_pth
     return os.path.join(src, "summed_parents_cell_counts_dataframe.csv")
 
 #give list of structures you want to pool
-#sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-#            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-#            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-#            "Auditory areas", "Ectorhinal area", "Perirhinal area", "Entorhinal area"]
-#sois =      ["Thalamus, sensory-motor cortex related", 
-#            "Thalamus, polymodal association cortex related", "Periventricular zone", "Periventricular region", "Hypothalamic medial zone", 
-#            "Hypothalamic lateral zone", "Midbrain, sensory related", "Midbrain, motor related", "Midbrain, behavioral state related", 
-#            "Hippocampal formation", "Striatum", "Pallidum", "Periaqueductal gray", "Subiculum", "Main olfactory bulb", "Olfactory areas",
-#            "Basolateral amygdalar nucleus", "Basomedial amygdalar nucleus", "Pons, sensory related", "Pons, motor related", 
-#            "Pons, behavioral state related", "Superior olivary complex", "Parabrachial nucleus", "Ventral posterior complex of the thalamus",
-#            "Ventral anterior-lateral complex of the thalamus", "Medial geniculate complex"]            
-#sois =            ["Lateral group of the dorsal thalamus", "Anterior group of the dorsal thalamus", "Medial group of the dorsal thalamus",
-#            "Intralaminar nuclei of the dorsal thalamus", "Geniculate group, ventral thalamus", "Ventral group of the dorsal thalamus",
-#            "Subparafascicular area"]
+sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
+            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
+            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
+            "Auditory areas", "Ectorhinal area", "Perirhinal area", "Entorhinal area"]
 
 #run
 sum_pth = pool_regions(structures, cond, df_pth, ann_pth, src, percent_density_csv_pth)
