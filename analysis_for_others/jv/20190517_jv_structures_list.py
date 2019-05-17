@@ -196,44 +196,15 @@ for an in brains:
         pooled_counts[soi.name] = np.sum(np.asarray(counts))
     
     #fill other details and add to big dict
-    pooled_counts["group"] = condition[0]
     pooled_counts_an[an] = pooled_counts
-
+    pooled_counts["group"] = condition[0]
+    
 #make into giant dataframe
 main_df = pd.DataFrame.from_dict(pooled_counts_an, orient = "index")
 #sort by group so makes more sense
 main_df = main_df.sort_values(by=["group"])
 main_df.index.name = "animal"
 
-#rearrange columns so that group is first
-main_df = main_df[["group", "Somatosensory areas", "Gustatory areas", "Visceral area",
-       "Auditory areas", "Visual areas", "Anterior cingulate area",
-       "Prelimbic area", "Infralimbic area", "Orbital area",
-       "Agranular insular area", "Retrosplenial area",
-       "Posterior parietal association areas",
-       "Temporal association areas", "Perirhinal area", "Ectorhinal area",
-       "Taenia tecta", "Dorsal peduncular area", "Piriform area",
-       "Cortical amygdalar area", "Piriform-amygdalar area",
-       "Postpiriform transition area", "Hippocampal region",
-       "Retrohippocampal region", "Endopiriform nucleus",
-       "Lateral amygdalar nucleus", "Basolateral amygdalar nucleus",
-       "Basomedial amygdalar nucleus", "Posterior amygdalar nucleus",
-       "Striatum dorsal region", "Striatum ventral region",
-       "Lateral septal complex", "Striatum-like amygdalar nuclei",
-       "Pallidum", "Ventral group of the dorsal thalamus",
-       "Subparafascicular nucleus", "Subparafascicular area",
-       "Peripeduncular nucleus", "Geniculate group, dorsal thalamus",
-       "Lateral group of the dorsal thalamus",
-       "Anterior group of the dorsal thalamus",
-       "Medial group of the dorsal thalamus",
-       "Midline group of the dorsal thalamus",
-       "Intralaminar nuclei of the dorsal thalamus",
-       "Reticular nucleus of the thalamus",
-       "Geniculate group, ventral thalamus", "Epithalamus",
-       "Hypothalamus", "Midbrain, sensory related",
-       "Midbrain, motor related", "Midbrain, behavioral state related",
-       "Fastigial nucleus", "Interposed nucleus", "Dentate nucleus"]]
-    
 main_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_visualization.csv"))
 
 #rotate the df to make it eaiser to plot things
@@ -242,9 +213,9 @@ structures = pd.Series(main_df.columns.values[1:])
 rotate_df["name"] = pd.concat([structures]*33)
 vals = [pd.Series(main_df[xx].values) for xx in main_df.columns.values[1:]]    
 rotate_df["percent"] = pd.concat(vals, ignore_index = True)
-ans = [pd.Series([xx]*53) for xx in main_df.index.values]
+ans = [pd.Series([xx]*structures.shape[0]) for xx in main_df.index.values]
 rotate_df["animal"] = pd.concat(ans)
-groups = [pd.Series([xx]*53) for xx in main_df.group.values]
+groups = [pd.Series([xx]*structures.shape[0]) for xx in main_df.group.values]
 rotate_df["condition"] = pd.concat(groups)
 
 #save
