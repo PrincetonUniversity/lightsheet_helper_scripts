@@ -184,14 +184,13 @@ for an in brains:
         print(soi.name)
         progeny = [str(xx.name) for xx in soi.progeny]
         counts = [] #store counts in this list
-        pcounts = [] #store percent counts in this list
+        val = df.loc[(df.name == soi.name), "percent"].values
+        if val.shape[0] > 0: counts.append(val[0])
         if len(progeny) > 0:
             for progen in progeny:
                 val = df.loc[(df.name == progen), "percent"].values
                 if val.shape[0] > 0: counts.append(val[0])
-        else:
-            val = df.loc[(df.name == soi.name), "percent"].values
-            if val.shape[0] > 0: counts.append(val[0])
+                
         #sum counts in parent structures            
         pooled_counts[soi.name] = np.sum(np.asarray(counts))
     
