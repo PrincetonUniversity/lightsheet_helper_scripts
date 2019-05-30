@@ -7,6 +7,7 @@ Created on Tue May 14 15:00:51 2019
 """
 
 import pickle as pckl, numpy as np, seaborn as sns, pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 %matplotlib inline
 
@@ -43,7 +44,7 @@ ax.set_yticklabels(["{}".format(ak) for ak in regions], fontsize=7, va = "center
 ax.set_xticks(np.arange(len(brainnames_sort)))
 ax.set_xticklabels(["{}".format(brain) for brain in brainnames_sort], rotation=30, fontsize=5, ha="right")
 cb = plt.colorbar(shrink = 0.3)
-cb.set_label("% of thalamic counts", fontsize="x-small", labelpad=3)
+cb.set_label("% of total cell counts", fontsize="x-small", labelpad=3)
 plt.savefig(dst+"/counts_sort.svg", bbox_inches = "tight")
 
 #%%

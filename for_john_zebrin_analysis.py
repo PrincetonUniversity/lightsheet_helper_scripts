@@ -19,17 +19,32 @@ img = tifffile.imread(img_pth)
 #look at one slice
 plt.imshow(img[200])
 
+#HAVE TO DO
 #crop the image
 cb = img[:, 423:, :]
 
 #show cropped image
 plt.imshow(cb[400])
 
+#HAVE TO DO
 #reslice to posterior-anterior coronal view
 cb_coronal = np.rot90(np.transpose(cb, [1, 0, 2]), axes = (2,1))
 
 #show rotated image
 plt.imshow(cb_coronal[0])
+
+tifffile.imsave("/home/wanglab/Desktop/temp.tif", cb_coronal)
+
+#HAVE TO DO
+clahe = np.zeros_like(cb_coronal)
+
+for i, imgs in enumerate(cb_coronal):
+    #apply clahe function
+    #suppose the output is img_clahe
+    clahe[i] = img_clage
+
+#ssave it out
+tifffile.imsave([path], clahe)    
 
 #get max projection
 max_cb = np.max(cb_coronal, axis = 0)
