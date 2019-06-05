@@ -114,27 +114,22 @@ structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_tab
 #%%
 #GET ONLY THALAMUS POOLS
 nuclei = ["Parafascicular nucleus",
-        "Posterior complex of the thalamus",
-        
+        "Posterior complex of the thalamus",        
         "Posterior triangular thalamic nucleus",
         "Lateral posterior nucleus of the thalamus",
         "Lateral habenula",
         "Lateral dorsal nucleus of thalamus",
-        
+        "Central lateral nucleus of the thalamus",        
         "Paraventricular nucleus of the thalamus",
-        "Central lateral nucleus of the thalamus",
-        "Nucleus of reuniens",
-        
-        "Ventral posterolateral nucleus of the thalamus",
-        "Ventral posteromedial nucleus of the thalamus", 
-        
+        "Nucleus of reuniens",        
         "Mediodorsal nucleus of thalamus",
         "Ventral part of the lateral geniculate complex",
-        
+        "Ventral posterolateral nucleus of the thalamus",
+        "Ventral posteromedial nucleus of the thalamus",         
         "Submedial nucleus of the thalamus",
-        "Anteroventral nucleus of thalamus",
         "Reticular nucleus of the thalamus",
         "Ventral medial nucleus of the thalamus",
+        "Anteroventral nucleus of thalamus",
         "Ventral anterior-lateral complex of the thalamus"
         ]
 
@@ -242,7 +237,7 @@ cell_counts_per_brain_pool = np.asarray([[x[0]+x[1], x[2]+x[3]+x[4]+x[5], x[6]+x
 
 #%%
 #pooled injections
-ak = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII-X", 
+ak_pool = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII-X", 
                  "Simplex", "Crus I", "Crus II", "PM, CP"])
 
 #pooling injection regions
@@ -268,13 +263,13 @@ expr_all_as_frac_of_lob_pool_norm = np.asarray([expr_all_as_frac_of_lob_pool[i]/
 #                       "Ventral posteromedial\n& posterolateral",
 #                       "Mediodorsal,\nVentral lateral geniculate",
 #                       "Submedial, Anteroventral\nReticular, Ventral medial\nVentral anterior-lateral"])
-regions = np.asarray(nuclei)
+
 #%%
 
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
 mean_counts = np.asarray([np.mean(cell_counts_per_brain_p[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
-fig = plt.figure(figsize=(6,5))
+fig = plt.figure(figsize=(5,7))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
@@ -292,7 +287,8 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 #cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
 #cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.3, aspect=10)
 cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
@@ -304,18 +300,18 @@ for ri,row in enumerate(show):
         ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
         
 #remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(ak))+.5)
-lbls = np.asarray(ak)
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
-ax.set_yticks(np.arange(len(regions))+.5)
+ax.set_yticks(np.arange(len(nuclei))+.5)
 #The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
 # only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
 # by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
 #ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
-ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
+ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
 dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst,"mean_count.svg"), bbox_inches = "tight")
+#plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
 #%%
 #glm
 X = expr_all_as_frac_of_lob_pool_norm
@@ -327,6 +323,9 @@ mat_shuf = []
 p_shuf = []
 ars = []
 rs = []
+fit = []
+fit_shuf = []
+
 for itera in range(1000):
     if itera%100 == 0: print(itera)
     if itera == 0:
@@ -336,8 +335,9 @@ for itera in range(1000):
         shuffle = True
         mat_shuf.append([])
         p_shuf.append([])
+        fit_shuf.append([])
         inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
-    for count, region in zip(Y.T, regions):
+    for count, region in zip(Y.T, nuclei):
         try:
             inj_ = inj[~np.isnan(count)]
             count = count[~np.isnan(count)]
@@ -358,11 +358,11 @@ for itera in range(1000):
             if not shuffle:
                 mat.append(val)
                 pmat.append(pvals)
-#                ars.append(res.rsquared_adj)
-#                rs.append(res.rsquared)
+                fit.append(res.fittedvalues)
             elif shuffle:
                 mat_shuf[-1].append(val)
                 p_shuf[-1].append(pvals)
+                fit_shuf[-1].append(res.fittedvalues)
         except:
             inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:] #sometimes the shuffle messes stuff up
             inj_ = inj[~np.isnan(count)]
@@ -400,21 +400,21 @@ for itera in range(1000):
             plt.ylabel("Residuals")
             plt.savefig(os.path.join(dst, "resid_inspection-{}.png").format(region))
         """
-        
+    
 
 mat = np.array(mat) # region x inj
 mat_shuf = np.array(mat_shuf) # region x inj
 pmat = np.array(pmat) # region x inj
 p_shuf = np.array(p_shuf)
-ars = np.array(ars)
-rs = np.array(rs)
+fit = np.array(fit)
+fit_shuf = np.array(fit_shuf)
 #%%
 ## display
-fig = plt.figure(figsize=(6,5))
+fig = plt.figure(figsize=(5,7))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 # map 1: weights
-show = mat # NOTE abs
+show = mat#np.median(mat_shuf, axis = 0) # NOTE abs
 
 vmin = 0
 vmax = 3
@@ -430,7 +430,8 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 #cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
 #cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", shrink=0.3, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.2, aspect=10)
 cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
@@ -462,11 +463,144 @@ ax.set_xticks(np.arange(len(ak))+.5)
 lbls = np.asarray(ak)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
+dst = "/home/wanglab/Desktop"
+#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+
+#%%
+
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_fit = np.asarray([np.mean(fit.T[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+
+fig = plt.figure(figsize=(5,7))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+show = mean_fit.T #np.flip(mean_counts, axis = 1) # NOTE abs
+
+vmin = 0
+vmax = 6
+cmap = plt.cm.viridis
+cmap.set_over('gold')
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,vmax-vmin+1)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
+#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.3, aspect=10)
+cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(True)
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        pass
+        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        
+#remaking labeles so it doesn't look squished
+ax.set_xticks(np.arange(len(ak))+.5)
+lbls = np.asarray(ak)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
+dst = "/home/wanglab/Desktop"
+#plt.savefig(os.path.join(dst,"thal_mean_fit.svg"), bbox_inches = "tight")
+
+#%%
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_fit = np.asarray([np.mean(fit_shuf.mean(axis = 0).T[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+
+fig = plt.figure(figsize=(5,7))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+show = mean_fit.T #np.flip(mean_counts, axis = 1) # NOTE abs
+
+vmin = 0
+vmax = 6
+cmap = plt.cm.viridis
+cmap.set_over('gold')
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,vmax-vmin+1)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
+#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.3, aspect=10)
+cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(True)
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        pass
+        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        
+#remaking labeles so it doesn't look squished
+ax.set_xticks(np.arange(len(ak))+.5)
+lbls = np.asarray(ak)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+# yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
 dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst,"weights.svg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst,"thal_mean_fit_shuf.svg"), bbox_inches = "tight")
+
+#%%
+
+#make boxplots to make fit and shuffle fit vs. actual?
+fig = plt.figure(figsize=(20,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+df = pd.DataFrame()
+df["count"] = fit.ravel()
+df["brain"] = np.array(brains*18)
+df["region"] = np.repeat(np.asarray(regions), 23)
+df["inj"] = np.array([ak[idx] for idx in primary_pool]*18)
+
+ax = sns.heatmap(fit.T)
+#ax.set_xticks(np.arange(len(regions))+.5)
+#ax.set_xticklabels(["{}".format(bi) for bi in regions], rotation=30, fontsize=6, ha="center")
+##
+#vmin = 0
+#vmax = 6
+#cmap = plt.cm.viridis
+#cmap.set_over('gold')
+##colormap
+## discrete colorbar details
+#bounds = np.linspace(vmin,vmax,vmax-vmin+1)
+##bounds = np.linspace(-2,5,8)
+#norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+#
+#pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+##cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
+##cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
+#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+#                  shrink=0.3, aspect=10)
+#cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
+#cb.ax.tick_params(labelsize="x-small")
+#
+#cb.ax.set_visible(True)
+## exact value annotations
+#for ri,row in enumerate(show):
+#    for ci,col in enumerate(row):
+#        pass
+#        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+#        
+##remaking labeles so it doesn't look squished
+#ax.set_xticks(np.arange(len(ak))+.5)
+#lbls = np.asarray(ak)
+#ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+## yticks
+#ax.set_yticks(np.arange(len(regions))+.5)
+#ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")

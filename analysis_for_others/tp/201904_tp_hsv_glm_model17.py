@@ -108,7 +108,7 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 #%%
 
 #pooled injections
-ak = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
+ak_pool = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
                  "Simplex", "Crura", "PM, CP"])
 #np.save("/home/wanglab/mounts/wang/zahra/modeling/h129/neocortex/pooled_cerebellar_regions.npy", ak)
 #pooling injection regions
@@ -120,12 +120,7 @@ expr_all_as_frac_of_inj_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[3],
                                  brain[7]+brain[8]+brain[9],brain[10], brain[11]+brain[12], 
                                  brain[13]+brain[14]] for brain in expr_all_as_frac_of_inj])
     
-#drop brain with high count, lob vi, vii
-#brain ids: 21
-mask = np.ones(len(expr_all_as_frac_of_lob_pool), dtype=bool)
-mask[[21]] = False
-
-primary = np.array([np.argmax(e) for e in expr_all_as_frac_of_inj_pool[mask, ...]])
+primary = np.array([np.argmax(e) for e in expr_all_as_frac_of_inj_pool])
 primary_reg = np.array([ak[i] for i in primary])
 #np.save("/home/wanglab/mounts/wang/zahra/modeling/h129/neocortex/primary_region_injected_in_pooled_cerebellar_regions.npy", primary_reg)
 
