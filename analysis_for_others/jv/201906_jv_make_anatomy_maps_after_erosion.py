@@ -106,7 +106,7 @@ def make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, save_dst,
     
     #loop only positives
     zstep = 10
-    colorbar_cutoff = 65#20,60 #this is related to zstep size...(it"s like  apercetnage...)
+    colorbar_cutoff = 80#20,60 #this is related to zstep size...(it"s like  apercetnage...)
     rngs = range(0, 558, zstep)
     for iii in range(len(rngs)-1):
         #range rng = (100,150)

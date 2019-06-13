@@ -121,7 +121,10 @@ expr_all_as_frac_of_inj_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[3],
                                  brain[7]+brain[8]+brain[9],brain[10], brain[11]+brain[12], 
                                  brain[13]+brain[14]] for brain in expr_all_as_frac_of_inj])
     
-primary = np.array([np.argmax(e) for e in expr_all_as_frac_of_inj_pool])
+primary_pool = np.array([np.argmax(e) for e in expr_all_as_frac_of_inj_pool])
+
+#get n's after pooling
+primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
 
 #NORMALISATION
 total_lob_sum = np.asarray([np.sum(expr_all_as_frac_of_lob_pool[i]) for i in range(len(expr_all_as_frac_of_lob))])    
@@ -133,7 +136,6 @@ cells_regions = cells_regions.to_dict(orient = "dict")
 
 brains = list(cells_regions.keys())
 
-###########################################################WORKING ON THIS###########################################################
 #pooling regions
 structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", 
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
@@ -246,12 +248,14 @@ cell_counts_per_brain_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], b
                                           brain[8]+brain[9], brain[10], brain[12], brain[11], 
                                           brain[13]+brain[14], brain[15]+brain[16]] for brain in cell_counts_per_brain_p])
 
-regions = np.asarray(['Infralimbic, Prelimbic,\n Anterior Cingulate, Orbital',
+regions = np.asarray(['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital',
        'Frontal pole', 'Agranular insula', 'Gustatory, Visceral',
        'Somatomotor, Somatosensory', 'Retrosplenial', 'Visual',
-       'Posterior parietal', 'Temporal, Auditory',
+       'Post. parietal', 'Temporal, Auditory',
        'Peririhinal, Ectorhinal'])
 
+X = normalised
+Y = cell_counts_per_brain_pool    
 #%%
 
 ##  glm
@@ -377,4 +381,6 @@ ax.set_yticks(np.arange(len(regions))+.5)
 # by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
 #ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
-plt.savefig(os.path.join(dst,"nc_lm.pdf"), bbox_inches = "tight")
+#plt.savefig(os.path.join(dst,"nc_lm.pdf"), bbox_inches = "tight")
+
+#%%

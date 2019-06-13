@@ -367,10 +367,10 @@ def generate_p_value_maps(src):
     groupC = [os.path.join(flds, fld) for fld in os.listdir(flds)if conditions[os.path.basename(fld)] == "CNO_control_reversal"]; groupC.sort()
     groupD = [os.path.join(flds, fld) for fld in os.listdir(flds) if conditions[os.path.basename(fld)] == "DREADDs"]; groupC.sort()
 
-    group_a = [xx+"/cells_heatmap.tif" for xx in groupA]
-    group_b = [xx+"/cells_heatmap.tif" for xx in groupB]  
-    group_c = [xx+"/cells_heatmap.tif" for xx in groupC]  
-    group_d = [xx+"/cells_heatmap.tif" for xx in groupD]  
+    group_a = [xx+"/cells_heatmap_60um_erosion.tif" for xx in groupA]
+    group_b = [xx+"/cells_heatmap_60um_erosion.tif" for xx in groupB]  
+    group_c = [xx+"/cells_heatmap_60um_erosion.tif" for xx in groupC]  
+    group_d = [xx+"/cells_heatmap_60um_erosion.tif" for xx in groupD]  
     
     
     grp_a = stat.readDataGroup(group_a)
