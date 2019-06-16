@@ -430,7 +430,7 @@ def generate_p_value_maps(src):
     io.writeData(os.path.join(src, "pvalues_CNO_control_reversal_vs_DREADDs.tif"), rsp.sagittalToCoronalData(pvalsc.astype("float32")))
 
 #run
-src = os.path.join(src, "p_value_maps")
+src = os.path.join(src, "p_value_maps_unequal_variance_condition")
 if not os.path.exists(src): os.mkdir(src)
 generate_p_value_maps(src)
 

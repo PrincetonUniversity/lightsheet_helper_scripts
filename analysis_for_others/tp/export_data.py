@@ -6,10 +6,28 @@ Created on Wed Jun  5 15:18:29 2019
 @author: wanglab
 """
 
+import os, pickle as pckl
+#%%
+#save
+dst = "/jukebox/wang/zahra/modeling/h129/thalamus/"
+
+data = {}
+
+data["cell_counts_per_brain_p"] = cell_counts_per_brain_p
+data["fit"] = fit
+data["fit_shuf"] = fit_shuf
+data["p_shuf"] = p_shuf
+data["brains"] = brains
+data["ak_pool"] = ak_pool
+data["primary_pool"] = primary_pool
+
+#store data (serialize)
+with open(os.path.join(dst, "shuffle_figure_data.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+    
+#%%
 #save
 dst = "/jukebox/wang/zahra/modeling/h129/neocortex/"
-
-#%%
 
 data = {}
 

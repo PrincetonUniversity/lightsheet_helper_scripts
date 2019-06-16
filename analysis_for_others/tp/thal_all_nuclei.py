@@ -441,7 +441,7 @@ cb.ax.set_visible(True)
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
         pass
-        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
 
 # signif
 sig = pmat < .05#/np.size(pmat)
@@ -457,14 +457,14 @@ ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance
 
 # aesthetics
 # xticksjt -t monokai -m 200
-ax.set_xticks(np.arange(len(ak))+.5)
+ax.set_xticks(np.arange(len(ak_pool))+.5)
 
 #remaking labeles so it doesn't look squished
-lbls = np.asarray(ak)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(nuclei))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
+ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="x-small")
 dst = "/home/wanglab/Desktop"
 #plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 
@@ -501,26 +501,29 @@ cb.ax.set_visible(True)
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
         pass
-        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
-        
+        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
+  
+# aesthetics
+# xticksjt -t monokai -m 200
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+
 #remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(ak))+.5)
-lbls = np.asarray(ak)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(nuclei))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
+ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="x-small")
 dst = "/home/wanglab/Desktop"
 #plt.savefig(os.path.join(dst,"thal_mean_fit.svg"), bbox_inches = "tight")
 
 #%%
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
-mean_fit = np.asarray([np.mean(fit_shuf.mean(axis = 0).T[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+mean_shuf_fit = np.asarray([np.mean(fit_shuf.mean(axis = 0).T[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
 fig = plt.figure(figsize=(5,7))
 ax = fig.add_axes([.4,.1,.5,.8])
 
-show = mean_fit.T #np.flip(mean_counts, axis = 1) # NOTE abs
+show = mean_shuf_fit.T #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 0
 vmax = 6
@@ -548,59 +551,59 @@ for ri,row in enumerate(show):
         ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
         
 #remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(ak))+.5)
-lbls = np.asarray(ak)
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
-ax.set_yticks(np.arange(len(regions))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
 dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst,"thal_mean_fit_shuf.svg"), bbox_inches = "tight")
+#plt.savefig(os.path.join(dst,"thal_mean_fit_shuf.svg"), bbox_inches = "tight")
 
 #%%
 
 #make boxplots to make fit and shuffle fit vs. actual?
-fig = plt.figure(figsize=(20,5))
-ax = fig.add_axes([.4,.1,.5,.8])
-df = pd.DataFrame()
-df["count"] = fit.ravel()
-df["brain"] = np.array(brains*18)
-df["region"] = np.repeat(np.asarray(regions), 23)
-df["inj"] = np.array([ak[idx] for idx in primary_pool]*18)
+short_nuclei = ['Parafascicular n.',
+ 'P. complex',
+ 'P. triangular n.',
+ 'LP',
+ 'L. habenula',
+ 'LD',
+ 'CL',
+ 'PV',
+ 'Reuniens',
+ 'MD',
+ 'V. of lat. gen. complex',
+ 'VPL',
+ 'VPM',
+ 'Submedial n.',
+ 'RTN',
+ 'VM',
+ 'AV',
+ 'VA-L']
 
-ax = sns.heatmap(fit.T)
-#ax.set_xticks(np.arange(len(regions))+.5)
-#ax.set_xticklabels(["{}".format(bi) for bi in regions], rotation=30, fontsize=6, ha="center")
-##
-#vmin = 0
-#vmax = 6
-#cmap = plt.cm.viridis
-#cmap.set_over('gold')
-##colormap
-## discrete colorbar details
-#bounds = np.linspace(vmin,vmax,vmax-vmin+1)
-##bounds = np.linspace(-2,5,8)
-#norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-#
-#pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-##cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-##cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-#                  shrink=0.3, aspect=10)
-#cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
-#cb.ax.tick_params(labelsize="x-small")
-#
-#cb.ax.set_visible(True)
-## exact value annotations
-#for ri,row in enumerate(show):
-#    for ci,col in enumerate(row):
-#        pass
-#        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
-#        
-##remaking labeles so it doesn't look squished
-#ax.set_xticks(np.arange(len(ak))+.5)
-#lbls = np.asarray(ak)
-#ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
-## yticks
-#ax.set_yticks(np.arange(len(regions))+.5)
-#ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
+df = pd.DataFrame()
+df["count"] = cell_counts_per_brain_p.T.ravel()
+df["fit"] = fit.ravel()
+df["shuffle"] = fit_shuf.mean(axis = 0).ravel()
+df["shuffle_log"] = np.log10(fit_shuf.mean(axis = 0).ravel())
+df["fit_log"] = np.log10(df["count"].values)
+df["brain"] = np.array(brains*18)
+df["region"] = np.repeat(np.asarray(short_nuclei), 23)
+df["inj"] = np.array([ak_pool[idx] for idx in primary_pool]*18)
+
+sns.set_style("white")
+
+colors = ["r", "darkgoldenrod", "darkblue", "olivedrab", "darkslategray", "saddlebrown", "purple"]
+
+g = sns.FacetGrid(df, col="inj", height=5, aspect=.5, palette = colors)
+
+g.map(sns.barplot, "fit", "region", facecolor=(1, 1, 1, 0), ci = "sd", capsize = 0.2, edgecolor = "darkblue") 
+g.map(sns.swarmplot, "fit", "region", color = "darkblue", size = 3) 
+g.map(sns.barplot, "shuffle", "region", alpha = 0.4, color = "gray", ci = None) 
+
+g.set_xlabels("% of thalamic counts")
+
+sns.despine(offset=10)
+    
+plt.savefig(os.path.join(dst,"boxplot.pdf"), bbox_inches = "tight")
