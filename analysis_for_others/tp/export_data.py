@@ -31,6 +31,22 @@ dst = "/jukebox/wang/zahra/modeling/h129/neocortex/"
 
 data = {}
 
+data["cell_counts_per_brain_p"] = cell_counts_per_brain_pool
+data["fit"] = fit
+data["fit_shuf"] = fit_shuf
+data["p_shuf"] = p_shuf
+data["brains"] = brains
+data["ak_pool"] = ak
+data["primary_pool"] = primary_pool
+data["regions"] = regions
+
+#store data (serialize)
+with open(os.path.join(dst, "shuffle_figure_data.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+    
+#%%    
+data = {}
+
 data["mat"] = mat
 data["pmat"] = pmat
 data["mat_shuf"] = mat_shuf

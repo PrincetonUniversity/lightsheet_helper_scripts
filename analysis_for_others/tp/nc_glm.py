@@ -7,13 +7,12 @@ Created on Fri May 17 18:21:39 2019
 """
 
 from lightsheet.network_analysis import make_structure_objects
-from scipy.stats import spearmanr
 import statsmodels.api as sm
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np, os, pickle as pckl
 from skimage.external import tifffile
-import math 
+import pandas as pd
 
 #custom
 inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
@@ -109,7 +108,7 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 #%%
 
 #pooled injections
-ak = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
+ak = np.asarray(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
                  "Simplex", "Crura", "PM, CP"])
 
 #pooling injection regions
@@ -263,8 +262,9 @@ mat = []
 pmat = []
 mat_shuf = []
 p_shuf = []
-ars = []
-rs = []
+fit = []
+fit_shuf = []
+
 for itera in range(1000):
     if itera%100 == 0: print(itera)
     if itera == 0:
@@ -274,6 +274,7 @@ for itera in range(1000):
         shuffle = True
         mat_shuf.append([])
         p_shuf.append([])
+        fit_shuf.append([])
         inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
     for count, region in zip(Y.T, regions):
         inj_ = inj[~np.isnan(count)]
@@ -295,12 +296,12 @@ for itera in range(1000):
         if not shuffle:
             mat.append(val)
             pmat.append(pvals)
-#            ars.append(res.rsquared_adj)
-#            rs.append(res.rsquared)
+            fit.append(res.fittedvalues)
+            
         elif shuffle:
             mat_shuf[-1].append(val)
             p_shuf[-1].append(pvals)
-        
+            fit_shuf[-1].append(res.fittedvalues)
         # inspect residuals
         """
         if not shuffle:
@@ -318,8 +319,8 @@ mat = np.array(mat) # region x inj
 mat_shuf = np.array(mat_shuf) # region x inj
 pmat = np.array(pmat) # region x inj
 p_shuf = np.array(p_shuf)
-ars = np.array(ars)
-rs = np.array(rs)
+fit = np.array(fit)
+fit_shuf = np.array(fit_shuf)
 
 #%%
 ## display
@@ -384,3 +385,76 @@ ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
 #plt.savefig(os.path.join(dst,"nc_lm.pdf"), bbox_inches = "tight")
 
 #%%
+
+import seaborn as sns
+alpha = 0.3
+#make boxplots to make fit and shuffle fit vs. actual
+df = pd.DataFrame()
+df["count"] = cell_counts_per_brain_pool.T.ravel()
+df["fit"] = fit.ravel()
+df["shuffle"] = fit_shuf.mean(axis = 0).ravel()
+df["shuffle_log"] = np.log10(fit_shuf.mean(axis = 0).ravel())
+df["fit_log"] = np.log10(df["count"].values)
+df["brain"] = np.array(brains*10)
+df["region"] = np.repeat(np.asarray(regions), 33)
+df["inj"] = np.array([ak[idx] for idx in primary_pool]*10)
+
+sns.set_style("white")
+g = sns.FacetGrid(df[(df.region != "Somatomotor, Somatosensory") & 
+                     (df.region != "Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital")], 
+    col="inj", height=5, aspect=.5, sharex = True, sharey = True)
+
+g.map(sns.barplot, "count", "region", facecolor=(1, 1, 1, 0), ci = "sd", linewidth=2.5, capsize = 0.2,
+      edgecolor = "darkblue") 
+g.map(sns.swarmplot, "count", "region", color = "darkblue", size = 4)
+#g.map(sns.barplot, "fit", "region", facecolor=(1, 1, 1, 0), ci = None, capsize = 0.2, edgecolor = "firebrick") 
+g.map(sns.swarmplot, "fit", "region", color = "firebrick", size = 3) 
+g.map(sns.barplot, "shuffle", "region", alpha = alpha, color = "gray", ci = None) 
+
+g.set_xlabels("% of neocortical counts")
+
+sns.despine(offset=10)
+
+#save out
+dst = "/home/wanglab/Desktop"    
+plt.savefig(os.path.join(dst, "nc_boxplot_1.svg"), bbox_inches = "tight")
+
+#%%
+g = sns.FacetGrid(df[(df.region == "Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital")], 
+    col="inj", height=1.5, aspect=1.5, sharex = True, sharey = True)
+
+g.map(sns.barplot, "count", "region", facecolor=(1, 1, 1, 0), ci = "sd", linewidth=2.5, capsize = 0.2,
+      edgecolor = "darkblue") 
+g.map(sns.swarmplot, "count", "region", color = "darkblue", size = 4)
+#g.map(sns.barplot, "fit", "region", facecolor=(1, 1, 1, 0), ci = None, capsize = 0.2, edgecolor = "firebrick") 
+g.map(sns.swarmplot, "fit", "region", color = "firebrick", size = 3) 
+g.map(sns.barplot, "shuffle", "region", alpha = alpha, color = "gray", ci = None) 
+
+g.set_xlabels("% of neocortical counts")
+
+sns.despine(offset=10)
+
+#save out
+plt.tight_layout()
+dst = "/home/wanglab/Desktop"    
+plt.savefig(os.path.join(dst, "nc_boxplot_2.svg"), bbox_inches = "tight")
+
+#%%
+g = sns.FacetGrid(df[(df.region == "Somatomotor, Somatosensory")], 
+    col="inj", height=1.5, aspect=1.5, sharex = True, sharey = True)
+
+g.map(sns.barplot, "count", "region", facecolor=(1, 1, 1, 0), ci = "sd", linewidth=2.5, capsize = 0.2,
+      edgecolor = "darkblue") 
+g.map(sns.swarmplot, "count", "region", color = "darkblue", size = 4)
+#g.map(sns.barplot, "fit", "region", facecolor=(1, 1, 1, 0), ci = None, capsize = 0.2, edgecolor = "firebrick") 
+g.map(sns.swarmplot, "fit", "region", color = "firebrick", size = 3) 
+g.map(sns.barplot, "shuffle", "region", alpha = alpha, color = "gray", ci = None) 
+g.add_legend()
+g.set_xlabels("% of neocortical counts")
+
+sns.despine(offset=10)
+
+#save out
+plt.tight_layout()
+dst = "/home/wanglab/Desktop"    
+plt.savefig(os.path.join(dst, "nc_boxplot_3.svg"), bbox_inches = "tight")
