@@ -17,6 +17,8 @@ bars on boxplots are standard deviation of the real data.
 it is possible to do a t-test or something to see if we get significance that way, my guess is it is not necessary 
 because we have the Wald t-test from the GLM also?
 example of how to display shuffle using bar plots: https://www.nature.com/articles/nature23020/figures/4.
+this paper does it side by side (shuffle next to data), but not sure if it is needed here again because we are not 
+testing significance and just for visualization. it also helps with overcrowding to just overlay.
 """
 
 #THALAMUS
@@ -67,7 +69,7 @@ df["region"] = np.repeat(np.asarray(short_nuclei), 23)
 df["inj"] = np.array([data["ak_pool"][idx] for idx in data["primary_pool"]]*18)
 
 sns.set_style("white")
-#removing simplex and lob iii, iv/v because n is too low
+#removing simplex and lob iii, iv/v because n < 3
 g = sns.FacetGrid(df[(df.inj != "Simplex") & (df.inj != "Lob. III, IV-V")], col="inj", height=5, aspect=1)
 
 g.map(sns.barplot, "count", "region", facecolor=(1, 1, 1, 0), ci = "sd", linewidth=1, capsize = 0.2,
