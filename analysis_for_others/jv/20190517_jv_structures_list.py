@@ -10,17 +10,17 @@ import pandas as pd, os
 import numpy as np
 
 #set the id table, and annotation file paths
-df_pth = r"Y:\atlas\ls_id_table_w_voxelcounts.xlsx"
-ann_pth = r"Y:\atlas\annotation_sagittal_atlas_20um_iso.tif"
+df_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ann_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_erosion.tif"
 
 #path to appropriate csv file
-percent_density_csv_pth = r"X:\Jess\lightsheet_output\201904_ymaze_cfos\pooled_analysis\60um_erosion_analysis\cell_counts_dataframe_w_percents_density.csv"
+percent_density_csv_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv"
 
 #SET THE DESTINATION DIRECTORY HERE
-dst = r"C:\Users\Zahra\Desktop"
+dst = "/home/wanglab/Desktop"
  
 #give list of structures you want to pool
-pth = r"X:\Jess\lightsheet_output\201904_ymaze_cfos\structures.csv"
+pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
 
 #run this first cell the way it is, imports tom"s class for allen ontology
 class structure:
