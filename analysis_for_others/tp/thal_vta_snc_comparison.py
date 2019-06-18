@@ -111,33 +111,62 @@ assert brains == list(cells_regions.keys())
 structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", 
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
+#csv of cell counts dict
+df_cells_regions = pd.DataFrame(cells_regions)
+#%%
+
+#GET ONLY VPM + bonus thal nuclei?, VTA, AND SNC COUNTS TO COMPARE
+
+nuclei = ["Ventral tegmental area", #vta
+        "Substantia nigra, reticular part", #snc
+        "Substantia nigra, lateral part",
+        "Substantia nigra, compact part",
+        "Reticular nucleus of the thalamus", #thal
+        "Mediodorsal nucleus of thalamus",
+        "Ventral posteromedial nucleus of the thalamus"
+        ]
+
+#get densities for all the structures
+
+df = pd.read_excel("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", index_col = None)
+df = df.drop(columns = ["Unnamed: 0"])
+df = df.sort_values(by = ["name"])
+
+#scale in mm
+scale = 0.020 ##mm/voxel
+
+df = df.append(df_cells_regions)
+
 #%%
 #GET ONLY VPM + bonus thal nuclei?, VTA, AND SNC COUNTS TO COMPARE
 
-nuclei = ["Mediodorsal nucleus of thalamus", #thal
-        "Ventral posterolateral nucleus of the thalamus",
-        "Ventral posteromedial nucleus of the thalamus",         
-        "Reticular nucleus of the thalamus",
-        "Ventral tegmental area", #vta
+nuclei = ["Ventral tegmental area", #vta
         "Substantia nigra, reticular part", #snc
         "Substantia nigra, lateral part",
-        "Substantia nigra, compact part"
+        "Substantia nigra, compact part",
+        "Reticular nucleus of the thalamus", #thal
+        "Mediodorsal nucleus of thalamus",
+        "Ventral posteromedial nucleus of the thalamus"
         ]
 
 #make new dict - for all brains
-cells_pooled_regions = {}
+cells_pooled_regions = {} #for raw counts
+density_pooled_regions = {} #for density
 
 for brain in brains:    
     #make new dict - this is for EACH BRAIN
-    pooled_regions = {}
+    c_pooled_regions = {}
+    d_pooled_regions = {}
     
     for soi in nuclei:
         try:
             soi = [s for s in structures if s.name==soi][0]
             counts = [] #store counts in this list
+            volume = [] #store volume in this list
             for k, v in cells_regions[brain].items():
                 if k == soi.name:
                     counts.append(v)
+            volume.append(soi.volume)
             progeny = [str(xx.name) for xx in soi.progeny]
             #now sum up progeny
             if len(progeny) > 0:
@@ -145,15 +174,15 @@ for brain in brains:
                     for k, v in cells_regions[brain].items():
                         if k == progen:
                             counts.append(v)
-            pooled_regions[soi.name] = np.sum(np.asarray(counts))
+            c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
         except:
             for k, v in cells_regions[brain].items():
                 if k == soi:
                     counts.append(v)
-            pooled_regions[soi] = np.sum(np.asarray(counts))
+            c_pooled_regions[soi] = np.sum(np.asarray(counts))
                     
     #add to big dict
-    cells_pooled_regions[brain] = pooled_regions
+    cells_pooled_regions[brain] = c_pooled_regions
     
 #making the proper array per brain where regions are removed
 cell_counts_per_brain = []
@@ -171,15 +200,14 @@ for k,v in cells_pooled_regions.items():
 cell_counts_per_brain = np.asarray(cell_counts_per_brain)
 
 #add snc parts
-nuclei_pool = ["Mediodorsal n.", #thal
-        "Ventral posterolateral n.",
-        "Ventral posteromedial n.",         
-        "Reticular n.",
-        "Ventral tegmental area", #vta
-        "Substantia nigra" #snc
+nuclei_pool = ["Ventral tegmental area", #vta
+        "Substantia nigra", #snc
+        "Reticular n.", #thal
+        "Mediodorsal n.",
+        "Ventral posteromedial n."
         ]
 
-cell_counts_per_brain_pool = np.asarray([[xx[0], xx[1], xx[2], xx[3], xx[4], xx[5]+xx[6]+xx[7]] for xx in cell_counts_per_brain])
+cell_counts_per_brain_pool = np.asarray([[xx[0], xx[1]+xx[2]+xx[3], xx[4], xx[5], xx[6]] for xx in cell_counts_per_brain])
 #%%
 #pooled injections
 ak_pool = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII-X", 
@@ -218,11 +246,9 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.5, aspect=10)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", 
+                  ticks=bounds, boundaries=bounds, format="%d", shrink=0.5, aspect=10)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=2)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
@@ -241,121 +267,9 @@ lbls = np.asarray(brains)
 ax.set_xticklabels(["{}\ninj={}".format(br, ak) for br, ak in zip(brains, ak_pool[primary_pool])], rotation=45, fontsize=5, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(nuclei_pool))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
+
 ax.set_yticklabels(["{}".format(bi) for bi in nuclei_pool], fontsize="xx-small")
 dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst,"thalvtacomp_norm_count.svg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst,"thalvtacomp_cell_count.pdf"), bbox_inches = "tight")
 
 #%%
-#GET ONLY VPM, VTA, AND SNC COUNTS TO COMPARE
-
-nuclei = ["Ventral posteromedial nucleus of the thalamus",         
-        "Ventral tegmental area", #vta
-        "Substantia nigra, reticular part", #snc
-        "Substantia nigra, lateral part",
-        "Substantia nigra, compact part"
-        ]
-
-#make new dict - for all brains
-cells_pooled_regions = {}
-
-for brain in brains:    
-    #make new dict - this is for EACH BRAIN
-    pooled_regions = {}
-    
-    for soi in nuclei:
-        try:
-            soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
-            progeny = [str(xx.name) for xx in soi.progeny]
-            #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-            pooled_regions[soi.name] = np.sum(np.asarray(counts))
-        except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)
-            pooled_regions[soi] = np.sum(np.asarray(counts))
-                    
-    #add to big dict
-    cells_pooled_regions[brain] = pooled_regions
-    
-#making the proper array per brain where regions are removed
-cell_counts_per_brain = []
-
-#initialise dummy var
-i = []
-for k,v in cells_pooled_regions.items():
-    dct = cells_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    cell_counts_per_brain.append(i)
-    #re-initialise for next
-    i = []  
-    
-cell_counts_per_brain = np.asarray(cell_counts_per_brain)
-
-#add snc parts
-nuclei_pool = ["Ventral posteromedial n.",         
-        "Ventral tegmental area", #vta
-        "Substantia nigra" #snc
-        ]
-
-cell_counts_per_brain_pool = np.asarray([[xx[0], xx[1], xx[2]+xx[3]+xx[4]] for xx in cell_counts_per_brain])
-
-#ignoring cb topology as this can be confusing and non-specific
-fig = plt.figure(figsize=(15,1))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-show = cell_counts_per_brain_pool.T #np.flip(mean_counts, axis = 1) # NOTE abs
-
-vmin = 0
-vmax = 50#.6
-cmap = plt.cm.viridis
-cmap.set_over('gold')
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.8, aspect=10)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(True)
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        pass
-        if col < 10:
-            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="white", ha="center", va="center", fontsize="small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="k", ha="center", va="center", fontsize="small")
-#remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(brains))+.5)
-lbls = np.asarray(brains)
-ax.set_xticklabels(["{}\ninj={}".format(br, ak) for br, ak in zip(brains, ak_pool[primary_pool])], rotation=45, fontsize=5, ha="right")
-# yticks
-ax.set_yticks(np.arange(len(nuclei_pool))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
-ax.set_yticklabels(["{}".format(bi) for bi in nuclei_pool], fontsize="xx-small")
-dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst,"thalvtacomp_count_only_vpm.pdf"), bbox_inches = "tight")
