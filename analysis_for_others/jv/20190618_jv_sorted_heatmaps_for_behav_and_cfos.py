@@ -8,20 +8,20 @@ Created on Tue Jun 18 12:44:54 2019
 
 import pandas as pd, numpy as np, matplotlib.pyplot as plt, matplotlib as mpl, os
 
-mpl.rcParams['pdf.fonttype'] = 42
-mpl.rcParams['ps.fonttype'] = 42
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
 
 ### manipulating dataframe
 #################################################################CHANGE PATHS##################################################################
 #set destination for figs
-dst = "/home/wanglab/Desktop"
+dst = r"C:\Users\Zahra\Desktop"
 
 #import counts
-pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/select_structures_percent_counts_for_visualization.csv"
+pth = r"X:\Jess\lightsheet_output\201904_ymaze_cfos\pooled_analysis\60um_erosion_analysis\select_structures_percent_counts_for_visualization.csv"
 df = pd.read_csv(pth)
 
 #import behavior & inj metrics
-bh_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/ymaze.csv"
+bh_pth = r"X:\Jess\lightsheet_output\201904_ymaze_cfos\pooled_analysis\60um_erosion_analysis\ymaze.csv"
 bh = pd.read_csv(bh_pth)
 ###################################################################################################################################################
 
@@ -67,7 +67,7 @@ show = counts
 vmin = 0
 vmax = 3#.6
 cmap = plt.cm.viridis
-cmap.set_over('gold')
+cmap.set_over("gold")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,3,7)
@@ -81,7 +81,7 @@ cb.set_label("% of total counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(brains))+.5)
 lbls = np.asarray(brains)
 ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")
@@ -107,7 +107,7 @@ show = counts
 vmin = 2
 vmax = 10#.6
 cmap = plt.cm.viridis
-cmap.set_over('gold')
+cmap.set_over("gold")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,10,9)
@@ -121,7 +121,7 @@ cb.set_label("% of total counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(brains))+.5)
 lbls = np.asarray(brains)
 ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")
@@ -148,7 +148,7 @@ show = counts
 vmin = 0
 vmax = 0.5#.6
 cmap = plt.cm.viridis
-cmap.set_over('gold')
+cmap.set_over("gold")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,6)
@@ -162,7 +162,7 @@ cb.set_label("% of total counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(brains))+.5)
 lbls = np.asarray(brains)
 ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")
@@ -192,7 +192,7 @@ show = bhm
 vmin = 0
 vmax = 100#.6
 cmap = plt.cm.Reds
-cmap.set_over('maroon')
+cmap.set_over("maroon")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,6)
@@ -206,7 +206,7 @@ cb.set_label("Performance", fontsize=3, labelpad=3)
 cb.ax.tick_params(labelsize=3)
 
 cb.ax.set_visible(True)
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(brains))+.5)
 lbls = np.asarray(brains)
 ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")
@@ -230,7 +230,7 @@ show = bhm
 vmin = -0.02
 vmax = 0.1#.6
 cmap = plt.cm.Reds
-cmap.set_over('maroon')
+cmap.set_over("maroon")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,6)
@@ -245,7 +245,7 @@ cb.set_label("Performance", fontsize=3, labelpad=3)
 cb.ax.tick_params(labelsize=3)
 
 cb.ax.set_visible(True)
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(brains))+.5)
 lbls = np.asarray(brains)
 ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")
@@ -270,7 +270,7 @@ show = bhm
 vmin = 8500
 vmax = 15000#.6
 cmap = plt.cm.Reds
-cmap.set_over('maroon')
+cmap.set_over("maroon")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,6)
@@ -285,7 +285,7 @@ cb.set_label("Distance", fontsize=3, labelpad=3)
 cb.ax.tick_params(labelsize=3)
 
 cb.ax.set_visible(True)
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(brains))+.5)
 lbls = np.asarray(brains)
 ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")
@@ -298,13 +298,13 @@ plt.savefig(os.path.join(dst,"behav_distance.pdf"), bbox_inches = "tight")
 
 #plot inj fractions
 #injection columns
-inj = ['DREADD voxel fraction', 'lobvi', 'lobvii', 'crus1', 'crus2', 'simplex', 'vermis',
-       'hemisphere']
+inj = ["DREADD voxel fraction", "lobvi", "lobvii", "crus1", "crus2", "simplex", "vermis",
+       "hemisphere"]
 
 bhm = np.asarray([df[xx].values for xx in df.columns if xx in inj])
 
-bhn = np.asarray(['cerebellar fraction', 'Lob. VI', 'Lob. VII', 'Crus 1', 'Crus 2', 'Simplex',
-                  'Vermis', 'Hemisphere', ])
+bhn = np.asarray(["cerebellar fraction", "Lob. VI", "Lob. VII", "Crus 1", "Crus 2", "Simplex",
+                  "Vermis", "Hemisphere", ])
 
 
 fig = plt.figure(figsize=(11,2))
@@ -315,7 +315,7 @@ show = bhm
 vmin = 0
 vmax = 0.4#.6
 cmap = plt.cm.Blues
-cmap.set_over('lightslategray')
+cmap.set_over("lightslategray")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,5)
@@ -331,13 +331,13 @@ cb.ax.tick_params(labelsize=3)
 
 cb.ax.set_visible(True)
 
-ax.spines['left'].set_position(('outward', 5))
-ax.spines['bottom'].set_position(('outward', 5))
+ax.spines["left"].set_position(("outward", 5))
+ax.spines["bottom"].set_position(("outward", 5))
 # Hide the right and top spines
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["top"].set_visible(False)
 
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(brains))+.5)
 lbls = np.asarray(brains)
 ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")

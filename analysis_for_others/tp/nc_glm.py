@@ -139,26 +139,40 @@ brains = list(cells_regions.keys())
 structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", 
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
+#%%
+#atlas res
+scale_factor = 0.020 #mm/voxel
+
 #GET ONLY NEOCORTICAL POOLS
 sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
             "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
             "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
+#get densities for all the structures
+df = pd.read_excel("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", index_col = None)
+df = df.drop(columns = ["Unnamed: 0"])
+df = df.sort_values(by = ["name"])
+
 #make new dict - for all brains
-cells_pooled_regions = {}
+cells_pooled_regions = {} #for raw counts
+volume_pooled_regions = {} #for density
 
 for brain in brains:    
     #make new dict - this is for EACH BRAIN
-    pooled_regions = {}
+    c_pooled_regions = {}
+    d_pooled_regions = {}
     
     for soi in sois:
         try:
             soi = [s for s in structures if s.name==soi][0]
             counts = [] #store counts in this list
+            volume = [] #store volume in this list
             for k, v in cells_regions[brain].items():
                 if k == soi.name:
                     counts.append(v)
+            #add to volume list from LUT
+            volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))
             progeny = [str(xx.name) for xx in soi.progeny]
             #now sum up progeny
             if len(progeny) > 0:
@@ -166,15 +180,23 @@ for brain in brains:
                     for k, v in cells_regions[brain].items():
                         if k == progen:
                             counts.append(v)
-            pooled_regions[soi.name] = np.sum(np.asarray(counts))
+                            #add to volume list from LUT
+                    volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
+            c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
+            d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
         except:
             for k, v in cells_regions[brain].items():
                 if k == soi:
-                    counts.append(v)
-            pooled_regions[soi] = np.sum(np.asarray(counts))
+                    counts.append(v)                    
+            #add to volume list from LUT
+            volume.append(df.loc[df.name == soi, "voxels_in_structure"].values[0])
+            c_pooled_regions[soi] = np.sum(np.asarray(counts))
+            d_pooled_regions[soi] = np.sum(np.asarray(volume))
                     
     #add to big dict
-    cells_pooled_regions[brain] = pooled_regions
+    cells_pooled_regions[brain] = c_pooled_regions
+    volume_pooled_regions[brain] = d_pooled_regions
+
     
 #making the proper array per brain where regions are removed
 cell_counts_per_brain = []
@@ -187,8 +209,35 @@ for k,v in cells_pooled_regions.items():
         i.append(l)  
     cell_counts_per_brain.append(i)
     #re-initialise for next
-    i = []    
+    i = []  
+    
+cell_counts_per_brain = np.asarray(cell_counts_per_brain)
 
+cell_counts_per_brain_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], brain[3], brain[6], brain[5]+brain[7], 
+                                          brain[8]+brain[9], brain[10], brain[12], brain[11], 
+                                          brain[13]+brain[14], brain[15]+brain[16]] for brain in cell_counts_per_brain])
+
+volume_per_brain = []
+
+#initialise dummy var
+i = []
+for k,v in volume_pooled_regions.items():
+    dct = volume_pooled_regions[k]
+    for j,l in dct.items():
+        i.append(l)  
+    volume_per_brain.append(i)
+    #re-initialise for next
+    i = []  
+
+volume_per_brain_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], brain[3], brain[6], brain[5]+brain[7], 
+                                          brain[8]+brain[9], brain[10], brain[12], brain[11], 
+                                          brain[13]+brain[14], brain[15]+brain[16]] for brain in volume_per_brain])
+    
+volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
+volume_per_brain_pool = np.asarray(volume_per_brain_pool)*(scale_factor**3)
+
+#calculate denisty
+density_per_brain_pool = np.asarray([xx/volume_per_brain_pool[i] for i, xx in enumerate(cell_counts_per_brain_pool)])
 
 #%%
 #get counts for all of neocortex
@@ -253,8 +302,18 @@ regions = np.asarray(['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital',
        'Post. parietal', 'Temporal, Auditory',
        'Peririhinal, Ectorhinal'])
 
+cb_region_vol = np.asarray([np.sum(xx) for k, xx in atlas_rois.items()]) #per region
+total_cb_voxels = np.sum(cb_region_vol)
+
+scale = 0.020 #mm/voxel
+inj_vol = np.asarray([np.sum(xx)/(total_cb_voxels) for xx in inj_raw]) #on the order of 10e-7? #right now the units are cells/mm3
+inj_vol = np.asarray([xx/np.max(inj_vol) for xx in inj_vol])
+#inj_vol = np.asarray([np.sum(xx) for xx in inj_raw]) #per brain
+
+norm_density_per_brain_pool = np.asarray([xx/inj_vol[i] for i, xx in enumerate(density_per_brain_pool)])
+
 X = normalised
-Y = cell_counts_per_brain_pool    
+Y = density_per_brain_pool    
 #%%
 
 ##  glm
@@ -331,13 +390,13 @@ ax = fig.add_axes([.4,.1,.5,.8])
 show = mat # NOTE abs
 
 vmin = 0
-vmax = 6
+vmax = 80
 cmap = plt.cm.Reds
 cmap.set_under('w')
 cmap.set_over('maroon')
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,vmax-vmin+1)
+bounds = np.linspace(vmin,vmax,9)
 #bounds = np.linspace(0,5,11)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
@@ -353,8 +412,10 @@ cb.ax.set_visible(True)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        pass
-        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        if col < 50:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
+        else: 
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
 
 # signif
 sig = pmat < .05#/np.size(pmat)
@@ -382,7 +443,7 @@ ax.set_yticks(np.arange(len(regions))+.5)
 # by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
 #ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
-#plt.savefig(os.path.join(dst,"nc_lm.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "nc_glm_density.pdf"), bbox_inches = "tight")
 
 #%%
 
