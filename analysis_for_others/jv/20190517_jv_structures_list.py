@@ -206,16 +206,23 @@ main_df.index.name = "animal"
 
 main_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_visualization.csv"))
 
-#rotate the df to make it eaiser to plot things
+import itertools
+
 rotate_df = pd.DataFrame()
-structures = pd.Series(main_df.columns.values[1:])
-rotate_df["name"] = pd.concat([structures]*33)
-vals = [pd.Series(main_df[xx].values) for xx in main_df.columns.values[1:]]    
+struct = [list(itertools.repeat(xx, 33)) for xx in main_df.columns.values[:-1]]
+struct = pd.Series(list(itertools.chain.from_iterable(struct)))
+rotate_df["name"] = struct
+
+vals = [pd.Series(main_df[xx].values) for xx in main_df.columns.values[:-1]]    
 rotate_df["percent"] = pd.concat(vals, ignore_index = True)
-ans = [pd.Series([xx]*structures.shape[0]) for xx in main_df.index.values]
-rotate_df["animal"] = pd.concat(ans)
-groups = [pd.Series([xx]*structures.shape[0]) for xx in main_df.group.values]
-rotate_df["condition"] = pd.concat(groups)
+
+ans = list(itertools.repeat(main_df.index.values, len(struct)))
+ans = pd.Series(list(itertools.chain.from_iterable(ans)))
+rotate_df["animal"] = ans
+
+groups = list(itertools.repeat(main_df.group.values, len(struct)))
+groups = pd.Series(list(itertools.chain.from_iterable(groups)))
+rotate_df["condition"] = groups
 
 #save
 rotate_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_plots.csv"), index = False)
