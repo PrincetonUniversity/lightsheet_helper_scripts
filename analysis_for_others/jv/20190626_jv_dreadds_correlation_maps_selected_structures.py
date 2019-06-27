@@ -94,21 +94,22 @@ dfcorr.to_csv(os.path.join(dst, "spearman_coeff_select_structures_dreadds.csv"))
 """
 note that here only plotting structures for p-value < 0.05
 """
+#sort by most positive to most negative correlation
+dfcorr = dfcorr.sort_values(by = ["corr_coeff"], ascending = False) #pick ascending or decending order
+
 sig_structs = [xx for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05]
 
 counts = np.asarray([df[xx].values for xx in sig_structs])
 
 regions = np.asarray(sig_structs)
 
-coeff = np.asarray([np.repeat(dfcorr.loc[(dfcorr.name == xx), "corr_coeff"].values[0], counts.shape[1])  #need to make it 2d
-                for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05])
-
 brains = df.animal.values
 
+   
 #formatting
-fig, axes = plt.subplots(ncols = 1, nrows = 2, sharex = True, figsize = (4,14), gridspec_kw = {"wspace":0, "hspace":0,
-                         'height_ratios': [4.5,1]})
-ax = axes[0]
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (5,14), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [7,1], "width_ratios": [20,1]})
+ax = axes[0,0]
 
 show = counts
 
@@ -124,12 +125,12 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.2, aspect=10)
-cb.set_label("% of total counts", fontsize="x-small", labelpad=3)
+                  shrink=0.1, aspect=10)
+cb.set_label("normalized % of total counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
-#value annotations
-for ri,row in enumerate(coeff):
+#value annotations - of ACTUAL COUNTS (CAN CHANGE THIS LATER)
+for ri,row in enumerate(counts):
     for ci,col in enumerate(row):
         pass
         if counts[ri, ci] < 1.5:
@@ -147,18 +148,33 @@ ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, 
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
 
+#plot spearman r
+ax = axes[0,1]
+
+plt.axis("off")
+
+#coeff as 2D
+coeff = np.asarray([np.repeat(dfcorr.loc[(dfcorr.name == xx), "corr_coeff"].values[0], 10)
+                for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05])
+
+show = coeff
+
+pc = ax.pcolor(show, cmap="RdBu")    
+ax.set_frame_on(False)
+ax.get_xaxis().set_ticks([])
+ax.get_yaxis().set_ticks([])
+ax.set_ylabel(r"Spearman $\rho$") 
+ax.yaxis.set_label_position("right")
 #plot inj
-ax = axes[1]
+ax = axes[1,0]
 
 #plot inj fractions
 #injection columns
-inj = ["DREADD voxel fraction", "lobvi", "lobvii", "crus1", "crus2", "simplex", "vermis",
-       "hemisphere"]
+inj = ["lobvi", "lobvii", "crus1", "crus2", "simplex"]
 
 bhm = np.asarray([df[xx].values for xx in df.columns if xx in inj])
 
-bhn = np.asarray(["cerebellar fraction", "Lob. VI", "Lob. VII", "Crus 1", "Crus 2", "Simplex",
-                  "Vermis", "Hemisphere", ])
+bhn = np.asarray(["Lob. VI", "Lob. VII", "Crus 1", "Crus 2", "Simplex"])
 
 show = bhm
 
@@ -167,15 +183,15 @@ vmax = 0.6
 cmap = plt.cm.Blues
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,4)
+bounds = np.linspace(vmin,vmax,7)
 
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=.4, aspect=10)
-cb.set_label("Distance", fontsize=3, labelpad=3)
+                  shrink=0.6, aspect=10)
+cb.set_label("Fraction of injection", fontsize=5, labelpad=3)
 cb.ax.tick_params(labelsize=3)
 
 cb.ax.set_visible(True)
@@ -207,11 +223,11 @@ for count in counts:
     
 #to array
 counts_norm = np.asarray(counts_norm)
-
+    
 #formatting
-fig, axes = plt.subplots(ncols = 1, nrows = 2, sharex = True, figsize = (4,14), gridspec_kw = {"wspace":0, "hspace":0,
-                         'height_ratios': [4.5,1]})
-ax = axes[0]
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (5,14), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [7,1], "width_ratios": [20,1]})
+ax = axes[0,0]
 
 show = counts_norm
 
@@ -227,12 +243,12 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.2, aspect=10)
+                  shrink=0.1, aspect=10)
 cb.set_label("normalized % of total counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
-#value annotations
-for ri,row in enumerate(coeff):
+#value annotations - of ACTUAL COUNTS (CAN CHANGE THIS LATER)
+for ri,row in enumerate(counts):
     for ci,col in enumerate(row):
         pass
         if counts_norm[ri, ci] < 0.2:
@@ -250,18 +266,34 @@ ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, 
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
 
+#plot spearman r
+ax = axes[0,1]
+
+plt.axis("off")
+
+#coeff as 2D
+coeff = np.asarray([np.repeat(dfcorr.loc[(dfcorr.name == xx), "corr_coeff"].values[0], 10)
+                for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05])
+
+show = coeff
+
+pc = ax.pcolor(show, cmap="RdBu")    
+
+ax.set_frame_on(False)
+ax.get_xaxis().set_ticks([])
+ax.get_yaxis().set_ticks([])
+ax.set_ylabel(r"Spearman $\rho$") 
+ax.yaxis.set_label_position("right")
 #plot inj
-ax = axes[1]
+ax = axes[1,0]
 
 #plot inj fractions
 #injection columns
-inj = ["DREADD voxel fraction", "lobvi", "lobvii", "crus1", "crus2", "simplex", "vermis",
-       "hemisphere"]
+inj = ["lobvi", "lobvii", "crus1", "crus2", "simplex"]
 
 bhm = np.asarray([df[xx].values for xx in df.columns if xx in inj])
 
-bhn = np.asarray(["cerebellar fraction", "Lob. VI", "Lob. VII", "Crus 1", "Crus 2", "Simplex",
-                  "Vermis", "Hemisphere", ])
+bhn = np.asarray(["Lob. VI", "Lob. VII", "Crus 1", "Crus 2", "Simplex"])
 
 show = bhm
 
