@@ -61,6 +61,14 @@ df = df.drop(columns = ["Mouse ID", "Condition", "rev", "Region"])
 #only DREADDS
 df = df[df.group == "DREADDs"]
 
+#SORT BY BEHAVIOR/INJ
+print("\n**************************************\noptions to sort by: \n\n{}".format(list(df.columns)))
+
+to_sort_by = "lobvi"
+df = df.sort_values(by = [to_sort_by], ascending = False) #pick ascending or decending order
+
+print("\n**************************************\nanimals ordered by {} metric: \n{}".format(to_sort_by, df.animal.values))
+
 #corr
 #get structures
 structs = [xx[0] for xx in pd.read_csv(os.path.join(src, "structures.csv")).values]
@@ -80,20 +88,22 @@ for struct in structs:
 dfcorr.to_csv(os.path.join(dst, "spearman_coeff_select_structures_dreadds.csv"))
 
 #%%
-#plotting - NOT complete
+#plotting
 sig_structs = [xx for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05]
 
 counts = np.asarray([df[xx].values for xx in sig_structs])
 
 regions = np.asarray(sig_structs)
 
-coeff = np.asarray([dfcorr.loc[(dfcorr.name == xx), "corr_coeff"].values[0] for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05])
+coeff = np.asarray([np.repeat(dfcorr.loc[(dfcorr.name == xx), "corr_coeff"].values[0], counts.shape[1])  #need to make it 2d
+                for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05])
 
 brains = df.animal.values
 
 #formatting
-fig = plt.figure(figsize=(3,6))
-ax = fig.add_axes([.4,.1,.5,.7])
+fig, axes = plt.subplots(ncols = 1, nrows = 2, sharex = True, figsize = (4,14), gridspec_kw = {"wspace":0, "hspace":0,
+                         'height_ratios': [4.5,1]})
+ax = axes[0]
 
 show = counts
 
@@ -109,7 +119,7 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.3, aspect=10)
+                  shrink=0.2, aspect=10)
 cb.set_label("% of total counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
@@ -117,10 +127,10 @@ cb.ax.tick_params(labelsize="x-small")
 for ri,row in enumerate(coeff):
     for ci,col in enumerate(row):
         pass
-        if counts[ < 25:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
+        if counts[ri, ci] < 1.5:
+            ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
+            ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
         
         
 cb.ax.set_visible(True)
@@ -131,4 +141,155 @@ ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, 
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
-plt.savefig(os.path.join(dst,"cfos_percent_counts_1.pdf"), bbox_inches = "tight")
+
+#plot inj
+ax = axes[1]
+
+#plot inj fractions
+#injection columns
+inj = ["DREADD voxel fraction", "lobvi", "lobvii", "crus1", "crus2", "simplex", "vermis",
+       "hemisphere"]
+
+bhm = np.asarray([df[xx].values for xx in df.columns if xx in inj])
+
+bhn = np.asarray(["cerebellar fraction", "Lob. VI", "Lob. VII", "Crus 1", "Crus 2", "Simplex",
+                  "Vermis", "Hemisphere", ])
+
+show = bhm
+
+vmin = 0
+vmax = 0.6
+cmap = plt.cm.Blues
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,4)
+
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=.4, aspect=10)
+cb.set_label("Distance", fontsize=3, labelpad=3)
+cb.ax.tick_params(labelsize=3)
+
+cb.ax.set_visible(True)
+
+ax.spines["left"].set_position(("outward", 5))
+ax.spines["bottom"].set_position(("outward", 5))
+# Hide the right and top spines
+ax.spines["right"].set_visible(False)
+ax.spines["top"].set_visible(False)
+
+#remaking labeles so it doesn"t look squished
+ax.set_xticks(np.arange(len(brains))+.5)
+lbls = np.asarray(brains)
+ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(bhn))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in bhn], fontsize="xx-small")
+
+plt.savefig(os.path.join(dst,"cfos_n_inj.pdf"), bbox_inches = "tight")
+
+#%%
+#trying normalized
+
+counts = np.asarray([df[xx].values for xx in sig_structs])
+counts_norm = []
+for count in counts:
+    counts_norm.append([((xx - np.min(count)) / (np.max(count) - np.min(count))) for 
+                          xx in count])
+    
+#to array
+counts_norm = np.asarray(counts_norm)
+
+#formatting
+fig, axes = plt.subplots(ncols = 1, nrows = 2, sharex = True, figsize = (4,14), gridspec_kw = {"wspace":0, "hspace":0,
+                         'height_ratios': [4.5,1]})
+ax = axes[0]
+
+show = counts_norm
+
+vmin = 0
+vmax = 1#.6
+cmap = plt.cm.viridis
+cmap.set_over("gold")
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,1,6)
+
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.2, aspect=10)
+cb.set_label("normalized % of total counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+#value annotations
+for ri,row in enumerate(coeff):
+    for ci,col in enumerate(row):
+        pass
+        if counts_norm[ri, ci] < 0.3:
+            ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        
+        
+cb.ax.set_visible(True)
+#remaking labeles so it doesn"t look squished
+ax.set_xticks(np.arange(len(brains))+.5)
+lbls = np.asarray(brains)
+ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(regions))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
+
+#plot inj
+ax = axes[1]
+
+#plot inj fractions
+#injection columns
+inj = ["DREADD voxel fraction", "lobvi", "lobvii", "crus1", "crus2", "simplex", "vermis",
+       "hemisphere"]
+
+bhm = np.asarray([df[xx].values for xx in df.columns if xx in inj])
+
+bhn = np.asarray(["cerebellar fraction", "Lob. VI", "Lob. VII", "Crus 1", "Crus 2", "Simplex",
+                  "Vermis", "Hemisphere", ])
+
+show = bhm
+
+vmin = 0
+vmax = 0.6
+cmap = plt.cm.Blues
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,4)
+
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.6, aspect=10)
+cb.set_label("Fraction of injection", fontsize=5, labelpad=3)
+cb.ax.tick_params(labelsize=3)
+
+cb.ax.set_visible(True)
+
+ax.spines["left"].set_position(("outward", 5))
+ax.spines["bottom"].set_position(("outward", 5))
+# Hide the right and top spines
+ax.spines["right"].set_visible(False)
+ax.spines["top"].set_visible(False)
+
+#remaking labeles so it doesn"t look squished
+ax.set_xticks(np.arange(len(brains))+.5)
+lbls = np.asarray(brains)
+ax.set_xticklabels(["{}".format(br) for br in brains], rotation=45, fontsize=5, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(bhn))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in bhn], fontsize="xx-small")
+
+plt.savefig(os.path.join(dst,"cfos_n_inj_norm.pdf"), bbox_inches = "tight")
