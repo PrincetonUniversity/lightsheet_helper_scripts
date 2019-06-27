@@ -265,7 +265,7 @@ vmax = 0.6
 cmap = plt.cm.Blues
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,4)
+bounds = np.linspace(vmin,vmax,7)
 
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
