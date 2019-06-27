@@ -72,6 +72,7 @@ print("\n**************************************\nanimals ordered by {} metric: \
 #corr
 #get structures
 structs = [xx[0] for xx in pd.read_csv(os.path.join(src, "structures.csv")).values]
+
 a = df.lobvi.values #this is the things you are correlating each structure's % counts to, 
 #theoretically you can change this to a behavior metric to see how it changes the coefficients....
 
@@ -89,6 +90,10 @@ dfcorr.to_csv(os.path.join(dst, "spearman_coeff_select_structures_dreadds.csv"))
 
 #%%
 #plotting
+
+"""
+note that here only plotting structures for p-value < 0.05
+"""
 sig_structs = [xx for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05]
 
 counts = np.asarray([df[xx].values for xx in sig_structs])
@@ -230,7 +235,7 @@ cb.ax.tick_params(labelsize="x-small")
 for ri,row in enumerate(coeff):
     for ci,col in enumerate(row):
         pass
-        if counts_norm[ri, ci] < 0.3:
+        if counts_norm[ri, ci] < 0.2:
             ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
             ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
