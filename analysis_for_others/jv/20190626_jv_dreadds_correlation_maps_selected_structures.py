@@ -33,14 +33,14 @@ mpl.rcParams["ps.fonttype"] = 42
 dst = "/home/wanglab/Desktop"
 
 #set source
-src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis"
+src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/more_selected_structures"
 #import counts
-pth = os.path.join(src, "select_structures_percent_counts.csv")
+pth = os.path.join(src, "select_structures_percent_counts_for_visualizations.csv")
 
 cts = pd.read_csv(pth)
 #wtf - rename back to original
-cts["animal"] = cts["Unnamed: 0"]
-cts = cts.drop(columns = ["Unnamed: 0"])
+#cts["animal"] = cts["Unnamed: 0"]
+#cts = cts.drop(columns = ["Unnamed: 0"])
 
 #import behavior & inj metrics
 bh_pth = os.path.join(src, "ymaze.csv")
@@ -48,6 +48,7 @@ bh = pd.read_csv(bh_pth)
 
 #sort by animal in counts csv
 cts = cts.sort_values(by = ["animal"])
+bh = bh.sort_values(by = ["Mouse ID"])
 
 #remove homecage control for now from counts
 cts = cts[cts.group != "homecage_control"]
@@ -97,7 +98,7 @@ note that here only plotting structures for p-value < 0.05
 #sort by most positive to most negative correlation
 dfcorr = dfcorr.sort_values(by = ["corr_coeff"], ascending = False) #pick ascending or decending order
 
-sig_structs = [xx for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05]
+sig_structs = [xx for xx in dfcorr.name.values]# if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05]
 
 counts = np.asarray([df[xx].values for xx in sig_structs])
 
@@ -105,7 +106,6 @@ regions = np.asarray(sig_structs)
 
 brains = df.animal.values
 
-   
 #formatting
 fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (5,14), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [7,1], "width_ratios": [20,1]})
@@ -155,7 +155,7 @@ plt.axis("off")
 
 #coeff as 2D
 coeff = np.asarray([np.repeat(dfcorr.loc[(dfcorr.name == xx), "corr_coeff"].values[0], 10)
-                for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05])
+                for xx in dfcorr.name.values])# if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05])
 
 show = coeff
 
@@ -225,8 +225,8 @@ for count in counts:
 counts_norm = np.asarray(counts_norm)
     
 #formatting
-fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (5,14), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [7,1], "width_ratios": [20,1]})
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (5,20), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [12,1], "width_ratios": [20,1]})
 ax = axes[0,0]
 
 show = counts_norm
@@ -273,7 +273,7 @@ plt.axis("off")
 
 #coeff as 2D
 coeff = np.asarray([np.repeat(dfcorr.loc[(dfcorr.name == xx), "corr_coeff"].values[0], 10)
-                for xx in dfcorr.name.values if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05])
+                for xx in dfcorr.name.values])# if dfcorr.loc[(dfcorr.name == xx), "corr_pval"].values[0] < 0.05])
 
 show = coeff
 

@@ -14,35 +14,40 @@ mpl.rcParams["ps.fonttype"] = 42
 ### manipulating dataframe
 #################################################################CHANGE PATHS##################################################################
 #set destination for figs
-dst = r"C:\Users\Zahra\Desktop"
+dst = "/home/wanglab/Desktop"
 
 #import counts
-pth = r"X:\Jess\lightsheet_output\201904_ymaze_cfos\pooled_analysis\60um_erosion_analysis\select_structures_percent_counts_for_visualization.csv"
-df = pd.read_csv(pth)
+pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/select_structures_percent_counts_for_visualization.csv"
+cts = pd.read_csv(pth)
 
 #import behavior & inj metrics
-bh_pth = r"X:\Jess\lightsheet_output\201904_ymaze_cfos\pooled_analysis\60um_erosion_analysis\ymaze.csv"
+bh_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/ymaze.csv"
 bh = pd.read_csv(bh_pth)
 ###################################################################################################################################################
 
 #sort by animal in counts csv
-df = df.sort_values(by = ["animal"])
+cts = cts.sort_values(by = ["animal"])
 
 #remove homecage control for now from counts
-df = df[df.group != "homecage_control"]
+cts = cts[cts.group != "homecage_control"]
 
 #join both dataframes for count and behavior?
-df = pd.concat([df, bh], axis = 1)
+df = pd.concat([cts, bh], axis = 1)
 
 #drop unneeded
 df = df.drop(columns = ["Mouse ID", "Condition", "rev", "Region"])
+
+#get only per group
+#df = df[df.group == "DREADDs"]
+#get two groups!!
+#df = df[(df.group == "DREADDs") & (df.group == "CNO_control_reversal")]
 
 ######################################################################SET ORDERING METRIC#################################################################
 #SORT BY BEHAVIOR/INJ
 print("\n**************************************\noptions to sort by: \n\n{}".format(list(df.columns)))
 
-to_sort_by = "Initial Reversal"
-df = df.sort_values(by = [to_sort_by], ascending = False) #pick ascending or decending order
+to_sort_by = ["group", "lobvi"]
+df = df.sort_values(by = to_sort_by, ascending = [True, False]) #pick ascending or decending order
 
 print("\n**************************************\nanimals ordered by {} metric: \n{}".format(to_sort_by, df.animal.values))
 
@@ -93,10 +98,12 @@ plt.savefig(os.path.join(dst,"cfos_percent_counts_1.pdf"), bbox_inches = "tight"
 #%%
 
 #sort 2 - high count regions
-counts = np.asarray([df[xx].values for xx in df.columns if xx != "animal" and xx != "group" 
+structs = [xx for xx in cts.columns.values if xx != "animal" and xx != "group"]
+
+counts = np.asarray([df[xx].values for xx in structs if xx != "animal" and xx != "group" 
                      and np.mean(df[xx].values) > 3])
 
-regions = np.asarray([xx for xx in df.columns if xx != "animal" and xx != "group" 
+regions = np.asarray([xx for xx in structs if xx != "animal" and xx != "group" 
                      and np.mean(df[xx].values) > 3])
 #formatting
 fig = plt.figure(figsize=(11,1.2))
@@ -134,10 +141,12 @@ plt.savefig(os.path.join(dst,"cfos_percent_counts_2.pdf"), bbox_inches = "tight"
 #%%
 
 #sort 3 - low count regions
-counts = np.asarray([df[xx].values for xx in df.columns if xx != "animal" and xx != "group" 
+structs = [xx for xx in cts.columns.values if xx != "animal" and xx != "group"]
+
+counts = np.asarray([df[xx].values for xx in structs if xx != "animal" and xx != "group" 
                      and np.mean(df[xx].values) < 5e-1])
 
-regions = np.asarray([xx for xx in df.columns if xx != "animal" and xx != "group" 
+regions = np.asarray([xx for xx in structs if xx != "animal" and xx != "group" 
                      and np.mean(df[xx].values) < 5e-1 ])
 #formatting
 fig = plt.figure(figsize=(11,4))
@@ -218,9 +227,9 @@ plt.savefig(os.path.join(dst,"behav_rev.pdf"), bbox_inches = "tight")
 #%%
 
 #plot multisession reversal + learning
-bhm = np.asarray([df[xx].values for xx in df.columns if xx == "Multisession Reversal " or xx == "Multisession Learning"])
+bhm = np.asarray([df[xx].values for xx in df.columns if xx == "Multisession Reversal" or xx == "Multisession Learning"])
 
-bhn = np.asarray([xx for xx in df.columns if xx == "Multisession Reversal " or xx == "Multisession Learning"])
+bhn = np.asarray([xx for xx in df.columns if xx == "Multisession Reversal" or xx == "Multisession Learning"])
 
 fig = plt.figure(figsize=(11,.4))
 ax = fig.add_axes([.4,.1,.5,.7])
@@ -313,9 +322,8 @@ ax = fig.add_axes([.4,.1,.5,.7])
 show = bhm
 
 vmin = 0
-vmax = 0.4#.6
+vmax = 0.6
 cmap = plt.cm.Blues
-cmap.set_over("lightslategray")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,5)
