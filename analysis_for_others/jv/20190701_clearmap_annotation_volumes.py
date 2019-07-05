@@ -133,7 +133,11 @@ tps_s = np.asarray(tps_s)
 fns_s = np.asarray(fns_s)
 fps_s = np.asarray(fps_s)
 tps_s_av = np.mean(tps_s, axis = 1).astype(int)
+fps_s_av = np.mean(fps_s, axis = 1).astype(int)
+fns_s_av = np.mean(fns_s, axis = 1).astype(int)
 tpr = tps_s_av/n_cells_per_size_av
+fpr = fps_s_av/n_cells_per_size_av
+fnr = fns_s_av/n_cells_per_size_av
       
 #x axis
 #cellszthres
@@ -145,14 +149,22 @@ fig = plt.figure()
 
 ax1 = fig.add_subplot(111)
 line1 = ax1.plot(n_cells_per_size_av[2:], 'k')
+#format
+ax1.set_ylim(0, 1000)
+ax1.set_yticks(np.arange(0, 1000, 50))
+ax1.set_xticks(np.arange(0, 30, 2))
 plt.ylabel("Number of cells detected")
 
 # now, the second axes that shares the x-axis with the ax1
 ax2 = fig.add_subplot(111, sharex=ax1, frameon=False)
-line2 = ax2.plot(tpr[2:], 'r')
+line2 = ax2.plot(tpr[2:], 'g')
+#line2 = ax2.plot(fpr[2:], 'r')
+
+#format
 ax2.yaxis.tick_right()
 ax2.yaxis.set_label_position("right")
-plt.ylabel("Proportion of true positive cells detected")
+ax2.set_ylim(0, 1)
+plt.ylabel("Proportion")
 plt.xlabel("Cell size threshold (voxels)") 
 
 
@@ -173,9 +185,13 @@ plt.xlabel("Cell size threshold (voxels)")
 
 from matplotlib.lines import Line2D
 custom_lines = [Line2D([0], [0], color='k', lw=4),
-                Line2D([0], [0], color='r', lw=4)]
-    
+                Line2D([0], [0], color='g', lw=4)]
+                #Line2D([0], [0], color='g', lw=4)]
+
+#format
 plt.legend(custom_lines, ['Number of cells detected by ClearMap', 'Proportion of detected cells also annotated by user'],
+                          #'Proportion of detected cells not annotated by user'],
            bbox_to_anchor=(0.97, -0.15))
 
-plt.savefig(os.path.join(src, "true_positive_rate.pdf"), dpi = 300, bbox_inches = "tight")
+dst = "/home/wanglab/Desktop"
+plt.savefig(os.path.join(dst, "true_positive_rate.svg"), dpi = 300, bbox_inches = "tight")
