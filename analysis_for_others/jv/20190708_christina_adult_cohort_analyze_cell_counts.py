@@ -39,7 +39,8 @@ nms = ["dadult_pc_crus1_1",
        "dadult_pc_lob6_20",
        "dadult_pc_lob6_21"]
 
-cond = ["Vector Control", "Vector Control", "Vector Control", "DREADDs", "Vector Control", "DREADDs", "Vector Control", "DREADDs", "DREADDs","DREADDs", "DREADDs",
+cond = ["Vector Control", "Vector Control", "Vector Control", "DREADDs", "Vector Control", 
+        "DREADDs", "Vector Control", "DREADDs", "DREADDs","DREADDs", "DREADDs",
         "DREADDs"]
 
 conditions = {n:c for n,c in zip(nms, cond)}
@@ -54,6 +55,7 @@ atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 #%%
+
 def generate_data_frame(conditions, lst, pth):
     """ 
     used to make a pooled csv file of all cell counts in an experiment
@@ -94,7 +96,7 @@ def generate_data_frame(conditions, lst, pth):
 #run
 csv_pth = generate_data_frame(conditions, lst, pth)
 
-#%%
+
 def generate_percent_counts_and_density_per_region(src, csv_pth):
     
     """ generates another column in the dataframe that is just # counts / total counts in brain """
@@ -130,7 +132,7 @@ def generate_percent_counts_and_density_per_region(src, csv_pth):
 
 #run
 percent_density_csv_pth = generate_percent_counts_and_density_per_region(src, csv_pth)
-#%%
+
 """ pools regions together based on allen name """    
  
 #give list of structures you want to pool
@@ -186,6 +188,7 @@ main_df.index.name = "animal"
 
 main_df.to_csv(os.path.join(src, "select_structures_percent_counts_for_visualization.csv"))
 
+#rotate and reorient for different analyses
 rotate_df = pd.DataFrame()
 struct = [list(itertools.repeat(xx, len(main_df))) for xx in main_df.columns.values[:-1]]
 struct = pd.Series(list(itertools.chain.from_iterable(struct)))
@@ -207,7 +210,7 @@ rotate_df.to_csv(os.path.join(src, "select_structures_percent_counts_for_plots.c
 
 print("saved in :{}".format(src))
 
-#%%
+
 #anova for cell counts, percents, and density across all conditions, per structure
 from scipy.stats import f_oneway
 
