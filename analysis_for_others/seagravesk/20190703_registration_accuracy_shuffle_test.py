@@ -68,7 +68,7 @@ if __name__ == "__main__":
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
     
     #paths
-    outdr = "/jukebox/scratch/zmd/registration_accuracy_iters/registration"
+    outdr = "/jukebox/scratch/zmd/registration_accuracy_iters/registration/ventral_up"
     src = "/jukebox/scratch/zmd/registration_accuracy_iters/volumes"
     vols = [os.path.join(src, xx) for xx in os.listdir(src)]
     

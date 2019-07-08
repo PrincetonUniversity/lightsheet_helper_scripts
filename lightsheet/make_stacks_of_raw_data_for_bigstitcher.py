@@ -6,27 +6,49 @@ Created on Tue Jul  2 14:47:05 2019
 @author: wanglab
 """
 
-import os, re
+import os, numpy as np, tifffile, SimpleITK as sitk, matplotlib.pyplot as plt
+%matplotlib inline
 
-pth = "/home/wanglab/mounts/LightSheetData/mallarino/ricardo/20190702/raw_data/190702_20190313_edu_171_20190610_mallarino_1d3x_488_008na_z25um_1hfds_100ms_40povlp_sagittal_11-03-29"
+#path to raw data
+pth = "/jukebox/wang/seagravesk/lightsheet/cfos_raw_images/cfos/171206_f37077_observer_20171011_790_015na_1hfsds_z5um_1000msec_12-27-06"
 
-imgs = [os.path.join(pth, xx) for xx in os.listdir(pth) if "UltraII_raw_RawDataStack" in xx]; imgs.sort()
+#find only raw images
+imgs = [os.path.join(pth, xx) for xx in os.listdir(pth) if "UltraII_raw_DataStack" in xx 
+        or "UltraII_raw_RawDataStack" in xx]; imgs.sort()
 
-regexpression = r'(.*)(?P<y>\d{2})(.*)(?P<x>\d{2})(.*C+)(?P<ls>[0-9]{1,2})(.*Z+)(?P<z>[0-9]{1,4})(.*r)(?P<ch>[0-9]{1,4} )(.ome.tif)'
+y,x = tifffile.imread(imgs[2]).shape
+print(y,x)
+#make memmap arr of these
+#only left ls, one channel, one tile
+arr = np.lib.format.open_memmap("/jukebox/scratch/zmd/bigstitcher/f37077_observer_20171011_dorsal_up_790.npy", 
+                                dtype = "uint16", mode = "w+", shape = (len(imgs), y, x))
 
-reg = re.compile(regexpression)
-matches = list(map(reg.match, imgs)) #matches[0].groups()
+for i, img in enumerate(imgs):
+    #read 1 plane
+    im = sitk.GetArrayFromImage(sitk.ReadImage((img)))
+    arr[i] = im
+    print(i)
+    if i%50 == 0: arr.flush()
+    
+#%%
+import h5py 
+    
+#read mmap array and make into raw file?
+arr = np.lib.format.open_memmap("/jukebox/scratch/zmd/bigstitcher/f37077_observer_20171011_dorsal_up_790.npy", 
+                                dtype = "uint16", mode = "r")
 
-##find index of z,y,x,ch in a match str
-z_indx = matches[0].span('z')
-try:
-    y_indx = matches[0].span('y')
-    x_indx = matches[0].span('x')
-    tiling = True
-except IndexError:
-    y_indx = 1
-    x_indx = 1
-    tiling = False
+#h = h5py.File("/jukebox/scratch/zmd/bigstitcher/f37077_observer_20171011_dorsal_up_790.hdf5", 'w')   
+#dset = h.create_dataset("data", data = arr)
 
-chs=[]; [chs.append(matches[i].group('ch')[:]) for i in range(len(matches)) if matches[i].group('ch')[:] not in chs]
-zplns=[]; [zplns.append(matches[i].group('z')) for i in range(len(matches)) if matches[i].group('z') not in zplns]; zplns.sort()
+tifffile.imsave("/jukebox/scratch/zmd/bigstitcher/f37077_observer_20171011_dorsal_up_790_z500_600.tif", arr[500:600])
+
+#%%
+#read mmap array and make into raw file?
+arr = np.lib.format.open_memmap("/jukebox/scratch/zmd/bigstitcher/f37077_observer_20171011_ventral_up_790.npy", 
+                                dtype = "uint16", mode = "r")
+
+#h = h5py.File("/jukebox/scratch/zmd/bigstitcher/f37077_observer_20171011_ventral_up_790.hdf5", 'w')   
+#dset = h.create_dataset("data", data = arr)
+arr_flip = np.flipud(np.fliplr(arr))
+tifffile.imsave("/jukebox/scratch/zmd/bigstitcher/f37077_observer_20171011_ventral_up_790.tif", arr_flip)
+    
