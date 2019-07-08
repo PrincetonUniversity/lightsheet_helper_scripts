@@ -8,14 +8,13 @@ Created on Mon Jul  8 16:10:57 2019
 
 import os, numpy as np
 os.chdir("/jukebox/wang/zahra/python/lightsheet_py3")
-from skimage.external import tifffile
 import seaborn as sns, pandas as pd, matplotlib.pyplot as plt
 import scipy, itertools
 from skimage.exposure import equalize_hist, adjust_gamma
 from tools.utils.io import listdirfull
 from tools.analysis.network_analysis import make_structure_objects
 
-sns.set_style('white')
+sns.set_style("white")
 
 #make inputs
 src = "/jukebox/wang/Jess/lightsheet_output/201810_cfos/pooled_analysis/lobuleVI"
@@ -23,32 +22,32 @@ if not os.path.exists(src): os.mkdir(src)
 flds = "/jukebox/wang/Jess/lightsheet_output/201810_cfos/processed"
 
 #get files
-lst = [fld for fld in listdirfull(flds) if os.path.exists(os.path.join(fld, 'Annotated_counts_60um_erosion.csv')) and fld[-7:-3] == "lob6" 
-       or fld[-7:] == 'crus1_3' or fld[-7:] == 'crus1_1' or fld[-7:] == 'crus1_4' ]; lst.sort()
+lst = [fld for fld in listdirfull(flds) if os.path.exists(os.path.join(fld, "Annotated_counts_60um_erosion.csv")) and fld[-7:-3] == "lob6" 
+       or fld[-7:] == "crus1_3" or fld[-7:] == "crus1_1" or fld[-7:] == "crus1_4" ]; lst.sort()
 
 #conditions
-nms = ['dadult_pc_crus1_1',
-       'dadult_pc_crus1_3',
-       'dadult_pc_crus1_4',
-       'dadult_pc_lob6_13',
-       'dadult_pc_lob6_14',
-       'dadult_pc_lob6_15',
-       'dadult_pc_lob6_16',
-       'dadult_pc_lob6_17',
-       'dadult_pc_lob6_18',
-       'dadult_pc_lob6_19',
-       'dadult_pc_lob6_20',
-       'dadult_pc_lob6_21']
+nms = ["dadult_pc_crus1_1",
+       "dadult_pc_crus1_3",
+       "dadult_pc_crus1_4",
+       "dadult_pc_lob6_13",
+       "dadult_pc_lob6_14",
+       "dadult_pc_lob6_15",
+       "dadult_pc_lob6_16",
+       "dadult_pc_lob6_17",
+       "dadult_pc_lob6_18",
+       "dadult_pc_lob6_19",
+       "dadult_pc_lob6_20",
+       "dadult_pc_lob6_21"]
 
-cond = ['Vector Control', 'Vector Control', 'Vector Control', 'DREADDs', 'Vector Control', 'DREADDs', 'Vector Control', 'DREADDs', 'DREADDs','DREADDs', 'DREADDs',
-        'DREADDs']
+cond = ["Vector Control", "Vector Control", "Vector Control", "DREADDs", "Vector Control", "DREADDs", "Vector Control", "DREADDs", "DREADDs","DREADDs", "DREADDs",
+        "DREADDs"]
 
 conditions = {n:c for n,c in zip(nms, cond)}
 pth = os.path.join(src, "cell_counts.csv")
 
-df_pth = '/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx'
-ann_pth = '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_erosion.tif'
-atl_pth = '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif'
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_erosion.tif"
+atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 #%%
 
 #build structures class
@@ -79,7 +78,7 @@ def generate_data_frame(conditions, lst, pth):
     df = pd.concat(bglst)
     df["counts"] = df["counts"].apply(int)
 
-    #remove structures we don't care about!!!!!!!!!!!!!!!!!!!!!!
+    #remove structures we don"t care about!!!!!!!!!!!!!!!!!!!!!!
     sois = ["ventricular systems", "fiber tracts", "grooves"]
     for soi in sois:
         soi = [s for s in structures if s.name==soi][0]
@@ -213,8 +212,7 @@ print("saved in :{}".format(src))
 from scipy.stats import f_oneway
 
 #do first for all structures
-df = pd.read_csv(os.path.join(src, 'select_structures_percent_counts_for_plots.csv'))
-#df = pd.read_csv(os.path.join(path,'select_structures_percent_counts_for_plots.csv'))
+df = pd.read_csv(os.path.join(src, "select_structures_percent_counts_for_plots.csv"))
 
 df_anova = pd.DataFrame()
 df_anova["name"] = np.unique(df["name"].values)
