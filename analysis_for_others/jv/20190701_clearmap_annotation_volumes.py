@@ -6,8 +6,11 @@ Created on Mon Jul  1 14:33:15 2019
 @author: wanglab
 """
 
-import numpy as np, os, tifffile
+import numpy as np, os, tifffile, matplotlib as mpl
 from tools.conv_net.utils.io import pairwise_distance_metrics, load_dictionary
+
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
 
 src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/clearmap_accuracy_quantification/clearmap_results"
 
@@ -18,7 +21,7 @@ flds = [os.path.join(src, xx) for xx in os.listdir(src)]; flds.sort()
 n_cells_per_size = []
 
 for sz in flds:
-    arrs = [os.path.join(sz, xx) for xx in os.listdir(sz) if xx[-3:] == "npy"]; arrs.sort()
+    arrs = [os.path.join(sz, xx) for xx in os.listdir(sz) if xx[-3:] == "npy" and not "pcdev" in xx]; arrs.sort()
     n_cells_per_size.append(np.array([len(np.load(xx)) for xx in arrs]))
 
 #%%
@@ -82,7 +85,7 @@ for a in [os.path.join(pth, xx) for xx in os.listdir(pth)]:
 #save out points
 dst = os.path.join(os.path.dirname(pth), "cfos_points_dictionary.p")
 
-with open(dst, 'wb') as fl:    
+with open(dst, "wb") as fl:    
     pickle.dump(file_points_dct, fl, protocol=pickle.HIGHEST_PROTOCOL)
 
 print("Saved in {}".format(os.path.join(os.path.dirname(pth), "cfos_points_dictionary.p")))    
@@ -148,7 +151,7 @@ import matplotlib.pyplot as plt
 fig = plt.figure()
 
 ax1 = fig.add_subplot(111)
-line1 = ax1.plot(n_cells_per_size_av[2:], 'k')
+line1 = ax1.plot(n_cells_per_size_av[2:], "k")
 #format
 ax1.set_ylim(0, 1000)
 ax1.set_yticks(np.arange(0, 1000, 50))
@@ -157,8 +160,8 @@ plt.ylabel("Number of cells detected")
 
 # now, the second axes that shares the x-axis with the ax1
 ax2 = fig.add_subplot(111, sharex=ax1, frameon=False)
-line2 = ax2.plot(tpr[2:], 'g')
-#line2 = ax2.plot(fpr[2:], 'r')
+line2 = ax2.plot(tpr[2:], "g")
+#line2 = ax2.plot(fpr[2:], "r")
 
 #format
 ax2.yaxis.tick_right()
@@ -172,26 +175,26 @@ plt.xlabel("Cell size threshold (voxels)")
 #for im in range(19):
 #    # and the first axes using subplot populated with data 
 #    ax1 = fig.add_subplot(111)
-#    line1 = ax1.plot(n_cells_per_size[1:, im], 'k')
+#    line1 = ax1.plot(n_cells_per_size[1:, im], "k")
 #    plt.ylabel("Number of cells detected")
 #
 #    # now, the second axes that shares the x-axis with the ax1
 #    ax2 = fig.add_subplot(111, sharex=ax1, frameon=False)
-#    line2 = ax2.plot(tps_s[1:, im]/n_cells_per_size[1:, im], 'r')
+#    line2 = ax2.plot(tps_s[1:, im]/n_cells_per_size[1:, im], "r")
 #    ax2.yaxis.tick_right()
 #    ax2.yaxis.set_label_position("right")
 #    plt.ylabel("Proportion of true positive cells detected")
 #    plt.xlabel("Cell size threshold (voxels)") 
 
 from matplotlib.lines import Line2D
-custom_lines = [Line2D([0], [0], color='k', lw=4),
-                Line2D([0], [0], color='g', lw=4)]
-                #Line2D([0], [0], color='g', lw=4)]
+custom_lines = [Line2D([0], [0], color="k", lw=4),
+                Line2D([0], [0], color="g", lw=4)]
+                #Line2D([0], [0], color="g", lw=4)]
 
 #format
-plt.legend(custom_lines, ['Number of cells detected by ClearMap', 'Proportion of detected cells also annotated by user'],
-                          #'Proportion of detected cells not annotated by user'],
+plt.legend(custom_lines, ["Number of cells detected by ClearMap", "Proportion of detected cells also annotated by user"],
+                          #"Proportion of detected cells not annotated by user"],
            bbox_to_anchor=(0.97, -0.15))
 
 dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst, "true_positive_rate.svg"), dpi = 300, bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "true_positive_rate.pdf"), dpi = 300, bbox_inches = "tight")
