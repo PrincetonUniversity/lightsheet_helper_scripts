@@ -68,18 +68,22 @@ if __name__ == "__main__":
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
     
     #paths
-    outdr = "/jukebox/scratch/zmd/registration_accuracy_iters/registration/ventral_up"
+    outdr = "/jukebox/scratch/zmd/registration_accuracy_iters/inverse_registration"
     src = "/jukebox/scratch/zmd/registration_accuracy_iters/volumes"
     vols = [os.path.join(src, xx) for xx in os.listdir(src)]
     
     #pick reg vol based on step ID (will only need 2) 
     start = time.time()
     vol = vols[stepid]
-    fx = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
-    out = os.path.join(outdr, "iter"+str(jobid).zfill(3))
+    mv = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
+    if stepid == 0:
+        out = os.path.join(os.path.join(outdr, "dorsal_up"), "iter"+str(jobid).zfill(3))
+    else:
+        out = os.path.join(os.path.join(outdr, "ventral_up"), "iter"+str(jobid).zfill(3))
+    #make output dir
     if not os.path.exists(out): os.mkdir(out)
     
-    mv = vol
+    fx = vol
     
     params = ["/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order1_Par0000affine.txt", 
               "/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order2_Par0000bspline.txt"]
