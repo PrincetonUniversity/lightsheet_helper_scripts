@@ -69,14 +69,13 @@ for brain in brains:
     mean_line = lines.mean(axis = 0)
     
     #set condition
-    if "dbe-dcm" in brain:
+    if "dbe_no_dcm" in brain:
         condition = "dbe-dcm"
-    if "dbe+dcm" or "dbe_dcm" in brain:
+    elif "dbe_dcm" in brain:
         condition = "dbe+dcm"
-    if "eci+dcm" or "eci_dcm" in brain:
+    elif "eci_dcm" in brain:
         condition = "eci+dcm"
-    if "eci-dcm" or "eci_no_dcm" in brain:
-        condition = "eci-dcm"
+    else: condition = "eci-dcm"
 #    
 #    if "dbe_dcm" in brain:
 #        condition = "dbe+dcm"
@@ -95,9 +94,11 @@ for brain in brains:
 #overlay all conditions
 plt.figure()    
 for i in range(len(int_profile)):
-    plt.plot(int_profile[i][1])
+    plt.plot(int_profile[i][1], color = "royalblue")
 plt.xlabel("Distance (pixels)")
 plt.ylabel("Mean intensity")
+save_pth = "/home/wanglab/Desktop/all_brain_intensity_profile.pdf"
+plt.savefig(save_pth, dpi = 300)
     
 #overlay by condition
 #get data
@@ -123,16 +124,17 @@ mean_eci_no_dcm = np.mean(np.asarray(eci_no_dcm), axis = 0)
 
 plt.figure()
 #overlay on each other
-plt.plot(mean_dbe_no_dcm[1000:], label = "DBE-DCM")
-plt.plot(mean_dbe_dcm[1000:], label = "DBE+DCM")
-plt.plot(mean_eci_dcm[1000:], label = "ECI-DCM")
-plt.plot(mean_eci_no_dcm[1000:], label = "ECI+DCM")
+plt.plot(mean_dbe_no_dcm[1000:], label = "DBE-DCM (n = 4)")
+plt.plot(mean_dbe_dcm[1000:], label = "DBE+DCM (n = 5)")
+plt.plot(mean_eci_dcm[1000:], label = "ECI-DCM (n = 6)")
+plt.plot(mean_eci_no_dcm[1000:], label = "ECI+DCM (n = 5)")
 plt.legend()
 plt.xlabel("Distance (pixels)")
 plt.ylabel("Mean intensity")
 #ADD CODE TO SAVE MATPLOTLIB FIGURE
-save_pth = "/home/wanglab/Desktop/test.pdf"
+save_pth = "/home/wanglab/Desktop/intensity_profile_per_condition.pdf"
 plt.savefig(save_pth, dpi = 300)
+
 
 #%%
 #calculate slopes per animal per condition
@@ -161,15 +163,30 @@ for animal in eci_no_dcm:
     linreg = linregress(range(len(animal[1000:])), animal[1000:])
     eci_no_dcm_slopes.append(linreg.slope)    
 
-#stats
-#ANOVA ONE WAY
-from scipy.stats import f_oneway
+#%%
+#export slopes
+import pandas as pd    
+df = pd.DataFrame([dbe_no_dcm_slopes, dbe_dcm_slopes, eci_no_dcm_slopes, eci_dcm_slopes])
 
-f_oneway(eci_dcm_slopes, dbe_dcm_slopes, dbe_no_dcm_slopes)
+#transpose
+df = df.T
+
+df.columns = ["dbe_no_dcm_slopes", "dbe_dcm_slopes", "eci_no_dcm_slopes", "eci_dcm_slopes"]
 
 #T-TEST
 from scipy.stats import ttest_ind
 
-#ttest_ind(eci_no_dcm_slopes, dbe_no_dcm_slopes)
-ttest_ind(dbe_dcm_slopes, eci_dcm_slopes)
+ttest = ttest_ind(dbe_no_dcm_slopes, eci_no_dcm_slopes)
+df["dbe_no_dcm_vs_eci_no_dcm_ttest_pval"] = ttest.pvalue
+ttest = ttest_ind(dbe_no_dcm_slopes, eci_dcm_slopes)
+df["dbe_no_dcm_vs_eci_dcm_ttest_pval"] = ttest.pvalue
+ttest = ttest_ind(dbe_no_dcm_slopes, dbe_dcm_slopes)
+df["dbe_no_dcm_vs_dbe_dcm_ttest_pval"] = ttest.pvalue
+ttest = ttest_ind(eci_dcm_slopes, dbe_dcm_slopes)
+df["eci_dcm_vs_dbe_dcm_ttest_pval"] = ttest.pvalue
+ttest = ttest_ind(eci_no_dcm_slopes, dbe_dcm_slopes)
+df["eci_no_dcm_vs_dbe_dcm_ttest_pval"] = ttest.pvalue
+ttest = ttest_ind(eci_dcm_slopes, eci_no_dcm_slopes)
+df["eci_dcm_vs_eci_no_dcm_ttest_pval"] = ttest.pvalue
 
+df.to_csv("/home/wanglab/Desktop/slopes_and_ttest_results.csv")
