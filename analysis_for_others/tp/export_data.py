@@ -7,6 +7,64 @@ Created on Wed Jun  5 15:18:29 2019
 """
 
 import os, pickle as pckl
+
+#%%
+
+
+#save
+dst = "/jukebox/wang/zahra/modeling/h129/striatum/"
+
+data = {}
+
+data["brainnames"] = brains
+data["expr_all_as_frac_of_lob"] = expr_all_as_frac_of_lob
+data["expr_all_as_frac_of_inj"] = expr_all_as_frac_of_inj
+data["primary_as_frac_of_lob"] = primary_as_frac_of_lob
+data["secondary"] = secondary
+data["cell_counts_per_brain"] = cell_counts_per_brain
+data["cell_counts_per_brain_p"] = cell_counts_per_brain_p
+data["expr_all_as_frac_of_lob_pool"] = expr_all_as_frac_of_lob_pool
+#data["expr_all_as_frac_of_lob_pool_norm"] = expr_all_as_frac_of_lob_pool_norm
+data["expr_all_as_frac_of_inj_pool"] = expr_all_as_frac_of_inj_pool
+data["primary_pool"] = primary_pool
+data["ak_pool"] = ak_pool
+data["volume_per_brain"] = volume_per_brain
+data["density_per_brain"] = density_per_brain
+data["primary_lob_n"] = primary_lob_n
+data["sois"] = sois
+
+#store data (serialize)
+with open(os.path.join(dst, "count_and_density_data.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+    
+#%%
+
+#save
+dst = "/jukebox/wang/zahra/modeling/h129/pallidum/"
+
+data = {}
+
+data["brainnames"] = brains
+data["expr_all_as_frac_of_lob"] = expr_all_as_frac_of_lob
+data["expr_all_as_frac_of_inj"] = expr_all_as_frac_of_inj
+data["primary_as_frac_of_lob"] = primary_as_frac_of_lob
+data["secondary"] = secondary
+data["cell_counts_per_brain"] = cell_counts_per_brain
+data["cell_counts_per_brain_p"] = cell_counts_per_brain_p
+data["expr_all_as_frac_of_lob_pool"] = expr_all_as_frac_of_lob_pool
+#data["expr_all_as_frac_of_lob_pool_norm"] = expr_all_as_frac_of_lob_pool_norm
+data["expr_all_as_frac_of_inj_pool"] = expr_all_as_frac_of_inj_pool
+data["primary_pool"] = primary_pool
+data["ak_pool"] = ak_pool
+data["volume_per_brain"] = volume_per_brain
+data["density_per_brain"] = density_per_brain
+data["primary_lob_n"] = primary_lob_n
+data["sois"] = sois
+
+#store data (serialize)
+with open(os.path.join(dst, "count_and_density_data.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+    
 #%%
 
 #save

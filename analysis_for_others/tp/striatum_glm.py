@@ -428,7 +428,7 @@ plt.savefig(os.path.join(dst,"str_pcounts_boxplots.pdf"), bbox_inches = "tight")
 
 #%%
 
-#GET ONLY STRIATUM small structures
+#GET ONLY PALLIDUM small structures
 sois = ["Globus pallidus, external segment", "Globus pallidus, internal segment", 
         "Substantia innominata", "Magnocellular nucleus", "Medial septal complex", 
         "Triangular nucleus of septum", "Bed nuclei of the stria terminalis", "Bed nucleus of the anterior commissure"]
