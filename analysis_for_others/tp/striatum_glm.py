@@ -181,10 +181,10 @@ for brain in brains:
             #now sum up progeny
             if len(progeny) > 0:
                 for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-                            #add to volume list from LUT
+#                    for k, v in cells_regions[brain].items():
+#                        if k == progen:
+#                            counts.append(v)
+#                            #add to volume list from LUT
                     volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
             c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
             d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
@@ -264,11 +264,11 @@ for brain in brains:
                     counts.append(v)
             progeny = [str(xx.name) for xx in soi.progeny]
             #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
+#            if len(progeny) > 0:
+#                for progen in progeny:
+#                    for k, v in cells_regions[brain].items():
+#                        if k == progen:
+#                            counts.append(v)
             nc[soi.name] = np.sum(np.asarray(counts))
         except:
             for k, v in cells_regions[brain].items():
@@ -305,7 +305,7 @@ ax = fig.add_axes([.4,.1,.5,.8])
 show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 0
-vmax = 10
+vmax = 20
 cmap = plt.cm.viridis
 cmap.set_over('gold')
 #colormap
@@ -463,9 +463,9 @@ for brain in brains:
             #now sum up progeny
             if len(progeny) > 0:
                 for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
+#                    for k, v in cells_regions[brain].items():
+#                        if k == progen:
+#                            counts.append(v)
                             #add to volume list from LUT
                     volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
             c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
@@ -546,11 +546,11 @@ for brain in brains:
                     counts.append(v)
             progeny = [str(xx.name) for xx in soi.progeny]
             #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
+#            if len(progeny) > 0:
+#                for progen in progeny:
+#                    for k, v in cells_regions[brain].items():
+#                        if k == progen:
+#                            counts.append(v)
             nc[soi.name] = np.sum(np.asarray(counts))
         except:
             for k, v in cells_regions[brain].items():
@@ -587,7 +587,7 @@ ax = fig.add_axes([.4,.1,.5,.8])
 show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 0
-vmax = 12
+vmax = 20
 cmap = plt.cm.viridis
 cmap.set_over('gold')
 #colormap
@@ -637,7 +637,7 @@ ax = fig.add_axes([.4,.1,.5,.8])
 show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 100
-vmax = 800
+vmax = 600
 cmap = plt.cm.viridis
 cmap.set_over('gold')
 #colormap
