@@ -18,8 +18,8 @@ import pandas as pd
 inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-cells_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_coordinate_only_including_structure"
-cells_regions_pth = '/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_region/nc_dataframe.p'
+cells_regions_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_region/nc_dataframe.p"
+dst = "/home/wanglab/Desktop"
 
 #making dictionary of injection sites
 injections = {}
@@ -125,10 +125,11 @@ primary_pool = np.array([np.argmax(e) for e in expr_all_as_frac_of_inj_pool])
 #get n's after pooling
 primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
 
-#NORMALISATION
-total_lob_sum = np.asarray([np.sum(expr_all_as_frac_of_lob_pool[i]) for i in range(len(expr_all_as_frac_of_lob))])    
-normalised = np.asarray([expr_all_as_frac_of_lob_pool[i]/total_lob_sum[i] for i in range(len(expr_all_as_frac_of_lob))])
-
+from sklearn import preprocessing
+#normalization  of inj site
+expr_all_as_frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in expr_all_as_frac_of_inj_pool])
+    
+#%%
 #making dictionary of cells by region
 cells_regions = pckl.load(open(cells_regions_pth, "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
@@ -213,32 +214,6 @@ for k,v in cells_pooled_regions.items():
     
 cell_counts_per_brain = np.asarray(cell_counts_per_brain)
 
-cell_counts_per_brain_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], brain[3], brain[6], brain[5]+brain[7], 
-                                          brain[8]+brain[9], brain[10], brain[12], brain[11], 
-                                          brain[13]+brain[14], brain[15]+brain[16]] for brain in cell_counts_per_brain])
-
-volume_per_brain = []
-
-#initialise dummy var
-i = []
-for k,v in volume_pooled_regions.items():
-    dct = volume_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    volume_per_brain.append(i)
-    #re-initialise for next
-    i = []  
-
-volume_per_brain_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], brain[3], brain[6], brain[5]+brain[7], 
-                                          brain[8]+brain[9], brain[10], brain[12], brain[11], 
-                                          brain[13]+brain[14], brain[15]+brain[16]] for brain in volume_per_brain])
-    
-volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
-volume_per_brain_pool = np.asarray(volume_per_brain_pool)*(scale_factor**3)
-
-#calculate denisty
-density_per_brain_pool = np.asarray([xx/volume_per_brain_pool[i] for i, xx in enumerate(cell_counts_per_brain_pool)])
-
 #%%
 #get counts for all of neocortex
 sois = ["Isocortex"]    
@@ -296,24 +271,15 @@ cell_counts_per_brain_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], b
                                           brain[8]+brain[9], brain[10], brain[12], brain[11], 
                                           brain[13]+brain[14], brain[15]+brain[16]] for brain in cell_counts_per_brain_p])
 
+
 regions = np.asarray(['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital',
        'Frontal pole', 'Agranular insula', 'Gustatory, Visceral',
        'Somatomotor, Somatosensory', 'Retrosplenial', 'Visual',
-       'Post. parietal', 'Temporal, Auditory',
-       'Peririhinal, Ectorhinal'])
-
-cb_region_vol = np.asarray([np.sum(xx) for k, xx in atlas_rois.items()]) #per region
-total_cb_voxels = np.sum(cb_region_vol)
-
-scale = 0.020 #mm/voxel
-inj_vol = np.asarray([np.sum(xx)/(total_cb_voxels) for xx in inj_raw]) #on the order of 10e-7? #right now the units are cells/mm3
-inj_vol = np.asarray([xx/np.max(inj_vol) for xx in inj_vol])
-#inj_vol = np.asarray([np.sum(xx) for xx in inj_raw]) #per brain
-
-norm_density_per_brain_pool = np.asarray([xx/inj_vol[i] for i, xx in enumerate(density_per_brain_pool)])
-
-X = normalised
-Y = density_per_brain_pool    
+       'Post. parietal', 'Temporal, Auditory', 'Peririhinal, Ectorhinal'])
+    
+    
+X = expr_all_as_frac_of_inj_pool_norm
+Y = cell_counts_per_brain_pool    
 #%%
 
 ##  glm
@@ -390,7 +356,7 @@ ax = fig.add_axes([.4,.1,.5,.8])
 show = mat # NOTE abs
 
 vmin = 0
-vmax = 80
+vmax = 4
 cmap = plt.cm.Reds
 cmap.set_under('w')
 cmap.set_over('maroon')
@@ -438,12 +404,8 @@ lbls = np.asarray(ak)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
-plt.savefig(os.path.join(dst, "nc_glm_density.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "nc_glm.pdf"), bbox_inches = "tight")
 
 #%%
 

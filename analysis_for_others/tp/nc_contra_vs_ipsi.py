@@ -440,13 +440,7 @@ _ipsi = np.asarray(_ipsi)
 #make into one
 _counts = np.asarray([_contra, _ipsi])           
 _dist = np.asarray(list(lr_dist.values()))
- 
-#sort by distance
-sort_dist = np.sort(_dist)
-sort_contra = _contra[np.argsort(_dist)]
-sort_ipsi = _ipsi[np.argsort(_dist)]
-sort_inj = _inj[np.argsort(_dist)]    
-#%%
+
 #injection site analysis
 pth = "/jukebox/wang/zahra/modeling/h129/neocortex/data.p"
 data = pckl.load(open(pth, "rb"), encoding = "latin1")
@@ -455,6 +449,13 @@ brains = data["brainnames"]
 primary_pool = data["primary_pool"]
 ak_pool = data["cb_regions_pool"]
 inj = data["expr_all_as_frac_of_inj_pool"]
+ 
+#sort by distance
+sort_dist = np.sort(_dist)
+sort_contra = _contra[np.argsort(_dist)]
+sort_ipsi = _ipsi[np.argsort(_dist)]
+sort_inj = _inj[np.argsort(_dist)]    
+#%%
 
 #injection specific
 _inj = np.asarray([inj[i] for i in range(len(inj)) if brains[i] in lr_brains])
@@ -565,7 +566,7 @@ show = np.asarray([sort_contra/sort_ipsi])
 br = lr_brains 
 
 vmin = 0.7
-vmax = 1
+vmax = 1.2
 cmap = plt.cm.Blues 
 cmap.set_over('midnightblue')
 cmap.set_under('ghostwhite')
@@ -587,7 +588,7 @@ cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col >= 1:
+        if col >= 1.2:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")        
