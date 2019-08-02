@@ -18,46 +18,46 @@ import pandas as pd
 inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-cells_regions_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/cell_count_by_region/nc_dataframe.p"
+cells_regions_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/nc_dataframe.p"
 dst = "/home/wanglab/Desktop"
 
 #making dictionary of injection sites
 injections = {}
 
 #MAKE SURE THEY ARE IN THIS ORDER
-brains = ['20180409_jg46_bl6_lob6a_04', 
-          '20180608_jg75', 
-          '20170204_tp_bl6_cri_1750r_03',
-          '20180608_jg72', 
-          '20180416_jg56_bl6_lob8_04', 
-          '20170116_tp_bl6_lob45_ml_11', 
-          '20180417_jg60_bl6_cri_04', 
-          '20180410_jg52_bl6_lob7_05', 
-          '20170116_tp_bl6_lob7_1000r_10', 
-          '20180409_jg44_bl6_lob6a_02', 
-          '20180410_jg49_bl6_lob45_02', 
-          '20180410_jg48_bl6_lob6a_01', 
-          '20180612_jg80', 
-          '20180608_jg71',
-          '20170212_tp_bl6_crii_1000r_02', 
-          '20170115_tp_bl6_lob6a_rpv_03', 
-          '20170212_tp_bl6_crii_2000r_03', 
-          '20180417_jg58_bl6_sim_02',
-          '20170130_tp_bl6_sim_1750r_03', 
-          '20170115_tp_bl6_lob6b_ml_04', 
-          '20180410_jg50_bl6_lob6b_03', 
-          '20170115_tp_bl6_lob6a_1000r_02', 
-          '20170116_tp_bl6_lob45_500r_12', 
-          '20180612_jg77', 
-          '20180612_jg76', 
-          '20180416_jg55_bl6_lob8_03', 
-          '20170115_tp_bl6_lob6a_500r_01', 
-          '20170130_tp_bl6_sim_rpv_01', 
-          '20170204_tp_bl6_cri_1000r_02', 
-          '20170212_tp_bl6_crii_250r_01', 
-          '20180417_jg61_bl6_crii_05',
-          '20170116_tp_bl6_lob7_ml_08', 
-          '20180409_jg47_bl6_lob6a_05']
+brains = ["20180409_jg46_bl6_lob6a_04", 
+          "20180608_jg75", 
+          "20170204_tp_bl6_cri_1750r_03",
+          "20180608_jg72", 
+          "20180416_jg56_bl6_lob8_04", 
+          "20170116_tp_bl6_lob45_ml_11", 
+          "20180417_jg60_bl6_cri_04", 
+          "20180410_jg52_bl6_lob7_05", 
+          "20170116_tp_bl6_lob7_1000r_10", 
+          "20180409_jg44_bl6_lob6a_02", 
+          "20180410_jg49_bl6_lob45_02", 
+          "20180410_jg48_bl6_lob6a_01", 
+          "20180612_jg80", 
+          "20180608_jg71",
+          "20170212_tp_bl6_crii_1000r_02", 
+          "20170115_tp_bl6_lob6a_rpv_03", 
+          "20170212_tp_bl6_crii_2000r_03", 
+          "20180417_jg58_bl6_sim_02",
+          "20170130_tp_bl6_sim_1750r_03", 
+          "20170115_tp_bl6_lob6b_ml_04", 
+          "20180410_jg50_bl6_lob6b_03", 
+          "20170115_tp_bl6_lob6a_1000r_02", 
+          "20170116_tp_bl6_lob45_500r_12", 
+          "20180612_jg77", 
+          "20180612_jg76", 
+          "20180416_jg55_bl6_lob8_03", 
+          "20170115_tp_bl6_lob6a_500r_01", 
+          "20170130_tp_bl6_sim_rpv_01", 
+          "20170204_tp_bl6_cri_1000r_02", 
+          "20170212_tp_bl6_crii_250r_01", 
+          "20180417_jg61_bl6_crii_05",
+          "20170116_tp_bl6_lob7_ml_08", 
+          "20180409_jg47_bl6_lob6a_05"]
 
 for pth in brains:
     print(pth)
@@ -108,7 +108,7 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 #%%
 
 #pooled injections
-ak = np.asarray(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
+ak_pool = np.asarray(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
                  "Simplex", "Crura", "PM, CP"])
 
 #pooling injection regions
@@ -122,10 +122,9 @@ expr_all_as_frac_of_inj_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[3],
     
 primary_pool = np.array([np.argmax(e) for e in expr_all_as_frac_of_inj_pool])
 
-#get n's after pooling
+#get n"s after pooling
 primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
 
-from sklearn import preprocessing
 #normalization  of inj site
 expr_all_as_frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in expr_all_as_frac_of_inj_pool])
     
@@ -214,7 +213,6 @@ for k,v in cells_pooled_regions.items():
     
 cell_counts_per_brain = np.asarray(cell_counts_per_brain)
 
-#%%
 #get counts for all of neocortex
 sois = ["Isocortex"]    
 
@@ -272,10 +270,10 @@ cell_counts_per_brain_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], b
                                           brain[13]+brain[14], brain[15]+brain[16]] for brain in cell_counts_per_brain_p])
 
 
-regions = np.asarray(['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital',
-       'Frontal pole', 'Agranular insula', 'Gustatory, Visceral',
-       'Somatomotor, Somatosensory', 'Retrosplenial', 'Visual',
-       'Post. parietal', 'Temporal, Auditory', 'Peririhinal, Ectorhinal'])
+regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
+       "Frontal pole", "Agranular insula", "Gustatory, Visceral",
+       "Somatomotor, Somatosensory", "Retrosplenial", "Visual",
+       "Post. parietal", "Temporal, Auditory", "Peririhinal, Ectorhinal"])
     
     
 X = expr_all_as_frac_of_inj_pool_norm
@@ -283,6 +281,7 @@ Y = cell_counts_per_brain_pool
 #%%
 
 ##  glm
+c_mat = []
 mat = []
 pmat = []
 mat_shuf = []
@@ -319,6 +318,7 @@ for itera in range(1000):
         val = coef/se
 
         if not shuffle:
+            c_mat.append(coef)
             mat.append(val)
             pmat.append(pvals)
             fit.append(res.fittedvalues)
@@ -339,7 +339,7 @@ for itera in range(1000):
             plt.savefig(os.path.join(dst, "resid_inspection-{}.png").format(region))
         """
         
-
+c_mat = np.array(c_mat)
 mat = np.array(mat) # region x inj
 mat_shuf = np.array(mat_shuf) # region x inj
 pmat = np.array(pmat) # region x inj
@@ -353,13 +353,13 @@ fig = plt.figure(figsize=(6,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 # map 1: weights
-show = mat # NOTE abs
+show = np.flipud(mat) # NOTE abs
 
 vmin = 0
 vmax = 4
 cmap = plt.cm.Reds
-cmap.set_under('w')
-cmap.set_over('maroon')
+cmap.set_under("w")
+cmap.set_over("maroon")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,9)
@@ -376,15 +376,15 @@ cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
 
 # exact value annotations
-for ri,row in enumerate(show):
+for ri,row in enumerate(c_mat):
     for ci,col in enumerate(row):
-        if col < 50:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
+        if col < 3:
+            ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
         else: 
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
+            ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
 
 # signif
-sig = pmat < .05#/np.size(pmat)
+sig = np.flipud(pmat) < .05#/np.size(pmat)
 p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
 null = (p_shuf_pos < .05).sum(axis=(1,2))
 nullmean = null.mean()
@@ -399,12 +399,12 @@ ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance
 # xticksjt -t monokai -m 200
 ax.set_xticks(np.arange(len(ak))+.5)
 
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 lbls = np.asarray(ak)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="xx-small")
+ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="xx-small")
 plt.savefig(os.path.join(dst, "nc_glm.pdf"), bbox_inches = "tight")
 
 #%%

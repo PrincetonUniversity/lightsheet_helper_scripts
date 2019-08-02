@@ -30,11 +30,9 @@ z,y,x = ann_h.shape
 ann_h_left = ann_h[:, :, :int(x/2)] #cut in the middle in x
 ann_h_right = ann_h[:, :, int(x/2):]
 plt.imshow(ann_h_left[120])
-#back to sagittal
-ann_h_left_sag = np.transpose(ann_h_left, [2, 1, 0])
-ann_h_right_sag = np.transpose(ann_h_right, [2, 1, 0])
 
-plt.imshow(ann_h_left_sag[120])
+ann_sag_left = np.transpose(ann_h_left, [2, 1, 0])
+ann_sag_right = np.transpose(ann_h_right, [2, 1, 0])
 
 def add_progeny_counts_at_each_level(df, df_pth, ann_pth):
     """
@@ -107,7 +105,7 @@ df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelc
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 structures_names = [xx.name for xx in structures]
 
-#%%   
+   
 #collect 
 id_table = pd.read_excel(df_pth)
 #brains should be in this order as they were saved in this order for inj analysis
@@ -164,14 +162,7 @@ for fld in flds:
     inj_vol = tifffile.imread(inj_pth)
     inj_vol_h = np.transpose(inj_vol, [2, 1, 0])
     z,y,x = inj_vol_h.shape
-    inj_vol_h_left = inj_vol_h[:, :, :int(x/2)] #cut in the middle in x
-    inj_vol_h_right = inj_vol_h[:, :, int(x/2):]
 
-    #display for verification
-#    plt.figure()
-#    plt.imshow(inj_vol_h_right[150, 423:, :], cmap = "gist_yarg")
-#    plt.figure()
-#    plt.imshow(inj_vol_h_left[150, 423:, :], cmap = "gist_yarg")
     #cutting off at 423, same as tom's analysis
     arr = find_site(inj_vol_h[:, 423:, :])
     arr_left = arr[:, :, :int(x/2)]
@@ -198,7 +189,7 @@ for fld in flds:
     else:
         print("brain has an injection close to midline so not considering it rn\n")
 
-#%%
+
         
 #get brains that we actually need to get cell counts from
 lr_brains = list(lr_designation.keys())
@@ -208,7 +199,7 @@ post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/postt
 dct = {}
 for fl in post_transformed:
     arr = np.load(fl)
-    point_lst = transformed_pnts_to_allen_helper_func(arr, ann_h_left_sag, order = "ZYX")
+    point_lst = transformed_pnts_to_allen_helper_func(arr, ann_sag_left, order = "ZYX")
     print(os.path.basename(os.path.dirname(os.path.dirname(fl))))
     df = count_structure_lister(id_table, *point_lst).fillna(0)
     #for some reason duplicating columns, so use this
@@ -235,7 +226,7 @@ df.to_pickle(os.path.join(dst, "nc_left_side.p"))
 dct = {}
 for fl in post_transformed:
     arr = np.load(fl)
-    point_lst = transformed_pnts_to_allen_helper_func(arr, ann_h_right_sag, order = "ZYX")
+    point_lst = transformed_pnts_to_allen_helper_func(arr, ann_sag_right, order = "ZYX")
     print(os.path.basename(os.path.dirname(os.path.dirname(fl))))
     df = count_structure_lister(id_table, *point_lst).fillna(0)
     #for some reason duplicating columns, so use this
@@ -360,7 +351,6 @@ cell_counts_per_brain_left = np.asarray(cell_counts_per_brain)
 
 isocortex_per_brain_left = cell_counts_per_brain_left.sum(axis = 0)       
 
-#%%
 #get isocortex counts from unsummed dataframe
 no_prog_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/nc_dataframe_no_prog_at_each_level.p"
 cells_regions = pckl.load(open(no_prog_pth, "rb"), encoding = "latin1")
@@ -416,12 +406,20 @@ for k,v in all_nc_counts.items():
 #make into % counts the proper way
 pcounts_per_brain_left = np.asarray([(brain/nc_counts[i]*100) for i, brain in enumerate(cell_counts_per_brain_left)])
 pcounts_per_brain_right = np.asarray([(brain/nc_counts[i]*100) for i, brain in enumerate(cell_counts_per_brain_right)])
-#%%
+
 #preprocessing into contra/ipsi counts per brain, per structure
 #different nc counts
 #contra = left inj/right counts, etc.
-nc_left_counts = np.asarray([np.sum(xx) for xx in cell_counts_per_brain_left]).T
-nc_right_counts = np.asarray([np.sum(xx) for xx in cell_counts_per_brain_right]).T
+#sum across nc
+#nc_left_counts = np.asarray([np.sum(xx) for xx in cell_counts_per_brain_left]).T
+#nc_right_counts = np.asarray([np.sum(xx) for xx in cell_counts_per_brain_right]).T
+
+#PICK AN AREA HERE
+#area = 8 #infralimbic, prelimbic, etc.
+#nc_area = structure[area]
+nc_left_counts = cell_counts_per_brain_left
+nc_right_counts = cell_counts_per_brain_right
+
 lrv = list(lr_designation.values())
 lr_brains = list(lr_designation.keys())
 
@@ -435,10 +433,10 @@ for i in range(len(lr_brains)):
         contra[brains[i]] = nc_right_counts[i]; _contra.append(nc_right_counts[i])
         ipsi[brains[i]] = nc_left_counts[i]; _ipsi.append(nc_left_counts[i])
         
-_contra = np.asarray(_contra)
-_ipsi = np.asarray(_ipsi)
+_contra = np.asarray(_contra).T
+_ipsi = np.asarray(_ipsi).T
+_ratio = np.asarray([_contra[i]/_ipsi[i] for i in range(len(_contra))])
 #make into one
-_counts = np.asarray([_contra, _ipsi])           
 _dist = np.asarray(list(lr_dist.values()))
 
 #injection site analysis
@@ -450,50 +448,24 @@ primary_pool = data["primary_pool"]
 ak_pool = data["cb_regions_pool"]
 inj = data["expr_all_as_frac_of_inj_pool"]
  
-#sort by distance
-sort_dist = np.sort(_dist)
-sort_contra = _contra[np.argsort(_dist)]
-sort_ipsi = _ipsi[np.argsort(_dist)]
-sort_inj = _inj[np.argsort(_dist)]    
-#%%
-
-#injection specific
 _inj = np.asarray([inj[i] for i in range(len(inj)) if brains[i] in lr_brains])
 _primary_pool = np.asarray([primary_pool[i] for i in range(len(primary_pool)) if brains[i] in lr_brains])
 
-lobiiiiv_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. III, IV-V"])
-lobvivii_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. VIa, VIb, VII"])
-lobviiix_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. VIII, IX, X"])
-sim_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Simplex"])
-cr_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Crura"])
-pmcp_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "PM, CP"])
-    
-    
-lobiiiiv_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. III, IV-V"])
-lobvivii_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. VIa, VIb, VII"])
-lobviiix_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. VIII, IX, X"])
-sim_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Simplex"])
-cr_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Crura"])
-pmcp_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "PM, CP"])
-    
+#sort by distance
+sort_dist = np.sort(_dist)
+sort_contra = _contra.T[np.argsort(_dist, axis = 0)]
+sort_ipsi = _ipsi.T[np.argsort(_dist, axis = 0)]
+sort_ratio = _ratio.T[np.argsort(_dist, axis = 0)]
+sort_inj = _inj[np.argsort(_dist)]   
+
+print(sort_dist.shape)
+print(sort_ratio.shape)
+
 #%%
 #plotting
-
 #formatting
-fig, axes = plt.subplots(ncols = 1, nrows = 4, figsize = (20,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [4,2,1,1]})
+fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (20,10), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,5,0.5]})
 
 #inj fractions
 ax = axes[0]
@@ -526,61 +498,24 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
 #show raw counts    
 ax = axes[1]
 
-show = np.flipud(np.asarray([sort_contra, sort_ipsi]))
+show = np.flipud(np.asarray(sort_ratio.T))
 br = lr_brains 
 
-vmin = 0
-vmax = 8000
+vmin = 0.5
+vmax = 1.1
 cmap = plt.cm.viridis 
 cmap.set_over('gold')
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
+bounds = np.linspace(vmin,vmax,3)
 #bounds = np.linspace(-2,5,8)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 #cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
 #cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(True)
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col < 1600:
-            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="white", ha="center", va="center", fontsize="x-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="k", ha="center", va="center", fontsize="x-small")
-        
-ax.set_yticks(np.arange(2)+.5)
-ax.set_yticklabels(["Ipsi", "Contra"], fontsize="x-small")
-ax.set_ylabel("All Neocortical counts", fontsize="x-small")
-ax.yaxis.set_label_coords(-0.12,1.02)
-
-ax = axes[2]
-show = np.asarray([sort_contra/sort_ipsi])
-br = lr_brains 
-
-vmin = 0.7
-vmax = 1.2
-cmap = plt.cm.Blues 
-cmap.set_over('midnightblue')
-cmap.set_under('ghostwhite')
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,11)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.2, aspect=5)
 cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
@@ -588,15 +523,16 @@ cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col >= 1.2:
+        if col < 0.5:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
         else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")        
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
+        
+ax.set_yticks(np.arange(len(structure))+.5)
+ax.set_yticklabels(structure, fontsize="x-small")
+ax.set_ylabel("Contra/Ipsi ratios")
 
-ax.set_yticks(np.arange(1)+.5)
-ax.set_yticklabels(["Contra/Ipsi"], fontsize="x-small")
-
-ax = axes[3]
+ax = axes[2]
 show = np.asarray([sort_dist])
 br = lr_brains 
 
@@ -619,7 +555,7 @@ cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks
 cb.set_label("Left to right", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
-cb.ax.set_visible(True)
+cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
@@ -637,4 +573,4 @@ ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
 dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst,"nc_contra_ipsi.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst,"ss_contra_ipsi_v2.pdf"), bbox_inches = "tight")
