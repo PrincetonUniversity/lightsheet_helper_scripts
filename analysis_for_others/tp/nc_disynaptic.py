@@ -27,7 +27,7 @@ dst = "/home/wanglab/Desktop"
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 structures_names = [xx.name for xx in structures]
 
-#%%
+
 #THALAMUS
 brains = ["20170410_tp_bl6_lob6a_ml_repro_01",
          "20160823_tp_bl6_cri_500r_02",
@@ -146,9 +146,11 @@ for k,v in volume_pooled_regions.items():
 volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
 
 #calculate denisty
-density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
+thal_density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
+mean_thal_density_per_brain = thal_density_per_brain.mean(axis = 0)
+std_thal_density_per_brain = thal_density_per_brain.std(axis = 0)
 
-
+#%%
 ## display
 fig = plt.figure(figsize=(15, 5))
 ax = fig.add_axes([.4,.1,.5,.8])
@@ -321,9 +323,11 @@ for k,v in volume_pooled_regions.items():
 volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
 
 #calculate denisty
-density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
+nc_density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
+mean_nc_density_per_brain = nc_density_per_brain.mean(axis = 0)
+std_nc_density_per_brain = nc_density_per_brain.std(axis = 0)
 
-
+#%%
 ## display
 fig = plt.figure(figsize=(22, 5))
 ax = fig.add_axes([.4,.1,.5,.8])
@@ -372,3 +376,17 @@ ax.set_ylabel("Neocortical 'trisynaptic' timepoint", fontsize="x-small")
 ax.yaxis.set_label_coords(-0.22,0.5)
 
 plt.savefig(os.path.join(dst,"nc_density_at_nc_timepoint.pdf"), bbox_inches = "tight")
+
+#%%
+ratio_mean_density = np.array(mean_thal_density_per_brain/mean_nc_density_per_brain)
+ratio_std_density = np.array(std_thal_density_per_brain/std_nc_density_per_brain)
+
+import pandas as pd
+df = pd.DataFrame()
+df["structures"] = sois
+df["mean_thal_density"] = np.round(mean_thal_density_per_brain, decimals = 4)
+df["mean_nc_density"] = np.round(mean_nc_density_per_brain, decimals = 4)
+df["ratio_mean_density"] = np.round(ratio_mean_density, decimals = 4)
+df["ratio_std_density"] = np.round(ratio_std_density, decimals = 4)
+
+df.to_csv("/home/wanglab/Desktop/disynaptic.csv")

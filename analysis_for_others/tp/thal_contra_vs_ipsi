@@ -36,31 +36,6 @@ ann_h_right_sag = np.transpose(ann_h_right, [2, 1, 0])
 
 plt.imshow(ann_h_left_sag[120])
 
-def add_progeny_counts_at_each_level(df, df_pth, ann_pth):
-    """
-    """
-    #make structures
-    from tools.analysis.network_analysis import make_structure_objects
-    structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
-    
-    #make copy of df so not to count things multiple times often
-    ddf = df.copy()
-    ddf[:] = 0
-    
-    #now do prog
-    for s in structures:
-        if len(s.progeny)!=0:
-            #break
-            prog = [xx.name for xx in s.progeny]
-            s_vals = df[df.index==s.name].values
-            prog_df_vals = df[df.index.isin(prog)].sum(0).values
-            sums = s_vals + prog_df_vals
-            ddf[ddf.index==s.name] = sums
-        else:
-            ddf[ddf.index==s.name] = df[df.index==s.name].values
-            
-    return ddf        
-
 #now get injection site and automatically designate L/R
 def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
     """Find a connected area of high intensity, using a basic filter + threshold + connected components approach
@@ -105,7 +80,6 @@ def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
 df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx"
 
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
-structures_names = [xx.name for xx in structures]
 
 #%%   
 #collect 
@@ -216,10 +190,6 @@ df = pd.DataFrame(data.T, columns=columns, index=index)
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
 #save before adding projeny counts at each level
 df.to_pickle(os.path.join(dst, "thal_left_side_no_prog_at_each_level.p"))
-#now sum at levels
-df = add_progeny_counts_at_each_level(df, df_pth, ann_pth)
-#save out
-df.to_pickle(os.path.join(dst, "thal_left_side.p"))
 
 #collect 
 dct = {}
@@ -241,10 +211,6 @@ df = pd.DataFrame(data.T, columns=columns, index=index)
 
 #save before adding projeny counts at each level
 df.to_pickle(os.path.join(dst, "thal_right_side_no_prog_at_each_level.p"))
-#now sum at levels
-df = add_progeny_counts_at_each_level(df, df_pth, ann_pth)
-#save out
-df.to_pickle(os.path.join(dst, "thal_right_side.p"))
 
 #RIGHT SIDE
 #setup
@@ -286,6 +252,13 @@ for brain in lr_brains:
             for k, v in cells_regions[brain].items():
                 if k == soi.name:
                     counts.append(v)
+            progeny = [str(xx.name) for xx in soi.progeny]
+            #now sum up progeny
+            if len(progeny) > 0:
+                for progen in progeny:
+                    for k, v in cells_regions[brain].items():
+                        if k == progen:
+                            counts.append(v)
             c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
         except:
             for k, v in cells_regions[brain].items():
@@ -334,6 +307,13 @@ for brain in lr_brains:
             for k, v in cells_regions[brain].items():
                 if k == soi.name:
                     counts.append(v)
+            progeny = [str(xx.name) for xx in soi.progeny]
+            #now sum up progeny
+            if len(progeny) > 0:
+                for progen in progeny:
+                    for k, v in cells_regions[brain].items():
+                        if k == progen:
+                            counts.append(v)
             c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
         except:
             for k, v in cells_regions[brain].items():
@@ -364,8 +344,9 @@ cell_counts_per_brain_left = np.asarray(cell_counts_per_brain)
 #preprocessing into contra/ipsi counts per brain, per structure
 #different nc counts
 #contra = left inj/right counts, etc.
-nc_left_counts = np.asarray([np.sum(xx) for xx in cell_counts_per_brain_left]).T
-nc_right_counts = np.asarray([np.sum(xx) for xx in cell_counts_per_brain_right]).T
+nc_left_counts = cell_counts_per_brain_left
+nc_right_counts = cell_counts_per_brain_right
+
 lrv = list(lr_designation.values())
 lr_brains = list(lr_designation.keys())
 
@@ -379,11 +360,11 @@ for i in range(len(lr_brains)):
         contra[brains[i]] = nc_right_counts[i]; _contra.append(nc_right_counts[i])
         ipsi[brains[i]] = nc_left_counts[i]; _ipsi.append(nc_left_counts[i])
         
-_contra = np.asarray(_contra)
-_ipsi = np.asarray(_ipsi)
+_contra = np.asarray(_contra).T
+_ipsi = np.asarray(_ipsi).T
+_ratio = np.asarray([_contra[i]/_ipsi[i] for i in range(len(_contra))])
 #make into one
-_counts = np.asarray([_contra, _ipsi])           
-_dist = np.asarray(list(lr_dist.values())) 
+_dist = np.asarray(list(lr_dist.values()))
 
 #injection site analysis
 pth = "/jukebox/wang/zahra/modeling/h129/thalamus/data.p"
@@ -399,9 +380,13 @@ _primary_pool = np.asarray([primary_pool[i] for i in range(len(primary_pool)) if
 
 #sort by distance
 sort_dist = np.sort(_dist)
-sort_contra = _contra[np.argsort(_dist)]
-sort_ipsi = _ipsi[np.argsort(_dist)]
-sort_inj = _inj[np.argsort(_dist)]    
+sort_contra = _contra.T[np.argsort(_dist, axis = 0)]
+sort_ipsi = _ipsi.T[np.argsort(_dist, axis = 0)]
+sort_ratio = _ratio.T[np.argsort(_dist, axis = 0)]
+sort_inj = _inj[np.argsort(_dist)]   
+
+print(sort_dist.shape)
+print(sort_ratio.shape)
 #%%
 #injection specific
 lobiiiiv_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
@@ -432,11 +417,10 @@ pmcp_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra))
                                 if ak_pool[_primary_pool[i]] == "PM, CP"])
     
 #%%
-#plotting
-
+#plotting ALL 
 #formatting
-fig, axes = plt.subplots(ncols = 1, nrows = 4, figsize = (12,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [4,2,1,1]})
+fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (15,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,1,0.5]})
 
 #inj fractions
 ax = axes[0]
@@ -469,61 +453,27 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
 #show raw counts    
 ax = axes[1]
 
-show = np.flipud(np.asarray([sort_contra, sort_ipsi]))
+mat = np.nan_to_num(np.flipud(np.asarray(sort_ratio.T)))
+mat[mat == np.inf] = 1000
+
+show = mat[10:12]
 br = lr_brains 
 
 vmin = 0
-vmax = 200
+vmax = 1.1
 cmap = plt.cm.viridis 
 cmap.set_over('gold')
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
+bounds = np.linspace(vmin,vmax,3)
 #bounds = np.linspace(-2,5,8)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 #cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
 #cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(True)
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col < 60:
-            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="white", ha="center", va="center", fontsize="x-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="k", ha="center", va="center", fontsize="x-small")
-        
-ax.set_yticks(np.arange(2)+.5)
-ax.set_yticklabels(["Ipsi", "Contra"], fontsize="x-small")
-ax.set_ylabel("All Thalamic counts", fontsize="x-small")
-ax.yaxis.set_label_coords(-0.12,1.02)
-
-ax = axes[2]
-show = np.asarray([sort_contra/sort_ipsi])
-br = lr_brains 
-
-vmin = 0.7
-vmax = 1.2
-cmap = plt.cm.Blues 
-cmap.set_over('midnightblue')
-cmap.set_under('ghostwhite')
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,11)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.2, aspect=5)
 cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
@@ -531,15 +481,16 @@ cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col >= 1.1:
+        if col < 0.5:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
         else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")        
-
-ax.set_yticks(np.arange(1)+.5)
-ax.set_yticklabels(["Contra/Ipsi"], fontsize="x-small")
-
-ax = axes[3]
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
+        
+ax.set_yticks(np.arange(2)+.5)
+ax.set_yticklabels(["VPL", "VPM"], fontsize="x-small")
+ax.set_ylabel("Contra/Ipsi ratios")
+ax.yaxis.set_label_coords(-0.075,1.02)
+ax = axes[2]
 show = np.asarray([sort_dist])
 br = lr_brains 
 
@@ -562,7 +513,7 @@ cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks
 cb.set_label("Left to right", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
-cb.ax.set_visible(True)
+cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
@@ -580,4 +531,4 @@ ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
 dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst,"thal_contra_ipsi.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst,"thal_contra_ipsi_v2.pdf"), bbox_inches = "tight")
