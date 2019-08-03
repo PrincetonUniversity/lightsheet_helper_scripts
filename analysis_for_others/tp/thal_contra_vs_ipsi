@@ -38,24 +38,7 @@ plt.imshow(ann_h_left_sag[120])
 
 #now get injection site and automatically designate L/R
 def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
-    """Find a connected area of high intensity, using a basic filter + threshold + connected components approach
-    
-    by: bdeverett
-
-    Parameters
-    ----------
-    img : np.ndarray
-        3D stack in which to find site (technically need not be 3D, so long as filter parameter is adjusted accordingly)
-    thresh: float
-        threshold for site-of-interest intensity, in number of standard deviations above the mean
-    filter_kernel: tuple
-        kernel for filtering of image before thresholding
-    num_sites_to_keep: int, number of injection sites to keep, useful if multiple distinct sites
-    
-    Returns
-    --------
-    bool array of volume where coordinates where detected
-    """
+    """ by ben deverett """
     from scipy.ndimage.filters import gaussian_filter as gfilt
     from scipy.ndimage import label
     if type(im) == str: im = tifffile.imread(im)
@@ -81,7 +64,7 @@ df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelc
 
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
-#%%   
+   
 #collect 
 id_table = pd.read_excel(df_pth)
 #brains should be in this order as they were saved in this order for inj analysis
@@ -387,40 +370,12 @@ sort_inj = _inj[np.argsort(_dist)]
 
 print(sort_dist.shape)
 print(sort_ratio.shape)
-#%%
-#injection specific
-lobiiiiv_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. III, IV-V"])
-lobvivii_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. VIa, VIb, VII"])
-lobviiix_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. VIII, IX, X"])
-sim_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Simplex"])
-cr_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Crura"])
-pmcp_contra = np.asarray([_contra[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "PM, CP"])
-    
-    
-lobiiiiv_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. III, IV-V"])
-lobvivii_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. VIa, VIb, VII"])
-lobviiix_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Lob. VIII, IX, X"])
-sim_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Simplex"])
-cr_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "Crura"])
-pmcp_ipsi = np.asarray([_ipsi[i] for i in range(len(_contra)) 
-                                if ak_pool[_primary_pool[i]] == "PM, CP"])
-    
+
 #%%
 #plotting ALL 
 #formatting
-fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (15,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2,1,0.5]})
+fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (15,8), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,5,0.5]})
 
 #inj fractions
 ax = axes[0]
@@ -455,8 +410,9 @@ ax = axes[1]
 
 mat = np.nan_to_num(np.flipud(np.asarray(sort_ratio.T)))
 mat[mat == np.inf] = 1000
+mat[mat > 1000] = 1000
 
-show = mat[10:12]
+show = mat
 br = lr_brains 
 
 vmin = 0
@@ -486,10 +442,11 @@ for ri,row in enumerate(show):
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
         
-ax.set_yticks(np.arange(2)+.5)
-ax.set_yticklabels(["VPL", "VPM"], fontsize="x-small")
+ax.set_yticks(np.arange(len(structure))+.5)
+ax.set_yticklabels(structure, fontsize="x-small")
 ax.set_ylabel("Contra/Ipsi ratios")
-ax.yaxis.set_label_coords(-0.075,1.02)
+ax.yaxis.set_label_coords(-0.3,0.8)
+
 ax = axes[2]
 show = np.asarray([sort_dist])
 br = lr_brains 
