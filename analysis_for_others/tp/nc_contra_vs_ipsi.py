@@ -21,19 +21,24 @@ mpl.rcParams['ps.fonttype'] = 42
 ann_pth = "/jukebox/wang/pisano/Python/atlas/stepwise_erosion/annotation_sagittal_atlas_20um_iso_60um_edge_erosion_80um_ventricular_erosion.tif"#"/jukebox/wang/pisano/Python/atlas/annotation_sagittal_atlas_20um_iso.tif"
 
 #cut annotation file in middle
-ann = tifffile.imread(ann_pth)
-plt.imshow(ann[300])
+#ann = tifffile.imread(ann_pth)
+#plt.imshow(ann[300])
 #make horizontal
-ann_h = np.transpose(ann, [2, 1, 0])
-plt.imshow(ann_h[120])
-z,y,x = ann_h.shape
-ann_h_left = ann_h[:, :, :int(x/2)] #cut in the middle in x
-ann_h_right = ann_h[:, :, int(x/2):]
-plt.imshow(ann_h_left[120])
+#ann_h = np.transpose(ann, [2, 1, 0])
+#plt.imshow(ann_h[120])
+#z,y,x = ann_h.shape
+#ann_h_left = ann_h[:, :, :int(x/2)] #cut in the middle in x
+#ann_h_right = ann_h[:, :, int(x/2):]
+#plt.imshow(ann_h_left[120])
 
-ann_sag_left = np.transpose(ann_h_left, [2, 1, 0])
-ann_sag_right = np.transpose(ann_h_right, [2, 1, 0])
+src = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
+ann_h_left = tifffile.imread(os.path.join(src, "horizontal_ann_20um_iso_left_dafina_annotation_60um_edge_erosion_80um_ventricular_erosion.tif"))
+ann_h_right = tifffile.imread(os.path.join(src, "horizontal_ann_20um_iso_right_dafina_annotation_60um_edge_erosion_80um_ventricular_erosion.tif"))
+#back to sagittal
+ann_h_left_sag = np.transpose(ann_h_left, [2, 1, 0])
+ann_h_right_sag = np.transpose(ann_h_right, [2, 1, 0])
 
+plt.imshow(ann_h_left_sag[120])
 def add_progeny_counts_at_each_level(df, df_pth, ann_pth):
     """
     """
@@ -196,7 +201,7 @@ post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/postt
 dct = {}
 for fl in post_transformed:
     arr = np.load(fl)
-    point_lst = transformed_pnts_to_allen_helper_func(arr, ann_sag_left, order = "ZYX")
+    point_lst = transformed_pnts_to_allen_helper_func(arr, ann_h_left_sag, order = "ZYX")
     print(os.path.basename(os.path.dirname(os.path.dirname(fl))))
     df = count_structure_lister(id_table, *point_lst).fillna(0)
     #for some reason duplicating columns, so use this
@@ -219,7 +224,7 @@ df.to_pickle(os.path.join(dst, "nc_left_side_no_prog_at_each_level.p"))
 dct = {}
 for fl in post_transformed:
     arr = np.load(fl)
-    point_lst = transformed_pnts_to_allen_helper_func(arr, ann_sag_right, order = "ZYX")
+    point_lst = transformed_pnts_to_allen_helper_func(arr, ann_h_right_sag, order = "ZYX")
     print(os.path.basename(os.path.dirname(os.path.dirname(fl))))
     df = count_structure_lister(id_table, *point_lst).fillna(0)
     #for some reason duplicating columns, so use this
@@ -408,7 +413,7 @@ print(sort_ratio.shape)
 
 #%%
 
-#plotting ALL 
+#plotting ONLY SOMATOSENSORY/SOMATOMOTOR 
 #formatting
 fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (20,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [3,2,1]})
@@ -525,7 +530,7 @@ plt.savefig(os.path.join(dst,"contra_ipsi_ss_sm_v2.pdf"), bbox_inches = "tight")
 #plotting ALL 
 #formatting
 fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (20,10), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2,5,0.5]})
+                         "height_ratios": [2,5,0.3]})
 
 #inj fractions
 ax = axes[0]
@@ -558,7 +563,11 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
 #show raw counts    
 ax = axes[1]
 
-show = np.flipud(np.asarray(sort_ratio.T))
+mat = np.nan_to_num(np.flipud(np.asarray(sort_ratio.T)))
+mat[mat == np.inf] = 1000
+mat[mat > 1000] = 1000
+
+show = mat
 br = lr_brains 
 
 vmin = 0.5
@@ -583,7 +592,7 @@ cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 0.5:
+        if col <= 0.6:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
