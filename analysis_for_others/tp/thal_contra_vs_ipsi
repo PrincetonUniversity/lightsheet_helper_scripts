@@ -379,7 +379,7 @@ print(sort_ratio.shape)
 #%%
 #plotting ALL 
 #formatting
-fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (15,8), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (13,8), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5,0.4]})
 
 #inj fractions
