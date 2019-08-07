@@ -390,3 +390,37 @@ df["ratio_mean_density"] = np.round(ratio_mean_density, decimals = 4)
 df["ratio_std_density"] = np.round(ratio_std_density, decimals = 4)
 
 df.to_csv("/home/wanglab/Desktop/disynaptic.csv")
+
+#%%
+
+import statsmodels.api as sm
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#linear regression
+Y = mean_nc_density_per_brain
+X = mean_thal_density_per_brain
+results = sm.OLS(Y,sm.add_constant(X)).fit()
+
+mean_slope = results.params[0]
+mean_r2 = results.rsquared
+mean_intercept = results.params[1]
+#fit_thal = np.polyfit(range(thal_density_per_brain.shape[1]), thal_density_per_brain.mean(axis = 0), 1)
+#fit_fn_thal = np.poly1d(fit_thal)
+#linreg_stats_thal = linregress(range(thal_density_per_brain.shape[1]), thal_density_per_brain.mean(axis = 0))
+#    
+#plot as scatter
+size = 10
+ax.scatter(y = Y, x = X, s = size)
+
+##%%    
+#plt.scatter(y = thal_density_per_brain[:, i], x = range(thal_density_per_brain.shape[0]), color = "red")
+#    
+ax.set_ylim([0, 500])
+
+#ax.set_xlim([0, 100])
+ax.set_ylabel("Neocortical densities at neocortical 'trisynaptic' timepoint")
+ax.set_xlabel("Neocortical densities at thalamic 'disynaptic' timepoint")
+plt.legend(prop={'size': 6})
+plt.savefig("/home/wanglab/Desktop/disynaptic.pdf", bbox_inches = "tight")

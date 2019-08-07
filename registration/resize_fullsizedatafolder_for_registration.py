@@ -6,7 +6,8 @@ Created on Mon May 20 11:26:43 2019
 @author: wanglab
 """
 
-import os, tifffile, time, shutil
+import os, tifffile, sys
+sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 import cv2
 import numpy as np, subprocess as sp
 from scipy.ndimage import zoom

@@ -6,10 +6,11 @@ Created on Mon Aug  5 11:11:31 2019
 @author: wanglab
 """
 
-import os, tifffile, time, shutil
+import os, tifffile, time, shutil, sys
+sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 import cv2
 import numpy as np, subprocess as sp
-from scipy.ndimage import zoom
+from tools.imageprocessing.preprocessing import resample
 
 #helpers
 def makedir(dr):
@@ -94,6 +95,48 @@ def elastix_command_line_call(fx, mv, out, parameters, fx_mask=False, verbose=Fa
         return
 
     return ElastixResultFile, TransformParameterFile
+
+def change_transform_parameter_initial_transform(fl, initialtrnsformpth):
+    '''
+    (InitialTransformParametersFileName "NoInitialTransform")
+    initialtrnsformpth = 'NoInitialTransform' or 'pth/to/transform.0.txt'
+    '''
+    fl1 = fl[:-5]+'0000.txt'
+    
+    with open(fl, 'r') as f, open(fl1, 'w') as new:
+            for line in f:
+                new.write('(InitialTransformParametersFileName "{}")\n'.format(initialtrnsformpth)) if 'InitialTransformParametersFileName' in line else new.write(line)
+    
+    #overwrite original transform file
+    shutil.move(fl1, fl)
+    return
+
+def apply_transformix_and_register(reg_ch_resampledforelastix, sig_ch_resampledforelastix, sig_to_reg_out, reg_to_atl_out,
+                                   AtlasFile, parameters, transformfile, resampled_zyx_dims):
+  
+    
+    #run elastix on sig/inj channel -> reg channel (but don't register reg to itself)
+    ElastixResultFile, TransformParameterFile = elastix_command_line_call(reg_ch_resampledforelastix, sig_ch_resampledforelastix, sig_to_reg_out, parameters)
+    
+    #copy transform paramters to set up transform series:
+    [shutil.copy(os.path.join(reg_to_atl_out, xx), os.path.join(sig_to_reg_out, 'regtoatlas_'+xx)) for xx in os.listdir(reg_to_atl_out) if 'TransformParameters' in xx]
+    
+    #connect transforms by setting regtoatlas TP0's initial transform to sig->reg transform
+    #might need to go backwards...
+    reg_to_atlas_tps = [os.path.join(sig_to_reg_out, xx) for xx in os.listdir(sig_to_reg_out) if 'TransformParameters' in xx and 'regtoatlas' in xx]; reg_to_atlas_tps.sort() 
+    sig_to_reg_tps = [os.path.join(sig_to_reg_out, xx) for xx in os.listdir(sig_to_reg_out) if 'TransformParameters' in xx and 'regtoatlas' not in xx]; sig_to_reg_tps.sort()
+
+    #account for moving the reg_to_atlas_tps:
+    [change_transform_parameter_initial_transform(reg_to_atlas_tps[xx+1], reg_to_atlas_tps[xx]) for xx in range(len(reg_to_atlas_tps)-1)]
+
+    #now make the initialtransform of the first(0) sig_to_reg be the last's reg_to_atlas transform
+    change_transform_parameter_initial_transform(reg_to_atlas_tps[0], sig_to_reg_tps[-1])
+            
+    #run transformix        
+    sp.call(['transformix', '-in', sig_ch_resampledforelastix, '-out', sig_to_reg_out, '-tp', reg_to_atlas_tps[-1]])
+    
+    print(sig_to_reg_out,'\n   Transformix File Generated: {}'.format(sig_to_reg_out))
+        
 #%%
 if __name__ == "__main__":
     
@@ -147,7 +190,8 @@ if __name__ == "__main__":
                os.listdir(os.path.join(src, animal)) if "resampledforelastix.tif" in xx]; volumes.sort()
 
     #step3
-    #reg to atlas    
+    #reg to atlas
+    
     print("\n\n registration channel to atlas")
     fx = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
     out_reg = os.path.join(os.path.join(outdr, animal), "reg_to_atl"); makedir(out_reg)
@@ -157,20 +201,45 @@ if __name__ == "__main__":
     params = ["/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order1_Par0000affine.txt", 
               "/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order2_Par0000bspline.txt"]
     
-    elastix_command_line_call(fx, mv, out_reg, params, fx_mask=False, verbose=False)
+#    e_out_file, transformfile = elastix_command_line_call(fx, mv, out_reg, params, fx_mask=False, verbose=False)
+    transformfile = os.path.join(out_reg, "TransformParameters.1.txt")
+    secondary_registration = True
+    resampled_zyx_dims = False
     
     #inj to reg
-    print("\n\n injection channel to registration channel")
+    inj_vol = [xx for xx in volumes if "488" in xx and "ch01" in xx][0]   
+     
     out_inj = os.path.join(os.path.join(outdr, animal), "inj_to_reg"); makedir(out_inj)
-    fx = os.path.join(out_reg, "result.1.tif")
-    mv = [xx for xx in volumes if "488" in xx and "ch01" in xx][0]
-    
-    elastix_command_line_call(fx, mv, out_inj, params, fx_mask=False, verbose=False)
+    #appy transform
+#    apply_transformix_and_register(mv, inj_vol, out_inj, out_reg,
+#                                   fx, params, transformfile, resampled_zyx_dims)
     
     #cell to reg
-    print("\n\n cell channel to registration channel")
+    cell_vol = [xx for xx in volumes if "647" in xx and "ch00" in xx][0]   
+     
     out_cell = os.path.join(os.path.join(outdr, animal), "cell_to_reg"); makedir(out_cell)
-    fx = os.path.join(out_reg, "result.1.tif")
-    mv = [xx for xx in volumes if "647" in xx and "ch00" in xx][0]
+    #appy transform
     
-    elastix_command_line_call(fx, mv, out_cell, params, fx_mask=False, verbose=False)
+    apply_transformix_and_register(mv, cell_vol, out_cell, out_reg,
+                                   fx, params, transformfile, resampled_zyx_dims)
+    
+    
+    ####### check to see if script finished due to an error
+    if os.path.exists(out_reg)==False:
+        print("****ERROR****GOTTEN TO END OF SCRIPT,\nTHIS ELASTIX OUTPUT FILE DOES NOT EXIST: {0} \n".format(out_reg))
+#
+#    #inj to reg
+#    print("\n\n injection channel to registration channel")
+#    out_inj = os.path.join(os.path.join(outdr, animal), "inj_to_reg"); makedir(out_inj)
+#    fx = os.path.join(out_reg, "result.1.tif")
+#    mv = [xx for xx in volumes if "488" in xx and "ch01" in xx][0]
+#    
+#    elastix_command_line_call(fx, mv, out_inj, params, fx_mask=False, verbose=False)
+#    
+#    #cell to reg
+#    print("\n\n cell channel to registration channel")
+#    out_cell = os.path.join(os.path.join(outdr, animal), "cell_to_reg"); makedir(out_cell)
+#    fx = os.path.join(out_reg, "result.1.tif")
+#    mv = [xx for xx in volumes if "647" in xx and "ch00" in xx][0]
+#    
+#    elastix_command_line_call(fx, mv, out_cell, params, fx_mask=False, verbose=False)
