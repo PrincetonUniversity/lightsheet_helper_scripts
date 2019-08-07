@@ -398,29 +398,56 @@ import statsmodels.api as sm
 fig = plt.figure(figsize=(10,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
+#rewrite nc labels
+lbls = ['Infralimbic',
+ 'Prelimbic',
+ 'Anterior cingulate',
+ 'Frontal pole',
+ 'Orbital',
+ 'Gustatory',
+ 'Agranular insula',
+ 'Visceral',
+ 'Somatosensory',
+ 'Somatomotor',
+ 'Retrosplenial',
+ 'Posterior parietal',
+ 'Visual',
+ 'Temporal',
+ 'Auditory',
+ 'Ectorhinal',
+ 'Perirhinal']
 #linear regression
-Y = mean_nc_density_per_brain
-X = mean_thal_density_per_brain
+Y = np.sort(mean_nc_density_per_brain)[:-1]
+X = mean_thal_density_per_brain[np.argsort(mean_nc_density_per_brain)][:-1]
+strcs = np.asarray(lbls)[np.argsort(mean_nc_density_per_brain)][:-1]
 results = sm.OLS(Y,sm.add_constant(X)).fit()
 
 mean_slope = results.params[0]
 mean_r2 = results.rsquared
-mean_intercept = results.params[1]
+mean_intercept = 1.07236079
 #fit_thal = np.polyfit(range(thal_density_per_brain.shape[1]), thal_density_per_brain.mean(axis = 0), 1)
 #fit_fn_thal = np.poly1d(fit_thal)
 #linreg_stats_thal = linregress(range(thal_density_per_brain.shape[1]), thal_density_per_brain.mean(axis = 0))
 #    
 #plot as scatter
-size = 10
-ax.scatter(y = Y, x = X, s = size)
+color_map = ["dimgray", "rosybrown", "darkred", "tomato", "chocolate", "orange", "gold", "olive", "darkseagreen", "springgreen", "teal",
+             "darkturquoise", "steelblue", "navy", "indigo", "crimson", "deeppink"]
+
+size = 30
+for i in range(len(X)):
+    ax.scatter(y = Y[i], x = X[i], s = size, label = strcs[i], c = color_map[i])
+#
+X = range(0, 30)
+ax.plot(X, X*mean_slope + mean_intercept, "--r", label = "Slope={}\n$R^2$={}".format(round(mean_slope, 2), 
+                   round(mean_r2, 2)))
 
 ##%%    
 #plt.scatter(y = thal_density_per_brain[:, i], x = range(thal_density_per_brain.shape[0]), color = "red")
 #    
 ax.set_ylim([0, 500])
-
+ax.set_xticks(np.arange(0, 30, 2))
 #ax.set_xlim([0, 100])
-ax.set_ylabel("Neocortical densities at neocortical 'trisynaptic' timepoint")
-ax.set_xlabel("Neocortical densities at thalamic 'disynaptic' timepoint")
-plt.legend(prop={'size': 6})
+ax.set_ylabel("Average neocortical densities at neocortical timepoint")
+ax.set_xlabel("Average neocortical densities at thalamic timepoint")
+plt.legend(prop={'size': 10}, bbox_to_anchor=(1,1), loc='upper left', ncol=1)
 plt.savefig("/home/wanglab/Desktop/disynaptic.pdf", bbox_inches = "tight")
