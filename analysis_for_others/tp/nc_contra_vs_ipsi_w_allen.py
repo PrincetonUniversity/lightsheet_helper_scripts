@@ -10,17 +10,21 @@ Created on Tue Aug  6 14:07:37 2019
 %matplotlib inline
 import numpy as np, pandas as pd, os, sys, shutil, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
 import SimpleITK as sitk
-from tools.registration.register import elastix_command_line_call, jacobian_command_line_call, change_interpolation_order, transformix_command_line_call, transformed_pnts_to_allen_helper_func, count_structure_lister
-from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files, point_transformix, unpack_pnts
+from tools.registration.register import elastix_command_line_call, jacobian_command_line_call, change_interpolation_order
+from tools.registration.register import transformix_command_line_call, transformed_pnts_to_allen_helper_func, count_structure_lister
+from tools.registration.register import change_transform_parameter_initial_transform
+from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files
+from tools.registration.transform_list_of_points import point_transformix, unpack_pnts, points_resample
 from tools.utils.io import listdirfull, makedir, load_memmap_arr, load_np, listall, load_kwargs
 from skimage.external import tifffile
 from scipy.ndimage.morphology import distance_transform_edt
 from tools.analysis.network_analysis import make_structure_objects
 from scipy.ndimage.measurements import center_of_mass
 from tools.registration.transform_cell_counts import generate_transformed_cellcount
+from tools.imageprocessing.orientation import fix_contour_orientation
 
-mpl.rcParams['pdf.fonttype'] = 42
-mpl.rcParams['ps.fonttype'] = 42
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
 
 #now get injection site and automatically designate L/R
 def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
@@ -51,7 +55,7 @@ def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
     labelled,nlab = label(thresholded)
 
     if nlab == 0:
-        raise Exception('Site not detected, try a lower threshold?')
+        raise Exception("Site not detected, try a lower threshold?")
     elif nlab == 1:
         return labelled.astype(bool)
     elif num_sites_to_keep == 1:
@@ -68,8 +72,8 @@ def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
 #remake annotation of allen atlas with same params for erosion
 
 #USING 60um edge erosion and 80 um ventricular erosion for NC, as edge seems to be the break bpoint. No real effect for ventricular so will keep the same
-ann_pth = '/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans.tif'
-new_erode_path = '/jukebox/wang/zahra/h129_contra_vs_ipsi/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif'
+ann_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans.tif"
+new_erode_path = "/jukebox/wang/zahra/h129_contra_vs_ipsi/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif"
 #get ventricles - these are the values of ventricles in the annotation image (also the same as the look up file)
 ventricle_values = [108.0, 81.0, 116.0, 129.0, 145.0, 73.0]
 ventricular_microns_to_erode = 80
@@ -78,7 +82,7 @@ zyx_scale = (25,25,25)
 
 #NOTE THIS ESSENTIALLY SCALES PIXEL SPACE*****
 ann = sitk.GetArrayFromImage(sitk.ReadImage((ann_pth)))
-distance_space_inside = distance_transform_edt(ann.astype('bool'), sampling=zyx_scale)*-1 #INSIDE
+distance_space_inside = distance_transform_edt(ann.astype("bool"), sampling=zyx_scale)*-1 #INSIDE
 distance_space_inside = np.abs(distance_space_inside)
 
 #zero out edges
@@ -94,7 +98,7 @@ vann[vann==0.0] = 1
 vmask = np.isin(vann, ventricle_values)
 vann[vmask] = 0.0 #erode out nonventricular space adjacent to ventricles
 vann[vann!=0.0] = 1 
-distance_space_inside = distance_transform_edt(vann.astype('bool'), sampling=zyx_scale)*-1 #INSIDE
+distance_space_inside = distance_transform_edt(vann.astype("bool"), sampling=zyx_scale)*-1 #INSIDE
 distance_space_inside = np.abs(distance_space_inside)
 mask = np.copy(distance_space_inside)
 mask[distance_space_inside<=ventricular_microns_to_erode] = 0
@@ -129,49 +133,44 @@ ann_h_right_sag = np.transpose(ann_h_right, [2, 1, 0])
 
 plt.imshow(ann_h_left_sag[120])      
 
-#%%
-#make structures
-df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx"
-
-structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 #%%   
 #collect 
 id_table = pd.read_excel(df_pth)
 #brains should be in this order as they were saved in this order for inj analysis
-brains = ['20180409_jg46_bl6_lob6a_04',
- '20180608_jg75',
- '20170204_tp_bl6_cri_1750r_03',
- '20180608_jg72',
- '20180416_jg56_bl6_lob8_04',
- '20170116_tp_bl6_lob45_ml_11',
- '20180417_jg60_bl6_cri_04',
- '20180410_jg52_bl6_lob7_05',
- '20170116_tp_bl6_lob7_1000r_10',
- '20180409_jg44_bl6_lob6a_02',
- '20180410_jg49_bl6_lob45_02',
- '20180410_jg48_bl6_lob6a_01',
- '20180612_jg80',
- '20180608_jg71',
- '20170212_tp_bl6_crii_1000r_02',
- '20170115_tp_bl6_lob6a_rpv_03',
- '20170212_tp_bl6_crii_2000r_03',
- '20180417_jg58_bl6_sim_02',
- '20170130_tp_bl6_sim_1750r_03',
- '20170115_tp_bl6_lob6b_ml_04',
- '20180410_jg50_bl6_lob6b_03',
- '20170115_tp_bl6_lob6a_1000r_02',
- '20170116_tp_bl6_lob45_500r_12',
- '20180612_jg77',
- '20180612_jg76',
- '20180416_jg55_bl6_lob8_03',
- '20170115_tp_bl6_lob6a_500r_01',
- '20170130_tp_bl6_sim_rpv_01',
- '20170204_tp_bl6_cri_1000r_02',
- '20170212_tp_bl6_crii_250r_01',
- '20180417_jg61_bl6_crii_05',
- '20170116_tp_bl6_lob7_ml_08',
- '20180409_jg47_bl6_lob6a_05']
+brains = ["20180409_jg46_bl6_lob6a_04",
+ "20180608_jg75",
+ "20170204_tp_bl6_cri_1750r_03",
+ "20180608_jg72",
+ "20180416_jg56_bl6_lob8_04",
+ "20170116_tp_bl6_lob45_ml_11",
+ "20180417_jg60_bl6_cri_04",
+ "20180410_jg52_bl6_lob7_05",
+ "20170116_tp_bl6_lob7_1000r_10",
+ "20180409_jg44_bl6_lob6a_02",
+ "20180410_jg49_bl6_lob45_02",
+ "20180410_jg48_bl6_lob6a_01",
+ "20180612_jg80",
+ "20180608_jg71",
+ "20170212_tp_bl6_crii_1000r_02",
+ "20170115_tp_bl6_lob6a_rpv_03",
+ "20170212_tp_bl6_crii_2000r_03",
+ "20180417_jg58_bl6_sim_02",
+ "20170130_tp_bl6_sim_1750r_03",
+ "20170115_tp_bl6_lob6b_ml_04",
+ "20180410_jg50_bl6_lob6b_03",
+ "20170115_tp_bl6_lob6a_1000r_02",
+ "20170116_tp_bl6_lob45_500r_12",
+ "20180612_jg77",
+ "20180612_jg76",
+ "20180416_jg55_bl6_lob8_03",
+ "20170115_tp_bl6_lob6a_500r_01",
+ "20170130_tp_bl6_sim_rpv_01",
+ "20170204_tp_bl6_cri_1000r_02",
+ "20170212_tp_bl6_crii_250r_01",
+ "20180417_jg61_bl6_crii_05",
+ "20170116_tp_bl6_lob7_ml_08",
+ "20180409_jg47_bl6_lob6a_05"]
     
 src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/reg_to_allen"
 
@@ -191,7 +190,7 @@ for fld in flds:
     inj_vol = tifffile.imread(inj_pth)
     z,y,x = inj_vol.shape
 
-    #cutting off at 423, same as tom's analysis
+    #cutting off at 423, same as tom"s analysis
     arr = find_site(inj_vol[:, 423:, :])
     arr_left = arr[:int(z/2), :, :]
     arr_right = arr[int(z/2):, :, :]
@@ -218,10 +217,16 @@ for fld in flds:
         print("brain has an injection close to midline so not considering it rn\n")
 
 #%%
+
+#make structures
+df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx"
+
+structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
+
 #transform points to allen atlas space
         
-def generate_transformed_cellcount(dataframe, output_folder, transformfiles):
-    '''Function to take a csv file and generate an input to transformix
+def generate_transformed_cellcount(dataframe, output_folder, transformfiles, param_dct):
+    """Function to take a csv file and generate an input to transformix
     
     Inputs
     ----------------
@@ -229,29 +234,33 @@ def generate_transformed_cellcount(dataframe, output_folder, transformfiles):
     dst = destination to save files
     transformfiles = list of all elastix transform files used, and in order of the original transform****
     lightsheet_parameter_file = .p file generated from lightsheet package
-    '''
+    """
     
     #make zyx numpy arry
-    zyx = dataframe[['z','y','x']].values
+    zyx = dataframe[["z","y","x"]].values
     
     #adjust for reorientation THEN rescaling, remember full size data needs dimension change releative to resample
-    kwargs = pckl.load(open(lightsheet_parameter_dictionary, "rb"), encoding = "latin1")
 
-    vol = [xx for xx in kwargs['volumes'] if xx.ch_type =='cellch'][0]
-    fullsizedimensions = get_fullsizedims_from_kwargs(kwargs) #don't get from kwargs['volumes'][0].fullsizedimensions it's bad! use this instead
-    zyx = fix_contour_orientation(zyx, verbose=verbose, **kwargs) #now in orientation of resample
-    zyx = points_resample(zyx, original_dims = fix_dimension_orientation(fullsizedimensions, **kwargs), 
-                          resample_dims = tifffile.imread(vol.resampled_for_elastix_vol).shape, verbose = verbose)[:, :3]
-   
+    vol = [xx for xx in kwargs["volumes"] if xx.ch_type =="cellch"][0]
+    fszfld = vol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox")
+    pln = tifffile.imread(os.path.join(fszfld, os.listdir(fszfld)[0]))
+    sag_fszdims = (pln.shape[0], pln.shape[1], len([xx for xx in os.listdir(fszfld) if ".tif" in xx])) #zyx sagittal
+    
+    zyx = fix_contour_orientation(zyx, **kwargs) #now in orientation of resample
+    resample_dims = tifffile.imread(vol.resampled_for_elastix_vol.replace("/home/wanglab", "/jukebox")).shape
+    
+    #now everything in sagittal
+    zyxf = (resample_dims[0]/sag_fszdims[0], resample_dims[1]/sag_fszdims[1], resample_dims[2]/sag_fszdims[2])
+    rsmpl_zyx = np.asarray([[xx[0]*zyxf[0], xx[1]*zyxf[1], xx[2]*zyxf[2]] for xx in zyx])
     #make into transformix-friendly text file
-    pretransform_text_file = create_text_file_for_elastix(zyx, output_folder)
+    pretransform_text_file = create_text_file_for_elastix(rsmpl_zyx, output_folder)
         
     #copy over elastix files
     transformfiles = modify_transform_files(transformfiles, output_folder) 
-    change_transform_parameter_initial_transform(transformfiles[0], 'NoInitialTransform')
    
     #run transformix on points
-    points_file = point_transformix(pretransform_text_file, transformfiles[-1], output_folder)
+    points_file = point_transformix(pretransform_text_file, transformfiles[0], output_folder)
+#    points_file_t2 = point_transformix(points_file, transformfiles[1], output_folder)
     
     #convert registered points into structure counts
     converted_points = unpack_pnts(points_file, output_folder)   
@@ -261,50 +270,33 @@ def generate_transformed_cellcount(dataframe, output_folder, transformfiles):
 nc_lst = brains
 
 #set up
-src = '/jukebox/wang/pisano/tracing_output/antero_4x'
-dst = '/jukebox/wang/zahra/h129_contra_vs_ipsi/reg_to_allen'
-input_list = [xx for xx in listdirfull('/jukebox/wang/pisano/tracing_output/antero_4x') if os.path.basename(xx) in nc_lst]
-
-volume_transform_type = 'single';#both for regwatlas, and only affine for sig adn reg #'all', 'single': don't consider reg with sig at all
-verbose = True
-
-#pool injections - first transform
-#from '/home/wanglab/wang/pisano/Python/pytom/jupyter_notebooks/tracing/collect_and_transform_cell_counts.py'
-#goal is to transform cooridnates, voxelize based on number of cells and overlay with reigstered cell signal channel...
-error_file = os.path.join(os.path.join(dst, brain), 'errors.txt')
+src = "/jukebox/wang/pisano/tracing_output/antero_4x"
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/reg_to_allen"
+input_list = [xx for xx in listdirfull("/jukebox/wang/pisano/tracing_output/antero_4x") if os.path.basename(xx) in nc_lst]
 
 #inputs
 folder_suffix = "3dunet_output/pooled_cell_measures"
-
-#IMPORTANT. the idea is to apply cfos->auto->atlas. Apply this to all input list except the bad_secondary_reg_only_use_primary
-doubletransform=True
-doubletransform_affine_only=True #[r2s0, a2r0, a2r1]
-#these are brains were they broke in either direction
-#brains were "inverse" tranform broke
-bad_secondary_reg_only_use_primary = ['20180327_jg42_bl6_lob6a_05', '20180608_jg71',
-                                      '20170116_tp_bl6_lob45_ml_11', '20170115_tp_bl6_lob6a_1000r_02',
-                                      '20170116_tp_bl6_lob45_500r_12']
 
 errors_lst=[]
 for fld in input_list:
     try:
         #get 3dunet cell dataframe csv file
-        input_csv = listdirfull(os.path.join(fld, folder_suffix), '.csv')
-        assert len(input_csv) == 1, 'multiple csv files'
+        input_csv = listdirfull(os.path.join(fld, folder_suffix), ".csv")
+        assert len(input_csv) == 1, "multiple csv files"
         dataframe = pd.read_csv(input_csv[0])
-        output_folder = os.path.join(os.path.join(dst, os.path.basename(fld)), 'transformed_points'); makedir(output_folder)
+        output_folder = os.path.join(os.path.join(dst, os.path.basename(fld)), "transformed_points"); makedir(output_folder)
 
-        #EXAMPLE USING LIGHTSHEET - assumes marking centers in the 'raw' full sized cell channel. This will transform those centers into "atlas" space (in this case the moving image)
+        #EXAMPLE USING LIGHTSHEET - assumes marking centers in the "raw" full sized cell channel. This will transform those centers into "atlas" space (in this case the moving image)
         #in this case the "inverse transform has the atlas as the moving image in the first step, and the autofluorescence channel as the moving image in the second step 
         #NOTE - it seems that the registration of cell to auto is failing on occasion....thus get new files...################################
-        cell_reg_fld = os.path.join(os.path.join(dst, os.path.basename(fld)), 'cell_to_reg')
+        cell_reg_fld = os.path.join(os.path.join(dst, os.path.basename(fld)), "cell_to_reg")
         r2a = os.path.join(cell_reg_fld, "regtoatlas_TransformParameters.1.txt")
         s2r = os.path.join(cell_reg_fld, "TransformParameters.0.txt")
+        param_dct = os.path.join(fld, "param_dict.p")
         transformfiles = [r2a, s2r]
-        converted_points = generate_transformed_cellcount(dataframe, output_folder, transformfiles)
-    except Exception, e:
-        print fld, e
-        errors_lst.append([fld, e])
+        converted_points = generate_transformed_cellcount(dataframe, output_folder, transformfiles, param_dct)
+    except Exception as e:
+        print(fld, e)
         
 print errors_lst        
         
@@ -543,7 +535,7 @@ br = np.asarray(lr_brains)[np.argsort(_dist)]
 vmin = 0
 vmax = 0.8
 cmap = plt.cm.Reds 
-cmap.set_over('darkred')
+cmap.set_over("darkred")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,6)
@@ -571,7 +563,7 @@ br = lr_brains
 vmin = 0.5
 vmax = 1.1
 cmap = plt.cm.viridis 
-cmap.set_over('gold')
+cmap.set_over("gold")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,3)
@@ -606,8 +598,8 @@ br = lr_brains
 vmin = -100
 vmax = 80
 cmap = plt.cm.RdBu_r
-cmap.set_over('maroon')
-cmap.set_under('midnightblue')
+cmap.set_over("maroon")
+cmap.set_under("midnightblue")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,4)
@@ -631,7 +623,7 @@ for ri,row in enumerate(show):
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")        
 
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(br))+.5)
 lbls = np.asarray(br)
 ax.set_xticklabels(br, rotation=30, fontsize=5, ha="right")
@@ -657,7 +649,7 @@ br = np.asarray(lr_brains)[np.argsort(_dist)]
 vmin = 0
 vmax = 0.8
 cmap = plt.cm.Reds 
-cmap.set_over('darkred')
+cmap.set_over("darkred")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,6)
@@ -689,7 +681,7 @@ br = lr_brains
 vmin = 0.5
 vmax = 1.1
 cmap = plt.cm.viridis 
-cmap.set_over('gold')
+cmap.set_over("gold")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,3)
@@ -724,8 +716,8 @@ br = lr_brains
 vmin = -100
 vmax = 80
 cmap = plt.cm.RdBu_r
-cmap.set_over('maroon')
-cmap.set_under('midnightblue')
+cmap.set_over("maroon")
+cmap.set_under("midnightblue")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,4)
@@ -749,7 +741,7 @@ for ri,row in enumerate(show):
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")        
 
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(br))+.5)
 lbls = np.asarray(br)
 ax.set_xticklabels(br, rotation=30, fontsize=5, ha="right")

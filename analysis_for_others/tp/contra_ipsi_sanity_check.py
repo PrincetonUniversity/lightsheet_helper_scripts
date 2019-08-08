@@ -11,6 +11,7 @@ from skimage.morphology import ball
 
 #first, make a map of cells
 converted_points = np.load(converted_points)
+
 zyx = np.asarray([(int(xx[0]), int(xx[1]), int(xx[2])) for xx in converted_points]) #cells are counted in horizontal volumes
    
 vol = "/home/wanglab/mounts/wang/pisano/tracing_output/antero_4x/20170115_tp_bl6_lob6a_500r_01/elastix/20170115_tp_bl6_lob6a_500r_01_647_010na_z7d5um_75_msec_10povlp_resized_ch00/result.tif"
