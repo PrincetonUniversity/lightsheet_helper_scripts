@@ -424,7 +424,7 @@ results = sm.OLS(Y,sm.add_constant(X)).fit()
 
 mean_slope = results.params[0]
 mean_r2 = results.rsquared
-mean_intercept = 1.07236079
+mean_intercept = results.params[1]
 #fit_thal = np.polyfit(range(thal_density_per_brain.shape[1]), thal_density_per_brain.mean(axis = 0), 1)
 #fit_fn_thal = np.poly1d(fit_thal)
 #linreg_stats_thal = linregress(range(thal_density_per_brain.shape[1]), thal_density_per_brain.mean(axis = 0))

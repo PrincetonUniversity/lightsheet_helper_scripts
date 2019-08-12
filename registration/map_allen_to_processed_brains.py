@@ -138,7 +138,7 @@ def apply_transformix_and_register(reg_ch_resampledforelastix, sig_ch_resampledf
     
     print(sig_to_reg_out,'\n   Transformix File Generated: {}'.format(sig_to_reg_out))
         
-#%%
+
 if __name__ == "__main__":
     
     #setup
@@ -192,9 +192,8 @@ if __name__ == "__main__":
     volumes = [os.path.join((os.path.join(src, animal)), xx) for xx in 
                os.listdir(os.path.join(src, animal)) if "resampledforelastix.tif" in xx]; volumes.sort()
 
-    #step3
+    #step3 inverse
     #reg to atlas
-    
     print("\n registration channel to atlas")
     mv = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
     out_reg = os.path.join(os.path.join(outdr, animal), "atl_to_reg"); makedir(out_reg)
@@ -210,39 +209,15 @@ if __name__ == "__main__":
     resampled_zyx_dims = False
     
     #inj to reg
-    inj_vol = [xx for xx in volumes if "488" in xx and "ch01" in xx][0]   
-     
-    out_inj = os.path.join(os.path.join(outdr, animal), "inj_to_reg"); makedir(out_inj)
-    #appy transform
-    apply_transformix_and_register(mv, inj_vol, out_inj, out_reg,
-                                   fx, params, transformfile, resampled_zyx_dims)
+    inj_vol = [xx for xx in volumes if "488" in xx and "ch01" in xx][0]     
+    out_inj = os.path.join(os.path.join(outdr, animal), "reg_to_inj"); makedir(out_inj)
     
+    e_out_file, e_transform_file = elastix_command_line_call(fx=inj_vol, mv=fx, out=out_inj, parameters=params)        
+
     #cell to reg
     cell_vol = [xx for xx in volumes if "647" in xx and "ch00" in xx][0]   
      
-    out_cell = os.path.join(os.path.join(outdr, animal), "cell_to_reg"); makedir(out_cell)
-    #appy transform
+    out_cell = os.path.join(os.path.join(outdr, animal), "reg_to_cell"); makedir(out_cell)
     
-    apply_transformix_and_register(mv, cell_vol, out_cell, out_reg,
-                                   fx, params, transformfile, resampled_zyx_dims)
+    e_out_file, e_transform_file = elastix_command_line_call(fx=cell_vol, mv=fx, out=out_cell, parameters=params)        
     
-    
-    ####### check to see if script finished due to an error
-    if os.path.exists(out_reg)==False:
-        print("****ERROR****GOTTEN TO END OF SCRIPT,\nTHIS ELASTIX OUTPUT FILE DOES NOT EXIST: {0} \n".format(out_reg))
-#
-#    #inj to reg
-#    print("\n\n injection channel to registration channel")
-#    out_inj = os.path.join(os.path.join(outdr, animal), "inj_to_reg"); makedir(out_inj)
-#    fx = os.path.join(out_reg, "result.1.tif")
-#    mv = [xx for xx in volumes if "488" in xx and "ch01" in xx][0]
-#    
-#    elastix_command_line_call(fx, mv, out_inj, params, fx_mask=False, verbose=False)
-#    
-#    #cell to reg
-#    print("\n\n cell channel to registration channel")
-#    out_cell = os.path.join(os.path.join(outdr, animal), "cell_to_reg"); makedir(out_cell)
-#    fx = os.path.join(out_reg, "result.1.tif")
-#    mv = [xx for xx in volumes if "647" in xx and "ch00" in xx][0]
-#    
-#    elastix_command_line_call(fx, mv, out_cell, params, fx_mask=False, verbose=False)
