@@ -12,7 +12,6 @@ import matplotlib as mpl
 from tools.imageprocessing.orientation import fix_orientation
 from tools.registration.transform import count_structure_lister, transformed_pnts_to_allen_helper_func
 from tools.utils.io import load_kwargs, listdirfull, makedir
-from natsort import natsorted
 from collections import Counter
 import SimpleITK as sitk, pandas as pd
 import matplotlib.pyplot as plt; plt.ion()

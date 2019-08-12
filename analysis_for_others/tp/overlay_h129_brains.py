@@ -144,7 +144,6 @@ if __name__ == "__main__":
     #inputs
     input_folder = "/jukebox/wang/pisano/tracing_output/antero_4x/"
     folder_suffix = "3dunet_output/pooled_cell_measures"
-    
 #    brains = ["20180409_jg46_bl6_lob6a_04",
 #             "20180608_jg75",
 #             "20170204_tp_bl6_cri_1750r_03",
