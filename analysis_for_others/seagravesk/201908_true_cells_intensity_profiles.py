@@ -104,7 +104,7 @@ for i, impth in enumerate(impths):
             axes[1].plot(xprofile, label = "X")
             axes[1].set_ylabel("Pixel intensity")
             axes[1].set_xlabel("Normalized distance")
-            axes[1].set_xticks(np.arange(0, len(zprofile), 2))
+            axes[1].set_xticks(np.arange(0, len(xprofile), 2))
             axes[1].set_xticklabels([-1. , -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8], fontsize = "x-small")
             axes[1].legend()
         
@@ -136,7 +136,7 @@ pdf_pages.close()
 
 #save data to pickle
 import pickle
-sv = "/home/wanglab/Desktop/real_cells.p"
+sv = "/jukebox/wang/zahra/kelly_cell_detection_analysis/real_cells.p"
 
 with open(sv, "wb") as fp:
     pickle.dump(pnts_dct, fp, protocol=pickle.HIGHEST_PROTOCOL)
