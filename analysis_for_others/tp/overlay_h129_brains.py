@@ -6,11 +6,10 @@ Created on Mon Aug 12 09:37:20 2019
 @author: wanglab
 """
 
-
 import os, sys, numpy as np, pandas as pd, cv2, multiprocessing as mp
 from skimage.external import tifffile
 from skimage.morphology import ball
-sys.path.append("/jukebox/wang/zahra/lightsheet_copy")
+sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 from tools.utils.io import makedir, load_dictionary, listdirfull, listall
 from tools.registration.transform_list_of_points import modify_transform_files
 from tools.registration.register import transformix_command_line_call
@@ -52,7 +51,6 @@ def overlay_qc(args):
         from collections import Counter
         zyx_cnt = Counter(zyx)
         
-        
         #check...
         if make_volumes:
             #manually call transformix
@@ -90,7 +88,7 @@ def overlay_qc(args):
                     badlist.append([z,y,x])
                     
             #apply x y dilation
-            r = 1
+            r = 2
             selem = ball(r)[int(r/2)]
             cell_cnn = cell_cnn.astype("uint8")
             cell_cnn = np.asarray([cv2.dilate(cell_cnn[i], selem, iterations = 1) for i in range(cell_cnn.shape[0])])
@@ -134,78 +132,98 @@ def overlay_qc(args):
         with open(error_file, "a") as err_fl:
             err_fl.write("\n\n{} {}\n\n".format(fld, e))
                 
-#%%
+
 if __name__ == "__main__":
     #goal is to transform cooridnates, voxelize based on number of cells and overlay with reigstered cell signal channel...
-    output_folder = "/home/wanglab/Desktop/thal_transformed_points"; makedir(output_folder)
-    qc_folder =  "/home/wanglab/Desktop/thal_qc"; makedir(qc_folder)
-    error_file = "/home/wanglab/Desktop/thal_qc/errors.txt"
-    
-    #inputs
+    #set paths and make folders
+    dst = "/jukebox/wang/zahra/h129_qc"
     input_folder = "/jukebox/wang/pisano/tracing_output/antero_4x/"
     folder_suffix = "3dunet_output/pooled_cell_measures"
-#    brains = ["20180409_jg46_bl6_lob6a_04",
-#             "20180608_jg75",
-#             "20170204_tp_bl6_cri_1750r_03",
-#             "20180608_jg72",
-#             "20180416_jg56_bl6_lob8_04",
-#             "20170116_tp_bl6_lob45_ml_11",
-#             "20180417_jg60_bl6_cri_04",
-#             "20180410_jg52_bl6_lob7_05",
-#             "20170116_tp_bl6_lob7_1000r_10",
-#             "20180409_jg44_bl6_lob6a_02",
-#             "20180410_jg49_bl6_lob45_02",
-#             "20180410_jg48_bl6_lob6a_01",
-#             "20180612_jg80",
-#             "20180608_jg71",
-#             "20170212_tp_bl6_crii_1000r_02",
-#             "20170115_tp_bl6_lob6a_rpv_03",
-#             "20170212_tp_bl6_crii_2000r_03",
-#             "20180417_jg58_bl6_sim_02",
-#             "20170130_tp_bl6_sim_1750r_03",
-#             "20170115_tp_bl6_lob6b_ml_04",
-#             "20180410_jg50_bl6_lob6b_03",
-#             "20170115_tp_bl6_lob6a_1000r_02",
-#             "20170116_tp_bl6_lob45_500r_12",
-#             "20180612_jg77",
-#             "20180612_jg76",
-#             "20180416_jg55_bl6_lob8_03",
-#             "20170115_tp_bl6_lob6a_500r_01",
-#             "20170130_tp_bl6_sim_rpv_01",
-#             "20170204_tp_bl6_cri_1000r_02",
-#             "20170212_tp_bl6_crii_250r_01",
-#             "20180417_jg61_bl6_crii_05",
-#             "20170116_tp_bl6_lob7_ml_08",
-#             "20180409_jg47_bl6_lob6a_05"]
-#    
-    brains = ["20170410_tp_bl6_lob6a_ml_repro_01",
-         "20160823_tp_bl6_cri_500r_02",
-         "20180417_jg59_bl6_cri_03",
-         "20170207_db_bl6_crii_1300r_02",
-         "20160622_db_bl6_unk_01",
-         "20161205_tp_bl6_sim_750r_03",
-         "20180410_jg51_bl6_lob6b_04",
-         "20170419_db_bl6_cri_rpv_53hr",
-         "20170116_tp_bl6_lob6b_lpv_07",
-         "20170411_db_bl6_crii_mid_53hr",
-         "20160822_tp_bl6_crii_1500r_06",
-         "20160920_tp_bl6_lob7_500r_03",
-         "20170207_db_bl6_crii_rpv_01",
-         "20161205_tp_bl6_sim_250r_02",
-         "20161207_db_bl6_lob6a_500r_53hr",
-         "20170130_tp_bl6_sim_rlat_05",
-         "20170115_tp_bl6_lob6b_500r_05",
-         "20170419_db_bl6_cri_mid_53hr",
-         "20161207_db_bl6_lob6a_850r_53hr",
-         "20160622_db_bl6_crii_52hr_01",
-         "20161207_db_bl6_lob6a_50rml_53d5hr",
-         "20161205_tp_bl6_lob45_1000r_01",
-         "20160801_db_l7_cri_01_mid_64hr"]
+    print(sys.argv)
+    tmpnt = int(sys.argv[1])
     
-    brains = [os.path.join(input_folder, xx) for xx in brains]
-    input_list = [xx for xx in brains if os.path.exists(os.path.join(xx, folder_suffix))]
-    verbose, doubletransform, make_volumes = True, True, True
-    iterlst = [(fld, folder_suffix, output_folder, verbose, doubletransform, make_volumes) for fld in input_list]
-    p = mp.Pool(6)
-    p.map(overlay_qc, iterlst)
+    if tmpnt == 0:
+        #thalamus
+        output_folder = os.path.join(dst, "thal_transformed_points"); makedir(output_folder)
+        qc_folder =  os.path.join(dst, "thal_qc"); makedir(qc_folder)
+        error_file = os.path.join(qc_folder, "errors.txt")
+        
+        #inputs
+        brains = ["20170410_tp_bl6_lob6a_ml_repro_01",
+             "20160823_tp_bl6_cri_500r_02",
+             "20180417_jg59_bl6_cri_03",
+             "20170207_db_bl6_crii_1300r_02",
+             "20160622_db_bl6_unk_01",
+             "20161205_tp_bl6_sim_750r_03",
+             "20180410_jg51_bl6_lob6b_04",
+             "20170419_db_bl6_cri_rpv_53hr",
+             "20170116_tp_bl6_lob6b_lpv_07",
+             "20170411_db_bl6_crii_mid_53hr",
+             "20160822_tp_bl6_crii_1500r_06",
+             "20160920_tp_bl6_lob7_500r_03",
+             "20170207_db_bl6_crii_rpv_01",
+             "20161205_tp_bl6_sim_250r_02",
+             "20161207_db_bl6_lob6a_500r_53hr",
+             "20170130_tp_bl6_sim_rlat_05",
+             "20170115_tp_bl6_lob6b_500r_05",
+             "20170419_db_bl6_cri_mid_53hr",
+             "20161207_db_bl6_lob6a_850r_53hr",
+             "20160622_db_bl6_crii_52hr_01",
+             "20161207_db_bl6_lob6a_50rml_53d5hr",
+             "20161205_tp_bl6_lob45_1000r_01",
+             "20160801_db_l7_cri_01_mid_64hr"]
+        
+        brains = [os.path.join(input_folder, xx) for xx in brains]
+        input_list = [xx for xx in brains if os.path.exists(os.path.join(xx, folder_suffix))]
+        verbose, doubletransform, make_volumes = True, False, True
+        iterlst = [(fld, folder_suffix, output_folder, verbose, doubletransform, make_volumes) for fld in input_list]
+        p = mp.Pool(6)
+        p.map(overlay_qc, iterlst)
+        
+    elif tmpnt == 1:
+        #nc
+        output_folder = os.path.join(dst, "nc_transformed_points"); makedir(output_folder)
+        qc_folder =  os.path.join(dst, "nc_qc"); makedir(qc_folder)
+        error_file = os.path.join(qc_folder, "errors.txt")
+        
+        brains = ["20180409_jg46_bl6_lob6a_04",
+                     "20180608_jg75",
+                     "20170204_tp_bl6_cri_1750r_03",
+                     "20180608_jg72",
+                     "20180416_jg56_bl6_lob8_04",
+                     "20170116_tp_bl6_lob45_ml_11",
+                     "20180417_jg60_bl6_cri_04",
+                     "20180410_jg52_bl6_lob7_05",
+                     "20170116_tp_bl6_lob7_1000r_10",
+                     "20180409_jg44_bl6_lob6a_02",
+                     "20180410_jg49_bl6_lob45_02",
+                     "20180410_jg48_bl6_lob6a_01",
+                     "20180612_jg80",
+                     "20180608_jg71",
+                     "20170212_tp_bl6_crii_1000r_02",
+                     "20170115_tp_bl6_lob6a_rpv_03",
+                     "20170212_tp_bl6_crii_2000r_03",
+                     "20180417_jg58_bl6_sim_02",
+                     "20170130_tp_bl6_sim_1750r_03",
+                     "20170115_tp_bl6_lob6b_ml_04",
+                     "20180410_jg50_bl6_lob6b_03",
+                     "20170115_tp_bl6_lob6a_1000r_02",
+                     "20170116_tp_bl6_lob45_500r_12",
+                     "20180612_jg77",
+                     "20180612_jg76",
+                     "20180416_jg55_bl6_lob8_03",
+                     "20170115_tp_bl6_lob6a_500r_01",
+                     "20170130_tp_bl6_sim_rpv_01",
+                     "20170204_tp_bl6_cri_1000r_02",
+                     "20170212_tp_bl6_crii_250r_01",
+                     "20180417_jg61_bl6_crii_05",
+                     "20170116_tp_bl6_lob7_ml_08",
+                     "20180409_jg47_bl6_lob6a_05"]
+        
+        brains = [os.path.join(input_folder, xx) for xx in brains]
+        input_list = [xx for xx in brains if os.path.exists(os.path.join(xx, folder_suffix))]
+        verbose, doubletransform, make_volumes = True, False, True
+        iterlst = [(fld, folder_suffix, output_folder, verbose, doubletransform, make_volumes) for fld in input_list]
+        p = mp.Pool(6)
+        p.map(overlay_qc, iterlst)
     
