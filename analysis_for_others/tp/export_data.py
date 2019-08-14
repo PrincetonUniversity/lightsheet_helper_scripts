@@ -10,7 +10,28 @@ import os, pickle as pckl
 
 #%%
 
+dst = "/jukebox/wang/zahra/h129_qc/data"
+data = {}
 
+data["nc_brainnames"] = nc_brains
+data["thal_brainnames"] = thal_brains
+data["thal_cell_counts_per_brain"] = thal_cell_counts_per_brain
+data["nc_cell_counts_per_brain"] = nc_cell_counts_per_brain
+data["nc_volume_per_brain"] = nc_volume_per_brain
+data["thal_volume_per_brain"] = thal_volume_per_brain
+data["thal_density_per_brain"] = thal_density_per_brain
+data["mean_thal_density_per_brain"] = mean_thal_density_per_brain
+data["std_thal_density_per_brain"] = std_thal_density_per_brain
+data["nc_density_per_brain"] = nc_density_per_brain
+data["mean_nc_density_per_brain"] = mean_nc_density_per_brain
+data["std_nc_density_per_brain"] = std_nc_density_per_brain
+data["nc_lbls"] = lbls
+
+#store data (serialize)
+with open(os.path.join(dst, "nc_density_at_thal_nc_timepoint_data_all_brains.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+
+#%%
 #save
 dst = "/jukebox/wang/zahra/modeling/h129/striatum/"
 
