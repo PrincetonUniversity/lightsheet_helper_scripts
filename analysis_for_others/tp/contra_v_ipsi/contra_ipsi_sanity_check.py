@@ -10,11 +10,12 @@ import numpy as np, tifffile as tif, cv2, matplotlib.pyplot as plt
 from skimage.morphology import ball
 
 #first, make a map of cells
-converted_points = np.load(converted_points)
+pth = "/home/wanglab/mounts/wang/zahra/h129_contra_vs_ipsi/pma_to_aba/20180410_jg52_bl6_lob7_05/posttransformed_zyx_voxels.npy"
+converted_points = np.load(pth)
 
 zyx = np.asarray([(int(xx[0]), int(xx[1]), int(xx[2])) for xx in converted_points]) #cells are counted in horizontal volumes
    
-vol = "/home/wanglab/mounts/wang/pisano/tracing_output/antero_4x/20170115_tp_bl6_lob6a_500r_01/elastix/20170115_tp_bl6_lob6a_500r_01_647_010na_z7d5um_75_msec_10povlp_resized_ch00/result.tif"
+vol = "/home/wanglab/mounts/wang/zahra/h129_contra_vs_ipsi/reg_to_allen/20180410_jg52_bl6_lob7_05/cell_to_reg/result.tif"
 
 img = tif.imread(vol)           
  
@@ -34,7 +35,7 @@ cell_map = np.asarray([cv2.dilate(cell_map[i], selem, iterations = 1) for i in r
 
 merged = np.stack([img, cell_map, np.zeros_like(cell_map)], -1)
 
-tif.imsave("/home/wanglab/Desktop/test.tif", merged)
+tif.imsave("/home/wanglab/Desktop/20180410_jg52_bl6_lob7_05_test.tif", merged)
 #%%
 
 z = [xx[0] for xx in arr]
