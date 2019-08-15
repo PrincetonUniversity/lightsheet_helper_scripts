@@ -33,28 +33,28 @@ structures_names = [xx.name for xx in structures]
 dst = "/home/wanglab/Desktop"
 
 #THALAMUS
-thal_brains = ["20170410_tp_bl6_lob6a_ml_repro_01",
+thal_brains = [#"20170410_tp_bl6_lob6a_ml_repro_01",
          "20160823_tp_bl6_cri_500r_02",
          "20180417_jg59_bl6_cri_03",
-         "20170207_db_bl6_crii_1300r_02",
-         "20160622_db_bl6_unk_01",
-         "20161205_tp_bl6_sim_750r_03",
+        # "20170207_db_bl6_crii_1300r_02",
+        # "20160622_db_bl6_unk_01",
+        # "20161205_tp_bl6_sim_750r_03",
          "20180410_jg51_bl6_lob6b_04",
-         "20170419_db_bl6_cri_rpv_53hr",
+        # "20170419_db_bl6_cri_rpv_53hr",
          "20170116_tp_bl6_lob6b_lpv_07",
-         "20170411_db_bl6_crii_mid_53hr",
+        # "20170411_db_bl6_crii_mid_53hr",
          "20160822_tp_bl6_crii_1500r_06",
          "20160920_tp_bl6_lob7_500r_03",
-         "20170207_db_bl6_crii_rpv_01",
-         "20161205_tp_bl6_sim_250r_02",
-         "20161207_db_bl6_lob6a_500r_53hr",
-         "20170130_tp_bl6_sim_rlat_05",
+        # "20170207_db_bl6_crii_rpv_01",
+        # "20161205_tp_bl6_sim_250r_02",
+        # "20161207_db_bl6_lob6a_500r_53hr",
+        # "20170130_tp_bl6_sim_rlat_05",
          "20170115_tp_bl6_lob6b_500r_05",
-         "20170419_db_bl6_cri_mid_53hr",
+       #  "20170419_db_bl6_cri_mid_53hr",
          "20161207_db_bl6_lob6a_850r_53hr",
-         "20160622_db_bl6_crii_52hr_01",
+       #  "20160622_db_bl6_crii_52hr_01",
          "20161207_db_bl6_lob6a_50rml_53d5hr",
-         "20161205_tp_bl6_lob45_1000r_01",
+       #  "20161205_tp_bl6_lob45_1000r_01",
          "20160801_db_l7_cri_01_mid_64hr"]
 
 cells_regions_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/dataframe_no_prog_at_each_level.p"
@@ -207,9 +207,7 @@ for ri,row in enumerate(show):
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
 
 # aesthetics
-ax.set_xticks(np.arange(len(brains))+.5)
-
-#remaking labeles so it doesn"t look squished
+ax.set_xticks(np.arange(len(thal_brains))+.5)
 thal_brains = np.asarray(thal_brains)
 ax.set_xticklabels(thal_brains, rotation=30, fontsize=6, ha="right")
 # yticks
@@ -404,9 +402,7 @@ for ri,row in enumerate(show):
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
 
 # aesthetics
-ax.set_xticks(np.arange(len(brains))+.5)
-
-#remaking labeles so it doesn"t look squished
+ax.set_xticks(np.arange(len(nc_brains))+.5)
 nc_brains = np.asarray(nc_brains)
 ax.set_xticklabels(nc_brains, rotation=30, fontsize=6, ha="right")
 # yticks
@@ -420,16 +416,43 @@ plt.savefig(os.path.join(dst,"nc_density_at_nc_timepoint.pdf"), bbox_inches = "t
 #%%
 ratio_mean_density = np.array(mean_thal_density_per_brain/mean_nc_density_per_brain)
 ratio_std_density = np.array(std_thal_density_per_brain/std_nc_density_per_brain)
+#calculate median also
+median_thal_density_per_brain = np.median(thal_density_per_brain, axis = 0)
+median_nc_density_per_brain = np.median(nc_density_per_brain, axis = 0)
+ratio_median_density = np.array(median_thal_density_per_brain/median_nc_density_per_brain)
+from scipy.stats import median_absolute_deviation as mad
+mad_thal_density_per_brain = mad(thal_density_per_brain, axis = 0)
+mad_nc_density_per_brain = mad(nc_density_per_brain, axis = 0)
+ratio_mad_density = np.array(mad_thal_density_per_brain/mad_nc_density_per_brain)
 
 import pandas as pd
 df = pd.DataFrame()
-df["structures"] = sois
-df["mean_thal_density"] = np.round(mean_thal_density_per_brain, decimals = 4)
-df["mean_nc_density"] = np.round(mean_nc_density_per_brain, decimals = 4)
-df["ratio_mean_density"] = np.round(ratio_mean_density, decimals = 4)
-df["ratio_std_density"] = np.round(ratio_std_density, decimals = 4)
+d = 4 #decimals to round to
+df["mean_thal_density"] = np.round(mean_thal_density_per_brain, d)
+df["mean_nc_density"] = np.round(mean_nc_density_per_brain, d)
+df["std_thal_density"] = np.round(std_thal_density_per_brain, d)
+df["std_nc_density"] = np.round(std_nc_density_per_brain, d)
+df["median_thal_density"] = np.round(median_thal_density_per_brain, d)
+df["median_nc_density"] = np.round(median_nc_density_per_brain, d)
+df["mad_thal_density"] = np.round(mad_thal_density_per_brain, d)
+df["mad_nc_density"] = np.round(mad_nc_density_per_brain, d)
 
-df.to_csv("/home/wanglab/Desktop/disynaptic.csv")
+df["ratio_mean_density"] = np.round(ratio_mean_density, d)
+df["ratio_median_density"] = np.round(ratio_median_density, d)
+df["ratio_std_density"] = np.round(ratio_std_density, d)
+df["ratio_mad_density"] = np.round(ratio_mad_density, d)
+df.index = lbls
+
+#make another dataframe with just ratio stats
+df_stats = pd.DataFrame()
+df_stats["mean"] = np.round(df.mean(axis = 0).values, d)
+df_stats["median"] = np.round(df.median(axis = 0).values, d)
+df_stats["standard_deviation"] = np.round(df.std(axis = 0).values, d)
+df_stats["median_absolute_deviation"] = np.round(mad(df.to_numpy(), axis = 0), d)
+df_stats.index = df.columns
+df = df.append(df_stats.T)
+
+df.to_csv(os.path.join(dst, "disynaptic.csv"))
 
 #%%
 
@@ -477,7 +500,7 @@ size = 30
 for i in range(len(X)):
     ax.scatter(y = Y[i], x = X[i], s = size, label = strcs[i], c = color_map[i])
 #
-X = range(0, 30)
+X = range(0, 20)
 ax.plot(X, X*mean_slope + mean_intercept, "--r", label = "Slope={}\n$R^2$={}".format(round(mean_slope, 2), 
                    round(mean_r2, 2)))
 
@@ -485,7 +508,7 @@ ax.plot(X, X*mean_slope + mean_intercept, "--r", label = "Slope={}\n$R^2$={}".fo
 #plt.scatter(y = thal_density_per_brain[:, i], x = range(thal_density_per_brain.shape[0]), color = "red")
 #    
 ax.set_ylim([0, 500])
-ax.set_xticks(np.arange(0, 30, 2))
+ax.set_xticks(np.arange(0, 20, 2))
 #ax.set_xlim([0, 100])
 ax.set_ylabel("Average neocortical densities at neocortical timepoint")
 ax.set_xlabel("Average neocortical densities at thalamic timepoint")

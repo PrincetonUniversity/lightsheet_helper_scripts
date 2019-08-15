@@ -8,6 +8,7 @@ Created on Wed Aug 14 14:22:57 2019
 
 import matplotlib.pyplot as plt
 import numpy as np, os, pickle as pckl, matplotlib as mpl, statsmodels.api as sm, pandas as pd
+from scipy.stats import median_absolute_deviation as mad
 
 
 mpl.rcParams['pdf.fonttype'] = 42
@@ -31,6 +32,7 @@ mean_nc_density_per_brain = data["mean_nc_density_per_brain"]
 std_thal_density_per_brain = data["std_thal_density_per_brain"]
 std_nc_density_per_brain = data["std_nc_density_per_brain"]
 
+#-----------------------------------------------------------------------------------------------------------------------------
 ## display
 fig = plt.figure(figsize=(15, 5))
 ax = fig.add_axes([.4,.1,.5,.8])
@@ -64,7 +66,6 @@ for ri,row in enumerate(show):
 
 # aesthetics
 ax.set_xticks(np.arange(len(thal_brains))+.5)
-#remaking labeles so it doesn"t look squished
 thal_brains = np.asarray(thal_brains)
 ax.set_xticklabels(thal_brains, rotation=30, fontsize=6, ha="right")
 # yticks
@@ -75,8 +76,8 @@ ax.yaxis.set_label_coords(-0.2,0.5)
 
 plt.savefig(os.path.join(dst,"nc_density_at_thalamic_timepoint.pdf"), bbox_inches = "tight")
 
+#-----------------------------------------------------------------------------------------------------------------------------
 #NC
-
 fig = plt.figure(figsize=(22, 5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
@@ -124,40 +125,52 @@ ax.yaxis.set_label_coords(-0.22,0.5)
 
 plt.savefig(os.path.join(dst,"nc_density_at_nc_timepoint.pdf"), bbox_inches = "tight")
 
+#-----------------------------------------------------------------------------------------------------------------------------
 #save the stats for the densities into csv
 ratio_mean_density = np.array(mean_thal_density_per_brain/mean_nc_density_per_brain)
 ratio_std_density = np.array(std_thal_density_per_brain/std_nc_density_per_brain)
+#calculate median also
+median_thal_density_per_brain = np.median(thal_density_per_brain, axis = 0)
+median_nc_density_per_brain = np.median(nc_density_per_brain, axis = 0)
+ratio_median_density = np.array(median_thal_density_per_brain/median_nc_density_per_brain)
+
+mad_thal_density_per_brain = mad(thal_density_per_brain, axis = 0)
+mad_nc_density_per_brain = mad(nc_density_per_brain, axis = 0)
+ratio_mad_density = np.array(mad_thal_density_per_brain/mad_nc_density_per_brain)
 
 df = pd.DataFrame()
-df["structures"] = lbls
-df["mean_thal_density"] = np.round(mean_thal_density_per_brain, decimals = 4)
-df["mean_nc_density"] = np.round(mean_nc_density_per_brain, decimals = 4)
-df["ratio_mean_density"] = np.round(ratio_mean_density, decimals = 4)
-df["ratio_std_density"] = np.round(ratio_std_density, decimals = 4)
+d = 4 #decimals to round to
+df["mean_thal_density"] = np.round(mean_thal_density_per_brain, d)
+df["mean_nc_density"] = np.round(mean_nc_density_per_brain, d)
+df["std_thal_density"] = np.round(std_thal_density_per_brain, d)
+df["std_nc_density"] = np.round(std_nc_density_per_brain, d)
+df["median_thal_density"] = np.round(median_thal_density_per_brain, d)
+df["median_nc_density"] = np.round(median_nc_density_per_brain, d)
+df["mad_thal_density"] = np.round(mad_thal_density_per_brain, d)
+df["mad_nc_density"] = np.round(mad_nc_density_per_brain, d)
+
+df["ratio_mean_density"] = np.round(ratio_mean_density, d)
+df["ratio_median_density"] = np.round(ratio_median_density, d)
+df["ratio_std_density"] = np.round(ratio_std_density, d)
+df["ratio_mad_density"] = np.round(ratio_mad_density, d)
+df.index = lbls
+
+#make another dataframe with just ratio stats
+df_stats = pd.DataFrame()
+df_stats["mean"] = np.round(df.mean(axis = 0).values, d)
+df_stats["median"] = np.round(df.median(axis = 0).values, d)
+df_stats["standard_deviation"] = np.round(df.std(axis = 0).values, d)
+df_stats["median_absolute_deviation"] = np.round(mad(df.to_numpy(), axis = 0), d)
+df_stats.index = df.columns
+df = df.append(df_stats.T)
 
 df.to_csv(os.path.join(dst, "disynaptic.csv"))
+
+#-----------------------------------------------------------------------------------------------------------------------------
 
 fig = plt.figure(figsize=(10,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
-#rewrite nc labels
-lbls = ['Infralimbic',
- 'Prelimbic',
- 'Anterior cingulate',
- 'Frontal pole',
- 'Orbital',
- 'Gustatory',
- 'Agranular insula',
- 'Visceral',
- 'Somatosensory',
- 'Somatomotor',
- 'Retrosplenial',
- 'Posterior parietal',
- 'Visual',
- 'Temporal',
- 'Auditory',
- 'Ectorhinal',
- 'Perirhinal']
 #linear regression - not useful
 Y = np.sort(mean_nc_density_per_brain)[:-1]
 X = mean_thal_density_per_brain[np.argsort(mean_nc_density_per_brain)][:-1]
