@@ -373,35 +373,54 @@ sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in 
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
 #%%
 ## display
-fig = plt.figure(figsize=(20, 1.5))
-ax = fig.add_axes([.4,.1,.5,.8])
+fig, axes = plt.subplots(ncols = 1, nrows = 4, figsize = (15,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [1.5,1,1,1]})
 
-show = sort_cratio_pool.T
+#inj fractions
+ax = axes[0]
+
+show = np.fliplr(sort_inj).T
+
+vmin = 0
+vmax = 0.8
+cmap = plt.cm.Reds 
+cmap.set_over('darkred')
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
+
+ax = axes[1]
+show = sort_dcontra_pool.T
 yaxis = grps
 
-vmin = 0.7
-vmax = 1.5
+vmin = 0
+vmax = 500
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,5)
-#bounds = np.linspace(-2,5,8)
+bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
                   format="%0.1f", shrink=0.8, aspect=10)
-cb.set_label("Cell count ratio", fontsize="x-small", labelpad=3)
+cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
 
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 1.1:
+        if col < 200:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
@@ -413,8 +432,224 @@ ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_ylabel("Contra", fontsize="small")
+ax.yaxis.set_label_coords(-0.15,0.5)
+
+ax = axes[2]
+show = sort_dipsi_pool.T
+yaxis = grps
+
+vmin = 0
+vmax = 500
+cmap = plt.cm.viridis
+cmap.set_over("gold")
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.8, aspect=10)
+cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col < 200:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+
+# aesthetics
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+sort_brains = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_ylabel("Ipsi", fontsize="small")
+ax.yaxis.set_label_coords(-0.15,0.5)
+
+
+ax = axes[3]
+show = sort_dratio_pool.T
+yaxis = grps
+
+vmin = 0.7
+vmax = 1.5
+cmap = plt.cm.Blues
+cmap.set_over("navy")
+#colormap
+bounds = np.linspace(vmin,vmax,5)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.8, aspect=10)
+cb.set_label("Density ratio", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col > 1.5:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+
+# aesthetics
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+sort_brains = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_ylabel("Contra/Ipsi", fontsize="small")
+ax.yaxis.set_label_coords(-0.15,0.5)
 
 plt.savefig("/home/wanglab/Desktop/density_ratios.pdf", bbox_inches = "tight")
 
+#%%
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 4, figsize = (15,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [1.5,1,1,1]})
 
+#inj fractions
+ax = axes[0]
+
+show = np.fliplr(sort_inj).T
+
+vmin = 0
+vmax = 0.8
+cmap = plt.cm.Reds 
+cmap.set_over('darkred')
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
+
+ax = axes[1]
+show = sort_ccontra_pool.T
+yaxis = grps
+
+vmin = 0
+vmax = 2000
+cmap = plt.cm.viridis
+cmap.set_over("gold")
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%d", shrink=0.8, aspect=10)
+cb.set_label("Cell count", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col < 200:
+            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+
+# aesthetics
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+sort_brains = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_ylabel("Contra", fontsize="small")
+ax.yaxis.set_label_coords(-0.15,0.5)
+
+ax = axes[2]
+show = sort_cipsi_pool.T
+yaxis = grps
+
+vmin = 0
+vmax = 2000
+cmap = plt.cm.viridis
+cmap.set_over("gold")
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%d", shrink=0.8, aspect=10)
+cb.set_label("Cell count", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col < 200:
+            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+
+# aesthetics
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+sort_brains = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_ylabel("Ipsi", fontsize="small")
+ax.yaxis.set_label_coords(-0.15,0.5)
+
+
+ax = axes[3]
+show = sort_cratio_pool.T
+yaxis = grps
+
+vmin = 0.7
+vmax = 1.5
+cmap = plt.cm.Blues
+cmap.set_over("navy")
+#colormap
+bounds = np.linspace(vmin,vmax,5)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.8, aspect=10)
+cb.set_label("Cell count ratio", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col > 1.5:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+
+# aesthetics
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+sort_brains = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_ylabel("Contra/Ipsi", fontsize="small")
+ax.yaxis.set_label_coords(-0.15,0.5)
+
+plt.savefig("/home/wanglab/Desktop/count_ratios.pdf", bbox_inches = "tight")
 

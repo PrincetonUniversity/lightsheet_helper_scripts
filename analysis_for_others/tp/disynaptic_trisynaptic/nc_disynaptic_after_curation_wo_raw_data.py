@@ -127,6 +127,7 @@ plt.savefig(os.path.join(dst,"nc_density_at_nc_timepoint.pdf"), bbox_inches = "t
 
 #-----------------------------------------------------------------------------------------------------------------------------
 #save the stats for the densities into csv
+est_std = 0.6745 #normal mad to get estimated standard dev
 ratio_mean_density = np.array(mean_thal_density_per_brain/mean_nc_density_per_brain)
 ratio_std_density = np.array(std_thal_density_per_brain/std_nc_density_per_brain)
 #calculate median also
@@ -146,13 +147,13 @@ df["std_thal_density"] = np.round(std_thal_density_per_brain, d)
 df["std_nc_density"] = np.round(std_nc_density_per_brain, d)
 df["median_thal_density"] = np.round(median_thal_density_per_brain, d)
 df["median_nc_density"] = np.round(median_nc_density_per_brain, d)
-df["mad_thal_density"] = np.round(mad_thal_density_per_brain, d)
-df["mad_nc_density"] = np.round(mad_nc_density_per_brain, d)
+df["est_std_thal_density"] = np.round(mad_thal_density_per_brain/est_std, d)
+df["est_std_nc_density"] = np.round(mad_nc_density_per_brain/est_std, d)
 
 df["ratio_mean_density"] = np.round(ratio_mean_density, d)
 df["ratio_median_density"] = np.round(ratio_median_density, d)
 df["ratio_std_density"] = np.round(ratio_std_density, d)
-df["ratio_mad_density"] = np.round(ratio_mad_density, d)
+df["ratio_est_std_density"] = np.round(ratio_mad_density/est_std, d)
 df.index = lbls
 
 #make another dataframe with just ratio stats
@@ -160,12 +161,13 @@ df_stats = pd.DataFrame()
 df_stats["mean"] = np.round(df.mean(axis = 0).values, d)
 df_stats["median"] = np.round(df.median(axis = 0).values, d)
 df_stats["standard_deviation"] = np.round(df.std(axis = 0).values, d)
-df_stats["median_absolute_deviation"] = np.round(mad(df.to_numpy(), axis = 0), d)
+df_stats["est_standard_deviation"] = np.round(mad(df.to_numpy(), axis = 0)/est_std, d)
 df_stats.index = df.columns
 df = df.append(df_stats.T)
 
 df.to_csv(os.path.join(dst, "disynaptic.csv"))
 
+#%%
 #-----------------------------------------------------------------------------------------------------------------------------
 
 fig = plt.figure(figsize=(10,5))
