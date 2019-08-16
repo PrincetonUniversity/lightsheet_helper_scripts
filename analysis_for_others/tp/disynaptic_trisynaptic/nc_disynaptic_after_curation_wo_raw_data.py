@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import numpy as np, os, pickle as pckl, matplotlib as mpl, statsmodels.api as sm, pandas as pd
 from scipy.stats import median_absolute_deviation as mad
 
-
 mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['ps.fonttype'] = 42
 

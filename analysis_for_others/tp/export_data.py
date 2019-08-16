@@ -10,6 +10,25 @@ import os, pickle as pckl
 
 #%%
 
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
+data = {}
+
+data["cell_counts_per_brain_left"] = cell_counts_per_brain_left
+data["cell_counts_per_brain_right"] = cell_counts_per_brain_right
+data["density_per_brain_left"] = density_per_brain_left
+data["density_per_brain_right"] = density_per_brain_right
+
+data["lr_dist"] = lr_dist
+data["thal_nuclei"] = nuclei
+
+#store data (serialize)
+with open(os.path.join(dst, "thal_contra_ipsi_counts_densities.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+
+
+
+#%%
+
 dst = "/jukebox/wang/zahra/h129_qc/data"
 data = {}
 

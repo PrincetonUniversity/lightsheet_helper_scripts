@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug  6 14:07:37 2019
+Created on Fri Aug 16 17:24:45 2019
 
 @author: wanglab
 """
+
 
 import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
 import SimpleITK as sitk
@@ -61,7 +62,7 @@ def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
         vals = [i+1 for i in np.argsort(sizes)[-num_sites_to_keep:][::-1]]
         return np.in1d(labelled, vals).reshape(labelled.shape)
    
-#%%
+
 
 ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
 
@@ -78,16 +79,16 @@ plt.imshow(ann_left[120])
 
 #collect 
 #brains should be in this order as they were saved in this order for inj analysis
-brains = ["20180409_jg46_bl6_lob6a_04", "20180608_jg75","20170204_tp_bl6_cri_1750r_03", "20180608_jg72", "20180416_jg56_bl6_lob8_04",
- "20170116_tp_bl6_lob45_ml_11", "20180417_jg60_bl6_cri_04", "20180410_jg52_bl6_lob7_05", "20170116_tp_bl6_lob7_1000r_10",
- "20180409_jg44_bl6_lob6a_02", "20180410_jg49_bl6_lob45_02", "20180410_jg48_bl6_lob6a_01", "20180612_jg80", "20180608_jg71",
- "20170212_tp_bl6_crii_1000r_02", "20170115_tp_bl6_lob6a_rpv_03", "20170212_tp_bl6_crii_2000r_03", "20180417_jg58_bl6_sim_02",
- "20170130_tp_bl6_sim_1750r_03", "20170115_tp_bl6_lob6b_ml_04", "20180410_jg50_bl6_lob6b_03", "20170115_tp_bl6_lob6a_1000r_02",
- "20170116_tp_bl6_lob45_500r_12", "20180612_jg77", "20180612_jg76", "20180416_jg55_bl6_lob8_03", "20170115_tp_bl6_lob6a_500r_01",
- "20170130_tp_bl6_sim_rpv_01", "20170204_tp_bl6_cri_1000r_02", "20170212_tp_bl6_crii_250r_01", "20180417_jg61_bl6_crii_05",
- "20170116_tp_bl6_lob7_ml_08", "20180409_jg47_bl6_lob6a_05"]
-    
-src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/reg_to_allen"
+brains = ["20170410_tp_bl6_lob6a_ml_repro_01", "20160823_tp_bl6_cri_500r_02", "20180417_jg59_bl6_cri_03",
+"20170207_db_bl6_crii_1300r_02", "20160622_db_bl6_unk_01", "20161205_tp_bl6_sim_750r_03",
+"20180410_jg51_bl6_lob6b_04", "20170419_db_bl6_cri_rpv_53hr", "20170116_tp_bl6_lob6b_lpv_07",
+"20170411_db_bl6_crii_mid_53hr", "20160822_tp_bl6_crii_1500r_06", "20160920_tp_bl6_lob7_500r_03",
+"20170207_db_bl6_crii_rpv_01", "20161205_tp_bl6_sim_250r_02", "20161207_db_bl6_lob6a_500r_53hr",
+"20170130_tp_bl6_sim_rlat_05", "20170115_tp_bl6_lob6b_500r_05", "20170419_db_bl6_cri_mid_53hr",
+"20161207_db_bl6_lob6a_850r_53hr", "20160622_db_bl6_crii_52hr_01", "20161207_db_bl6_lob6a_50rml_53d5hr",
+"20161205_tp_bl6_lob45_1000r_01", "20160801_db_l7_cri_01_mid_64hr"]    
+
+src = "/jukebox/wang/pisano/tracing_output/antero_4x"
 
 flds = [os.path.join(src, xx) for xx in brains]
 
@@ -98,11 +99,13 @@ lr_dist = {}
 for fld in flds:
     brain = os.path.basename(fld)
     print(brain)
-    inj_pth = os.path.join(os.path.join(fld, "inj_to_reg"), "result.tif")
+    fl = os.listdir(os.path.join(fld, "elastix"))
+    fl.sort()
+    inj_pth = os.path.join(os.path.join(fld, "elastix"), fl[0]+"/result.tif")
     inj_vol = tifffile.imread(inj_pth)
     z,y,x = inj_vol.shape
 
-    arr = find_site(inj_vol[:, 412:, :])
+    arr = find_site(inj_vol[:, 423:, :])
     #find center of mass
     z_c,y_c,x_c = center_of_mass(arr)
     #take distance from center to arbitrary "midline" (aka half of z axis)
@@ -134,7 +137,7 @@ id_table = pd.read_excel(df_pth)
 nc_lst = brains
 
 #get brains that we actually need to get cell counts from
-src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/transformed_points"
+src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/transformed_points"
 post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
 transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
                   "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
@@ -187,9 +190,9 @@ def transformed_cells_to_allen(fld, ann, dst, fl_nm):
 
 pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
 #collect counts from right side
-right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "nc_right_side_no_prog_at_each_level_allen_atl.p")
+right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_no_prog_at_each_level_allen_atl.p")
 #collect counts from left side
-left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "nc_left_side_no_prog_at_each_level_allen_atl.p")
+left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_no_prog_at_each_level_allen_atl.p")
 
 #%%
 
@@ -211,6 +214,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
         d_pooled_regions = {}
         
         for soi in structure:
+            print(soi)
             try:
                 soi = [s for s in structures if s.name==soi][0]
                 counts = [] #store counts in this list
@@ -231,7 +235,8 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
                                 volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
                 c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
                 d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-            except:
+            except Exception as e:
+                print(e)
                 for k, v in cells_regions[brain].items():
                     if k == soi:
                         counts.append(v)                    
@@ -273,20 +278,21 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
     return cell_counts_per_brain, density_per_brain
 
 #making dictionary of cells by region
-cells_regions = pckl.load(open(os.path.join(dst, "nc_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
 
-nc_areas = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
+nuclei = ["Ventral group of the dorsal thalamus", "Subparafascicular nucleus", "Subparafascicular area",
+          "Peripeduncular nucleus", "Geniculate group, dorsal thalamus", "Lateral group of the dorsal thalamus",
+          "Anterior group of the dorsal thalamus", "Medial group of the dorsal thalamus", "Midline group of the dorsal thalamus",
+          "Intralaminar nuclei of the dorsal thalamus", "Reticular nucleus of the thalamus", "Geniculate group, ventral thalamus",
+          "Epithalamus"]
 
 #RIGHT SIDE
-cell_counts_per_brain_right, density_per_brain_right = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
+cell_counts_per_brain_right, density_per_brain_right = get_cell_n_density_counts(brains, nuclei, structures, cells_regions)
 #LEFT SIDE
-cells_regions = pckl.load(open(os.path.join(dst, "nc_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
-cell_counts_per_brain_left, density_per_brain_left = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
+cell_counts_per_brain_left, density_per_brain_left = get_cell_n_density_counts(brains, nuclei, structures, cells_regions)
 
 
 #%%
@@ -327,7 +333,7 @@ _cratio = np.asarray([_ccontra[i]/_cipsi[i] for i in range(len(_ccontra))])
 _dist = np.asarray(list(lr_dist.values()))
 
 #injection site analysis
-pth = "/jukebox/wang/zahra/modeling/h129/neocortex/data.p"
+pth = "/jukebox/wang/zahra/modeling/h129/thalamus/data.p"
 data = pckl.load(open(pth, "rb"), encoding = "latin1")
 
 brains = data["brainnames"]
@@ -353,28 +359,24 @@ sort_brains = np.array(lr_brains)[np.argsort(_dist)]
 print(sort_dist.shape)
 print(sort_cratio.shape)
 
-#group nc regions in smaller, meta regions
-#frontal, medial, posterior?
-#['Infralimbic area', 'Prelimbic area', 'Anterior cingulate area',
-#       'Frontal pole, cerebral cortex', 'Orbital area', 'Gustatory areas',
-#       'Agranular insular area', 'Visceral area', 'Somatosensory areas',
-#       'Somatomotor areas', 'Retrosplenial area',
-#       'Posterior parietal association areas', 'Visual areas',
-#       'Temporal association areas', 'Auditory areas', 'Ectorhinal area',
-#       'Perirhinal area']
-#group_ind = [[0:7], [8:10], [10:]]
+#group thalamus regions in smaller, meta regions
 
-grps = np.array(["Frontal\n(IL,PL,ACC,ORB,FRP,\nGU,AI,VISC)" , "Medial\n(MO,SS)", "Posterior\n(RSP,PTL,TE,PERI,ECT)"])
-sort_ccontra_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])
-sort_dcontra_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_dcontra])
-sort_cipsi_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_cipsi])
-sort_dipsi_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_dipsi])
+grps = np.array(["Sensory-motor thalamus" , "Polymodal thalamus"])
+sort_ccontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_ccontra])
+sort_dcontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_dcontra])
+sort_cipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_cipsi])
+sort_dipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_dipsi])
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
 #%%
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (15,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [1.5,1,1,1,0.3]})
+fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,0.8,0.8,0.8,0.5]})
+
+
+#set colormap specs
+vmaxcounts = 150
+whitetext = 30
 
 #inj fractions
 ax = axes[0]
@@ -403,7 +405,7 @@ show = sort_dcontra_pool.T
 yaxis = grps
 
 vmin = 0
-vmax = 500
+vmax = vmaxcounts
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
@@ -420,27 +422,23 @@ cb.ax.set_visible(True)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 200:
+        if col < whitetext:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
 
-# aesthetics
-ax.set_xticks(np.arange(len(sort_brains))+.5)
-sort_brains = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Contra", fontsize="small")
-ax.yaxis.set_label_coords(-0.15,0.5)
+ax.yaxis.set_label_coords(-0.25,0.5)
 
 ax = axes[2]
 show = sort_dipsi_pool.T
 yaxis = grps
 
 vmin = 0
-vmax = 500
+vmax = vmaxcounts
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
@@ -457,20 +455,16 @@ cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 200:
+        if col < whitetext:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
 
-# aesthetics
-ax.set_xticks(np.arange(len(sort_brains))+.5)
-sort_brains = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Ipsi", fontsize="small")
-ax.yaxis.set_label_coords(-0.15,0.5)
+ax.yaxis.set_label_coords(-0.25,0.5)
 
 
 ax = axes[3]
@@ -500,15 +494,11 @@ for ri,row in enumerate(show):
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
 
-# aesthetics
-ax.set_xticks(np.arange(len(sort_brains))+.5)
-sort_brains = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Contra/Ipsi", fontsize="small")
-ax.yaxis.set_label_coords(-0.15,0.5)
+ax.yaxis.set_label_coords(-0.25,0.5)
 
 ax = axes[4]
 show = np.asarray([sort_dist])
@@ -539,9 +529,8 @@ for ri,row in enumerate(show):
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")        
 
 #remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(br))+.5)
-lbls = np.asarray(br)
-ax.set_xticklabels(br, rotation=30, fontsize=5, ha="right")
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=5, ha="right")
 
 ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
@@ -550,9 +539,14 @@ plt.savefig("/home/wanglab/Desktop/density_ratios.pdf", bbox_inches = "tight")
 
 #%%
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (15,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [1.5,1,1,1,0.3]})
+fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,0.8,0.8,0.8,0.5]})
 
+
+#set colormap specs
+vmaxcounts = 150
+whitetext = 30
+    
 #inj fractions
 ax = axes[0]
 
@@ -580,7 +574,7 @@ show = sort_ccontra_pool.T
 yaxis = grps
 
 vmin = 0
-vmax = 2000
+vmax = vmaxcounts
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
@@ -597,7 +591,7 @@ cb.ax.set_visible(True)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 200:
+        if col < whitetext:
             ax.text(ci+.5, ri+.5, "{:d}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
             ax.text(ci+.5, ri+.5, "{:d}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
@@ -610,14 +604,14 @@ ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Contra", fontsize="small")
-ax.yaxis.set_label_coords(-0.15,0.5)
+ax.yaxis.set_label_coords(-0.25,0.5)
 
 ax = axes[2]
 show = sort_cipsi_pool.T
 yaxis = grps
 
 vmin = 0
-vmax = 2000
+vmax = vmaxcounts
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
@@ -634,7 +628,7 @@ cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 200:
+        if col < whitetext:
             ax.text(ci+.5, ri+.5, "{:d}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
             ax.text(ci+.5, ri+.5, "{:d}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
@@ -647,7 +641,7 @@ ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Ipsi", fontsize="small")
-ax.yaxis.set_label_coords(-0.15,0.5)
+ax.yaxis.set_label_coords(-0.25,0.5)
 
 
 ax = axes[3]
@@ -685,7 +679,7 @@ ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Contra/Ipsi", fontsize="small")
-ax.yaxis.set_label_coords(-0.15,0.5)
+ax.yaxis.set_label_coords(-0.25,0.5)
 
 ax = axes[4]
 show = np.asarray([sort_dist])
@@ -725,3 +719,22 @@ ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
 plt.savefig("/home/wanglab/Desktop/count_ratios.pdf", bbox_inches = "tight")
 
+#%%
+#basic statistics for these ratios
+from scipy.stats import median_absolute_deviation as mad
+
+df = pd.DataFrame()
+#decimal to round by
+d = 2
+df["median_density_ratio"] = np.round(np.median(sort_dratio_pool, axis = 0), d)
+df["mean_density_ratio"] = np.round(np.mean(sort_dratio_pool, axis = 0), d)
+df["std_density_ratio"] = np.round(np.std(sort_dratio_pool, axis = 0), d)
+df["est_std_density_ratio"] = np.round(mad(sort_dratio_pool, axis = 0)/0.6745, d)
+df["median_count_ratio"] = np.round(np.median(sort_cratio_pool, axis = 0), d)
+df["mean_count_ratio"] = np.round(np.mean(sort_cratio_pool, axis = 0), d)
+df["std_count_ratio"] = np.round(np.std(sort_cratio_pool, axis = 0), d)
+df["est_std_count_ratio"] = np.round(mad(sort_cratio_pool, axis = 0)/0.6745, d)
+
+df.index = grps
+
+df.to_csv("/home/wanglab/Desktop/ratio_stats.csv")
