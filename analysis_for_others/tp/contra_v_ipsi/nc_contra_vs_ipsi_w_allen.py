@@ -7,12 +7,11 @@ Created on Tue Aug  6 14:07:37 2019
 """
 
 import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
-import SimpleITK as sitk
 from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister
 from tools.registration.register import change_transform_parameter_initial_transform
 from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files
 from tools.registration.transform_list_of_points import point_transformix, unpack_pnts
-from tools.utils.io import listdirfull, makedir, load_memmap_arr, load_np, listall, load_kwargs
+from tools.utils.io import makedir
 from skimage.external import tifffile
 from tools.analysis.network_analysis import make_structure_objects
 from scipy.ndimage.measurements import center_of_mass
@@ -160,7 +159,9 @@ for fl in post_transformed:
     
 #%%
 #------------------------------------------------------------------------------------------------------------------------------    
-def transformed_cells_to_allen(fld, ann, dst, fl_nm):
+#NOTE THAT ONLY HAVE TO DO THIS ONCE!!!! DO NOT NEED TO DO AGAIN UNLESS DOUBLE CHECKIHG
+
+def transformed_cells_to_ann(fld, ann, dst, fl_nm):
     """ consolidating to one function bc then no need to copy/paste """
     dct = {}
     
@@ -187,9 +188,9 @@ def transformed_cells_to_allen(fld, ann, dst, fl_nm):
 
 pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
 #collect counts from right side
-right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "nc_right_side_no_prog_at_each_level_allen_atl.p")
+right = transformed_cells_to_ann(pma2aba_transformed, ann_right, dst, "nc_right_side_no_prog_at_each_level_allen_atl.p")
 #collect counts from left side
-left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "nc_left_side_no_prog_at_each_level_allen_atl.p")
+left = transformed_cells_to_ann(pma2aba_transformed, ann_left, dst, "nc_left_side_no_prog_at_each_level_allen_atl.p")
 
 #%%
 
@@ -725,3 +726,21 @@ ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
 plt.savefig("/home/wanglab/Desktop/count_ratios.pdf", bbox_inches = "tight")
 
+#basic statistics for these ratios
+from scipy.stats import median_absolute_deviation as mad
+
+df = pd.DataFrame()
+#decimal to round by
+d = 2
+df["median_density_ratio"] = np.round(np.median(sort_dratio_pool, axis = 0), d)
+df["mean_density_ratio"] = np.round(np.mean(sort_dratio_pool, axis = 0), d)
+df["std_density_ratio"] = np.round(np.std(sort_dratio_pool, axis = 0), d)
+df["est_std_density_ratio"] = np.round(mad(sort_dratio_pool, axis = 0)/0.6745, d)
+df["median_count_ratio"] = np.round(np.median(sort_cratio_pool, axis = 0), d)
+df["mean_count_ratio"] = np.round(np.mean(sort_cratio_pool, axis = 0), d)
+df["std_count_ratio"] = np.round(np.std(sort_cratio_pool, axis = 0), d)
+df["est_std_count_ratio"] = np.round(mad(sort_cratio_pool, axis = 0)/0.6745, d)
+
+df.index = grps
+
+df.to_csv("/home/wanglab/Desktop/ratio_stats.csv")
