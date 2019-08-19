@@ -21,19 +21,23 @@ data = pckl.load(open(pth, "rb"), encoding = "latin1")
 #set dst 
 dst = "/home/wanglab/Desktop"
 
-thal_density_per_brain = data["thal_density_per_brain"]
+#mask to remove
+curated_brains = [False, True, True, False, False, False, True, False, True, False, True, True, False, False, 
+                  False, False, True, False, True, False, True, False, True]
+
+thal_density_per_brain = data["thal_density_per_brain"][curated_brains]
 lbls = data["nc_lbls"]
 nc_brains = data["nc_brainnames"]
-thal_brains = data["thal_brainnames"]
+thal_brains = data["thal_brainnames"][curated_brains]
 nc_density_per_brain = data["nc_density_per_brain"]
-mean_thal_density_per_brain = data["mean_thal_density_per_brain"]
-mean_nc_density_per_brain = data["mean_nc_density_per_brain"]
-std_thal_density_per_brain = data["std_thal_density_per_brain"]
-std_nc_density_per_brain = data["std_nc_density_per_brain"]
+mean_thal_density_per_brain = np.mean(thal_density_per_brain, axis=0)
+mean_nc_density_per_brain = np.mean(nc_density_per_brain, axis=0)
+std_thal_density_per_brain = np.std(thal_density_per_brain, axis=0)
+std_nc_density_per_brain = np.std(nc_density_per_brain, axis=0)
 
 #-----------------------------------------------------------------------------------------------------------------------------
 ## display
-fig = plt.figure(figsize=(15, 5))
+fig = plt.figure(figsize=(10, 5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 show = np.flipud(thal_density_per_brain.T)
@@ -65,13 +69,12 @@ for ri,row in enumerate(show):
 
 # aesthetics
 ax.set_xticks(np.arange(len(thal_brains))+.5)
-thal_brains = np.asarray(thal_brains)
-ax.set_xticklabels(thal_brains, rotation=30, fontsize=6, ha="right")
+ax.set_xticklabels(np.asarray(thal_brains), rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(lbls))+.5)
 ax.set_yticklabels(np.flipud(np.asarray(lbls)), fontsize="x-small")
 ax.set_ylabel("Thalamic 'disynaptic' timepoint", fontsize="x-small")
-ax.yaxis.set_label_coords(-0.2,0.5)
+ax.yaxis.set_label_coords(-0.3,0.5)
 
 plt.savefig(os.path.join(dst,"nc_density_at_thalamic_timepoint.pdf"), bbox_inches = "tight")
 
