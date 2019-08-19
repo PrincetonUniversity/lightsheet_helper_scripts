@@ -169,39 +169,39 @@ df = df.append(df_stats.T)
 
 df.to_csv(os.path.join(dst, "disynaptic.csv"))
 
-#%%
+
 #-----------------------------------------------------------------------------------------------------------------------------
 
-fig = plt.figure(figsize=(10,5))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-#linear regression - not useful
-Y = np.sort(mean_nc_density_per_brain)[:-1]
-X = mean_thal_density_per_brain[np.argsort(mean_nc_density_per_brain)][:-1]
-strcs = np.asarray(lbls)[np.argsort(mean_nc_density_per_brain)][:-1]
-results = sm.OLS(Y,sm.add_constant(X)).fit()
-
-mean_slope = results.params[0]
-mean_r2 = results.rsquared
-mean_intercept = results.params[1]
-#plot as scatter
-#make them all different colors
-color_map = ["dimgray", "rosybrown", "darkred", "tomato", "chocolate", "orange", "gold", "olive", "darkseagreen", "springgreen", "teal",
-             "darkturquoise", "steelblue", "navy", "indigo", "crimson", "deeppink"]
-
-size = 30
-for i in range(len(X)):
-    ax.scatter(y = Y[i], x = X[i], s = size, label = strcs[i], c = color_map[i])
+#fig = plt.figure(figsize=(10,5))
+#ax = fig.add_axes([.4,.1,.5,.8])
 #
-X = range(0, 30)
-ax.plot(X, X*mean_slope + mean_intercept, "--r", label = "Slope={}\n$R^2$={}".format(round(mean_slope, 2), 
-                   round(mean_r2, 2)))
-
- 
-ax.set_ylim([0, 500])
-ax.set_xticks(np.arange(0, 30, 2))
-#ax.set_xlim([0, 100])
-ax.set_ylabel("Average neocortical densities at neocortical timepoint")
-ax.set_xlabel("Average neocortical densities at thalamic timepoint")
-plt.legend(prop={'size': 10}, bbox_to_anchor=(1,1), loc='upper left', ncol=1)
-plt.savefig(os.path.join(dst, "disynaptic.pdf"), bbox_inches = "tight")
+##linear regression - not useful
+#Y = np.sort(mean_nc_density_per_brain)
+#X = mean_thal_density_per_brain[np.argsort(mean_nc_density_per_brain)][:-1]
+#strcs = np.asarray(lbls)[np.argsort(mean_nc_density_per_brain)][:-1]
+#results = sm.OLS(Y,sm.add_constant(X)).fit()
+#
+#mean_slope = results.params[0]
+#mean_r2 = results.rsquared
+#mean_intercept = results.params[1]
+##plot as scatter
+##make them all different colors
+#color_map = ["dimgray", "rosybrown", "darkred", "tomato", "chocolate", "orange", "gold", "olive", "darkseagreen", "springgreen", "teal",
+#             "darkturquoise", "steelblue", "navy", "indigo", "crimson", "deeppink"]
+#
+#size = 30
+#for i in range(len(X)):
+#    ax.scatter(y = Y[i], x = X[i], s = size, label = strcs[i], c = color_map[i])
+##
+#X = range(0, 30)
+#ax.plot(X, X*mean_slope + mean_intercept, "--r", label = "Slope={}\n$R^2$={}".format(round(mean_slope, 2), 
+#                   round(mean_r2, 2)))
+#
+# 
+#ax.set_ylim([0, 500])
+#ax.set_xticks(np.arange(0, 30, 2))
+##ax.set_xlim([0, 100])
+#ax.set_ylabel("Average neocortical densities at neocortical timepoint")
+#ax.set_xlabel("Average neocortical densities at thalamic timepoint")
+#plt.legend(prop={'size': 10}, bbox_to_anchor=(1,1), loc='upper left', ncol=1)
+#plt.savefig(os.path.join(dst, "disynaptic.pdf"), bbox_inches = "tight")
