@@ -6,7 +6,7 @@ Created on Fri May 17 18:21:39 2019
 @author: wanglab
 """
 
-from lightsheet.network_analysis import make_structure_objects
+from tools.analysis.network_analysis import make_structure_objects
 import statsmodels.api as sm
 import matplotlib as mpl
 import matplotlib.pyplot as plt

@@ -21,6 +21,14 @@ data = pckl.load(open(main_data_pth, "rb"), encoding = "latin1")
 inj_pth = "/jukebox/wang/zahra/modeling/h129/thalamus/data.p"
 inj_dct = pckl.load(open(inj_pth, "rb"), encoding = "latin1")
 
+#inj volumes
+inj_vol_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_inj_vol.p" 
+inj_vol_dct = pckl.load(open(inj_vol_pth, "rb"), encoding = "latin1")
+inj_vol = inj_vol_dct["inj_vol"]
+iv = []
+for k,v in inj_vol.items():
+    iv.append(v)
+
 #set dst 
 sv_dst = "/home/wanglab/Desktop"
 
@@ -34,6 +42,9 @@ brains = inj_dct["brainnames"]
 primary_pool = inj_dct["primary_pool"]
 ak_pool = inj_dct["cb_regions_pool"]
 inj = inj_dct["expr_all_as_frac_of_inj_pool"]
+scale = 0.020 #mm/voxel
+#calculate mm^3
+vols = [round(xx*(scale**3),1) for xx in iv]
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 #preprocessing
@@ -84,6 +95,7 @@ sort_dratio = _dratio.T[np.argsort(_dist, axis = 0)]
 
 sort_inj = _inj[np.argsort(_dist)]   
 sort_brains = np.array(lr_brains)[np.argsort(_dist)]
+sort_vols = np.array(vols)[np.argsort(_dist)]/10000 #10^5
 
 print(sort_dist.shape)
 print(sort_cratio.shape)
@@ -101,8 +113,8 @@ sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2,0.8,0.8,0.8,0.5]})
+fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,0.5,0.8,0.8,0.8,0.5]})
 
 
 #set colormap specs
@@ -131,7 +143,42 @@ cb.ax.set_visible(False)
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
 
+#inj vols
 ax = axes[1]
+
+show = np.asarray([sort_vols])
+
+vmin = 0
+vmax = 8
+cmap = plt.cm.Greens 
+cmap.set_over('darkgreen')
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
+                  boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("$mm^3$", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col < 6:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", 
+                    ha="center", va="center", fontsize="x-small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", 
+                    ha="center", va="center", fontsize="x-small")
+
+ylabel = ["Injection volume\n($10^5$ $mm^3$)"]
+ax.set_yticks(np.arange(len(ylabel))+.5)
+ax.set_yticklabels(ylabel, fontsize="x-small")
+
+ax = axes[2]
 show = sort_dcontra_pool.T
 yaxis = grps
 
@@ -145,7 +192,7 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.8, aspect=10)
+                  format="%0.1f", shrink=1.5, aspect=10)
 cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
@@ -164,7 +211,7 @@ ax.set_yticklabels(yaxis, fontsize="x-small")
 ax.set_ylabel("Contra", fontsize="small")
 ax.yaxis.set_label_coords(-0.25,0.5)
 
-ax = axes[2]
+ax = axes[3]
 show = sort_dipsi_pool.T
 yaxis = grps
 
@@ -178,7 +225,7 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.8, aspect=10)
+                  format="%0.1f", shrink=1.5, aspect=10)
 cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(False)
@@ -198,7 +245,7 @@ ax.set_ylabel("Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(-0.25,0.5)
 
 
-ax = axes[3]
+ax = axes[4]
 show = sort_dratio_pool.T
 yaxis = grps
 
@@ -231,7 +278,7 @@ ax.set_yticklabels(yaxis, fontsize="x-small")
 ax.set_ylabel("Contra/Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(-0.25,0.5)
 
-ax = axes[4]
+ax = axes[5]
 show = np.asarray([sort_dist])
 br = lr_brains 
 
@@ -267,13 +314,11 @@ ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
 plt.savefig(os.path.join(sv_dst, "thal_density_ratios.pdf"), bbox_inches = "tight")
+#%%
 #-------------------------------------------------------------------------------------------------------------------------------------
-
-
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2,0.8,0.8,0.8,0.5]})
-
+fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,0.4,0.8,0.8,0.8,0.5]})
 
 #set colormap specs
 vmaxcounts = 150
@@ -301,7 +346,42 @@ cb.ax.set_visible(False)
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
 
+#inj vols
 ax = axes[1]
+
+show = np.asarray([sort_vols])
+
+vmin = 0
+vmax = 8
+cmap = plt.cm.Greens 
+cmap.set_over('darkgreen')
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
+                  boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("$mm^3$", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col < 6:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", 
+                    ha="center", va="center", fontsize="x-small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", 
+                    ha="center", va="center", fontsize="x-small")
+
+ylabel = ["Injection volume\n($10^5$ $mm^3$)"]
+ax.set_yticks(np.arange(len(ylabel))+.5)
+ax.set_yticklabels(ylabel, fontsize="x-small")
+
+ax = axes[2]
 show = sort_ccontra_pool.T
 yaxis = grps
 
@@ -315,7 +395,7 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%d", shrink=0.8, aspect=10)
+                  format="%d", shrink=1.5, aspect=10)
 cb.set_label("Cell count", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
@@ -338,7 +418,7 @@ ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "tha
 ax.set_ylabel("Contra", fontsize="small")
 ax.yaxis.set_label_coords(-0.25,0.5)
 
-ax = axes[2]
+ax = axes[3]
 show = sort_cipsi_pool.T
 yaxis = grps
 
@@ -376,7 +456,7 @@ ax.set_ylabel("Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(-0.25,0.5)
 
 
-ax = axes[3]
+ax = axes[4]
 show = sort_cratio_pool.T
 yaxis = grps
 
@@ -413,7 +493,7 @@ ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "tha
 ax.set_ylabel("Contra/Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(-0.25,0.5)
 
-ax = axes[4]
+ax = axes[5]
 show = np.asarray([sort_dist])
 br = lr_brains 
 

@@ -6,16 +6,12 @@ Created on Thu May 23 13:38:57 2019
 @author: wanglab
 """
 
-import sys
-sys.path.append("/jukebox/wang/zahra/python/lightsheet_helper_scripts")
-from lightsheet.network_analysis import make_structure_objects
-from scipy.stats import spearmanr
+from tools.analysis.network_analysis import make_structure_objects
 import statsmodels.api as sm
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np, os, pickle as pckl, pandas as pd
 from skimage.external import tifffile
-import seaborn as sns
 
 #custom
 inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/injection_sites"
