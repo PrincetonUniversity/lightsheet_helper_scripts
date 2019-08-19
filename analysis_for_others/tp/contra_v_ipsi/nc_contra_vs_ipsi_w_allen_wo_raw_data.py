@@ -124,8 +124,8 @@ sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (15,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [1.5,0.3,1,1,1,0.3]})
+fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (15,6), sharex = True, 
+                         gridspec_kw = {"wspace":0, "hspace":0,"height_ratios": [1.5,0.3,1,1,1,0.3]})
 
 #set colormap specs
 vmaxcount = 500
@@ -144,7 +144,8 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
+                  boundaries=bounds, format="%d", 
                   shrink=0.9, aspect=5)
 cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
@@ -166,7 +167,8 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
+                  boundaries=bounds, format="%d", 
                   shrink=0.9, aspect=5)
 cb.set_label("$mm^3$", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
@@ -332,11 +334,11 @@ ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
 plt.savefig(os.path.join(sv_dst, "nc_density_ratios.pdf"), bbox_inches = "tight")
-#%%
+
 #-------------------------------------------------------------------------------------------------------------------------------------
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (15,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [1.5,0.3,1,1,1,0.3]})
+fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (15,6), sharex = True, gridspec_kw = 
+                         {"wspace":0, "hspace":0, "height_ratios": [1.5,0.3,1,1,1,0.3]})
 
 #inj fractions
 ax = axes[0]
@@ -352,7 +354,8 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
+                  boundaries=bounds, format="%d", 
                   shrink=0.9, aspect=5)
 cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
@@ -374,7 +377,8 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
+                  boundaries=bounds, format="%d", 
                   shrink=0.9, aspect=5)
 cb.set_label("$mm^3$", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
@@ -407,8 +411,8 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%d", shrink=0.8, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
+                  boundaries=bounds, format="%d", shrink=0.8, aspect=10)
 cb.set_label("Cell count", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
