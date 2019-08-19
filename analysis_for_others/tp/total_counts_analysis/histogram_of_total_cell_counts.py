@@ -16,7 +16,7 @@ structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_tab
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 dst = "/home/wanglab/Desktop"
-#%%
+
 #nc
 nc_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/nc_dataframe_no_prog_at_each_level.p"
 thal_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/dataframe_no_prog_at_each_level.p"
@@ -105,7 +105,7 @@ thal_sois = ["Ventral group of the dorsal thalamus", "Subparafascicular nucleus"
           "Epithalamus"]
 
 thal_brains, thal_counts_per_brain = get_counts_from_pickle(thal_pth, thal_sois)
-#%%
+
 #nc
 fig = plt.figure()
 ax = fig.add_axes([.4,.1,.5,.8])
@@ -132,7 +132,7 @@ ax.set_xlabel("Thalamic cell counts")
 
 plt.savefig(os.path.join(dst, "thal_histogram.pdf"), bbox_inches = "tight")
 
-#%%
+
 df = pd.DataFrame()
 
 est_std = 0.6745 #normal mad to get estimated standard dev
