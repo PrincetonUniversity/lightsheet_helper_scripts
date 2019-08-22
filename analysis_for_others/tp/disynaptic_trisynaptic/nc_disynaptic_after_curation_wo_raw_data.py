@@ -21,7 +21,7 @@ data = pckl.load(open(pth, "rb"), encoding = "latin1")
 #set dst 
 dst = "/home/wanglab/Desktop"
 
-#mask to remove
+#mask to remove sandy brains
 curated_brains = [False, True, True, False, False, False, True, False, True, False, True, True, False, False, 
                   False, False, True, False, True, False, True, False, True]
 
