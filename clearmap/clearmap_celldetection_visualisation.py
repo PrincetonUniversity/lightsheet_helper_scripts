@@ -10,7 +10,6 @@ from skimage.external import tifffile as tif
 from skimage.morphology import ball
 from scipy.ndimage.interpolation import zoom
 import matplotlib.pyplot as plt, numpy as np, cv2, os, pandas as pd
-from collections import Counter
 import matplotlib.colors
 from matplotlib.backends.backend_pdf import PdfPages
 

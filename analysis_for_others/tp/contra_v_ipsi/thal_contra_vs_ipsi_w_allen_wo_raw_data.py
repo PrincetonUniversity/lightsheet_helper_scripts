@@ -28,6 +28,7 @@ inj_vol = inj_vol_dct["inj_vol"]
 iv = []
 for k,v in inj_vol.items():
     iv.append(v)
+vols = [xx/1e9 for xx in iv]
 
 #set dst 
 sv_dst = "/home/wanglab/Desktop"
@@ -42,9 +43,6 @@ brains = inj_dct["brainnames"]
 primary_pool = inj_dct["primary_pool"]
 ak_pool = inj_dct["cb_regions_pool"]
 inj = inj_dct["expr_all_as_frac_of_inj_pool"]
-scale = 0.020 #mm/voxel
-#calculate mm^3
-vols = [round(xx*(scale**3),1) for xx in iv]
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 #preprocessing
@@ -95,7 +93,7 @@ sort_dratio = _dratio.T[np.argsort(_dist, axis = 0)]
 
 sort_inj = _inj[np.argsort(_dist)]   
 sort_brains = np.array(lr_brains)[np.argsort(_dist)]
-sort_vols = np.array(vols)[np.argsort(_dist)]/10000 #10^5
+sort_vols = np.array(vols)[np.argsort(_dist)]
 
 print(sort_dist.shape)
 print(sort_cratio.shape)
@@ -174,7 +172,7 @@ for ri,row in enumerate(show):
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", 
                     ha="center", va="center", fontsize="x-small")
 
-ylabel = ["Injection volume\n($10^5$ $mm^3$)"]
+ylabel = ["Injection volume\n($10^9$ voxels)"]
 ax.set_yticks(np.arange(len(ylabel))+.5)
 ax.set_yticklabels(ylabel, fontsize="x-small")
 
@@ -377,7 +375,7 @@ for ri,row in enumerate(show):
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", 
                     ha="center", va="center", fontsize="x-small")
 
-ylabel = ["Injection volume\n($10^5$ $mm^3$)"]
+ylabel = ["Injection volume\n($10^9$ voxels)"]
 ax.set_yticks(np.arange(len(ylabel))+.5)
 ax.set_yticklabels(ylabel, fontsize="x-small")
 
