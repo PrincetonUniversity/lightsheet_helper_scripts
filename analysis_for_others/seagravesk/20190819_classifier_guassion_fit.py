@@ -151,7 +151,7 @@ for i in range(len(xprof)):
         plt.xlabel('Distance (pixels)')
         plt.ylabel('Intensity')
     except:
-        print(xprof[i])
+        print(i, xprof[i])
 plt.show()
 
 #%%
