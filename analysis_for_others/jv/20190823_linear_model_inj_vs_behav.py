@@ -12,14 +12,18 @@ df_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis
 
 df = pd.read_csv(df_pth)
 
-df = df[df.Region == "Lobule VI"]
+#set variables
+df = df[df.Region == "Lobule VI"] #dreadds only
 inj = np.asarray([df.lobvi.values, df.lobvii.values, df.crus1.values, df.crus2.values]).T
 bh = np.asarray([df["InitialReversal"], df["Multisession Reversal"], df["FinalReversal"], df["ForcedReversal"]]).T
 X = inj
 Y = bh
+
+#labels
 regions = ["Lob. VI", "Lob. VII", "Crus I", "Crus II"]
 bhn = ["Initial Reversal", "Multisession Reversal", "Final Reversal", "Forced Reversal"]
 
+#change destination here
 dst = "/home/wanglab/Desktop"
 c_mat = []
 mat = []
