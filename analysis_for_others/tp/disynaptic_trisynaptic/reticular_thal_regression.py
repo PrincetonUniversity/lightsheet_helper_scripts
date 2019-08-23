@@ -108,7 +108,8 @@ def get_counts_from_pickle(pth, sois, structures, df_pth = "/jukebox/LightSheetT
 
     return brains, cell_counts_per_brain, density_per_brain
 
-thal_sois = ["Reticular nucleus of the thalamus"]
+thal_sois = ["Reticular nucleus of the thalamus", "Ventral posterolateral nucleus of the thalamus",
+        "Ventral posteromedial nucleus of the thalamus"]
 
 thal_brains, thal_counts_per_brain, thal_density_per_brain = get_counts_from_pickle(thal_pth, thal_sois, structures)
 nc_brains, thalnc_counts_per_brain, thalnc_density_per_brain = get_counts_from_pickle(nc_pth, thal_sois, structures)
@@ -135,100 +136,103 @@ nc_vermis = np.asarray([True if xx==0 or xx==1 or xx==2 or xx==4 else False for 
 
 #%%
 vermis = True
+thal_lbls = ["RTN", "VPL", "VPM"]
 #thalamus
 fig = plt.figure(figsize=(10,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
-if vermis:
-    #linear regression
-    c = np.squeeze(nct_density_per_brain)[thal_vermis]
-    X = np.sort(c)
-    Y = np.squeeze(thal_density_per_brain)[thal_vermis][np.argsort(c)]
-else:
-    c = np.squeeze(nct_density_per_brain)
-    X = np.sort(c)
-    Y = np.squeeze(thal_density_per_brain)[np.argsort(c)]
-    
-Xlabels = np.array(thal_brains)[thal_vermis][np.argsort(c)]
-results = sm.OLS(Y,sm.add_constant(X)).fit()
-
-mean_slope = results.params[1]
-mean_r2 = results.rsquared
-mean_intercept = results.params[0]
-
-#plot as scatter   
+#size of scatter
 size = 70
-ax.scatter(y = Y, x = X, s = size, color = "red")
 
-#plot fit line
-#ax.plot(mean_slope*range(50)+mean_intercept, '--k')
+for i in range(thal_density_per_brain.shape[1]):    
+    if vermis:
+        #linear regression
+        c = np.squeeze(nct_density_per_brain)[thal_vermis]
+        X = np.sort(c)
+        Y = np.squeeze(thal_density_per_brain[:,i])[thal_vermis][np.argsort(c)]
+    else:
+        c = np.squeeze(nct_density_per_brain)
+        X = np.sort(c)
+        Y = np.squeeze(thal_density_per_brain[:,i])[np.argsort(c)]
+        
+    Xlabels = np.array(thal_brains)[thal_vermis][np.argsort(c)]
+    results = sm.OLS(Y,sm.add_constant(X)).fit()
     
-lbls = Xlabels
-#only show some labels 
-#lbls = (np.zeros(Xlabels.shape)).astype('<U34')
-#lbls[-5:] = Xlabels[-5:]
-#lbls = ["" if xx=="0.0" else xx for xx in lbls]
+    mean_slope = results.params[1]
+    mean_r2 = results.rsquared
+    mean_intercept = results.params[0]
+    
+    #plot as scatter   
+    ax.scatter(y = Y, x = X, s = size, label=thal_lbls[i])
+    lbls = Xlabels
 
 for i, txt in enumerate(lbls):
     ax.annotate(txt, (X[i], Y[i]), fontsize = "x-small")
+
+#plot fit line
+#ax.plot(mean_slope*range(50)+mean_intercept, '--k')    
     
 ytick_spacing = 20; xtick_spacing = 2
 ax.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
 ax.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
 ax.set_xlim([0, 50])
 ax.set_xlabel("Total neocortical density at thalamic timepoint")
-ax.set_ylabel("Reticular nucleus density")
-
+ax.set_ylabel("Thalamic nucleus density")
+ax.legend(loc="upper left")
 textstr = "\n".join((
     "slope: {:0.2f}".format(mean_slope),
     "$R^2$: {:0.2f}".format(mean_r2)))
 
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 # place a text box in upper left in axes coords
-ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
-        verticalalignment='top', bbox=props)
+#ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+#        verticalalignment='top', bbox=props)
 
 plt.savefig(os.path.join(dst, "thal_disynaptic.pdf"), bbox_inches = "tight")
 
 #%%
 #neocortex
 #linear regression
-if vermis:
-    c = np.squeeze(nc_density_per_brain)[nc_vermis]
-    X = np.sort(c)
-    Y = np.squeeze(thalnc_density_per_brain)[nc_vermis][np.argsort(c)]
-else:
-    c = np.squeeze(nc_density_per_brain)
-    X = np.sort(c)
-    Y = np.squeeze(thalnc_density_per_brain)[np.argsort(c)]
-    
-Xlabels = np.array(nc_brains)[nc_vermis][np.argsort(c)]
-results = sm.OLS(Y,sm.add_constant(X)).fit()
-
-mean_slope = results.params[1]
-mean_r2 = results.rsquared
-mean_intercept = results.params[0]
 
 fig = plt.figure(figsize=(10,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
-#plot as scatter   
-size = 40
-ax.scatter(y = Y, x = X, s = size, color = "red")
+for i in range(thal_density_per_brain.shape[1]):    
+
+    if vermis:
+        c = np.squeeze(nc_density_per_brain)[nc_vermis]
+        X = np.sort(c)
+        Y = np.squeeze(thalnc_density_per_brain[:,i])[nc_vermis][np.argsort(c)]
+    else:
+        c = np.squeeze(nc_density_per_brain)
+        X = np.sort(c)
+        Y = np.squeeze(thalnc_density_per_brain[:,i])[np.argsort(c)]
+        
+    Xlabels = np.array(nc_brains)[nc_vermis][np.argsort(c)]
+    results = sm.OLS(Y,sm.add_constant(X)).fit()
+    
+    mean_slope = results.params[1]
+    mean_r2 = results.rsquared
+    mean_intercept = results.params[0]
+    
+    #plot as scatter   
+    size = 40
+    ax.scatter(y = Y, x = X, s = size, label=thal_lbls[i])
 
 ytick_spacing = 100; xtick_spacing = 20
 ax.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
 ax.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
 ax.set_xlim([0, 300])
 ax.set_xlabel("Total neocortical density at neocortical timepoint")
-ax.set_ylabel("Reticular nucleus density")
+ax.set_ylabel("Thalamic nucleus density")
+ax.legend(loc="upper left")
 
 textstr = "\n".join((
     "slope: {:0.2f}".format(mean_slope),
     "$R^2$: {:0.2f}".format(mean_r2)))
 
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
-        verticalalignment='top', bbox=props)
+#ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+#        verticalalignment='top', bbox=props)
 
 plt.savefig(os.path.join(dst, "nc_disynaptic.pdf"), bbox_inches = "tight")
