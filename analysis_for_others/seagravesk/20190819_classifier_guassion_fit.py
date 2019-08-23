@@ -6,10 +6,19 @@ Created on Mon Aug 19 17:22:36 2019
 @author: wanglab
 """
 
-import pickle, numpy as np, matplotlib.pyplot as plt, os
+import pickle, numpy as np, matplotlib.pyplot as plt, os, matplotlib.ticker as ticker
+from matplotlib.backends.backend_pdf import PdfPages
 from scipy.optimize import curve_fit
 from scipy import asarray as ar
 
+"""
+You could try to use something like scipy.optimize.curve_fit to fit a 3D Gaussian, 
+then calculate a chi^2 to assess the goodness of fit. You could see if there is a threshold in chi^2 
+above which most of the edge cells lie and below which the human annotated cells lie.
+What might be easier is seeing if there is a threshold in the width of the Gaussian that you fit.
+"""
+ 
+ 
 src = "/jukebox/wang/zahra/kelly_cell_detection_analysis"
 ecells = os.path.join(src, "edge_cells.p")
 
@@ -131,9 +140,26 @@ norm_x_mean = np.nanmean(norm_x, axis = 0)
 
 #%%
 
-for i in range(len(xprof)):
+dst = "/home/wanglab/Desktop/"
+typ = "edge"
+
+if typ == "cell":
+    type_cell = yprof
+    dst = os.path.join(dst, "{}_guassian_fit_cell_profiles.pdf".format(type_cell))
+else:
+    type_cell = yprof_e
+    dst = os.path.join(dst, "{}_guassian_fit_edge_profiles.pdf".format(type_cell))
+
+
+pdf_pages = PdfPages(dst) #compiles into multiple pdfs
+
+
+for i in range(len(type_cell)):
     try:
-        prof = xprof[i][5:15]
+        fig = plt.figure(figsize=(8,4))
+        ax = fig.add_axes([.4,.1,.5,.8])
+        
+        prof = type_cell[i][7:14]
         x = ar(range(len(prof)))
         y = prof
         
@@ -145,14 +171,35 @@ for i in range(len(xprof)):
             return a * np.exp(-(x - x0)**2 / (2 * sigma**2))
         
         popt,pcov = curve_fit(Gauss, x, y, p0=[max(y), mean, sigma])
+        c = Gauss(x, *popt)
         
-        plt.plot(x, y, 'b+:', label='data')
-        plt.plot(x, Gauss(x, *popt), 'r-', label='fit')
-        plt.xlabel('Distance (pixels)')
-        plt.ylabel('Intensity')
+        textstr = "\n".join((
+                  "width (px): {:0.1f}".format(max(c)-min(c)),
+                  "left minima: {}".format(prof[0]),
+                  "right minima: {}".format(prof[len(prof)-1])))
+        
+        ax.plot(x, y, 'b+:', label='data')
+        ax.plot(x, c, 'r-', label='fit')
+        props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+        # place a text box in upper left in axes coords
+        ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=10,
+        verticalalignment='top', bbox=props)
+        
+        ytick_spacing = 100; xtick_spacing = 1
+        ax.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
+        ax.set_ylim([min(prof)-50, max(prof)+50])
+        ax.set_xlim([0, 6])
+        ax.set_xlabel('Distance (pixels)')
+        ax.set_ylabel('Intensity')
+        
+        pdf_pages.savefig(dpi = 300, bbox_inches = 'tight') 
+        plt.close()
     except:
-        print(i, xprof[i])
-plt.show()
+        print(i, type_cell[i])
+
+#write PDF document contains all points
+pdf_pages.close()
 
 #%%
 
