@@ -7,7 +7,7 @@ Created on Fri May 17 18:21:39 2019
 """
 
 import matplotlib as mpl
-import matplotlib.pypl ot as plt
+import matplotlib.pyplot as plt
 import numpy as np, os, pickle as pckl
 
 #imports
@@ -43,7 +43,7 @@ show = np.flipud(mat) # NOTE abs
 #tp local
 tp = True
 if tp:
-    dst = "/Users/tjp7rr1/Downloads"
+#    dst = "/Users/tjp7rr1/Downloads"
     vmin = 0
     vmax = 4.01
     cmap = plt.cm.Blues#plt.cm.Reds
@@ -86,7 +86,7 @@ for ri,row in enumerate(c_mat):
             ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
 
 # signif
-sig = np.flipud(pmat) < .05#/np.size(pmat)
+sig = np.flipud(pmat) < .1#/np.size(pmat)
 p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
 null = (p_shuf_pos < .05).sum(axis=(1,2))
 nullmean = null.mean()

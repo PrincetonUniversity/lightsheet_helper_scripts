@@ -6,7 +6,8 @@ Created on Mon Aug 19 14:59:54 2019
 @author: wanglab
 """
 
-import statsmodels.api as sm, os
+import statsmodels.api as sm, os, sys
+#sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 import pickle, numpy as np, pandas as pd, matplotlib.pyplot as plt, matplotlib.ticker as ticker
 from tools.analysis.network_analysis import make_structure_objects
 
@@ -121,7 +122,7 @@ thal_brains, nct_counts_per_brain, nct_density_per_brain = get_counts_from_pickl
 nc_brains, nc_counts_per_brain, nc_density_per_brain = get_counts_from_pickle(nc_pth, nc_sois, structures)
 
 #mask to remove sandy brains
-curated_brains = [False, True, True, False, False, False, True, False, True, False, True, True, False, False, 
+curated_brains = [False, True, False, False, False, False, False, False, True, False, True, True, False, False, 
                   False, False, True, False, True, False, True, False, True]
 
 #sort vermis brains only
@@ -134,7 +135,7 @@ thal_brains = np.array(thal_brains)[curated_brains]
 primary_pool = nc_data["primary_pool"]
 nc_vermis = np.asarray([True if xx==0 or xx==1 or xx==2 or xx==4 else False for xx in primary_pool]) #mask for vermis and crus brains
 
-#%%
+
 vermis = True
 thal_lbls = ["RTN", "VPL", "VPM"]
 #thalamus
@@ -175,7 +176,7 @@ for i, txt in enumerate(lbls):
 ytick_spacing = 20; xtick_spacing = 2
 ax.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
 ax.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
-ax.set_xlim([0, 50])
+ax.set_xlim([0, 15])
 ax.set_xlabel("Total neocortical density at thalamic timepoint")
 ax.set_ylabel("Thalamic nucleus density")
 ax.legend(loc="upper left")
@@ -190,7 +191,7 @@ props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 
 plt.savefig(os.path.join(dst, "thal_disynaptic.pdf"), bbox_inches = "tight")
 
-#%%
+
 #neocortex
 #linear regression
 
