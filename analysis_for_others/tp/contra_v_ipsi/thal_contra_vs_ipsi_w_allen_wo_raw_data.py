@@ -33,17 +33,21 @@ vols = [xx/1e9 for xx in iv]
 #set dst 
 sv_dst = "/home/wanglab/Desktop"
 
-cell_counts_per_brain_left = data["cell_counts_per_brain_left"]
-cell_counts_per_brain_right = data["cell_counts_per_brain_right"]
-density_per_brain_left = data["density_per_brain_left"]
-density_per_brain_right = data["density_per_brain_right"]
+#mask unwanted brains - dropping fast spreading ones and a low count one
+curated_brains = [True, False, False, True, True, True, False, True, True, True, True, True,
+                   True, True, True, True, True, True, True, True, True, True, True]
+
+cell_counts_per_brain_left = data["cell_counts_per_brain_left"][curated_brains]
+cell_counts_per_brain_right = data["cell_counts_per_brain_right"][curated_brains]
+density_per_brain_left = data["density_per_brain_left"][curated_brains]
+density_per_brain_right = data["density_per_brain_right"][curated_brains]
 lr_dist = data["lr_dist"]
 
-brains = inj_dct["brainnames"]
-primary_pool = inj_dct["primary_pool"]
+brains = np.array(inj_dct["brainnames"])[curated_brains]
+primary_pool = inj_dct["primary_pool"][curated_brains]
 ak_pool = inj_dct["cb_regions_pool"]
-inj = inj_dct["expr_all_as_frac_of_inj_pool"]
-
+inj = inj_dct["expr_all_as_frac_of_inj_pool"][curated_brains]
+#%%
 #-------------------------------------------------------------------------------------------------------------------------------------
 #preprocessing
 thal_left_counts = cell_counts_per_brain_left
@@ -51,8 +55,8 @@ thal_right_counts = cell_counts_per_brain_right
 thal_density_left = density_per_brain_left
 thal_density_right = density_per_brain_right
 
-lrv = list(lr_dist.values())
-lr_brains = list(lr_dist.keys())
+lrv = np.array(list(lr_dist.values()))[curated_brains]
+lr_brains = np.array(list(lr_dist.keys()))[curated_brains]
 
 _ccontra = []; _cipsi = []; _dcontra = []; _dipsi = []
 for i in range(len(lr_brains)):
@@ -77,7 +81,7 @@ _cipsi = np.asarray(_cipsi).T; _dipsi = np.asarray(_dipsi).T
 _dratio = np.asarray([_dcontra[i]/_dipsi[i] for i in range(len(_dcontra))])
 _cratio = np.asarray([_ccontra[i]/_cipsi[i] for i in range(len(_ccontra))])
 #make into one
-_dist = np.asarray(list(lr_dist.values()))
+_dist = lrv
  
 _inj = np.asarray([inj[i] for i in range(len(inj)) if brains[i] in lr_brains])
 _primary_pool = np.asarray([primary_pool[i] for i in range(len(primary_pool)) if brains[i] in lr_brains])
@@ -116,7 +120,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (10,4), sharex = True, 
 
 
 #set colormap specs
-vmaxcounts = 150
+vmaxcounts = 120
 whitetext = 30
 
 #inj fractions
@@ -313,6 +317,7 @@ ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
 plt.savefig(os.path.join(sv_dst, "thal_density_ratios.pdf"), bbox_inches = "tight")
 
+#%%
 #-------------------------------------------------------------------------------------------------------------------------------------
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
