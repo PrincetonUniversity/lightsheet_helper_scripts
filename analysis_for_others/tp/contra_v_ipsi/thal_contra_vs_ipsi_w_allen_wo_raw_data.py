@@ -47,7 +47,7 @@ brains = np.array(inj_dct["brainnames"])[curated_brains]
 primary_pool = inj_dct["primary_pool"][curated_brains]
 ak_pool = inj_dct["cb_regions_pool"]
 inj = inj_dct["expr_all_as_frac_of_inj_pool"][curated_brains]
-#%%
+
 #-------------------------------------------------------------------------------------------------------------------------------------
 #preprocessing
 thal_left_counts = cell_counts_per_brain_left
@@ -86,18 +86,20 @@ _dist = lrv
 _inj = np.asarray([inj[i] for i in range(len(inj)) if brains[i] in lr_brains])
 _primary_pool = np.asarray([primary_pool[i] for i in range(len(primary_pool)) if brains[i] in lr_brains])
 
-#sort by distathale
-sort_dist = np.sort(_dist)
-sort_ccontra = _ccontra.T[np.argsort(_dist, axis = 0)]
-sort_cipsi = _cipsi.T[np.argsort(_dist, axis = 0)]
-sort_cratio = _cratio.T[np.argsort(_dist, axis = 0)]
-sort_dcontra = _dcontra.T[np.argsort(_dist, axis = 0)]
-sort_dipsi = _dipsi.T[np.argsort(_dist, axis = 0)]
-sort_dratio = _dratio.T[np.argsort(_dist, axis = 0)]
+#sort by injection fractions
+sort_primary = np.sort(primary_pool)
+sort_var = np.argsort(primary_pool, axis = 0)
+sort_inj = _inj[sort_var]
+sort_dist = _dist[sort_var]
+sort_ccontra = _ccontra.T[sort_var]
+sort_cipsi = _cipsi.T[sort_var]
+sort_cratio = _cratio.T[sort_var]
+sort_dcontra = _dcontra.T[sort_var]
+sort_dipsi = _dipsi.T[sort_var]
+sort_dratio = _dratio.T[sort_var]
 
-sort_inj = _inj[np.argsort(_dist)]   
-sort_brains = np.array(lr_brains)[np.argsort(_dist)]
-sort_vols = np.array(vols)[np.argsort(_dist)]
+sort_brains = np.array(lr_brains)[np.argsort(primary_pool)]
+sort_vols = np.array(vols)[np.argsort(primary_pool)]
 
 print(sort_dist.shape)
 print(sort_cratio.shape)
@@ -151,7 +153,7 @@ ax = axes[1]
 show = np.asarray([sort_vols])
 
 vmin = 0
-vmax = 8
+vmax = 12
 cmap = plt.cm.Greens 
 cmap.set_over('darkgreen')
 #colormap
@@ -169,7 +171,7 @@ cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 6:
+        if col < 10:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", 
                     ha="center", va="center", fontsize="x-small")
         else:
@@ -317,7 +319,7 @@ ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
 plt.savefig(os.path.join(sv_dst, "thal_density_ratios.pdf"), bbox_inches = "tight")
 
-#%%
+
 #-------------------------------------------------------------------------------------------------------------------------------------
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,

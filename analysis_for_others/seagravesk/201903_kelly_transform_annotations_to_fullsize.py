@@ -8,7 +8,6 @@ Created on Wed Mar 13 16:41:30 2019
 
 import os, numpy as np, sys, time
 from skimage.external import tifffile
-import pandas as pd
 sys.path.append("/jukebox/wang/zahra/lightsheet_copy")
 from tools.utils.io import makedir, load_memmap_arr, listall, load_kwargs
 from tools.registration.register import change_interpolation_order, transformix_command_line_call
@@ -17,17 +16,16 @@ from tools.registration.transform_cell_counts import get_fullsizedims_from_kwarg
 from scipy.ndimage.interpolation import zoom
 
 #setting paths
-ann = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans.tif"
+ann = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.nrrd"
 scratch_dir = "/jukebox/scratch/kellyms"
-pth = "/jukebox/wang/seagravesk/lightsheet/paths_to_all_lightsheet_registered_cfos_brains_20190311.csv"
+src = "/jukebox/wang/seagravesk/lightsheet/201908_cfos_left_side_only_registration"
 
 print(sys.argv)
 print(os.environ["SLURM_ARRAY_TASK_ID"])
 jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
 
 #list of brains    
-brains = pd.read_csv(pth, header = None)
-brains = list(brains[0])
+brains = [os.path.join(src, xx) for xx in os.listdir(src)]
 
 #set brain name
 brain = brains[jobid]
@@ -45,12 +43,8 @@ r2s0 = [xx for xx in listall(cellvol.inverse_elastixfld) if "reg2sig_TransformPa
 r2s1 = [xx for xx in listall(cellvol.inverse_elastixfld) if "reg2sig_TransformParameters.1" in xx and "cellch" in xx][0]
 
 #set destination directory
-if os.path.dirname(brain) == "/jukebox/wang/seagravesk/lightsheet/cfos_201810_ventral_up": 
-    braindst = os.path.join(scratch_dir, os.path.basename(brain)+"_ventral")
-    makedir(braindst)
-else: 
-    braindst = os.path.join(scratch_dir, os.path.basename(brain)+"_dorsal")
-    makedir(braindst)
+braindst = os.path.join(scratch_dir, os.path.basename(brain)+"_dorsal")
+makedir(braindst)
     
 aldst = os.path.join(braindst, "transformed_annotations"); makedir(aldst)
 
