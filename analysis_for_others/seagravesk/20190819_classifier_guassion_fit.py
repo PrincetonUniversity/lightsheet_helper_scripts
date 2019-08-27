@@ -190,6 +190,7 @@ df_e["x_diff_minima"] = diffsx_e; df_e["y_diff_minima"] = diffsy_e; df_e["z_diff
 
 df.to_csv(os.path.join(dst, "real_cell_stats.csv"))
 df_e.to_csv(os.path.join(dst, "edge_cell_stats.csv"))
+
 #%%
 
 typ = "edge"
