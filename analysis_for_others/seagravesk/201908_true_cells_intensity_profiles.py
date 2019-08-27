@@ -25,9 +25,7 @@ For example, should we take the three orthogonal vectors that pass through the v
 and do peak detection on those vectors?
 
 Number of cells in Volume 1: 126
-
 Number of cells in Volume 2: 165
-
 """
 
 src = "/jukebox/wang/seagravesk/lightsheet/man_label_cells_Kelly/In prog/complete"
@@ -44,7 +42,6 @@ roi_pths = [os.path.join(src, "171209_f37104_demons/171209_f37104_demonstrator_2
 
 #make dict of cell coordinates (IN FIJI TERMS) and profile(s)
 pnts_dct = {}
-
 
 for i, impth in enumerate(impths):
     
@@ -66,7 +63,7 @@ for i, impth in enumerate(impths):
         print(pntn)
         try:
             seg = vol[pnts[pntn, 0], pnts[pntn,1]-w:pnts[pntn,1]+w, pnts[pntn,2]-w:pnts[pntn,2]+w]
-            assert seg.shape[0] == seg.shape[1]
+#            assert seg.shape[0] == seg.shape[1]
             cell = np.zeros_like(seg)
             cell[int(cell.shape[0]/2), int(cell.shape[1]/2)] = 100
             
@@ -112,6 +109,7 @@ for i, impth in enumerate(impths):
             pdf_pages.savefig(dpi = 300, bbox_inches = 'tight') 
             plt.close()
             
+            print("saving...")
             #save profiles to dct
             dct["yprofile"] = yprofile
             dct["xprofile"] = xprofile
@@ -123,7 +121,6 @@ for i, impth in enumerate(impths):
             big_dct[tuple(pnts[pntn])] = dct
         
         except:
-            print("\n")
             print(pnts[pntn])
             print("\n a cell at edge of volume, disregard for now\n\n")
     

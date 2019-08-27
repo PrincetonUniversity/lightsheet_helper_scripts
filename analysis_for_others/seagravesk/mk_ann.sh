@@ -14,7 +14,7 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-module load anacondapy/5.1.0
+module load anacondapy/5.3.1
 module load elastix/4.8
 . activate lightsheet_py3
 

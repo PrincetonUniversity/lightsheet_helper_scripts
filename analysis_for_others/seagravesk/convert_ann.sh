@@ -14,9 +14,9 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-module load anacondapy/5.1.0
+module load anacondapy/5.3.1
 . activate lightsheet
 
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
-python convert_memmap_npy_to_single_tifs.py ${SLURM_ARRAY_TASK_ID}
+python 201903_convert_memmap_npy_to_single_tifs.py ${SLURM_ARRAY_TASK_ID}

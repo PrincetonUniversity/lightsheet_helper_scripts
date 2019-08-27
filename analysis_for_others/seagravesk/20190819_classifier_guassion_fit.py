@@ -6,10 +6,11 @@ Created on Mon Aug 19 17:22:36 2019
 @author: wanglab
 """
 
-import pickle, numpy as np, matplotlib.pyplot as plt, os, matplotlib.ticker as ticker
+import pickle, numpy as np, matplotlib.pyplot as plt, os, matplotlib.ticker as ticker, pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
 from scipy.optimize import curve_fit
 from scipy import asarray as ar
+from scipy.stats import chisquare
 
 """
 You could try to use something like scipy.optimize.curve_fit to fit a 3D Gaussian, 
@@ -17,7 +18,6 @@ then calculate a chi^2 to assess the goodness of fit. You could see if there is 
 above which most of the edge cells lie and below which the human annotated cells lie.
 What might be easier is seeing if there is a threshold in the width of the Gaussian that you fit.
 """
- 
  
 src = "/jukebox/wang/zahra/kelly_cell_detection_analysis"
 ecells = os.path.join(src, "edge_cells.p")
@@ -27,26 +27,30 @@ rcells = os.path.join(src, "real_cells.p")
 rcells = pickle.load(open(rcells, "rb"), encoding = "latin1")
 ecells = pickle.load(open(ecells, "rb"), encoding = "latin1")
 
-#change to see distance in pixels around cell center
-cutoff = 3
+dst = "/home/wanglab/Desktop/"
+
+#%%
 #look at real cells first
 #do for all x,y,z
-yprof = []
+yprof = []; cell_id = []; df = pd.DataFrame()
 #make 1 array for all y profiles of cells
 for k,v in rcells.items():
     cdct = v
     for j,m in cdct.items():
         print(j)
+        cell_id.append((k,j))
         yprof.append(cdct[j]["yprofile"])
 #make np array
 yprof = np.asarray(yprof)
 #normalize
 norm_yprof = []
 for yy in yprof:    
-    norm_yprof.append(np.asarray([(xx-min(yy))/(max(yy)-min(yy)) for xx in yy]))    
+    norm_yprof.append(np.asarray([(xx-np.nanmin(yy))/(np.nanmax(yy)-np.nanmin(yy)) for xx in yy]))    
 norm_yprof = np.asarray(norm_yprof)
 
-xprof = []
+df["cell_id"] = cell_id
+
+xprof = []; cell_id = []
 #make 1 array for all y profiles of cells
 for k,v in rcells.items():
     cdct = v
@@ -58,10 +62,10 @@ xprof = np.asarray(xprof)
 #normalize
 norm_xprof = []
 for yy in xprof:    
-    norm_xprof.append(np.asarray([(xx-min(yy))/(max(yy)-min(yy)) for xx in yy]))
+    norm_xprof.append(np.asarray([(xx-np.nanmin(yy))/(np.nanmax(yy)-np.nanmin(yy)) for xx in yy]))
 norm_xprof = np.asarray(norm_xprof)
 
-zprof = []
+zprof = []; cell_id = []; df_z = pd.DataFrame()
 #make 1 array for all y profiles of cells
 for k,v in rcells.items():
     cdct = v
@@ -73,25 +77,27 @@ zprof = np.asarray(zprof)
 #normalize
 norm_zprof = []
 for yy in zprof:    
-    norm_zprof.append(np.asarray([(xx-min(yy))/(max(yy)-min(yy)) for xx in yy]))
+    norm_zprof.append(np.asarray([(xx-np.nanmin(yy))/(np.nanmax(yy)-np.nanmin(yy)) for xx in yy]))
 norm_zprof = np.asarray(norm_zprof)
 
-
 #do the same for edge cells
-
+df_e = pd.DataFrame()
 #do for all x,y,z
-yprof_e = []
+yprof_e = []; cell_id = []
+brainname = "f37077_observer_20171011"
 #make 1 array for all y profiles of cells
 for k,v in ecells.items():
     cdct = v
     if type(v) is dict:
+        cell_id.append((brainname,k))
         yprof_e.append(cdct["yprofile"])
 #make np array
 yprof_e = np.asarray(yprof_e)
+df_e["cell_id"] = cell_id
 #normalize
 norm_yprof_e = []
 for yy in yprof_e:    
-    norm_yprof_e.append(np.asarray([(xx-min(yy))/(max(yy)-min(yy)) for xx in yy]))    
+    norm_yprof_e.append(np.asarray([(xx-np.nanmin(yy))/(np.nanmax(yy)-np.nanmin(yy)) for xx in yy]))    
 norm_yprof_e = np.asarray(norm_yprof_e)
 
 xprof_e = []
@@ -105,7 +111,7 @@ xprof_e = np.asarray(xprof_e)
 #normalize
 norm_xprof_e = []
 for yy in xprof_e:    
-    norm_xprof_e.append(np.asarray([(xx-min(yy))/(max(yy)-min(yy)) for xx in yy]))
+    norm_xprof_e.append(np.asarray([(xx-np.nanmin(yy))/(np.nanmax(yy)-np.nanmin(yy)) for xx in yy]))
 norm_xprof_e = np.asarray(norm_xprof_e)
 
 zprof_e = []
@@ -119,7 +125,7 @@ zprof_e = np.asarray(zprof_e)
 #normalize
 norm_zprof_e = []
 for yy in zprof_e:    
-    norm_zprof_e.append(np.asarray([(xx-min(yy))/(max(yy)-min(yy)) for xx in yy]))
+    norm_zprof_e.append(np.asarray([(xx-np.nanmin(yy))/(np.nanmax(yy)-np.nanmin(yy)) for xx in yy]))
 norm_zprof_e = np.asarray(norm_zprof_e)
 
 
@@ -137,18 +143,63 @@ norm_x = np.ones((norm_xprof.shape[0], 21))*float("nan")
 for i in range(len(norm_xprof)):
     norm_x[i, :len(norm_xprof[i])] = norm_xprof[i]
 norm_x_mean = np.nanmean(norm_x, axis = 0)        
-
 #%%
 
-dst = "/home/wanglab/Desktop/"
+def get_chisq_pvals(profiles, norm, px=3, vis=False, cutoff=0.99):
+    """ calculate chi square between mean cell profile and each cell profile """
+    pvals = []
+    for i in range(len(profiles)):
+        cell = profiles[i][10-px:10+px+1]
+        try:
+            chistat, pval = chisquare(f_obs=cell, f_exp=norm[10-px:10+px+1])
+            pvals.append(pval)
+            if vis:
+                if pval < cutoff:
+                    plt.plot(norm[10-px:10+px+1], color = "blue")
+                    plt.plot(cell, color = "blue", linestyle = "--")
+        except:
+            pval = -1
+    pvals = np.asarray(pvals)
+    
+    return pvals
+
+def get_cell_stats(profiles):
+    diffs = []
+    for i in range(len(profiles)):
+        diffs.append(np.nanmax(profiles[i])-np.nanmin(profiles[i]))
+        
+    diffs = np.asarray(diffs)
+    return diffs
+#uses normalized
+pvalsx = get_chisq_pvals(norm_x, norm_x_mean)
+pvalsy = get_chisq_pvals(norm_y, norm_y_mean)
+pvalsz = get_chisq_pvals(norm_z, norm_z_mean)
+pvalsx_e = get_chisq_pvals(norm_xprof_e, norm_x_mean)
+pvalsy_e = get_chisq_pvals(norm_yprof_e, norm_y_mean)
+pvalsz_e = get_chisq_pvals(norm_zprof_e, norm_z_mean)
+diffsx = get_cell_stats(xprof)
+diffsy = get_cell_stats(yprof)
+diffsz = get_cell_stats(zprof)
+diffsx_e = get_cell_stats(xprof_e)
+diffsy_e = get_cell_stats(yprof_e)
+diffsz_e = get_cell_stats(zprof_e)
+df["x_chisq_pvals"] = pvalsx; df["y_chisq_pvals"] = pvalsy; df["z_chisq_pvals"] = pvalsz
+df["x_diff_minima"] = diffsx; df["y_diff_minima"] = diffsy; df["z_diff_minima"] = diffsz
+df_e["x_chisq_pvals"] = pvalsx_e; df_e["y_chisq_pvals"] = pvalsy_e; df_e["z_chisq_pvals"] = pvalsz_e
+df_e["x_diff_minima"] = diffsx_e; df_e["y_diff_minima"] = diffsy_e; df_e["z_diff_minima"] = diffsz_e
+
+df.to_csv(os.path.join(dst, "real_cell_stats.csv"))
+df_e.to_csv(os.path.join(dst, "edge_cell_stats.csv"))
+#%%
+
 typ = "edge"
 
 if typ == "cell":
     type_cell = yprof
-    dst = os.path.join(dst, "{}_guassian_fit_cell_profiles.pdf".format(type_cell))
+    dst = os.path.join(dst, "{}_guassian_fit_cell_profiles.pdf".format(typ))
 else:
     type_cell = yprof_e
-    dst = os.path.join(dst, "{}_guassian_fit_edge_profiles.pdf".format(type_cell))
+    dst = os.path.join(dst, "{}_guassian_fit_edge_profiles.pdf".format(typ))
 
 
 pdf_pages = PdfPages(dst) #compiles into multiple pdfs
@@ -200,27 +251,3 @@ for i in range(len(type_cell)):
 
 #write PDF document contains all points
 pdf_pages.close()
-
-#%%
-
-def func(x, a, x0, sigma):
-    return a*np.exp(-(x-x0)**2/(2*sigma**2))
-
-def composite_spectrum(x, # data
-                       a, b, # linear baseline
-                       a1, x01, sigma1, # 1st line
-                       a2, x02, sigma2, # 2nd line
-                       a3, x03, sigma3 ): # 3rd line
-    return (x*a + b + func(x, a1, x01, sigma1)
-                    + func(x, a2, x02, sigma2)
-                    + func(x, a3, x03, sigma3))
-
-guess = [650, 800, 700, 1000, 800, 1200, 900, 800, 750, 700]
-
-popt, pcov = curve_fit(composite_spectrum, x, y, p0 = guess)
-plt.plot(x, composite_spectrum(x, *popt), 'k', label='Total fit')
-plt.plot(x, func(x, *popt[-3:])+x*popt[0]+popt[1], c='r', label='Broad component')
-FWHM = round(2*np.sqrt(2*np.log(2))*popt[10],4)
-plt.axvspan(popt[9]-FWHM/2, popt[9]+FWHM/2, facecolor='g', alpha=0.3, label='FWHM = %s'%(FWHM))
-plt.legend(fontsize=10)
-plt.show()

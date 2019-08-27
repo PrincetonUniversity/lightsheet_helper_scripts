@@ -8,7 +8,7 @@ Created on Wed Mar 13 16:41:30 2019
 
 import os, numpy as np, sys, time
 from skimage.external import tifffile
-sys.path.append("/jukebox/wang/zahra/lightsheet_copy")
+sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 from tools.utils.io import makedir, load_memmap_arr, listall, load_kwargs
 from tools.registration.register import change_interpolation_order, transformix_command_line_call
 from tools.registration.transform_list_of_points import modify_transform_files
