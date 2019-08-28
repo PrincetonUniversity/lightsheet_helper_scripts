@@ -6,9 +6,8 @@ Created on Wed Aug 28 10:18:37 2019
 @author: wanglab
 """
 
-import statsmodels.api as sm, os, sys
+import pickle, numpy as np, pandas as pd, matplotlib.pyplot as plt, sys, os
 sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
-import pickle, numpy as np, pandas as pd, matplotlib.pyplot as plt, matplotlib.ticker as ticker
 from tools.analysis.network_analysis import make_structure_objects
 
 thal_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/dataframe_no_prog_at_each_level.p"
