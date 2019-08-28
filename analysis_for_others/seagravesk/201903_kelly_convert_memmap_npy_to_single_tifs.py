@@ -15,7 +15,7 @@ jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
 
 src = "/jukebox/scratch/kellyms"
 
-pths = [os.path.join(src, xx) for xx in os.listdir(src) if "dorsal" in xx or "ventral" in xx]
+pths = [os.path.join(src, xx) for xx in os.listdir(src) if "m6" in xx or "f6" in xx]
 
 if jobid > len(pths)+1:
     print("array jobs greater than number of brains")

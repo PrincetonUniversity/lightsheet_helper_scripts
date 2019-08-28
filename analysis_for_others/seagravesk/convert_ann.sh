@@ -19,4 +19,4 @@ module load anacondapy/5.3.1
 
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
-python 201903_convert_memmap_npy_to_single_tifs.py ${SLURM_ARRAY_TASK_ID}
+python 201903_kelly_convert_memmap_npy_to_single_tifs.py ${SLURM_ARRAY_TASK_ID}
