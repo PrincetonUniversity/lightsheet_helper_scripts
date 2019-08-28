@@ -128,7 +128,6 @@ for yy in zprof_e:
     norm_zprof_e.append(np.asarray([(xx-np.nanmin(yy))/(np.nanmax(yy)-np.nanmin(yy)) for xx in yy]))
 norm_zprof_e = np.asarray(norm_zprof_e)
 
-
 #make into sensible numpy arrays to take mean
 norm_z = np.ones((norm_zprof.shape[0], 21))*float("nan")
 for i in range(len(norm_zprof)):
@@ -164,12 +163,30 @@ def get_chisq_pvals(profiles, norm, px=3, vis=False, cutoff=0.99):
     return pvals
 
 def get_cell_stats(profiles):
-    diffs = []
+    diffs = []; mus = []; sigmas = []
     for i in range(len(profiles)):
+        print(i)
         diffs.append(np.nanmax(profiles[i])-np.nanmin(profiles[i]))
+        x = ar(range(len(profiles[i])))
+        y = profiles[i]
+        # weighted arithmetic mean (corrected - check the section below)
+        mean = np.nansum(x * y) / np.nansum(y)
+        sigma = np.sqrt(np.nansum(y * (x - mean)**2) / np.nansum(y))
         
-    diffs = np.asarray(diffs)
-    return diffs
+        def Gauss(x, a, x0, sigma):
+            return a * np.exp(-(x - x0)**2 / (2 * sigma**2))
+        
+        try:
+            popt,pcov = curve_fit(Gauss, x, y, p0=[np.nanmax(y), mean, sigma])
+            mx, mu, sigma = popt
+        except Exception as e:
+            print(e)
+            mu, sigma = -1,-1
+        mus.append(mu); sigmas.append(sigma)
+        
+    diffs = np.asarray(diffs); mus = np.asarray(mus); sigmas = np.asarray(sigmas)
+    return diffs, mus, sigmas
+
 #uses normalized
 pvalsx = get_chisq_pvals(norm_x, norm_x_mean)
 pvalsy = get_chisq_pvals(norm_y, norm_y_mean)
@@ -177,16 +194,21 @@ pvalsz = get_chisq_pvals(norm_z, norm_z_mean)
 pvalsx_e = get_chisq_pvals(norm_xprof_e, norm_x_mean)
 pvalsy_e = get_chisq_pvals(norm_yprof_e, norm_y_mean)
 pvalsz_e = get_chisq_pvals(norm_zprof_e, norm_z_mean)
-diffsx = get_cell_stats(xprof)
-diffsy = get_cell_stats(yprof)
-diffsz = get_cell_stats(zprof)
-diffsx_e = get_cell_stats(xprof_e)
-diffsy_e = get_cell_stats(yprof_e)
-diffsz_e = get_cell_stats(zprof_e)
+diffsx, mu_x, sigma_x = get_cell_stats(xprof)
+diffsy, mu_y, sigma_y = get_cell_stats(yprof)
+diffsz, mu_z, sigma_z = get_cell_stats(zprof)
+diffsx_e, mu_xe, sigma_xe = get_cell_stats(xprof_e)
+diffsy_e, mu_ye, sigma_ye = get_cell_stats(yprof_e)
+diffsz_e, mu_ze, sigma_ze = get_cell_stats(zprof_e)
 df["x_chisq_pvals"] = pvalsx; df["y_chisq_pvals"] = pvalsy; df["z_chisq_pvals"] = pvalsz
 df["x_diff_minima"] = diffsx; df["y_diff_minima"] = diffsy; df["z_diff_minima"] = diffsz
+df["x_mean_guass"] = mu_x; df["y_mean_guass"] = mu_y; df["z_mean_guass"] = mu_z
+df["x_sigma_guass"] = sigma_x; df["y_sigma_guass"] = sigma_y; df["z_sigma_guass"] = sigma_z
+
 df_e["x_chisq_pvals"] = pvalsx_e; df_e["y_chisq_pvals"] = pvalsy_e; df_e["z_chisq_pvals"] = pvalsz_e
 df_e["x_diff_minima"] = diffsx_e; df_e["y_diff_minima"] = diffsy_e; df_e["z_diff_minima"] = diffsz_e
+df_e["x_mean_guass"] = mu_xe; df_e["y_mean_guass"] = mu_ye; df_e["z_mean_guass"] = mu_ze
+df_e["x_sigma_guass"] = sigma_xe; df_e["y_sigma_guass"] = sigma_ye; df_e["z_sigma_guass"] = sigma_ze
 
 df.to_csv(os.path.join(dst, "real_cell_stats.csv"))
 df_e.to_csv(os.path.join(dst, "edge_cell_stats.csv"))

@@ -90,7 +90,6 @@ def get_counts_from_pickle(pth, sois, structures, df_pth = "/jukebox/LightSheetT
         cell_counts_per_brain.append(i)
         #re-initialise for next
         i = []  
-        
     cell_counts_per_brain = np.asarray(cell_counts_per_brain)
     
     volume_per_brain = []
@@ -110,7 +109,7 @@ def get_counts_from_pickle(pth, sois, structures, df_pth = "/jukebox/LightSheetT
     return brains, cell_counts_per_brain, density_per_brain
 
 thal_sois = ["Reticular nucleus of the thalamus", "Ventral posterolateral nucleus of the thalamus",
-        "Ventral posteromedial nucleus of the thalamus"]
+        "Ventral posteromedial nucleus of the thalamus", "Striatum"]
 
 thal_brains, thal_counts_per_brain, thal_density_per_brain = get_counts_from_pickle(thal_pth, thal_sois, structures)
 nc_brains, thalnc_counts_per_brain, thalnc_density_per_brain = get_counts_from_pickle(nc_pth, thal_sois, structures)
@@ -137,7 +136,7 @@ nc_vermis = np.asarray([True if xx==0 or xx==1 or xx==2 or xx==4 else False for 
 
 
 vermis = True
-thal_lbls = ["RTN", "VPL", "VPM"]
+thal_lbls = ["RTN", "VPL", "VPM", "Striatum"]
 #thalamus
 fig = plt.figure(figsize=(10,5))
 ax = fig.add_axes([.4,.1,.5,.8])
@@ -194,7 +193,6 @@ plt.savefig(os.path.join(dst, "thal_disynaptic.pdf"), bbox_inches = "tight")
 
 #neocortex
 #linear regression
-
 fig = plt.figure(figsize=(10,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
