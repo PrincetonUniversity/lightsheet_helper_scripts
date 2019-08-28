@@ -120,6 +120,37 @@ sort_dipsi_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:]
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
 
+df = pd.DataFrame()
+df["Mean (frontal)"] = np.asarray([np.mean(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["Mean (medial)"] = np.asarray([np.mean(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["Mean (post.)"] = np.asarray([np.mean(sort_dratio_pool.T[2][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["Median (frontal)"] = np.asarray([np.median(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["Median (medial)"] = np.asarray([np.median(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["Median (post.)"] = np.asarray([np.median(sort_dratio_pool.T[2][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["Std. (frontal)"] = np.asarray([np.std(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["Std. (medial)"] = np.asarray([np.std(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["Std. (post.)"] = np.asarray([np.std(sort_dratio_pool.T[2][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+
+df["Est. Std. (frontal)"] = np.asarray([mad(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
+                                         idx in np.unique(_primary_pool)])
+df["Est. Std. (medial)"] = np.asarray([mad(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
+                                         idx in np.unique(_primary_pool)])    
+df["Est. Std. (post)"] = np.asarray([mad(sort_dratio_pool.T[2][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
+                                         idx in np.unique(_primary_pool)])    
+df.index = ak_pool
+df = df.round(2)
+df.to_csv(os.path.join(sv_dst, "nc_contra_ipsi_ratios_by_inj.csv"))
+
+#%%
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 ## display

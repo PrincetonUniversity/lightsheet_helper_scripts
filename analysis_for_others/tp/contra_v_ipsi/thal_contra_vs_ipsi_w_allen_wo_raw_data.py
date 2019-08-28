@@ -116,6 +116,28 @@ sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in 
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
+df = pd.DataFrame()
+df["mean_dratio_per_inj_smthal"] = np.asarray([np.mean(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["mean_dratio_per_inj_polythal"] = np.asarray([np.mean(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["med_dratio_per_inj_smthal"] = np.asarray([np.median(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["med_dratio_per_inj_polythal"] = np.asarray([np.median(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["std_dratio_per_inj_smthal"] = np.asarray([np.std(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["std_dratio_per_inj_polythal"] = np.asarray([np.std(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["est_std_dratio_per_inj_smthal"] = np.asarray([mad(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
+                                         idx in np.unique(_primary_pool)])
+df["est_std_dratio_per_inj_polythal"] = np.asarray([mad(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
+                                         idx in np.unique(_primary_pool)])    
+df.index = ak_pool
+df = df.round(2)
+df.to_csv(os.path.join(sv_dst, "contra_ipsi_ratios_by_inj.csv"))
+
+#-------------------------------------------------------------------------------------------------------------------------------------
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,0.5,0.8,0.8,0.8,0.5]})
