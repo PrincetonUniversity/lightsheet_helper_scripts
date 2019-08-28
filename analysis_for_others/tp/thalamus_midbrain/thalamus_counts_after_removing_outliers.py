@@ -19,7 +19,7 @@ dst = "/home/wanglab/Desktop"
 thal_data_pth = "/jukebox/wang/zahra/modeling/h129/thalamus/data_v2.p"
 thal_data = pickle.load(open(thal_data_pth, "rb"), encoding = "latin1")
 
-#%%
+
 def get_counts_from_pickle(pth, sois, structures, df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx",
                            scale = 0.020):
     cells_regions = pickle.load(open(pth, "rb"), encoding = "latin1")
@@ -133,8 +133,6 @@ thal_counts_per_brain = thal_counts_per_brain[curated_brains]
 total_counts_per_brain = total_counts_per_brain[curated_brains]
 #calculate percent counts
 pcounts_per_brain = (thal_counts_per_brain/total_counts_per_brain)*100
-
-#%%
 
 #rename nuclei
 thal_sois = ["PF", "PO", "PoT", "LP","LH","LD", "CL", "PVT", "RE","MD","LGv","VPL","VPM","SMT", "RTN", "VM", "AV", "VAL"]
