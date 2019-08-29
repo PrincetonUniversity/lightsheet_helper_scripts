@@ -13,6 +13,7 @@ from sklearn import metrics
 
 """
 zscore formula: z = (x(sample mean) - mu(population aka grouth truth mean))/(std. dev. of population)
+https://www.datacamp.com/community/tutorials/understanding-logistic-regression-python
 """
 src = "/jukebox/wang/zahra/kelly_cell_detection_analysis"
 
