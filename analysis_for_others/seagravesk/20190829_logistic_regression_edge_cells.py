@@ -122,3 +122,8 @@ plt.show()
 
 #%%
 prob = logreg.predict_proba(X_test)
+true_cell_probs = [xx for i, xx in enumerate(prob[:,1]) if y_test.values[i] == 1]
+sns.swarmplot(true_cell_probs, orient = "v")
+plt.ylabel("Classifier probability")
+plt.xlabel("Real cells (n = 67)")
+plt.axhline(y=0.5, color = "gray", linestyle = "--")

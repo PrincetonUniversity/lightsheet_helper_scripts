@@ -21,25 +21,29 @@ and do peak detection on those vectors?
 
 Number of cells in Volume 1: 126
 Number of cells in Volume 2: 165
+Number of cells in Volume 3: 63
 """
 
 src = "/jukebox/wang/seagravesk/lightsheet/man_label_cells_Kelly/In prog/complete"
-raw = "/jukebox/wang/seagravesk/lightsheet/cfos_raw_images/cfos"
+raw = "/jukebox/wang/seagravesk/lightsheet/cfos_raw_images/"
 w = 10
-dst = "/home/wanglab/Desktop/real_cell_profiles.pdf"
-pdf_pages = PdfPages(dst) #compiles into multiple pdfs
+dst = "/jukebox/wang/zahra/kelly_cell_detection_analysis"
+pdf_pages = PdfPages(os.path.join(dst, "real_cell_profiles.pdf")) #compiles into multiple pdfs
 
 #volume 1
 impths = [os.path.join(src, "171209_f37104_demons/171209_f37104_demonstrator_20171016_790_015na_1hfsds_z5um_1000msec_15-46-13_plane500to519_volume1.tif"),
-         os.path.join(src, "171210_m37079_mouse2/171210_m37079_mouse2_20171014_790_015na_1hfsds_z5um_1000msec_17-25-29_planes280to299_volume1.tif")]
+         os.path.join(src, "171210_m37079_mouse2/171210_m37079_mouse2_20171014_790_015na_1hfsds_z5um_1000msec_17-25-29_planes280to299_volume1.tif"),
+         os.path.join(src, "181011_f37077_observer/181011_f37077_observer_20171011_790_017na_1hfds_z5um_1000msec_13-29-49_planes280to299_volume1.tif")]
 
-fullszimpth = [os.path.join(raw, "171209_f37104_demonstrator_20171016_790_015na_1hfsds_z5um_1000msec_15-46-13"),
-               os.path.join(raw, "171210_m37079_mouse2_20171014_790_015na_1hfsds_z5um_1000msec_17-25-29")]
+fullszimpth = [os.path.join(raw, "cfos/171209_f37104_demonstrator_20171016_790_015na_1hfsds_z5um_1000msec_15-46-13"),
+               os.path.join(raw, "cfos/171210_m37079_mouse2_20171014_790_015na_1hfsds_z5um_1000msec_17-25-29"),
+               os.path.join(raw, "cfos_201810/181011_f37077_observer_20171011_790_017na_1hfds_z5um_1000msec_13-29-49")]
 
 roi_pths = [os.path.join(src, "171209_f37104_demons/171209_f37104_demonstrator_20171016_790_015na_1hfsds_z5um_1000msec_15-46-13_plane500to519_volume1_v11.RoiSet.zip"),
-           os.path.join(src, "171210_m37079_mouse2/171210_m37079_mouse2_20171014_790_015na_1hfsds_z5um_1000msec_17-25-29_planes280to299_volume1_v9.RoiSet.zip")]
+           os.path.join(src, "171210_m37079_mouse2/171210_m37079_mouse2_20171014_790_015na_1hfsds_z5um_1000msec_17-25-29_planes280to299_volume1_v9.RoiSet.zip"),
+           os.path.join(src, "181011_f37077_observer/181011_f37077_observer_20171011_790_017na_1hfds_z5um_1000msec_13-29-49_planes280to299_volume1_v4.RoiSet.zip")]
 
-fullszbnds = [(500, 590, 937), (280, 893, 934)] #from kelly notes
+fullszbnds = [(500, 590, 937), (280, 893, 934), (280, 1511, 970)] #from kelly notes
 
 #make dict of cell coordinates (IN FIJI TERMS) and profile(s) to save
 pnts_dct = {}
@@ -133,7 +137,7 @@ pdf_pages.close()
 print("\nexporting to pickle...\n")
 #save data to pickle
 import pickle
-sv = "/jukebox/wang/zahra/kelly_cell_detection_analysis/real_cells.p"
+sv = os.path.join(dst, "real_cells.p")
 
 with open(sv, "wb") as fp:
     pickle.dump(pnts_dct, fp, protocol=pickle.HIGHEST_PROTOCOL)

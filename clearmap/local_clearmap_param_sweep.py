@@ -49,7 +49,7 @@ params={
 "intensitycorrection" : False, #True = calculate mean intensity of overlap between tiles shift higher of two towards lower - useful for images where relative intensity is not important (i.e. tracing=True, cFOS=False)
 "rawdata" : True, # set to true if raw data is taken from scope and images need to be flattened; functionality for rawdata =False has not been tested**
 "FinalOrientation": (3, 2, 1), #Orientation: 1,2,3 means the same orientation as the reference and atlas files; #Flip axis with - sign (eg. (-1,2,3) flips x). 3D Rotate by swapping numbers. (eg. (2,1,3) swaps x and y); USE (3,2,1) for DVhorizotnal to sagittal. NOTE (TP): -3 seems to mess up the function and cannot seem to figure out why. do not use.
-"slurmjobfactor": 50, #number of array iterations per arrayjob since max job array on SPOCK is 1000
+"slurmjobfactor": 2000, #number of array iterations per arrayjob since max job array on SPOCK is 1000
 "removeBackgroundParameter_size": (5,5), #Remove the background with morphological opening (optimised for spherical objects), e.g. (7,7)
 "findExtendedMaximaParameter_hmax": None, # (float or None)     h parameter (for instance 20) for the initial h-Max transform, if None, do not perform a h-max transform
 "findExtendedMaximaParameter_size": 5, # size in pixels (x,y) for the structure element of the morphological opening
@@ -76,7 +76,7 @@ params={
 #####################################################################################################################################################
 #####################################################################################################################################################
 #####################################################################################################################################################
-#%%
+
 #sweep parameters copy & modifications - run before running above cell                
 def sweep_parameters_cluster(jobid, rBP_size_r, fEMP_hmax_r, fEMP_size_r, fEMP_threshold_r, fIP_method_r, fIP_size_r, 
                              dCSP_threshold_r, tick, optimization_chunk=7, pth=False, rescale=False, cleanup=True, **kwargs):
@@ -170,9 +170,6 @@ if __name__ == "__main__":
     updateparams(os.getcwd(), **params) # e.g. single job assuming directory_determiner function has been properly set
     #copy folder into output for records
     if not os.path.exists(os.path.join(params["outputdirectory"], "clearmap_cluster")): shutil.copytree(os.getcwd(), os.path.join(params["outputdirectory"], "clearmap_cluster"), ignore=shutil.ignore_patterns("^.git")) #copy run folder into output to save run info
-
-    #re-run update params like you would on the cluster
-    updateparams(os.path.join(params["outputdirectory"], "clearmap_cluster"), **params)
 
     #######################STEP 1 #######################
     #####################################################

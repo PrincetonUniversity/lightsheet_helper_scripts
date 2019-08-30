@@ -84,13 +84,13 @@ norm_zprof = np.asarray(norm_zprof)
 df_e = pd.DataFrame()
 #do for all x,y,z
 yprof_e = []; cell_id = []
-brainname = "f37077_observer_20171011"
 #make 1 array for all y profiles of cells
 for k,v in ecells.items():
     cdct = v
-    if type(v) is dict:
-        cell_id.append((brainname,k))
-        yprof_e.append(cdct["yprofile"])
+    for j,m in cdct.items():
+        print(j)
+        cell_id.append((k,j))
+        yprof_e.append(cdct[j]["yprofile"])
 #make np array
 yprof_e = np.asarray(yprof_e)
 df_e["cell_id"] = cell_id
@@ -104,8 +104,9 @@ xprof_e = []
 #make 1 array for all y profiles of cells
 for k,v in ecells.items():
     cdct = v
-    if type(v) is dict:
-        xprof_e.append(cdct["xprofile"])
+    for j,m in cdct.items():
+        print(j)
+        xprof_e.append(cdct[j]["xprofile"])
 #make np array
 xprof_e = np.asarray(xprof_e)
 #normalize
@@ -118,8 +119,9 @@ zprof_e = []
 #make 1 array for all y profiles of cells
 for k,v in ecells.items():
     cdct = v
-    if type(v) is dict:
-        zprof_e.append(cdct["zprofile"])
+    for j,m in cdct.items():
+        print(j)
+        zprof_e.append(cdct[j]["zprofile"])
 #make np array
 zprof_e = np.asarray(zprof_e)
 #normalize
