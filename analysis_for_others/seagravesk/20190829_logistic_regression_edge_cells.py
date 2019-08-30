@@ -89,7 +89,8 @@ logreg = LogisticRegression()
 # fit the model with data
 logreg.fit(X_train,y_train)
 
-y_pred=logreg.predict(X_test)
+y_pred = logreg.predict(X_test)
+lbls = y_test.values
 
 # import the metrics class
 cnf_matrix = metrics.confusion_matrix(y_test, y_pred)
@@ -118,3 +119,6 @@ auc = metrics.roc_auc_score(y_test, y_pred_proba)
 plt.plot(fpr,tpr,label="auc="+str(auc))
 plt.legend(loc=4)
 plt.show()
+
+#%%
+prob = logreg.predict_proba(X_test)

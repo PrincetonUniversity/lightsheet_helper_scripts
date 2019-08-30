@@ -14,7 +14,6 @@ mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['ps.fonttype'] = 42
 
 #import data
-#REPLACE FOLDER WITH STRIATUM for striatum quant (done separately for now but should be exactly the same format)
 pth = "/jukebox/wang/zahra/modeling/h129/pallidum/count_and_density_data.p"
 data = pckl.load(open(pth, "rb"), encoding = "latin1")
 
@@ -38,7 +37,7 @@ ax = fig.add_axes([.4,.1,.5,.8])
 show = mean_counts.T 
 
 vmin = 0
-vmax = 12
+vmax = 20
 cmap = plt.cm.viridis
 cmap.set_over('gold')
 #colormap
@@ -52,7 +51,7 @@ pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 #cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
                   shrink=0.3, aspect=10)
-cb.set_label("% of striatal counts", fontsize="x-small", labelpad=3)
+cb.set_label("% of pallidum counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
@@ -81,12 +80,12 @@ ax = fig.add_axes([.4,.1,.5,.8])
 show = mean_counts.T 
 
 vmin = 100
-vmax = 800
+vmax = 600
 cmap = plt.cm.viridis
 cmap.set_over('gold')
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,8)
+bounds = np.linspace(vmin,vmax,6)
 #bounds = np.linspace(-2,5,8)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
