@@ -16,8 +16,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 
 #setup
-img_pth = "/jukebox/wang/seagravesk/lightsheet/cfos_raw_images/cfos"
-brainname = "171213_m37110_demonstrator_20171016_790_015na_1hfsds_z5um_1000msec_16-03-36"
+img_pth = "/jukebox/wang/seagravesk/lightsheet/cfos_raw_images/cfos_201810"
+brainname = "181018_m37110_demonstrator_20171016_790_017na_1hfds_z5um_1000msec_12-58-47"
 src = "/jukebox/wang/zahra/kelly_cell_detection_analysis"
 brain = os.path.join(img_pth, brainname)
 
@@ -94,8 +94,7 @@ for i,cell in enumerate(cells):
     print(i)
     features[i] = get_features_from_cell(cell, vol)
     
-#%%
-    
+ 
 rcells = pd.read_csv(os.path.join(src, "real_cell_stats.csv"))
 ecells = pd.read_csv(os.path.join(src, "edge_cell_stats.csv"))
 
@@ -163,4 +162,4 @@ cell_map_c = np.asarray([cv2.dilate(cell_map_c[i], selem, iterations = 1) for i 
 
 merged = np.stack([vol, cell_map, cell_map_c], -1) #rgb image you can open up in fiji; volume = red; cells = green
 
-tif.imsave(os.path.join(src, "before_after_classfier.tif"), merged)
+tif.imsave(os.path.join(src, "VD_before_after_classfier.tif"), merged)
