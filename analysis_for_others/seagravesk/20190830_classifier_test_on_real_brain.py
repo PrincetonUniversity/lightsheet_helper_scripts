@@ -16,8 +16,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 
 #setup
-img_pth = "/jukebox/wang/seagravesk/lightsheet/cfos_raw_images/cfos_201810"
-brainname = "181018_m37110_demonstrator_20171016_790_017na_1hfds_z5um_1000msec_12-58-47"
+img_pth = "/jukebox/wang/seagravesk/lightsheet/cfos_raw_images/cfos"
+brainname = "171213_m37110_demonstrator_20171016_790_015na_1hfsds_z5um_1000msec_16-03-36"
 src = "/jukebox/wang/zahra/kelly_cell_detection_analysis"
 brain = os.path.join(img_pth, brainname)
 
@@ -79,7 +79,7 @@ def get_features_from_cell(cell, vol, w=10, px=3):
     muy, sigmay = get_guassian_stats(yprofile)
     muz, sigmaz = get_guassian_stats(zprofile)
     
-    return pvalx, pvaly, pvalz, chistatx, chistaty, chistatz, diffx, diffy, diffz, mux, muy, muz, sigmax, sigmay, sigmaz
+    return chistatx, chistaty, chistatz, pvalx, pvaly, pvalz, diffx, diffy, diffz, mux, muy, muz, sigmax, sigmay, sigmaz
     
 #lets do some middle 30 planes
 zrange = np.arange(700, 730)
@@ -112,7 +112,7 @@ allcells = pd.concat([ecs, rcs])
 X = allcells[params] # Features
 y = allcells.label # Target variable
 
-X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.25,random_state=0)
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.25)
 # instantiate the model (using the default parameters)
 logreg = LogisticRegression()
 # fit the model with data
@@ -162,4 +162,4 @@ cell_map_c = np.asarray([cv2.dilate(cell_map_c[i], selem, iterations = 1) for i 
 
 merged = np.stack([vol, cell_map, cell_map_c], -1) #rgb image you can open up in fiji; volume = red; cells = green
 
-tif.imsave(os.path.join(src, "VD_before_after_classfier.tif"), merged)
+tif.imsave(os.path.join(src, "DV_before_after_classfier.tif"), merged)

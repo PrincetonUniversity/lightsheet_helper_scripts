@@ -83,7 +83,7 @@ allcells = pd.concat([ecs, rcs])
 X = allcells[params] # Features
 y = allcells.label # Target variable
 
-X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.25,random_state=0)
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.25)
 # instantiate the model (using the default parameters)
 logreg = LogisticRegression()
 # fit the model with data
