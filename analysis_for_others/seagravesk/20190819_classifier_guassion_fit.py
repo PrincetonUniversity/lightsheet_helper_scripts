@@ -27,10 +27,7 @@ rcells = os.path.join(src, "real_cells.p")
 rcells = pickle.load(open(rcells, "rb"), encoding = "latin1")
 ecells = pickle.load(open(ecells, "rb"), encoding = "latin1")
 
-dst = "/jukebox/wang/zahra/kelly_cell_detection_analysis"
-
-
-#look at real cells first
+#real cells
 #do for all x,y,z
 yprof = []; cell_id = []; ints = []; df = pd.DataFrame()
 #make 1 array for all y profiles of cells
@@ -181,6 +178,7 @@ def get_cell_stats(profiles):
     diffs = np.asarray(diffs); mus = np.asarray(mus); sigmas = np.asarray(sigmas)
     return diffs, mus, sigmas
 
+#GET FEATURES
 #uses normalized
 #chisq fits for sliding window around cell
 chistatsx_px3, pvalsx_px3 = get_chisq_pvals(norm_xprof, norm_x_mean, px = 3)
@@ -214,8 +212,8 @@ diffsz, mu_z, sigma_z = get_cell_stats(zprof)
 diffsx_e, mu_xe, sigma_xe = get_cell_stats(xprof_e)
 diffsy_e, mu_ye, sigma_ye = get_cell_stats(yprof_e)
 diffsz_e, mu_ze, sigma_ze = get_cell_stats(zprof_e)
+
 #fill dataframe with features
-df["intensity"] = ints
 df["x_chisq_stat_px3"] = chistatsx_px3; df["y_chisq_stat_px3"] = chistatsy_px3; df["z_chisq_stat_px3"] = chistatsz_px3
 df["x_chisq_pvals_px3"] = pvalsx_px3; df["y_chisq_pvals_px3"] = pvalsy_px3; df["z_chisq_pvals_px3"] = pvalsz_px3
 df["x_chisq_stat_px5"] = chistatsx_px5; df["y_chisq_stat_px5"] = chistatsy_px5; df["z_chisq_stat_px5"] = chistatsz_px5
@@ -226,8 +224,8 @@ df["x_chisq_pvals_px10"] = pvalsx_px10; df["y_chisq_pvals_px10"] = pvalsy_px10; 
 df["x_diff_minima"] = diffsx; df["y_diff_minima"] = diffsy; df["z_diff_minima"] = diffsz
 df["x_mean_guass"] = mu_x; df["y_mean_guass"] = mu_y; df["z_mean_guass"] = mu_z
 df["x_sigma_guass"] = sigma_x; df["y_sigma_guass"] = sigma_y; df["z_sigma_guass"] = sigma_z
+df["intensity"] = ints
 
-df_e["intensity"] = ints_e
 df_e["x_chisq_stat_px3"] = chistatsx_e_px3; df_e["y_chisq_stat_px3"] = chistatsy_e_px3; df_e["z_chisq_stat_px3"] = chistatsz_e_px3
 df_e["x_chisq_pvals_px3"] = pvalsx_e_px3; df_e["y_chisq_pvals_px3"] = pvalsy_e_px3; df_e["z_chisq_pvals_px3"] = pvalsz_e_px3
 df_e["x_chisq_stat_px5"] = chistatsx_e_px5; df_e["y_chisq_stat_px5"] = chistatsy_e_px5; df_e["z_chisq_stat_px5"] = chistatsz_e_px5
@@ -238,7 +236,8 @@ df_e["x_chisq_pvals_px10"] = pvalsx_e_px10; df_e["y_chisq_pvals_px10"] = pvalsy_
 df_e["x_diff_minima"] = diffsx_e; df_e["y_diff_minima"] = diffsy_e; df_e["z_diff_minima"] = diffsz_e
 df_e["x_mean_guass"] = mu_xe; df_e["y_mean_guass"] = mu_ye; df_e["z_mean_guass"] = mu_ze
 df_e["x_sigma_guass"] = sigma_xe; df_e["y_sigma_guass"] = sigma_ye; df_e["z_sigma_guass"] = sigma_ze
+df_e["intensity"] = ints_e
 
-df.to_csv(os.path.join(dst, "real_cell_stats.csv"), index = None)
-df_e.to_csv(os.path.join(dst, "edge_cell_stats.csv"), index = None)
+df.to_csv(os.path.join(src, "real_cell_stats.csv"), index = None)
+df_e.to_csv(os.path.join(src, "edge_cell_stats.csv"), index = None)
 

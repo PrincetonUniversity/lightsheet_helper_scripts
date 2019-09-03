@@ -24,8 +24,10 @@ brain = os.path.join(img_pth, brainname)
 dct = sio.loadmat(os.path.join(brain, "sliding_diff_peak_find_975percentile_20190227_format2.mat"))
 arr = dct["cell_centers_orig_coord"]
 
-def get_features_from_cell(cell, vol, w=10, px=3):
+def get_features_from_cell(cell, vol, nfeature=28, w=10, pxs=[3,5,10]): #pxs = sliding window
     
+    #init feature array
+    features = np.zeros(nfeature)
     #based on labeled data, obv figure out a way to import them in the future
     norm_z_mean = [0.20293142, 0.21529837, 0.23150973, 0.25075755, 0.2467855 ,
            0.28805012, 0.3697442 , 0.511728  , 0.68492967, 0.82598543,
@@ -47,16 +49,22 @@ def get_features_from_cell(cell, vol, w=10, px=3):
     xprofile = vol[z,y,x-w:x+w+1] #cell centered at index = 3
     yprofile = vol[z,y-w:y+w+1,x] #cell centered at index = 3
     zprofile = vol[z-w:z+w+1,y,x] #cell centered at index = 3
-    intensity = vol[z,y,x]
-    chistatx, pvalx = chisquare(f_obs=[((xx-min(xprofile))/(max(xprofile)-min(xprofile))) for xx in xprofile][10-px:10+px+1],  #normalized
-                                       f_exp=norm_x_mean[10-px:10+px+1])
-    chistaty, pvaly = chisquare(f_obs=[((xx-min(yprofile))/(max(yprofile)-min(yprofile))) for xx in yprofile][10-px:10+px+1], 
-                                       f_exp=norm_y_mean[10-px:10+px+1])
-    chistatz, pvalz = chisquare(f_obs=[((xx-min(zprofile))/(max(zprofile)-min(zprofile))) for xx in zprofile][10-px:10+px+1], 
-                                       f_exp=norm_z_mean[10-px:10+px+1])
+    features[27] = vol[z,y,x] #intensity
     
+    i = 0 #index 
+    for px in pxs:
+        features[i:i+2] = chisquare(f_obs=[((xx-min(xprofile))/(max(xprofile)-min(xprofile))) for xx in xprofile][10-px:10+px+1],  #normalized
+                                           f_exp=norm_x_mean[10-px:10+px+1])
+        features[i+2:i+4] = chisquare(f_obs=[((xx-min(yprofile))/(max(yprofile)-min(yprofile))) for xx in yprofile][10-px:10+px+1], 
+                                           f_exp=norm_y_mean[10-px:10+px+1])
+        features[i+4:i+6] = chisquare(f_obs=[((xx-min(zprofile))/(max(zprofile)-min(zprofile))) for xx in zprofile][10-px:10+px+1], 
+                                           f_exp=norm_z_mean[10-px:10+px+1])
+        i+=6
+        
     #difference bw minimas
-    diffx, diffy, diffz = np.max(xprofile)-np.min(xprofile), np.max(yprofile)-np.min(yprofile), np.max(zprofile)-np.min(zprofile)
+    features[i:i+3] = np.max(xprofile)-np.min(xprofile), np.max(yprofile)-np.min(yprofile), np.max(zprofile)-np.min(zprofile)
+    #update index
+    i += 3
     
     def get_guassian_stats(profile):
         x = ar(range(len(profile)))
@@ -76,11 +84,11 @@ def get_features_from_cell(cell, vol, w=10, px=3):
         
         return mu, sigma
    
-    mux, sigmax = get_guassian_stats(xprofile)
-    muy, sigmay = get_guassian_stats(yprofile)
-    muz, sigmaz = get_guassian_stats(zprofile)
+    features[i:i+2] = get_guassian_stats(xprofile)
+    features[i+2:i+4] = get_guassian_stats(yprofile)
+    features[i+4:i+6] = get_guassian_stats(zprofile)
     
-    return chistatx, chistaty, chistatz, pvalx, pvaly, pvalz, diffx, diffy, diffz, mux, muy, muz, sigmax, sigmay, sigmaz, intensity
+    return features
     
 #lets do some middle 30 planes
 zrange = np.arange(700, 730)
@@ -90,18 +98,20 @@ vol = np.asarray([tif.imread(img) for img in imgs]) #image volumes
 cells = arr[(arr[...,0] >= 710) & (arr[...,0] < 720)] #cells detected in image volume
 
 #extract all the features from these cells
-features = np.zeros((len(cells), 16)) #16 features
+nfeature=28
+features = np.zeros((len(cells), nfeature)) 
 for i,cell in enumerate(cells):
-    print(i)
+    if i%1000==0: print(i)
     features[i] = get_features_from_cell(cell, vol)
     
- 
+#%%
+#predict
 rcells = pd.read_csv(os.path.join(src, "real_cell_stats.csv"))
 ecells = pd.read_csv(os.path.join(src, "edge_cell_stats.csv"))
 
 #find variables
 rc = rcells.copy().dropna()
-params = [xx for xx in rc.columns if xx != "cell_id"]
+params = [xx for xx in rc.columns if xx != "cell_id" and xx != "intensity"]
 
 #combine both cells into one dataset with a label colum
 ecs = ecells.drop(columns=["cell_id"]).dropna()
@@ -124,16 +134,15 @@ logreg.fit(X_train,y_train)
 imp = SimpleImputer(missing_values=np.nan, strategy='median')
 imp = imp.fit(features)
 features_imp = imp.transform(features)
-y_pred = logreg.predict(features_imp)
 
 #alternatively, drop guassian values?
 #features_imp = features[...,:9]
-y_pred = logreg.predict(features_imp)
+y_pred = logreg.predict(features_imp[:,:-1])
 #%%
 #visualize results
 classified_cells = cells[y_pred.astype(bool)]
 
-prob = logreg.predict_proba(features_imp)
+prob = logreg.predict_proba(features_imp[:,:-1])
 sns.boxplot(prob[...,1], orient = "h")
 plt.xlabel("Classifier probability for real cells")
 plt.ylabel("Cells (n = {})".format(len(prob)))
