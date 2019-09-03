@@ -216,27 +216,25 @@ diffsz_e, mu_ze, sigma_ze = get_cell_stats(zprof_e)
 #fill dataframe with features
 df["x_chisq_stat_px3"] = chistatsx_px3; df["y_chisq_stat_px3"] = chistatsy_px3; df["z_chisq_stat_px3"] = chistatsz_px3
 df["x_chisq_pvals_px3"] = pvalsx_px3; df["y_chisq_pvals_px3"] = pvalsy_px3; df["z_chisq_pvals_px3"] = pvalsz_px3
-df["x_chisq_stat_px5"] = chistatsx_px5; df["y_chisq_stat_px5"] = chistatsy_px5; df["z_chisq_stat_px5"] = chistatsz_px5
-df["x_chisq_pvals_px5"] = pvalsx_px5; df["y_chisq_pvals_px5"] = pvalsy_px5; df["z_chisq_pvals_px5"] = pvalsz_px5
-df["x_chisq_stat_px10"] = chistatsx_px10; df["y_chisq_stat_px10"] = chistatsy_px10; df["z_chisq_stat_px10"] = chistatsz_px10
-df["x_chisq_pvals_px10"] = pvalsx_px10; df["y_chisq_pvals_px10"] = pvalsy_px10; df["z_chisq_pvals_px10"] = pvalsz_px10
+#df["x_chisq_stat_px5"] = chistatsx_px5; df["y_chisq_stat_px5"] = chistatsy_px5; df["z_chisq_stat_px5"] = chistatsz_px5
+#df["x_chisq_pvals_px5"] = pvalsx_px5; df["y_chisq_pvals_px5"] = pvalsy_px5; df["z_chisq_pvals_px5"] = pvalsz_px5
+#df["x_chisq_stat_px10"] = chistatsx_px10; df["y_chisq_stat_px10"] = chistatsy_px10; df["z_chisq_stat_px10"] = chistatsz_px10
+#df["x_chisq_pvals_px10"] = pvalsx_px10; df["y_chisq_pvals_px10"] = pvalsy_px10; df["z_chisq_pvals_px10"] = pvalsz_px10
 
 df["x_diff_minima"] = diffsx; df["y_diff_minima"] = diffsy; df["z_diff_minima"] = diffsz
 df["x_mean_guass"] = mu_x; df["y_mean_guass"] = mu_y; df["z_mean_guass"] = mu_z
 df["x_sigma_guass"] = sigma_x; df["y_sigma_guass"] = sigma_y; df["z_sigma_guass"] = sigma_z
-df["intensity"] = ints
 
 df_e["x_chisq_stat_px3"] = chistatsx_e_px3; df_e["y_chisq_stat_px3"] = chistatsy_e_px3; df_e["z_chisq_stat_px3"] = chistatsz_e_px3
 df_e["x_chisq_pvals_px3"] = pvalsx_e_px3; df_e["y_chisq_pvals_px3"] = pvalsy_e_px3; df_e["z_chisq_pvals_px3"] = pvalsz_e_px3
-df_e["x_chisq_stat_px5"] = chistatsx_e_px5; df_e["y_chisq_stat_px5"] = chistatsy_e_px5; df_e["z_chisq_stat_px5"] = chistatsz_e_px5
-df_e["x_chisq_pvals_px5"] = pvalsx_e_px5; df_e["y_chisq_pvals_px5"] = pvalsy_e_px5; df_e["z_chisq_pvals_px5"] = pvalsz_e_px5
-df_e["x_chisq_stat_px10"] = chistatsx_e_px10; df_e["y_chisq_stat_px10"] = chistatsy_e_px10; df_e["z_chisq_stat_px10"] = chistatsz_e_px10
-df_e["x_chisq_pvals_px10"] = pvalsx_e_px10; df_e["y_chisq_pvals_px10"] = pvalsy_e_px10; df_e["z_chisq_pvals_px10"] = pvalsz_e_px10
+#df_e["x_chisq_stat_px5"] = chistatsx_e_px5; df_e["y_chisq_stat_px5"] = chistatsy_e_px5; df_e["z_chisq_stat_px5"] = chistatsz_e_px5
+#df_e["x_chisq_pvals_px5"] = pvalsx_e_px5; df_e["y_chisq_pvals_px5"] = pvalsy_e_px5; df_e["z_chisq_pvals_px5"] = pvalsz_e_px5
+#df_e["x_chisq_stat_px10"] = chistatsx_e_px10; df_e["y_chisq_stat_px10"] = chistatsy_e_px10; df_e["z_chisq_stat_px10"] = chistatsz_e_px10
+#df_e["x_chisq_pvals_px10"] = pvalsx_e_px10; df_e["y_chisq_pvals_px10"] = pvalsy_e_px10; df_e["z_chisq_pvals_px10"] = pvalsz_e_px10
 
 df_e["x_diff_minima"] = diffsx_e; df_e["y_diff_minima"] = diffsy_e; df_e["z_diff_minima"] = diffsz_e
 df_e["x_mean_guass"] = mu_xe; df_e["y_mean_guass"] = mu_ye; df_e["z_mean_guass"] = mu_ze
 df_e["x_sigma_guass"] = sigma_xe; df_e["y_sigma_guass"] = sigma_ye; df_e["z_sigma_guass"] = sigma_ze
-df_e["intensity"] = ints_e
 
 df.to_csv(os.path.join(src, "real_cell_stats.csv"), index = None)
 df_e.to_csv(os.path.join(src, "edge_cell_stats.csv"), index = None)
