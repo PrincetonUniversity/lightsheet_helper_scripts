@@ -47,6 +47,7 @@ def get_features_from_cell(cell, vol, w=10, px=3):
     xprofile = vol[z,y,x-w:x+w+1] #cell centered at index = 3
     yprofile = vol[z,y-w:y+w+1,x] #cell centered at index = 3
     zprofile = vol[z-w:z+w+1,y,x] #cell centered at index = 3
+    intensity = vol[z,y,x]
     chistatx, pvalx = chisquare(f_obs=[((xx-min(xprofile))/(max(xprofile)-min(xprofile))) for xx in xprofile][10-px:10+px+1],  #normalized
                                        f_exp=norm_x_mean[10-px:10+px+1])
     chistaty, pvaly = chisquare(f_obs=[((xx-min(yprofile))/(max(yprofile)-min(yprofile))) for xx in yprofile][10-px:10+px+1], 
@@ -79,7 +80,7 @@ def get_features_from_cell(cell, vol, w=10, px=3):
     muy, sigmay = get_guassian_stats(yprofile)
     muz, sigmaz = get_guassian_stats(zprofile)
     
-    return chistatx, chistaty, chistatz, pvalx, pvaly, pvalz, diffx, diffy, diffz, mux, muy, muz, sigmax, sigmay, sigmaz
+    return chistatx, chistaty, chistatz, pvalx, pvaly, pvalz, diffx, diffy, diffz, mux, muy, muz, sigmax, sigmay, sigmaz, intensity
     
 #lets do some middle 30 planes
 zrange = np.arange(700, 730)
@@ -89,7 +90,7 @@ vol = np.asarray([tif.imread(img) for img in imgs]) #image volumes
 cells = arr[(arr[...,0] >= 710) & (arr[...,0] < 720)] #cells detected in image volume
 
 #extract all the features from these cells
-features = np.zeros((len(cells), 15)) #15 features
+features = np.zeros((len(cells), 16)) #16 features
 for i,cell in enumerate(cells):
     print(i)
     features[i] = get_features_from_cell(cell, vol)

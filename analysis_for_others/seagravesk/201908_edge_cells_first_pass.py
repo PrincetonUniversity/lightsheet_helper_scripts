@@ -105,9 +105,9 @@ for i,mat in enumerate(mat_pths):
             axes[0].set_yticks([], [])
             
             intensity = img[y, z]
-            yprofile = img[y-w:y+w, x]
-            xprofile = img[y, x-w:x+w]
-            zprofile = vol[d-w:d+w, y, x]
+            yprofile = img[y-w:y+w+1, x]
+            xprofile = img[y, x-w:x+w+1]
+            zprofile = vol[d-w:d+w+1, y, x]
             
             axes[1].plot(zprofile, label = "Z")
             axes[1].plot(yprofile, label = "Y")
