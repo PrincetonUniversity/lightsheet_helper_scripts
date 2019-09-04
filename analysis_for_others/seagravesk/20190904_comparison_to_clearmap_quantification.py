@@ -11,7 +11,7 @@ from tools.conv_net.utils.io import pairwise_distance_metrics, read_roi_zip
 
 pth = "/jukebox/wang/zahra/kelly_cell_detection_analysis/comparison_to_clearmap/annotated_volumes"
 
-flds = [os.path.join(pth, "sweep/"+xx) for xx in os.listdir(os.path.join(pth, "sweep")) if "max" in xx]
+flds = [os.path.join(pth, "sweep/"+xx) for xx in os.listdir(os.path.join(pth, "sweep")) if "max" in xx] #only using the ones from the new sweep
 roi_pths = [os.path.join(pth, xx) for xx in os.listdir(pth) if "RoiSet.zip" in xx]; roi_pths.sort() #the sorts here are important, for order of volumes
 
 #these will be zyx 
@@ -42,8 +42,15 @@ for cutoff in cutoffs:
         tp = sum([measures[i][1] for i in range(len(measures))])
         fp = sum([measures[i][2] for i in range(len(measures))])
         fn = sum([measures[i][3] for i in range(len(measures))])
-        precision = tp/(tp+fp); recall = tp/(tp+fn) #calculating precision and recall
-        f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
+        
+        try: 
+            precision = tp/(tp+fp)
+            recall = tp/(tp+fn) #calculating precision and recall
+            f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
+        except Exception as e:
+            print(e)
+            f1 = np.nan #if tp, fn, etc. are 0
+            
         df.loc[df.parameters == os.path.basename(fld), "f1"] = f1
         df.loc[df.parameters == os.path.basename(fld), "true_positives"] = tp
         df.loc[df.parameters == os.path.basename(fld), "false_positives"] = fp

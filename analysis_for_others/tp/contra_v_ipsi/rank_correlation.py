@@ -98,13 +98,13 @@ fig = plt.figure()
 ax = fig.add_axes([.15,.15,.5,.8])
 
 X = total_cell_counts_per_brain
-Y = _cratio.T
+Y = np.log10(_cratio.T)
 
 ax.scatter(X, Y, color = "k", s = 10)
 
 ax.set_xlabel("Total neocortical cell counts")
-ax.set_ylabel("Contra/Ipsi count ratio")
-ax.axhline(y=1.2, color = "grey")
+ax.set_ylabel("Log10 of Contra/Ipsi count ratio")
+ax.axhline(y=np.log10(1.2), color = "grey")
 plt.savefig(os.path.join(sv_dst, "nc_contra_ipsi_raw_scatter.pdf"), dpi=300)
 
 fig = plt.figure(figsize=(12,7))
@@ -222,13 +222,13 @@ fig = plt.figure()
 ax = fig.add_axes([.15,.15,.5,.8])
 
 X = total_cell_counts_per_brain
-Y = _cratio.T
+Y = np.log10(_cratio.T)
 
 ax.scatter(X, Y, color = "k", s = 10)
 
 ax.set_xlabel("Total thalamic cell counts")
-ax.set_ylabel("Contra/Ipsi count ratio")
-ax.axhline(y=1.2, color = "grey")
+ax.set_ylabel("Log10 of Contra/Ipsi count ratio")
+ax.axhline(y=np.log10(1.2), color = "grey")
 plt.savefig(os.path.join(sv_dst, "thal_contra_ipsi_raw_scatter.pdf"), dpi=300)
 
 fig = plt.figure(figsize=(9,5))
