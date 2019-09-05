@@ -57,7 +57,7 @@ tif.imsave("/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_s
 id_df.to_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts_16bit.xlsx", index = None)
 
 #%%
-#have to do this differently for pma, as the "problem ids" do actually map to regions??? ask tom why maybe?
+#pma
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
 
 ann = sitk.GetArrayFromImage(sitk.ReadImage(ann_pth))
