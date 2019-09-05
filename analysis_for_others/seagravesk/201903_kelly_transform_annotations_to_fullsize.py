@@ -16,7 +16,7 @@ from tools.registration.transform_cell_counts import get_fullsizedims_from_kwarg
 from scipy.ndimage.interpolation import zoom
 
 #setting paths
-ann = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.nrrd"
+ann = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans_16bit.tif"
 scratch_dir = "/jukebox/scratch/kellyms"
 src = "/jukebox/wang/seagravesk/lightsheet/201908_cfos_left_side_only_registration"
 
@@ -51,6 +51,17 @@ aldst = os.path.join(braindst, "transformed_annotations"); makedir(aldst)
 #transformix
 transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0, r2s1], dst = aldst)
 [change_interpolation_order(xx,0) for xx in transformfiles]
+
+#change the parameter in the transform files that outputs 16bit images instead
+for fl in transformfiles:# Read in the file
+    with open(fl, "r") as file:
+        filedata = file.read()
+    # Replace the target string
+    filedata = filedata.replace('(ResultImagePixelType "short")', '(ResultImagePixelType "float")')
+    # Write the file out again
+    with open(fl, "w") as file:
+      file.write(filedata)
+#run transformix  
 transformix_command_line_call(ann, aldst, transformfiles[-1])
 
 #now zoom out - this is heavy!
@@ -65,7 +76,7 @@ bigdvann = np.swapaxes(zoom(tann, [1,1,dv0/float(dv1)], order=0),0,2)
 
 #make memmap
 annout = os.path.join(aldst, "transformed_annotations.npy")
-annout = load_memmap_arr(annout, mode="w+", dtype="float32", shape=(dv0,ap0,ml0))
+annout = load_memmap_arr(annout, mode="w+", dtype="uint16", shape=(dv0,ap0,ml0))
 
 #now rotate and scale each in ap and ml
 for iii,zplane in enumerate(bigdvann):

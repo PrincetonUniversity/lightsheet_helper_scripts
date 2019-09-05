@@ -24,12 +24,11 @@ else:
     
     arrpth = os.path.join(pths[jobid], "transformed_annotations/transformed_annotations.npy")
     dst = os.path.join(pths[jobid], "annotations_as_single_tifs")
-    if not os.path.exists(dst): 
-        os.mkdir(dst)
-        arr = np.lib.format.open_memmap(arrpth, dtype = "float32", mode = "r")
-        
-        print("\nfile with shape: {}".format(arr.shape))
-        
-        for z in range(arr.shape[0]):
-            tifffile.imsave(os.path.join(dst, "annotation_Z{}.tif".format(str(z).zfill(4))), arr[z], compress = 6)
-            print("\nmade z plane # {}".format(z))
+    if not os.path.exists(dst): os.mkdir(dst)
+    arr = np.lib.format.open_memmap(arrpth, dtype = "uint16", mode = "r")
+    
+    print("\nfile with shape: {}".format(arr.shape))
+    
+    for z in range(arr.shape[0]):
+        tifffile.imsave(os.path.join(dst, "annotation_Z{}.tif".format(str(z).zfill(4))), arr[z], compress = 6)
+        print("\nmade z plane # {}".format(z))
