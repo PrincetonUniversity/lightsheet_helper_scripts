@@ -24,46 +24,6 @@ mpl.rcParams["ps.fonttype"] = 42
 
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 
-def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
-    """Find a connected area of high intensity, using a basic filter + threshold + connected components approach
-    
-    by: bdeverett
-
-    Parameters
-    ----------
-    img : np.ndarray
-        3D stack in which to find site (technically need not be 3D, so long as filter parameter is adjusted accordingly)
-    thresh: float
-        threshold for site-of-interest intensity, in number of standard deviations above the mean
-    filter_kernel: tuple
-        kernel for filtering of image before thresholding
-    num_sites_to_keep: int, number of injection sites to keep, useful if multiple distinct sites
-    
-    Returns
-    --------
-    bool array of volume where coordinates where detected
-    """
-    from scipy.ndimage.filters import gaussian_filter as gfilt
-    from scipy.ndimage import label
-    if type(im) == str: im = tifffile.imread(im)
-
-    filtered = gfilt(im, filter_kernel)
-    thresholded = filtered > filtered.mean() + thresh*filtered.std() 
-    labelled,nlab = label(thresholded)
-
-    if nlab == 0:
-        raise Exception("Site not detected, try a lower threshold?")
-    elif nlab == 1:
-        return labelled.astype(bool)
-    elif num_sites_to_keep == 1:
-        sizes = [np.sum(labelled==i) for i in range(1,nlab+1)]
-        return labelled == np.argmax(sizes)+1
-    else:
-        sizes = [np.sum(labelled==i) for i in range(1,nlab+1)]
-        vals = [i+1 for i in np.argsort(sizes)[-num_sites_to_keep:][::-1]]
-        return np.in1d(labelled, vals).reshape(labelled.shape)
-   
-
 
 ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
 
@@ -89,38 +49,27 @@ brains = ["20170410_tp_bl6_lob6a_ml_repro_01", "20160823_tp_bl6_cri_500r_02", "2
 "20161207_db_bl6_lob6a_850r_53hr", "20160622_db_bl6_crii_52hr_01", "20161207_db_bl6_lob6a_50rml_53d5hr",
 "20161205_tp_bl6_lob45_1000r_01", "20160801_db_l7_cri_01_mid_64hr"]    
 
-src = "/jukebox/wang/pisano/tracing_output/antero_4x"
+src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/injection_sites"
 
-flds = [os.path.join(src, xx) for xx in brains]
+imgs = [os.path.join(src, xx+".tif.tif") for xx in brains]
 
 #pool brain names and L/R designation into dict
 lr_dist = {}
 thal_inj_vol = {}
 
 #get inj vol roundabout way
-for fld in flds:
-    brain = os.path.basename(fld)
+for img in imgs:
+    brain = os.path.basename(img)
     print(brain)
-    fl = os.listdir(os.path.join(fld, "elastix"))
-    fl.sort()
-    inj_pth = os.path.join(os.path.join(fld, "elastix"), fl[0]+"/result.tif")
-    inj_vol = tifffile.imread(inj_pth).astype("float32")
-    inj_vol[inj_vol < 0] = 65000
+    inj_vol = tifffile.imread(img)
     z,y,x = inj_vol.shape
-
-    arr = find_site(inj_vol[:, 450:, :])
-    #find center of mass
-    z_c,y_c,x_c = center_of_mass(arr)
+    
+    z_c,y_c,x_c = center_of_mass(inj_vol)
     #take distance from center to arbitrary "midline" (aka half of z axis)
     dist = z_c-(z/2)
     #save to dict 
-    lr_dist[brain] = dist
-    thal_inj_vol[brain] = np.sum(arr)
-    
-    plt.imshow(np.max(inj_vol, axis = 0), "gist_yarg") 
-    plt.imshow(np.max(arr, axis = 0), cmap, alpha = 0.3) 
-    plt.savefig("/home/wanglab/Desktop/%s_inj.pdf" % brain)
-    plt.close()
+    lr_dist[brain[:-8]] = dist
+    thal_inj_vol[brain[:-8]] = np.sum(inj_vol)
     
     if dist < 0:
         print("brain {} has a left-sided injection\n".format(brain))
