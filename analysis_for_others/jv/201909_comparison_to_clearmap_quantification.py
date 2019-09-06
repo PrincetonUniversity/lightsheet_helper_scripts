@@ -11,6 +11,7 @@ from tools.conv_net.utils.io import pairwise_distance_metrics, read_roi_zip
 
 src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/clearmap_accuracy_quantification"
 dst = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/clearmap_accuracy_quantification/results"
+
 #keeping this order bc that is how the rois are save in the pickle file
 rois = ["dp_ann_201904_an19_ymazefos_020719_pfc_z380-399_dp_ann.RoiSet.zip",
         "dp_ann_201904_an19_ymazefos_020719_cortex_z380-399_02_dp_ann.RoiSet.zip",
@@ -59,9 +60,11 @@ for cutoff in cutoffs:
         if n%100 == 0: print(n)
         
         detected_cells = np.asarray([v for k,v in dct[fld].items()])
+        #cells were accidently saved as x y z instead
+        detected_cells_reshape = np.asarray([np.array([[z,y,x] for x,y,z in vol]) for vol in detected_cells])
         
-        measures = [pairwise_distance_metrics(annotated_cells[i], detected_cells[i], cutoff = cutoff, verbose = False) for i
-                    in range(len(detected_cells))] 
+        measures = [pairwise_distance_metrics(annotated_cells[i], detected_cells_reshape[i], cutoff = cutoff, verbose = False) for i
+                    in range(len(detected_cells_reshape))] 
         
         tp = sum([measure[1] for measure in measures])
         fp = sum([measure[2] for measure in measures])
@@ -80,5 +83,5 @@ for cutoff in cutoffs:
         df.loc[df.parameters == os.path.basename(fld), "fp"] = fp
         df.loc[df.parameters == os.path.basename(fld), "fn"] = fn
                 
-    df.to_csv(os.path.join(dst, "clearmap_performance_measures_voxelcutoff_%02d_v2.csv" % cutoff))
+    df.to_csv(os.path.join(dst, "clearmap_performance_measures_voxelcutoff_%02d.csv" % cutoff))
     

@@ -246,7 +246,7 @@ if __name__ == "__main__":
                                     detectCellShapeParameter = {"threshold": int_threshold}, verbose = False)
                             
                             cells_reshape = np.array([[z,y,x] for x,y,z in c[0]]) #now z,y,x
-                            dct[os.path.basename(fn)] = c[0] #save cells wth volume name
+                            dct[os.path.basename(fn)] = cells_reshape #save cells wth volume name
     
                         bigdct["int_threshold%04d_max_threshold%02d_DoG%02d_size%02d_background%02d" % (int_threshold,
                                                              max_threshold, DoG, size, background)] = dct #save volumes as part of thresholds
