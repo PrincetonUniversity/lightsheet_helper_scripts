@@ -41,6 +41,7 @@ cell_counts_per_brain_left = data["cell_counts_per_brain_left"][curated_brains]
 cell_counts_per_brain_right = data["cell_counts_per_brain_right"][curated_brains]
 density_per_brain_left = data["density_per_brain_left"][curated_brains]
 density_per_brain_right = data["density_per_brain_right"][curated_brains]
+volume_per_brain = data["volume_per_brain_left"][curated_brains]
 lr_dist = data["lr_dist"]
 
 brains = np.array(inj_dct["brainnames"])[curated_brains]
@@ -51,6 +52,7 @@ vols = np.array(vols)[curated_brains]
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 #preprocessing
+scale_factor = 0.020
 thal_left_counts = cell_counts_per_brain_left
 thal_right_counts = cell_counts_per_brain_right
 thal_density_left = density_per_brain_left
@@ -98,6 +100,7 @@ sort_cratio = _cratio.T[sort_var]
 sort_dcontra = _dcontra.T[sort_var]
 sort_dipsi = _dipsi.T[sort_var]
 sort_dratio = _dratio.T[sort_var]
+sort_vox_per_region = volume_per_brain[np.argsort(_dist, axis = 0)]
 
 sort_brains = np.array(lr_brains)[np.argsort(primary_pool)]
 sort_vols = np.array(vols)[np.argsort(primary_pool)]
@@ -106,15 +109,15 @@ print(sort_dist.shape)
 print(sort_cratio.shape)
 
 #group thalamus regions in smaller, meta regions
-
 grps = np.array(["Sensory-motor thalamus" , "Polymodal thalamus"])
 sort_ccontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_ccontra])
-sort_dcontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_dcontra])
+sort_dcontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_ccontra])/(np.asarray([[np.sum(xx[:5]), 
+                                 np.sum(xx[5:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_cipsi])
-sort_dipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_dipsi])
+sort_dipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_cipsi])/(np.asarray([[np.sum(xx[:5]), 
+                                 np.sum(xx[5:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
-
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 df = pd.DataFrame()
@@ -139,14 +142,37 @@ df = df.round(2)
 df.to_csv(os.path.join(sv_dst, "contra_ipsi_ratios_by_inj.csv"))
 
 #-------------------------------------------------------------------------------------------------------------------------------------
+
+df = pd.DataFrame()
+df["mean_dratio_per_inj_smthal"] = np.asarray([np.mean(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["mean_dratio_per_inj_polythal"] = np.asarray([np.mean(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["med_dratio_per_inj_smthal"] = np.asarray([np.median(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["med_dratio_per_inj_polythal"] = np.asarray([np.median(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["std_dratio_per_inj_smthal"] = np.asarray([np.std(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["std_dratio_per_inj_polythal"] = np.asarray([np.std(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+                                         idx in np.unique(_primary_pool)])
+df["est_std_dratio_per_inj_smthal"] = np.asarray([mad(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
+                                         idx in np.unique(_primary_pool)])
+df["est_std_dratio_per_inj_polythal"] = np.asarray([mad(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
+                                         idx in np.unique(_primary_pool)])    
+df.index = ak_pool
+df = df.round(2)
+df.to_csv(os.path.join(sv_dst, "contra_ipsi_ratios_by_vermis_hemisphere.csv"))
+
+#-------------------------------------------------------------------------------------------------------------------------------------
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,0.5,0.8,0.8,0.8,0.5]})
 
 
 #set colormap specs
-vmaxcounts = 120
-whitetext = 30
+vmaxcounts = 70
+whitetext = 10
 
 #inj fractions
 ax = axes[0]

@@ -51,6 +51,8 @@ data["cell_counts_per_brain_left"] = cell_counts_per_brain_left
 data["cell_counts_per_brain_right"] = cell_counts_per_brain_right
 data["density_per_brain_left"] = density_per_brain_left
 data["density_per_brain_right"] = density_per_brain_right
+data["volume_per_brain_left"] = volume_per_brain_left
+
 
 data["lr_dist"] = lr_dist
 data["thal_nuclei"] = nuclei

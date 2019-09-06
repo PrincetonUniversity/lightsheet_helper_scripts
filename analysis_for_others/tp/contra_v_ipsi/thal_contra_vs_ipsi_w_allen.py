@@ -229,11 +229,11 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
         volume_per_brain.append(i)
         #re-initialise for next
         i = []  
-    volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
+    volume_per_brain = np.asarray(volume_per_brain)
     #calculate denisty
-    density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
+    density_per_brain = np.asarray([xx/(volume_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(cell_counts_per_brain)])
     
-    return cell_counts_per_brain, density_per_brain
+    return cell_counts_per_brain, density_per_brain, volume_per_brain
 
 #making dictionary of cells by region
 cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
@@ -246,16 +246,16 @@ nuclei = ["Ventral group of the dorsal thalamus", "Subparafascicular nucleus", "
           "Epithalamus"]
 
 #RIGHT SIDE
-cell_counts_per_brain_right, density_per_brain_right = get_cell_n_density_counts(brains, nuclei, structures, cells_regions)
+cell_counts_per_brain_right, density_per_brain_right, volume_per_brain_right = get_cell_n_density_counts(brains, nuclei, structures, cells_regions)
 #LEFT SIDE
 cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
-cell_counts_per_brain_left, density_per_brain_left = get_cell_n_density_counts(brains, nuclei, structures, cells_regions)
+cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_cell_n_density_counts(brains, nuclei, structures, cells_regions)
 
 
 #%%
 #preprocessing into contra/ipsi counts per brain, per structure
-
+scale_factor = 0.020
 nc_left_counts = cell_counts_per_brain_left
 nc_right_counts = cell_counts_per_brain_right
 nc_density_left = density_per_brain_left
@@ -310,7 +310,7 @@ sort_cratio = _cratio.T[np.argsort(_dist, axis = 0)]
 sort_dcontra = _dcontra.T[np.argsort(_dist, axis = 0)]
 sort_dipsi = _dipsi.T[np.argsort(_dist, axis = 0)]
 sort_dratio = _dratio.T[np.argsort(_dist, axis = 0)]
-
+sort_vox_per_region = volume_per_brain_left[np.argsort(_dist, axis = 0)]
 sort_inj = _inj[np.argsort(_dist)]   
 sort_brains = np.array(lr_brains)[np.argsort(_dist)]
 
@@ -318,12 +318,13 @@ print(sort_dist.shape)
 print(sort_cratio.shape)
 
 #group thalamus regions in smaller, meta regions
-
 grps = np.array(["Sensory-motor thalamus" , "Polymodal thalamus"])
 sort_ccontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_ccontra])
-sort_dcontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_dcontra])
+sort_dcontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_ccontra])/(np.asarray([[np.sum(xx[:5]), 
+                                 np.sum(xx[5:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_cipsi])
-sort_dipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_dipsi])
+sort_dipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_cipsi])/(np.asarray([[np.sum(xx[:5]), 
+                                 np.sum(xx[5:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
 #%%
@@ -333,8 +334,8 @@ fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (10,4), sharex = True, 
 
 
 #set colormap specs
-vmaxcounts = 150
-whitetext = 30
+vmaxcounts = 70
+whitetext = 10
 
 #inj fractions
 ax = axes[0]
