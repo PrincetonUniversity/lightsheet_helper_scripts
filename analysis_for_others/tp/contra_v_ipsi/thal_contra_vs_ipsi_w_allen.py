@@ -6,7 +6,6 @@ Created on Fri Aug 16 17:24:45 2019
 @author: wanglab
 """
 
-
 import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
 import SimpleITK as sitk
 from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister
@@ -17,6 +16,8 @@ from tools.utils.io import listdirfull, makedir, load_memmap_arr, load_np, lista
 from skimage.external import tifffile
 from tools.analysis.network_analysis import make_structure_objects
 from scipy.ndimage.measurements import center_of_mass
+import matplotlib.colors
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "red"]) #lime color makes cells pop
  
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
@@ -94,6 +95,7 @@ flds = [os.path.join(src, xx) for xx in brains]
 
 #pool brain names and L/R designation into dict
 lr_dist = {}
+thal_inj_vol = {}
 
 #get inj vol roundabout way
 for fld in flds:
@@ -102,16 +104,23 @@ for fld in flds:
     fl = os.listdir(os.path.join(fld, "elastix"))
     fl.sort()
     inj_pth = os.path.join(os.path.join(fld, "elastix"), fl[0]+"/result.tif")
-    inj_vol = tifffile.imread(inj_pth)
+    inj_vol = tifffile.imread(inj_pth).astype("float32")
+    inj_vol[inj_vol < 0] = 65000
     z,y,x = inj_vol.shape
 
-    arr = find_site(inj_vol[:, 423:, :])
+    arr = find_site(inj_vol[:, 450:, :])
     #find center of mass
     z_c,y_c,x_c = center_of_mass(arr)
     #take distance from center to arbitrary "midline" (aka half of z axis)
     dist = z_c-(z/2)
     #save to dict 
     lr_dist[brain] = dist
+    thal_inj_vol[brain] = np.sum(arr)
+    
+    plt.imshow(np.max(inj_vol, axis = 0), "gist_yarg") 
+    plt.imshow(np.max(arr, axis = 0), cmap, alpha = 0.3) 
+    plt.savefig("/home/wanglab/Desktop/%s_inj.pdf" % brain)
+    plt.close()
     
     if dist < 0:
         print("brain {} has a left-sided injection\n".format(brain))

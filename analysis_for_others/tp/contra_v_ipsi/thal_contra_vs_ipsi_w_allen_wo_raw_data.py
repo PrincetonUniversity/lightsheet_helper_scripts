@@ -24,11 +24,11 @@ inj_dct = pckl.load(open(inj_pth, "rb"), encoding = "latin1")
 #inj volumes
 inj_vol_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_inj_vol.p" 
 inj_vol_dct = pckl.load(open(inj_vol_pth, "rb"), encoding = "latin1")
-inj_vol = inj_vol_dct["inj_vol"]
+inj_vol = inj_vol_dct["thal_inj_vol"]
 iv = []
 for k,v in inj_vol.items():
     iv.append(v)
-vols = [xx/1e9 for xx in iv]
+vols = [xx/1e4 for xx in iv]
 
 #set dst 
 sv_dst = "/home/wanglab/Desktop"
@@ -47,6 +47,7 @@ brains = np.array(inj_dct["brainnames"])[curated_brains]
 primary_pool = inj_dct["primary_pool"][curated_brains]
 ak_pool = inj_dct["cb_regions_pool"]
 inj = inj_dct["expr_all_as_frac_of_inj_pool"][curated_brains]
+vols = np.array(vols)[curated_brains]
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 #preprocessing
@@ -200,7 +201,7 @@ for ri,row in enumerate(show):
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", 
                     ha="center", va="center", fontsize="x-small")
 
-ylabel = ["Injection volume\n($10^9$ voxels)"]
+ylabel = ["Injection volume\n($10^4$ voxels)"]
 ax.set_yticks(np.arange(len(ylabel))+.5)
 ax.set_yticklabels(ylabel, fontsize="x-small")
 
@@ -404,7 +405,7 @@ for ri,row in enumerate(show):
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", 
                     ha="center", va="center", fontsize="x-small")
 
-ylabel = ["Injection volume\n($10^9$ voxels)"]
+ylabel = ["Injection volume\n($10^4$ voxels)"]
 ax.set_yticks(np.arange(len(ylabel))+.5)
 ax.set_yticklabels(ylabel, fontsize="x-small")
 
