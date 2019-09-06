@@ -20,6 +20,7 @@ data = pckl.load(open(pth, "rb"), encoding = "latin1")
 
 #set dst 
 dst = "/home/wanglab/Desktop"
+dst = '/Users/tjp7rr1/Downloads/'
 
 cell_counts_per_brain_p = data["cell_counts_per_brain_p"]
 sois = data["sois"]
@@ -116,7 +117,7 @@ ax.set_yticks(np.arange(len(sois))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in sois], fontsize="xx-small")
 plt.savefig(os.path.join(dst,"str_mean_density.pdf"), bbox_inches = "tight")
 
-
+#%%
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
 density_per_brain_descending_order = np.sort(density_per_brain)
 order = np.argsort(np.mean(density_per_brain, axis = 0))

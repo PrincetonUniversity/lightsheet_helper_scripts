@@ -10,6 +10,7 @@ import os, numpy as np, pandas as pd, matplotlib.pyplot as plt
 from tools.conv_net.utils.io import pairwise_distance_metrics, read_roi_zip
 
 pth = "/jukebox/wang/zahra/kelly_cell_detection_analysis/comparison_to_clearmap/annotated_volumes"
+dst = "/jukebox/wang/zahra/kelly_cell_detection_analysis/comparison_to_clearmap/results"
 
 flds = [os.path.join(pth, "sweep/"+xx) for xx in os.listdir(os.path.join(pth, "sweep")) if "max" in xx] #only using the ones from the new sweep
 roi_pths = [os.path.join(pth, xx) for xx in os.listdir(pth) if "RoiSet.zip" in xx]; roi_pths.sort() #the sorts here are important, for order of volumes
@@ -27,10 +28,22 @@ for cutoff in cutoffs:
     print("cutoff: %s \n\n" % cutoff)
     df = pd.DataFrame()
     df["parameters"] = [os.path.basename(xx) for xx in flds]
-    df["true_positives"] = np.zeros(len(df))
-    df["false_positives"] = np.zeros(len(df))
-    df["false_negatives"] = np.zeros(len(df))
-    df["f1"] = np.zeros(len(df))
+    
+    df["tp_f37104_demonstrator"] = np.zeros(len(df))
+    df["tp_m37079_mouse2"] = np.zeros(len(df))
+    df["tp_f37077_observer"] = np.zeros(len(df))
+    
+    df["tp_f37104_demonstrator"] = np.zeros(len(df))
+    df["fp_m37079_mouse2"] = np.zeros(len(df))
+    df["fp_f37077_observer"] = np.zeros(len(df))
+    
+    df["fn_f37104_demonstrator"] = np.zeros(len(df))
+    df["fn_m37079_mouse2"] = np.zeros(len(df))
+    df["fn_f37077_observer"] = np.zeros(len(df))
+    
+    df["f1_f37104_demonstrator"] = np.zeros(len(df))
+    df["f1_m37079_mouse2"] = np.zeros(len(df))
+    df["f1_f37077_observer"] = np.zeros(len(df))
     
     for n, fld in enumerate(flds):
         if n%100 == 0: print(n)
@@ -38,25 +51,33 @@ for cutoff in cutoffs:
         detected_cells = np.asarray([np.load(arr_pth) for arr_pth in arr_pths])
         measures = [pairwise_distance_metrics(annotated_cells[i], detected_cells[i], cutoff = cutoff, verbose = False) for i
                     in range(len(arr_pths))] 
-        #measures consists of paired, tp, fp, fn, in that order
-        tp = sum([measures[i][1] for i in range(len(measures))])
-        fp = sum([measures[i][2] for i in range(len(measures))])
-        fn = sum([measures[i][3] for i in range(len(measures))])
         
-        try: 
-            precision = tp/(tp+fp)
-            recall = tp/(tp+fn) #calculating precision and recall
-            f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
-        except Exception as e:
-            print(e)
-            f1 = np.nan #if tp, fn, etc. are 0
-            
-        df.loc[df.parameters == os.path.basename(fld), "f1"] = f1
-        df.loc[df.parameters == os.path.basename(fld), "true_positives"] = tp
-        df.loc[df.parameters == os.path.basename(fld), "false_positives"] = fp
-        df.loc[df.parameters == os.path.basename(fld), "false_negatives"] = fn
-        
-    df.to_csv(os.path.join(pth, "clearmap_performance_measures_kelly_cfos_voxelcutoff_%02d_v2.csv" % cutoff))
+        for m, measure in enumerate(measures):
+            paired, tp, fp, fn = measure
+            try: 
+                precision = tp/(tp+fp)
+                recall = tp/(tp+fn) #calculating precision and recall
+                f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
+            except Exception as e:
+                print(e)
+                f1 = np.nan #if tp, fn, etc. are 0                
+            if m == 0: #these will always be in this order, hence saving this way, easier than doin this auto with the long filenames
+                df.loc[df.parameters == os.path.basename(fld), "f1_f37104_demonstrator"] = f1
+                df.loc[df.parameters == os.path.basename(fld), "tp_f37104_demonstrator"] = tp
+                df.loc[df.parameters == os.path.basename(fld), "fp_f37104_demonstrator"] = fp
+                df.loc[df.parameters == os.path.basename(fld), "fn_f37104_demonstrator"] = fn
+            if m == 1:
+                df.loc[df.parameters == os.path.basename(fld), "f1_m37079_mouse2"] = f1
+                df.loc[df.parameters == os.path.basename(fld), "tp_m37079_mouse2"] = tp
+                df.loc[df.parameters == os.path.basename(fld), "fp_m37079_mouse2"] = fp
+                df.loc[df.parameters == os.path.basename(fld), "fn_m37079_mouse2"] = fn
+            if m == 2:
+                df.loc[df.parameters == os.path.basename(fld), "f1_f37077_observer"] = f1
+                df.loc[df.parameters == os.path.basename(fld), "tp_f37077_observer"] = tp
+                df.loc[df.parameters == os.path.basename(fld), "fp_f37077_observer"] = fp
+                df.loc[df.parameters == os.path.basename(fld), "fn_f37077_observer"] = fn
+                
+    df.to_csv(os.path.join(dst, "clearmap_performance_measures_kelly_cfos_voxelcutoff_%02d_v2.csv" % cutoff))
     
 
 

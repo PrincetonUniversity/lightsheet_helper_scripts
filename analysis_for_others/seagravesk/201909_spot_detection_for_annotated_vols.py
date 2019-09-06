@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Wed Sep  4 15:29:59 2019
+Created on Thu Sep  5 15:56:45 2019
 
 @author: wanglab
 """
@@ -212,28 +212,29 @@ if __name__ == "__main__":
     import tifffile
     
     #run it on cfos volumes
-    pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/clearmap_accuracy_quantification"
-    inputs = os.path.join(pth, "raw_inputs")
-    vols = [os.path.join(inputs, xx) for xx in os.listdir(inputs) if "tif" in xx]
+    pth = "/jukebox/wang/zahra/kelly_cell_detection_analysis/comparison_to_clearmap/annotated_volumes"
+    vols = [os.path.join(pth, xx) for xx in os.listdir(pth) if "tif" in xx]
     
     #sweep
     max_thresholds = np.arange(2,10,2)
-    DoGs = np.arange(2,14,2)
+    DoGs = np.arange(2,16,2)
     backgrounds = np.arange(3, 13, 2)
     sizes = np.arange(2, 22, 2)
-    int_thresholds = np.arange(100, 1000, 200)
     
-    print("\n\niterations: %d" %(len(max_thresholds)*len(DoGs)*len(backgrounds)*len(sizes)*len(int_thresholds)))
-    
-    #save in one dict
-    bigdct = {}
-    for int_threshold in int_thresholds:
-        print(int_threshold)
-        for max_threshold in max_thresholds:
-            for DoG in DoGs:
-                for background in backgrounds:
-                    for size in sizes:
-                        dct = {}
+    for max_threshold in max_thresholds:
+        for DoG in DoGs:
+            for background in backgrounds:
+                for size in sizes:
+                    dst = os.path.join(pth, "sweep/max_threshold%02d_DoG%02d_size%02d_background%02d" % (max_threshold,
+                                                             DoG, size, background))
+                    
+                    if not os.path.exists(dst): 
+                        os.mkdir(dst)
+                        #save tifs elsewhere
+                        vis = os.path.join(dst, "stacks")
+                        if not os.path.exists(vis): os.mkdir(vis)
+                        
+                        print("\n\n{}".format(size))
                         for fn in vols:
                             img = io.readData(fn) #read as x,y,z
                             img = img.astype("uint16")
@@ -243,23 +244,21 @@ if __name__ == "__main__":
                                     filterDoGParameter = {"size": (DoG, DoG, 4)}, findExtendedMaximaParameter = {"h-max": None, 
                                                           "size": size, "threshold": max_threshold},
                                     findIntensityParameter = {"size": (3,3,3), "method": "Max"},
-                                    detectCellShapeParameter = {"threshold": int_threshold}, verbose = False)
+                                    detectCellShapeParameter = {"threshold": None}, verbose = False)
+                            
+                            print("done, found %d cells !" % c[0].shape[0])
                             
                             cells_reshape = np.array([[z,y,x] for x,y,z in c[0]]) #now z,y,x
-                            dct[os.path.basename(fn)] = c[0] #save cells wth volume name
-    
-                        bigdct["int_threshold%04d_max_threshold%02d_DoG%02d_size%02d_background%02d" % (int_threshold,
-                                                             max_threshold, DoG, size, background)] = dct #save volumes as part of thresholds
-    
-
-print("\nexporting to pickle...\n")
-#save data to pickle
-import pickle
-sv = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/clearmap_accuracy_quantification/clearmap_thresholds_sweep.p"
-
-with open(sv, "wb") as fp:
-    pickle.dump(bigdct, fp, protocol=pickle.HIGHEST_PROTOCOL)    
                             
+                            np.save(os.path.join(dst, os.path.basename(fn)[:-8]+"_clearmap.npy"), cells_reshape)
+                            
+                            cell_map = np.zeros_like(tifffile.imread(fn))
+                            
+                            for z,y,x in cells_reshape:
+                                cell_map[z,y,x] = 45000
+                            
+                            tifffile.imsave(os.path.join(vis, os.path.basename(fn)[:-8]+"_clearmap.tif"), cell_map.astype("float32"))
+                
 
 #%%  
     from skimage.morphology import ball
