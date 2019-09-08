@@ -13,7 +13,7 @@ import os, pickle as pckl
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
 data = {}
 
-data["inj_vol"] = inj_vol
+data["nc_inj_vol"] = nc_inj_vol
 #store data (serialize)
 with open(os.path.join(dst, "nc_inj_vol.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
@@ -34,6 +34,8 @@ data["cell_counts_per_brain_left"] = cell_counts_per_brain_left
 data["cell_counts_per_brain_right"] = cell_counts_per_brain_right
 data["density_per_brain_left"] = density_per_brain_left
 data["density_per_brain_right"] = density_per_brain_right
+data["volume_per_brain_left"] = volume_per_brain_left
+
 
 data["lr_dist"] = lr_dist
 data["nc_areas"] = nc_areas

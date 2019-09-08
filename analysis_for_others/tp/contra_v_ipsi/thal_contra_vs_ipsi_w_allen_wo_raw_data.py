@@ -115,30 +115,31 @@ grps = np.array(["Sensory-motor thalamus" , "Polymodal thalamus"])
 sort_ccontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_ccontra])
 sort_dcontra_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_ccontra])/(np.asarray([[np.sum(xx[:5]), 
                                  np.sum(xx[5:])] for xx in sort_vox_per_region])*(scale_factor**3))
+
 sort_cipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_cipsi])
 sort_dipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_cipsi])/(np.asarray([[np.sum(xx[:5]), 
                                  np.sum(xx[5:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
-
+sort_dratio_total_thal = (np.sum(sort_ccontra, axis = 1)/np.sum(sort_cipsi, axis = 1))
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 df = pd.DataFrame()
-df["mean_dratio_per_inj_smthal"] = np.asarray([np.mean(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+df["mean sm"] = np.asarray([np.mean(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
                                          idx in np.unique(_primary_pool)])
-df["mean_dratio_per_inj_polythal"] = np.asarray([np.mean(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+df["mean poly"] = np.asarray([np.mean(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
                                          idx in np.unique(_primary_pool)])
-df["med_dratio_per_inj_smthal"] = np.asarray([np.median(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+df["med sm"] = np.asarray([np.median(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
                                          idx in np.unique(_primary_pool)])
-df["med_dratio_per_inj_polythal"] = np.asarray([np.median(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+df["med poly"] = np.asarray([np.median(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
                                          idx in np.unique(_primary_pool)])
-df["std_dratio_per_inj_smthal"] = np.asarray([np.std(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
+df["std sm"] = np.asarray([np.std(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
                                          idx in np.unique(_primary_pool)])
-df["std_dratio_per_inj_polythal"] = np.asarray([np.std(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
+df["std poly"] = np.asarray([np.std(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
                                          idx in np.unique(_primary_pool)])
-df["est_std_dratio_per_inj_smthal"] = np.asarray([mad(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
+df["est std sm"] = np.asarray([mad(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
                                          idx in np.unique(_primary_pool)])
-df["est_std_dratio_per_inj_polythal"] = np.asarray([mad(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
+df["est std poly"] = np.asarray([mad(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
                                          idx in np.unique(_primary_pool)])    
 df.index = ak_pool
 df = df.round(2)
@@ -146,25 +147,49 @@ df.to_csv(os.path.join(sv_dst, "thal_contra_ipsi_ratios_by_inj.csv"))
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
-df = pd.DataFrame()
-df["mean_dratio_per_inj_vermis"] = [np.mean(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+df = pd.DataFrame(); df_total_thal = pd.DataFrame()
+df["mean vermis"] = [np.mean(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
                                                 axis=0) for i in range(len(sort_dratio_pool.T))] #only vermis    
-df["mean_dratio_per_inj_hem"] = [np.mean(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
-                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only hem
-df["med_dratio_per_inj_vermis"] = [np.median(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
-                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only vermis    
-df["med_dratio_per_inj_hem"] = [np.median(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
-                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only hem
-df["std_dratio_per_inj_vermis"] = [np.std(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
-                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only vermis    
-df["std_dratio_per_inj_hem"] = [np.std(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
-                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only hem
+df_total_thal["mean vermis"] = [np.mean(sort_dratio_total_thal[np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0)] #only vermis  
     
-df["est_std_dratio_per_inj_vermis"] = [mad(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+df["mean hem"] = [np.mean(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only hem
+df_total_thal["mean hem"] = [np.mean(sort_dratio_total_thal[np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0)] #only hem  
+
+df["med vermis"] = [np.median(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only vermis    
+df_total_thal["med vermis"] = [np.median(sort_dratio_total_thal[np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0)] #only vermis
+
+df["med hem"] = [np.median(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only hem
+df_total_thal["med hem"] = [np.median(sort_dratio_total_thal[np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0)] #only hem
+    
+df["std vermis"] = [np.std(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only vermis  
+df_total_thal["std vermis"] = [np.std(sort_dratio_total_thal[np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0)] #only vermis
+
+df["std hem"] = [np.std(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only hem
+df_total_thal["std hem"] = [np.std(sort_dratio_total_thal[np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0)] #only hem
+    
+df["est std vermis"] = [mad(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
                                                 axis=0)/0.6745 for i in range(len(sort_dratio_pool.T))] #only vermis
-df["est_std_dratio_per_inj_hem"] = [mad(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+df_total_thal["est std vermis"] = [mad(sort_dratio_total_thal[np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0)/0.6745] #only vermis
+
+df["est std hem"] = [mad(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
                                                 axis=0)/0.6745 for i in range(len(sort_dratio_pool.T))] #only hem  
-df.index = ["SM", "Poly"]
+df_total_thal["est std hem"] = [mad(sort_dratio_total_thal[np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0)/0.6745] #only hem
+
+df = df.append(df_total_thal)
+df.index = ["Sensory-motor thalamus", "Polymodal thalamus", "Thalamus"]
 df = df.round(2)
 df.to_csv(os.path.join(sv_dst, "thal_contra_ipsi_ratios_by_vermis_hemisphere.csv"))
 
@@ -594,14 +619,10 @@ plt.savefig(os.path.join(sv_dst, "thal_count_ratios.pdf"), bbox_inches = "tight"
 df = pd.DataFrame()
 #decimal to round by
 d = 2
-df["median_density_ratio"] = np.round(np.median(sort_dratio_pool, axis = 0), d)
-df["mean_density_ratio"] = np.round(np.mean(sort_dratio_pool, axis = 0), d)
-df["std_density_ratio"] = np.round(np.std(sort_dratio_pool, axis = 0), d)
-df["est_std_density_ratio"] = np.round(mad(sort_dratio_pool, axis = 0)/0.6745, d)
-df["median_count_ratio"] = np.round(np.median(sort_cratio_pool, axis = 0), d)
-df["mean_count_ratio"] = np.round(np.mean(sort_cratio_pool, axis = 0), d)
-df["std_count_ratio"] = np.round(np.std(sort_cratio_pool, axis = 0), d)
-df["est_std_count_ratio"] = np.round(mad(sort_cratio_pool, axis = 0)/0.6745, d)
+df["median ratio"] = np.round(np.median(sort_dratio_pool, axis = 0), d)
+df["mean ratio"] = np.round(np.mean(sort_dratio_pool, axis = 0), d)
+df["std ratio"] = np.round(np.std(sort_dratio_pool, axis = 0), d)
+df["est std ratio"] = np.round(mad(sort_dratio_pool, axis = 0)/0.6745, d)
 
 df.index = grps
 

@@ -24,7 +24,7 @@ inj_dct = pckl.load(open(inj_pth, "rb"), encoding = "latin1")
 #inj volumes
 inj_vol_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_inj_vol.p" 
 inj_vol_dct = pckl.load(open(inj_vol_pth, "rb"), encoding = "latin1")
-inj_vol = inj_vol_dct["inj_vol"]
+inj_vol = inj_vol_dct["nc_inj_vol"]
 iv = []
 for k,v in inj_vol.items():
     iv.append(v)
@@ -36,6 +36,7 @@ cell_counts_per_brain_left = data["cell_counts_per_brain_left"]
 cell_counts_per_brain_right = data["cell_counts_per_brain_right"]
 density_per_brain_left = data["density_per_brain_left"]
 density_per_brain_right = data["density_per_brain_right"]
+volume_per_brain_left = data["volume_per_brain_left"]
 lr_dist = data["lr_dist"]
 nc_areas = data["nc_areas"] #gives order of nc areas also
 
@@ -46,7 +47,8 @@ inj = inj_dct["expr_all_as_frac_of_inj_pool"]
 vols = [xx/1e9 for xx in iv]
 
 #-------------------------------------------------------------------------------------------------------------------------------------
-#preprocessing
+#preprocessing into contra/ipsi counts per brain, per structure
+scale_factor = 0.020
 nc_left_counts = cell_counts_per_brain_left
 nc_right_counts = cell_counts_per_brain_right
 nc_density_left = density_per_brain_left
@@ -93,32 +95,45 @@ inj = data["expr_all_as_frac_of_inj_pool"]
 _inj = np.asarray([inj[i] for i in range(len(inj)) if brains[i] in lr_brains])
 _primary_pool = np.asarray([primary_pool[i] for i in range(len(primary_pool)) if brains[i] in lr_brains])
 
-#sort by injection fractions
-sort_primary = np.sort(primary_pool)
-sort_var = np.argsort(primary_pool, axis = 0)
-sort_inj = _inj[sort_var]
-sort_dist = _dist[sort_var]
-sort_ccontra = _ccontra.T[sort_var]
-sort_cipsi = _cipsi.T[sort_var]
-sort_cratio = _cratio.T[sort_var]
-sort_dcontra = _dcontra.T[sort_var]
-sort_dipsi = _dipsi.T[sort_var]
-sort_dratio = _dratio.T[sort_var]
+#sort by distance
+sort_dist = np.sort(_dist)
+sort_ccontra = _ccontra.T[np.argsort(_dist, axis = 0)]
+sort_cipsi = _cipsi.T[np.argsort(_dist, axis = 0)]
+sort_cratio = _cratio.T[np.argsort(_dist, axis = 0)]
+sort_dcontra = _dcontra.T[np.argsort(_dist, axis = 0)]
+sort_dipsi = _dipsi.T[np.argsort(_dist, axis = 0)]
+sort_dratio = _dratio.T[np.argsort(_dist, axis = 0)]
+sort_vox_per_region = volume_per_brain_left[np.argsort(_dist, axis = 0)]
+sort_inj = _inj[np.argsort(_dist)]   
+sort_brains = np.array(lr_brains)[np.argsort(_dist)]
 
-sort_brains = np.array(lr_brains)[np.argsort(primary_pool)]
 sort_vols = np.array(vols)[np.argsort(primary_pool)]
 
 print(sort_dist.shape)
 print(sort_cratio.shape)
 
-#group into 3 regions
+#group nc regions in smaller, meta regions
+#frontal, medial, posterior?
+#['Infralimbic area', 'Prelimbic area', 'Anterior cingulate area',
+#       'Frontal pole, cerebral cortex', 'Orbital area', 'Gustatory areas',
+#       'Agranular insular area', 'Visceral area', 'Somatosensory areas',
+#       'Somatomotor areas', 'Retrosplenial area',
+#       'Posterior parietal association areas', 'Visual areas',
+#       'Temporal association areas', 'Auditory areas', 'Ectorhinal area',
+#       'Perirhinal area']
+#group_ind = [[0:7], [8:10], [10:]]
+
 grps = np.array(["Frontal\n(IL,PL,ACC,ORB,FRP,\nGU,AI,VISC)" , "Medial\n(MO,SS)", "Posterior\n(RSP,PTL,TE,PERI,ECT)"])
 sort_ccontra_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])
-sort_dcontra_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_dcontra])
+sort_dcontra_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])/(np.asarray([[np.sum(xx[0:7]), 
+                                        np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cipsi_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_cipsi])
-sort_dipsi_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_dipsi])
+sort_dipsi_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_cipsi])/(np.asarray([[np.sum(xx[0:7]), 
+                                      np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------
 
 df = pd.DataFrame()
 df["Mean (frontal)"] = np.asarray([np.mean(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
@@ -153,12 +168,13 @@ df.to_csv(os.path.join(sv_dst, "nc_contra_ipsi_ratios_by_inj.csv"))
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (15,6), sharex = True, 
-                         gridspec_kw = {"wspace":0, "hspace":0,"height_ratios": [1.5,0.3,1,1,1,0.3]})
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (15,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [1.5,1,1,1,0.3]})
 
-#set colormap specs
-vmaxcount = 500
-whitetext = 200
+#set colorbar features 
+maxdensity = 200
+whitetext = 40
 #inj fractions
 ax = axes[0]
 
@@ -173,8 +189,7 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
-                  boundaries=bounds, format="%d", 
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
                   shrink=0.9, aspect=5)
 cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
@@ -182,47 +197,12 @@ cb.ax.set_visible(False)
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
 
-#inj vols
 ax = axes[1]
-
-show = np.asarray([sort_vols])
-
-vmin = 0
-vmax = 8
-cmap = plt.cm.Greens 
-cmap.set_over('darkgreen')
-#colormap
-bounds = np.linspace(vmin,vmax,6)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
-                  boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
-cb.set_label("$mm^3$", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-cb.ax.set_visible(False)
-
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col < 6:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", 
-                    ha="center", va="center", fontsize="x-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", 
-                    ha="center", va="center", fontsize="x-small")
-
-ylabel = ["Injection volume\n($10^5$ $mm^3$)"]
-ax.set_yticks(np.arange(len(ylabel))+.5)
-ax.set_yticklabels(ylabel, fontsize="x-small")
-
-ax = axes[2]
 show = sort_dcontra_pool.T
 yaxis = grps
 
 vmin = 0
-vmax = vmaxcount
+vmax = maxdensity
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
@@ -240,25 +220,26 @@ cb.ax.set_visible(True)
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
         if col < whitetext:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", 
-                    va="center", fontsize="xx-small")
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", 
-                    va="center", fontsize="xx-small")
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
 
-
+# aesthetics
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+sort_brains = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Contra", fontsize="small")
 ax.yaxis.set_label_coords(-0.15,0.5)
 
-ax = axes[3]
+ax = axes[2]
 show = sort_dipsi_pool.T
 yaxis = grps
 
 vmin = 0
-vmax = vmaxcount
+vmax = maxdensity
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
@@ -276,13 +257,14 @@ cb.ax.set_visible(False)
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
         if col < whitetext:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", 
-                    va="center", fontsize="xx-small")
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", 
-                    va="center", fontsize="xx-small")
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
 
 # aesthetics
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+sort_brains = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
@@ -290,7 +272,7 @@ ax.set_ylabel("Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(-0.15,0.5)
 
 
-ax = axes[4]
+ax = axes[3]
 show = sort_dratio_pool.T
 yaxis = grps
 
@@ -313,21 +295,23 @@ cb.ax.set_visible(True)
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
         if col > 1.5:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", 
-                    va="center", fontsize="xx-small")
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", 
-                    va="center", fontsize="xx-small")
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
 
 # aesthetics
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+sort_brains = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Contra/Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(-0.15,0.5)
 
-ax = axes[5]
+ax = axes[4]
 show = np.asarray([sort_dist])
+br = lr_brains 
 
 vmin = -100
 vmax = 80
@@ -349,18 +333,18 @@ pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
         if col < -75 or col > 70:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", 
-                    va="center", fontsize="x-small")
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
         else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", 
-                    va="center", fontsize="x-small")        
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")        
 
-# aesthetics
-ax.set_xticks(np.arange(len(sort_brains))+.5)
-sort_brains = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize=6, ha="right")
+#remaking labeles so it doesn't look squished
+ax.set_xticks(np.arange(len(br))+.5)
+lbls = np.asarray(br)
+ax.set_xticklabels(br, rotation=30, fontsize=5, ha="right")
+
 ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
+
 
 plt.savefig(os.path.join(sv_dst, "nc_density_ratios.pdf"), bbox_inches = "tight")
 
@@ -576,14 +560,10 @@ plt.savefig(os.path.join(sv_dst, "nc_count_ratios.pdf"), bbox_inches = "tight")
 df = pd.DataFrame()
 #decimal to round by
 d = 2
-df["median_density_ratio"] = np.round(np.median(sort_dratio_pool, axis = 0), d)
-df["mean_density_ratio"] = np.round(np.mean(sort_dratio_pool, axis = 0), d)
-df["std_density_ratio"] = np.round(np.std(sort_dratio_pool, axis = 0), d)
-df["est_std_density_ratio"] = np.round(mad(sort_dratio_pool, axis = 0)/0.6745, d)
-df["median_count_ratio"] = np.round(np.median(sort_cratio_pool, axis = 0), d)
-df["mean_count_ratio"] = np.round(np.mean(sort_cratio_pool, axis = 0), d)
-df["std_count_ratio"] = np.round(np.std(sort_cratio_pool, axis = 0), d)
-df["est_std_count_ratio"] = np.round(mad(sort_cratio_pool, axis = 0)/0.6745, d)
+df["median ratio"] = np.round(np.median(sort_dratio_pool, axis = 0), d)
+df["mean ratio"] = np.round(np.mean(sort_dratio_pool, axis = 0), d)
+df["std ratio"] = np.round(np.std(sort_dratio_pool, axis = 0), d)
+df["est std ratio"] = np.round(mad(sort_dratio_pool, axis = 0)/0.6745, d)
 
 df.index = grps
 

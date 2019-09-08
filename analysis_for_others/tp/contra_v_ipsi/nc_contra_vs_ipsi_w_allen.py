@@ -21,47 +21,6 @@ mpl.rcParams["ps.fonttype"] = 42
 
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 
-def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
-    """Find a connected area of high intensity, using a basic filter + threshold + connected components approach
-    
-    by: bdeverett
-
-    Parameters
-    ----------
-    img : np.ndarray
-        3D stack in which to find site (technically need not be 3D, so long as filter parameter is adjusted accordingly)
-    thresh: float
-        threshold for site-of-interest intensity, in number of standard deviations above the mean
-    filter_kernel: tuple
-        kernel for filtering of image before thresholding
-    num_sites_to_keep: int, number of injection sites to keep, useful if multiple distinct sites
-    
-    Returns
-    --------
-    bool array of volume where coordinates where detected
-    """
-    from scipy.ndimage.filters import gaussian_filter as gfilt
-    from scipy.ndimage import label
-    if type(im) == str: im = tifffile.imread(im)
-
-    filtered = gfilt(im, filter_kernel)
-    thresholded = filtered > filtered.mean() + thresh*filtered.std() 
-    labelled,nlab = label(thresholded)
-
-    if nlab == 0:
-        raise Exception("Site not detected, try a lower threshold?")
-    elif nlab == 1:
-        return labelled.astype(bool)
-    elif num_sites_to_keep == 1:
-        sizes = [np.sum(labelled==i) for i in range(1,nlab+1)]
-        return labelled == np.argmax(sizes)+1
-    else:
-        sizes = [np.sum(labelled==i) for i in range(1,nlab+1)]
-        vals = [i+1 for i in np.argsort(sizes)[-num_sites_to_keep:][::-1]]
-        return np.in1d(labelled, vals).reshape(labelled.shape)
-   
-#%%
-
 ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
 
 #cut annotation file in middle
@@ -86,28 +45,27 @@ brains = ["20180409_jg46_bl6_lob6a_04", "20180608_jg75","20170204_tp_bl6_cri_175
  "20170130_tp_bl6_sim_rpv_01", "20170204_tp_bl6_cri_1000r_02", "20170212_tp_bl6_crii_250r_01", "20180417_jg61_bl6_crii_05",
  "20170116_tp_bl6_lob7_ml_08", "20180409_jg47_bl6_lob6a_05"]
     
-src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/reg_to_allen"
+src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
 
-flds = [os.path.join(src, xx) for xx in brains]
+imgs = [os.path.join(src, xx+".tif.tif") for xx in brains]
 
 #pool brain names and L/R designation into dict
 lr_dist = {}
+nc_inj_vol = {}
 
 #get inj vol roundabout way
-for fld in flds:
-    brain = os.path.basename(fld)
+for img in imgs:
+    brain = os.path.basename(img)
     print(brain)
-    inj_pth = os.path.join(os.path.join(fld, "inj_to_reg"), "result.tif")
-    inj_vol = tifffile.imread(inj_pth)
+    inj_vol = tifffile.imread(img)
     z,y,x = inj_vol.shape
-
-    arr = find_site(inj_vol[:, 412:, :])
-    #find center of mass
-    z_c,y_c,x_c = center_of_mass(arr)
+    
+    z_c,y_c,x_c = center_of_mass(inj_vol)
     #take distance from center to arbitrary "midline" (aka half of z axis)
     dist = z_c-(z/2)
     #save to dict 
-    lr_dist[brain] = dist
+    lr_dist[brain[:-8]] = dist
+    nc_inj_vol[brain[:-8]] = np.sum(inj_vol)
     
     if dist < 0:
         print("brain {} has a left-sided injection\n".format(brain))
@@ -116,7 +74,6 @@ for fld in flds:
     else:
         print("brain has an injection close to midline so not considering it rn\n")
 
-#%%
 
 #make structures
 #FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
@@ -160,7 +117,6 @@ for fl in post_transformed:
 #%%
 #------------------------------------------------------------------------------------------------------------------------------    
 #NOTE THAT ONLY HAVE TO DO THIS ONCE!!!! DO NOT NEED TO DO AGAIN UNLESS DOUBLE CHECKIHG
-
 def transformed_cells_to_ann(fld, ann, dst, fl_nm):
     """ consolidating to one function bc then no need to copy/paste """
     dct = {}
@@ -212,6 +168,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
         d_pooled_regions = {}
         
         for soi in structure:
+            print(soi)
             try:
                 soi = [s for s in structures if s.name==soi][0]
                 counts = [] #store counts in this list
@@ -232,7 +189,8 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
                                 volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
                 c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
                 d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-            except:
+            except Exception as e:
+                print(e)
                 for k, v in cells_regions[brain].items():
                     if k == soi:
                         counts.append(v)                    
@@ -267,11 +225,11 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
         volume_per_brain.append(i)
         #re-initialise for next
         i = []  
-    volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
+    volume_per_brain = np.asarray(volume_per_brain)
     #calculate denisty
-    density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
+    density_per_brain = np.asarray([xx/(volume_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(cell_counts_per_brain)])
     
-    return cell_counts_per_brain, density_per_brain
+    return cell_counts_per_brain, density_per_brain, volume_per_brain
 
 #making dictionary of cells by region
 cells_regions = pckl.load(open(os.path.join(dst, "nc_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
@@ -283,16 +241,16 @@ nc_areas = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Fr
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
 #RIGHT SIDE
-cell_counts_per_brain_right, density_per_brain_right = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
+cell_counts_per_brain_right, density_per_brain_right, volume_per_brain_right = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
 #LEFT SIDE
 cells_regions = pckl.load(open(os.path.join(dst, "nc_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
-cell_counts_per_brain_left, density_per_brain_left = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
+cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
 
 
 #%%
 #preprocessing into contra/ipsi counts per brain, per structure
-
+scale_factor = 0.020
 nc_left_counts = cell_counts_per_brain_left
 nc_right_counts = cell_counts_per_brain_right
 nc_density_left = density_per_brain_left
@@ -347,7 +305,7 @@ sort_cratio = _cratio.T[np.argsort(_dist, axis = 0)]
 sort_dcontra = _dcontra.T[np.argsort(_dist, axis = 0)]
 sort_dipsi = _dipsi.T[np.argsort(_dist, axis = 0)]
 sort_dratio = _dratio.T[np.argsort(_dist, axis = 0)]
-
+sort_vox_per_region = volume_per_brain_left[np.argsort(_dist, axis = 0)]
 sort_inj = _inj[np.argsort(_dist)]   
 sort_brains = np.array(lr_brains)[np.argsort(_dist)]
 
@@ -367,16 +325,22 @@ print(sort_cratio.shape)
 
 grps = np.array(["Frontal\n(IL,PL,ACC,ORB,FRP,\nGU,AI,VISC)" , "Medial\n(MO,SS)", "Posterior\n(RSP,PTL,TE,PERI,ECT)"])
 sort_ccontra_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])
-sort_dcontra_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_dcontra])
+sort_dcontra_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])/(np.asarray([[np.sum(xx[0:7]), 
+                                        np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cipsi_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_cipsi])
-sort_dipsi_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_dipsi])
+sort_dipsi_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_cipsi])/(np.asarray([[np.sum(xx[0:7]), 
+                                      np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
+
 #%%
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (15,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [1.5,1,1,1,0.3]})
 
+#set colorbar features 
+maxdensity = 200
+whitetext = 40
 #inj fractions
 ax = axes[0]
 
@@ -404,7 +368,7 @@ show = sort_dcontra_pool.T
 yaxis = grps
 
 vmin = 0
-vmax = 500
+vmax = maxdensity
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
@@ -421,7 +385,7 @@ cb.ax.set_visible(True)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 200:
+        if col < whitetext:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
@@ -441,7 +405,7 @@ show = sort_dipsi_pool.T
 yaxis = grps
 
 vmin = 0
-vmax = 500
+vmax = maxdensity
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
@@ -458,7 +422,7 @@ cb.ax.set_visible(False)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 200:
+        if col < whitetext:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
