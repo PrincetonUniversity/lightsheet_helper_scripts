@@ -7,12 +7,11 @@ Created on Fri Aug 16 17:24:45 2019
 """
 
 import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
-import SimpleITK as sitk
 from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister
 from tools.registration.register import change_transform_parameter_initial_transform
 from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files
 from tools.registration.transform_list_of_points import point_transformix, unpack_pnts
-from tools.utils.io import listdirfull, makedir, load_memmap_arr, load_np, listall, load_kwargs
+from tools.utils.io import makedir
 from skimage.external import tifffile
 from tools.analysis.network_analysis import make_structure_objects
 from scipy.ndimage.measurements import center_of_mass
@@ -78,10 +77,9 @@ for img in imgs:
     else:
         print("brain has an injection close to midline so not considering it rn\n")
 
-#%%
 
 #make structures
-#FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
+#FIXME: for some reason the allen table does not work on this, is it ok to use PMA...    
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)

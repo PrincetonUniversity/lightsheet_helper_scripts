@@ -4,6 +4,8 @@
 Created on Fri Aug 16 19:06:33 2019
 
 @author: wanglab
+
+outputs all figures and dataframes to 'dst' directory
 """
 
 import matplotlib.pyplot as plt
@@ -118,28 +120,6 @@ sort_dipsi_pool = np.asarray([[np.sum(xx[:5]), np.sum(xx[5:])] for xx in sort_ci
                                  np.sum(xx[5:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
-#-------------------------------------------------------------------------------------------------------------------------------------
-
-df = pd.DataFrame()
-df["mean_dratio_per_inj_smthal"] = np.asarray([np.mean(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
-                                         idx in np.unique(_primary_pool)])
-df["mean_dratio_per_inj_polythal"] = np.asarray([np.mean(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
-                                         idx in np.unique(_primary_pool)])
-df["med_dratio_per_inj_smthal"] = np.asarray([np.median(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
-                                         idx in np.unique(_primary_pool)])
-df["med_dratio_per_inj_polythal"] = np.asarray([np.median(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
-                                         idx in np.unique(_primary_pool)])
-df["std_dratio_per_inj_smthal"] = np.asarray([np.std(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0) for 
-                                         idx in np.unique(_primary_pool)])
-df["std_dratio_per_inj_polythal"] = np.asarray([np.std(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0) for 
-                                         idx in np.unique(_primary_pool)])
-df["est_std_dratio_per_inj_smthal"] = np.asarray([mad(sort_dratio_pool.T[0][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
-                                         idx in np.unique(_primary_pool)])
-df["est_std_dratio_per_inj_polythal"] = np.asarray([mad(sort_dratio_pool.T[1][np.where(_primary_pool == idx)[0]], axis=0)/0.6745 for 
-                                         idx in np.unique(_primary_pool)])    
-df.index = ak_pool
-df = df.round(2)
-df.to_csv(os.path.join(sv_dst, "contra_ipsi_ratios_by_inj.csv"))
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
@@ -162,7 +142,31 @@ df["est_std_dratio_per_inj_polythal"] = np.asarray([mad(sort_dratio_pool.T[1][np
                                          idx in np.unique(_primary_pool)])    
 df.index = ak_pool
 df = df.round(2)
-df.to_csv(os.path.join(sv_dst, "contra_ipsi_ratios_by_vermis_hemisphere.csv"))
+df.to_csv(os.path.join(sv_dst, "thal_contra_ipsi_ratios_by_inj.csv"))
+
+#-------------------------------------------------------------------------------------------------------------------------------------
+
+df = pd.DataFrame()
+df["mean_dratio_per_inj_vermis"] = [np.mean(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only vermis    
+df["mean_dratio_per_inj_hem"] = [np.mean(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only hem
+df["med_dratio_per_inj_vermis"] = [np.median(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only vermis    
+df["med_dratio_per_inj_hem"] = [np.median(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only hem
+df["std_dratio_per_inj_vermis"] = [np.std(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only vermis    
+df["std_dratio_per_inj_hem"] = [np.std(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0) for i in range(len(sort_dratio_pool.T))] #only hem
+    
+df["est_std_dratio_per_inj_vermis"] = [mad(sort_dratio_pool.T[i][np.where((_primary_pool == 0) | (_primary_pool == 1))], 
+                                                axis=0)/0.6745 for i in range(len(sort_dratio_pool.T))] #only vermis
+df["est_std_dratio_per_inj_hem"] = [mad(sort_dratio_pool.T[i][np.where((_primary_pool != 0) & (_primary_pool != 1))], 
+                                                axis=0)/0.6745 for i in range(len(sort_dratio_pool.T))] #only hem  
+df.index = ["SM", "Poly"]
+df = df.round(2)
+df.to_csv(os.path.join(sv_dst, "thal_contra_ipsi_ratios_by_vermis_hemisphere.csv"))
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 ## display
@@ -171,7 +175,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (10,4), sharex = True, 
 
 
 #set colormap specs
-vmaxcounts = 70
+vmaxcounts = 50
 whitetext = 10
 
 #inj fractions
