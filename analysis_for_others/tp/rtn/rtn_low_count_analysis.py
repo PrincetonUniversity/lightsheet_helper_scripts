@@ -18,30 +18,14 @@ from scipy.ndimage.measurements import center_of_mass
 import matplotlib.colors, statsmodels.api as sm
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "red"]) #lime color makes cells pop
 from scipy.stats import median_absolute_deviation as mad
+from scipy.ndimage.filters import gaussian_filter as gfilt
+from scipy.ndimage import label
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 
 def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
-    """Find a connected area of high intensity, using a basic filter + threshold + connected components approach
-    
-    by: bdeverett
-    Parameters
-    ----------
-    img : np.ndarray
-        3D stack in which to find site (technically need not be 3D, so long as filter parameter is adjusted accordingly)
-    thresh: float
-        threshold for site-of-interest intensity, in number of standard deviations above the mean
-    filter_kernel: tuple
-        kernel for filtering of image before thresholding
-    num_sites_to_keep: int, number of injection sites to keep, useful if multiple distinct sites
-    
-    Returns
-    --------
-    bool array of volume where coordinates where detected
-    """
-    from scipy.ndimage.filters import gaussian_filter as gfilt
-    from scipy.ndimage import label
+
     if type(im) == str: im = tifffile.imread(im)
 
     filtered = gfilt(im, filter_kernel)
@@ -94,6 +78,9 @@ brains = ["20160622_db_bl6_crii_52hr_01", "20160622_db_bl6_unk_01", "20160801_db
           "20170411_db_bl6_crii_lat_53hr", "20170411_db_bl6_crii_mid_53hr",
           "20170411_db_bl6_crii_rpv_53hr", "20170419_db_lob6b_rpv_53hr"]    
 
+brains_w_no_inj_vol = ["20170308_tp_bl6f_cri_2x_03", "20160920_tp_bl6_lob7_ml_01", "20170207_db_bl6_crii_1300r_02",
+                       "20160801_db_cri_02_1200rlow_52hr", "20170115_tp_bl6_lob6b_500r_05"]
+
 src = "/jukebox/wang/pisano/tracing_output/antero_4x"
 
 imgs = [os.path.join(src, xx) for xx in brains]
@@ -108,40 +95,45 @@ sv_dst = os.path.join(dst, "injection"); makedir(sv_dst)
 #get inj vol roundabout way
 for img in imgs:
     brain = os.path.basename(img)
-    print(brain)
     kwargs = load_kwargs(img)
-    try:
-        inj_vol_pth = [xx for xx in kwargs["volumes"] if xx.ch_type == "injch"][0]
-        inj_vol = tifffile.imread(inj_vol_pth.ch_to_reg_to_atlas)
-        inj_vol[inj_vol < 0] = 10000
-        assert np.sum(inj_vol < 0) == 0
-        z,y,x = inj_vol.shape
-        
-        arr = find_site(inj_vol[:, 423:, :])
-        #save segment
-        tifffile.imsave(os.path.join(sv_dst, brain+".tif"), arr.astype("uint16"))
-        
-        z_c,y_c,x_c = center_of_mass(arr)
-        #take distance from center to arbitrary "midline" (aka half of z axis)
-        dist = z_c-(z/2)
-        #save to dict 
-        lr_dist[brain] = dist
-        thal_inj_vol[brain] = np.sum(inj_vol)
-        
-        if dist < 0:
-            print("brain {} has a left-sided injection\n".format(brain))
-        elif dist > 0:
-            print("brain {} has a right-sided injection\n".format(brain))
-        else:
-            print("brain has an injection close to midline so not considering it rn\n")
-    except:
-        print("brain %s has no injection volume, segment from elsewhere\n" % brain)
-        brains_w_no_inj.append(img)
+    if not os.path.exists(os.path.join(sv_dst, brain+".tif")):
+        print(brain)
+        try:
+            if brain in brains_w_no_inj_vol:
+                inj_vol_pth = os.path.join(dst, brain+"_reg/result.1.tif")
+                inj_vol = tifffile.imread(inj_vol_pth)
+            else:
+                inj_vol_pth = [xx for xx in kwargs["volumes"] if xx.ch_type == "injch"][0]
+                inj_vol = tifffile.imread(inj_vol_pth.ch_to_reg_to_atlas)
+            inj_vol[inj_vol < 0] = 10000
+            assert np.sum(inj_vol < 0) == 0
+            z,y,x = inj_vol.shape
+            
+            arr = find_site(inj_vol[:, 423:, :])
+            #save segment
+            tifffile.imsave(os.path.join(sv_dst, brain+".tif"), arr.astype("uint16"))
+            
+            z_c,y_c,x_c = center_of_mass(arr)
+            #take distance from center to arbitrary "midline" (aka half of z axis)
+            dist = z_c-(z/2)
+            #save to dict 
+            lr_dist[brain] = dist
+            thal_inj_vol[brain] = np.sum(inj_vol)
+            
+            if dist < 0:
+                print("brain {} has a left-sided injection\n".format(brain))
+            elif dist > 0:
+                print("brain {} has a right-sided injection\n".format(brain))
+            else:
+                print("brain has an injection close to midline so not considering it rn\n")
+        except:
+            print("brain %s has no injection volume, segment from elsewhere\n" % brain)
+            brains_w_no_inj.append(img)
 
 #FIXME: temporarily dropping these brains with no inj, might use them again later
 #%%
 #make structures
-#FIXME: for some reason the allen table does not work on this, is it ok to use PMA...    
+#FIXME: for some reason the allen table does not work on this, is it ok to use PMA..?
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
 
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
@@ -259,7 +251,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
                     if k == soi:
                         counts.append(v)                    
                 #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))                c_pooled_regions[soi] = np.sum(np.asarray(counts))
+                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3)
                 c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
                 d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
                         
@@ -318,6 +310,7 @@ cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_
 #%%
 #regression total count on reticular thalamus count (y) for these brains
 #will sum left and right for this
+plt.figure()
 #X = np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1)
 x = np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1)
 #mask high count brain
@@ -398,6 +391,7 @@ primary_lob_n = np.asarray([np.where(primary == i)[0].shape[0] for i in np.uniqu
 #will sum left and right for this
 #ONLY VERMIS
 #X = (np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1))[primary < 10]
+plt.figure()
 x = (np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1))[primary < 10]
 #mask high count brain
 X = x[x < 1000]
@@ -414,8 +408,8 @@ for i,idx in enumerate(idxs):
 plt.xlabel("Total thalamic counts")    
 plt.ylabel("Thalamic nuclei counts")
 plt.title("Only vermis injections")
-plt.xlim([0, 200])
-plt.ylim([0, 30])
+#plt.xlim([0, 200])
+#plt.ylim([0, 30])
 plt.legend()
 plt.savefig(os.path.join(fig_dst, "thal_nuclei_reg_only_vermis.pdf"))
 
@@ -443,8 +437,8 @@ props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 # place a text box in upper left in axes coords
 ax.text(0.7, 0.95, textstr, transform=ax.transAxes, fontsize=12,
         verticalalignment='top', bbox=props)
-plt.xlim([0, 400])
-plt.ylim([0, 20])
+#plt.xlim([0, 400])
+#plt.ylim([0, 20])
 
 plt.savefig(os.path.join(fig_dst, "thal_rtn_ratio.pdf"))
 #%%
@@ -515,8 +509,8 @@ sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in 
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
 
 #%%
-fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (15,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [4,0.8,0.8,0.8,0.5]})
+fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (15,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [3,0.8,0.8,0.8,0.5]})
 
 
 #set colormap specs
@@ -576,7 +570,7 @@ for ri,row in enumerate(show):
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Contra", fontsize="small")
-ax.yaxis.set_label_coords(-0.25,0.5)
+ax.yaxis.set_label_coords(-0.15,0.5)
 
 ax = axes[2]
 show = sort_cipsi_pool.T
@@ -609,7 +603,7 @@ for ri,row in enumerate(show):
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Ipsi", fontsize="small")
-ax.yaxis.set_label_coords(-0.25,0.5)
+ax.yaxis.set_label_coords(-0.15,0.5)
 
 
 ax = axes[3]
@@ -643,7 +637,7 @@ for ri,row in enumerate(show):
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 ax.set_ylabel("Contra/Ipsi", fontsize="small")
-ax.yaxis.set_label_coords(-0.25,0.5)
+ax.yaxis.set_label_coords(-0.15,0.5)
 
 ax = axes[4]
 show = np.asarray([sort_dist])
