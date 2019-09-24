@@ -499,18 +499,18 @@ print(sort_cratio.shape)
 
 #group thalamus regions in smaller, meta regions
 grps = np.array(["Sensory-motor thalamus" , "Polymodal thalamus"])
-sort_ccontra_pool = np.asarray([[np.sum(xx[:8]), np.sum(xx[8:])] for xx in sort_ccontra])
-sort_dcontra_pool = np.asarray([[np.sum(xx[:8]), np.sum(xx[8:])] for xx in sort_ccontra])/(np.asarray([[np.sum(xx[:8]), 
+sort_ccontra_pool = np.asarray([[np.sum(xx[:8]), np.sum(xx[8:-1])] for xx in sort_ccontra])
+sort_dcontra_pool = np.asarray([[np.sum(xx[:8]), np.sum(xx[8:-1])] for xx in sort_ccontra])/(np.asarray([[np.sum(xx[:8]), 
                                  np.sum(xx[8:])] for xx in sort_vox_per_region])*(scale_factor**3))
-sort_cipsi_pool = np.asarray([[np.sum(xx[:8]), np.sum(xx[8:])] for xx in sort_cipsi])
-sort_dipsi_pool = np.asarray([[np.sum(xx[:8]), np.sum(xx[8:])] for xx in sort_cipsi])/(np.asarray([[np.sum(xx[:8]), 
+sort_cipsi_pool = np.asarray([[np.sum(xx[:8]), np.sum(xx[8:-1])] for xx in sort_cipsi])
+sort_dipsi_pool = np.asarray([[np.sum(xx[:8]), np.sum(xx[8:-1])] for xx in sort_cipsi])/(np.asarray([[np.sum(xx[:8]), 
                                  np.sum(xx[8:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
 
 #%%
-fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (15,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [3,0.8,0.8,0.8,0.5]})
+fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (18,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [3,1.6,0.8,0.8,0.8,0.4]})
 
 
 #set colormap specs
@@ -539,7 +539,42 @@ cb.ax.set_visible(False)
 ax.set_yticks(np.arange(len(ak))+.5)
 ax.set_yticklabels(np.flipud(ak), fontsize="x-small")
 
+
 ax = axes[1]
+show = np.array([(density_per_brain_left[:, 2]+density_per_brain_right[:, 13])[np.argsort(_dist, axis = 0)], #vpl
+                 (density_per_brain_left[:, 3]+density_per_brain_right[:, 13])[np.argsort(_dist, axis = 0)], #vpm
+                 (density_per_brain_left[:, 10]+density_per_brain_right[:, 13])[np.argsort(_dist, axis = 0)], #md
+                 (density_per_brain_left[:, 13]+density_per_brain_right[:, 13])[np.argsort(_dist, axis = 0)]]) #rtn
+yaxis = ["VPL density", "VPM density", "MD density", "RTN density"]
+
+vmin = 0
+vmax = 20
+cmap = plt.cm.Greens
+cmap.set_over("darkgreen")
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%d", shrink=0.8, aspect=10)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col > 15:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
+
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+
+ax = axes[2]
 show = sort_ccontra_pool.T
 yaxis = grps
 
@@ -572,7 +607,8 @@ ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "tha
 ax.set_ylabel("Contra", fontsize="small")
 ax.yaxis.set_label_coords(-0.15,0.5)
 
-ax = axes[2]
+
+ax = axes[3]
 show = sort_cipsi_pool.T
 yaxis = grps
 
@@ -606,7 +642,7 @@ ax.set_ylabel("Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(-0.15,0.5)
 
 
-ax = axes[3]
+ax = axes[4]
 show = sort_dratio_pool.T
 yaxis = grps
 
@@ -639,7 +675,7 @@ ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "tha
 ax.set_ylabel("Contra/Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(-0.15,0.5)
 
-ax = axes[4]
+ax = axes[5]
 show = np.asarray([sort_dist])
 br = lr_brains 
 

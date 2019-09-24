@@ -10,7 +10,7 @@ import tifffile as tif, numpy as np
 
 ann = tif.imread("/home/wanglab/mounts/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif")
 
-rtn = ann == 262
+rtn = (ann == 812) | (ann == 326)
 vpm = ann == 733
 vpl = ann == 718
 

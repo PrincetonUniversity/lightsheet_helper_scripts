@@ -1,0 +1,8 @@
+In the directory: /jukebox/wang/zahra/python/lightsheet_helper_scripts 
+As the user: pnilsadmin 
+on host: redshirt-n29 
+Cpus_allowed_list:	12,15,27
+Array Allocation Number: 
+Array Index: 
+ERROR: in fileExists(filepath=/home/wanglab/mounts/LightSheetTransfer/microscope_tests/20190905_19_17_27_Princeton-4x_tiffs/Ex_642/mdata.bin): Unable to open directory "/home/wanglab/mounts/LightSheetTransfer/microscope_tests/20190905_19_17_27_Princeton-4x_tiffs/Ex_642/"
+
