@@ -20,10 +20,7 @@ cat /proc/$$/status | grep Cpus_allowed_list
 echo "Array Allocation Number: $SLURM_ARRAY_JOB_ID"
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
-module load anacondapy/5.3.1
-. activate lightsheet
-
-terastitcher --displcompute --projin='/jukebox/LightSheetTransfer/microscope_tests/20190905_19_17_27_Princeton-4x_tiffs/Ex_642/xml_import.xml'
+terastitcher --merge --projin='/jukebox/LightSheetTransfer/microscope_tests/20190905_19_17_27_Princeton-4x_tiffs/Ex_642/xml_placetiles.xml' --volout='/jukebox/LightSheetTransfer/microscope_tests/20190905_19_17_27_Princeton-4x_tiffs/Ex_642/ts_out' --imout_depth=16 --resolutions=012345
 
 # HOW TO USE:
 # sbatch --array=0-20 sub_arrayjob.sh 
