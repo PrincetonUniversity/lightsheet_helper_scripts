@@ -212,8 +212,7 @@ if __name__ == "__main__":
     import tifffile
     
     #run it on cfos volumes
-    pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/clearmap_accuracy_quantification"
-    inputs = os.path.join(pth, "raw_inputs")
+    inputs = "/jukebox/wang/pisano/conv_net/annotations/all_better_res/h129/input_files"
     vols = [os.path.join(inputs, xx) for xx in os.listdir(inputs) if "tif" in xx]
     
     #sweep
@@ -255,7 +254,7 @@ if __name__ == "__main__":
 print("\nexporting to pickle...\n")
 #save data to pickle
 import pickle
-sv = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/clearmap_accuracy_quantification/clearmap_thresholds_sweep.p"
+sv = "/home/wanglab/Desktop/h129_clearmap.p"
 
 with open(sv, "wb") as fp:
     pickle.dump(bigdct, fp, protocol=pickle.HIGHEST_PROTOCOL)    
