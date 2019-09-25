@@ -20,8 +20,7 @@ cat /proc/$$/status | grep Cpus_allowed_list
 echo "Array Allocation Number: $SLURM_ARRAY_JOB_ID"
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
-terastitcher --merge --projin='/jukebox/LightSheetTransfer/microscope_tests/20190905_19_17_27_Princeton-4x_tiffs/Ex_642/xml_placetiles.xml' --volout='/jukebox/LightSheetTransfer/microscope_tests/20190905_19_17_27_Princeton-4x_tiffs/Ex_642/ts_out' --imout_depth=16 --resolutions=012345
-
+terastitcher --merge --projin='/jukebox/LightSheetTransfer/microscope_tests/20190905_19_17_27_Princeton-4x_tiffs/Ex_561/xml_placetiles.xml' --volout='/jukebox/LightSheetTransfer/microscope_tests/20190905_19_17_27_Princeton-4x_tiffs/Ex_561/ts_out' --imout_depth=16 --resolutions=02
 # HOW TO USE:
 # sbatch --array=0-20 sub_arrayjob.sh 
 #xvfb-run --auto-servernum --server-num=1 

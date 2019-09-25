@@ -1,0 +1,535 @@
+In the directory: /jukebox/wang/zahra/python/lightsheet_helper_scripts 
+As the user: pnilsadmin 
+on host: redshirt-n43 
+Cpus_allowed_list:	2,18,21
+Array Allocation Number: 
+Array Index: 
+[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2JOPERATION:	Multiresolution tile merging
+PHASE:		Initializing...
+TIME REMAINING:	0 minutes and 0 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 1 of 1500
+TIME REMAINING:	0 minutes and 0 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 2 of 1500
+TIME REMAINING:	37 minutes and 26 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 3 of 1500
+TIME REMAINING:	41 minutes and 34 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 4 of 1500
+TIME REMAINING:	49 minutes and 51 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	49 minutes and 51 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	49 minutes and 51 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	49 minutes and 51 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	49 minutes and 51 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	49 minutes and 51 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 5 of 1500
+TIME REMAINING:	94 minutes and 40 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 6 of 1500
+TIME REMAINING:	91 minutes and 17 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 7 of 1500
+TIME REMAINING:	85 minutes and 18 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 8 of 1500
+TIME REMAINING:	83 minutes and 55 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	83 minutes and 55 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	83 minutes and 55 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	83 minutes and 55 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	83 minutes and 55 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	83 minutes and 55 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 9 of 1500
+TIME REMAINING:	102 minutes and 9 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 10 of 1500
+TIME REMAINING:	99 minutes and 19 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 11 of 1500
+TIME REMAINING:	97 minutes and 0 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 12 of 1500
+TIME REMAINING:	95 minutes and 3 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	95 minutes and 3 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	95 minutes and 3 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	95 minutes and 3 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	95 minutes and 3 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	95 minutes and 3 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 13 of 1500
+TIME REMAINING:	108 minutes and 39 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 14 of 1500
+TIME REMAINING:	104 minutes and 22 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 15 of 1500
+TIME REMAINING:	102 minutes and 18 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 16 of 1500
+TIME REMAINING:	100 minutes and 28 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	100 minutes and 28 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	100 minutes and 28 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	100 minutes and 28 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	100 mi[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2Jnutes and 28 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	100 minutes and 28 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 17 of 1500
+TIME REMAINING:	109 minutes and 2 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 18 of 1500
+TIME REMAINING:	107 minutes and 1 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 19 of 1500
+TIME REMAINING:	103 minutes and 55 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 20 of 1500
+TIME REMAINING:	102 minutes and 21 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	102 minutes and 21 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	102 minutes and 21 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	102 minutes and 21 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	102 minutes and 21 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	102 minutes and 21 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 21 of 1500
+TIME REMAINING:	109 minutes and 9 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 22 of 1500
+TIME REMAINING:	107 minutes and 29 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 23 of 1500
+TIME REMAINING:	104 minutes and 53 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 24 of 1500
+TIME REMAINING:	104 minutes and 32 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	104 minutes and 32 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	104 minutes and 32 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	104 minutes and 32 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	104 minutes and 32 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	104 minutes and 32 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 25 of 1500
+TIME REMAINING:	110 minutes and 8 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 26 of 1500
+TIME REMAINING:	107 minutes and 42 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 27 of 1500
+TIME REMAINING:	106 minutes and 23 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 28 of 1500
+TIME REMAINING:	105 minutes and 8 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	105 minutes and 8 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	105 minutes and 8 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	105 minutes and 8 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	105 minutes and 8 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	105 minutes and 8 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 29 of 1500
+TIME REMAINING:	109 minutes and 54 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 30 of 1500
+TIME REMAINING:	108 minutes and 37 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 31 of 1500
+TIME REMAINING:	106 minutes and 37 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 32 of 1500
+TIME REMAINING:	105 minutes and 30 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	105 minutes and 30 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	105 minutes and 30 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	105 minutes and 30 seconds
+PROGRESS:	2%	**:::::::::::::[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	105 minutes and 30 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	105 minutes and 30 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 33 of 1500
+TIME REMAINING:	109 minutes and 39 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 34 of 1500
+TIME REMAINING:	107 minutes and 47 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 35 of 1500
+TIME REMAINING:	106 minutes and 44 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 36 of 1500
+TIME REMAINING:	105 minutes and 43 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	105 minutes and 43 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	105 minutes and 43 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	105 minutes and 43 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	105 minutes and 43 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	105 minutes and 43 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 37 of 1500
+TIME REMAINING:	109 minutes and 23 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 38 of 1500
+TIME REMAINING:	108 minutes and 22 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 39 of 1500
+TIME REMAINING:	106 minutes and 45 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 40 of 1500
+TIME REMAINING:	105 minutes and 50 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	105 minutes and 50 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	105 minutes and 50 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	105 minutes and 50 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	105 minutes and 50 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	105 minutes and 50 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 41 of 1500
+TIME REMAINING:	109 minutes and 7 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 42 of 1500
+TIME REMAINING:	108 minutes and 11 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 43 of 1500
+TIME REMAINING:	107 minutes and 17 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 44 of 1500
+TIME REMAINING:	106 minutes and 26 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	106 minutes and 26 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	106 minutes and 26 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 2 of 3
+TIME REMAINING:	106 minutes and 26 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 3 of 3
+TIME REMAINING:	106 minutes and 26 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 3
+TIME REMAINING:	106 minutes and 26 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 45 of 1500
+TIME REMAINING:	109 minutes and 23 seconds
+PROGRESS:	3%	***:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 46 of 1500
+TIME REMAINING:	108 minutes and 31 seconds
+PROGRESS:	3%	***:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 47 of 1500
+TIME REMAINING:	107 minutes and 10 seconds
+PROGRESS:	3%	***:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Merging slice 48 of 1500
+TIME REMAINING:	106 minutes and 22 seconds
+PROGRESS:	3%	***:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Generating resolution 1 of 3
+TIME REMAINING:	106 minutes and 22 seconds
+PROGRESS:	3%	***:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Multiresolution tile merging
+PHASE:		Saving to disc resolution 1
+TIME REMAINING:	106 minutes and 22 seconds
+PROGRESS:	3%	***::::::::::::::::::::::::::::::::::::::::::::::::::::[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J

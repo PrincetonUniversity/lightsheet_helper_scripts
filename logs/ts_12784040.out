@@ -1,0 +1,696 @@
+In the directory: /jukebox/wang/zahra/python/lightsheet_helper_scripts 
+As the user: pnilsadmin 
+on host: spock7-c0-13 
+Cpus_allowed_list:	5,9,11
+Array Allocation Number: 
+Array Index: 
+[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2JOPERATION:	Pairwise displacement computation
+PHASE:		Initializing...
+TIME REMAINING:	0 minutes and 0 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 1 of 136
+TIME REMAINING:	54 minutes and 0 seconds
+PROGRESS:	0%	::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 2 of 136
+TIME REMAINING:	60 minutes and 18 seconds
+PROGRESS:	1%	*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 3 of 136
+TIME REMAINING:	59 minutes and 6 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 4 of 136
+TIME REMAINING:	59 minutes and 24 seconds
+PROGRESS:	2%	**::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 5 of 136
+TIME REMAINING:	57 minutes and 38 seconds
+PROGRESS:	3%	***:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 6 of 136
+TIME REMAINING:	52 minutes and 21 seconds
+PROGRESS:	4%	****::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 7 of 136
+TIME REMAINING:	52 minutes and 49 seconds
+PROGRESS:	5%	*****:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 8 of 136
+TIME REMAINING:	49 minutes and 4 seconds
+PROGRESS:	5%	*****:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 9 of 136
+TIME REMAINING:	49 minutes and 37 seconds
+PROGRESS:	6%	******::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 10 of 136
+TIME REMAINING:	49 minutes and 21 seconds
+PROGRESS:	7%	*******:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 11 of 136
+TIME REMAINING:	46 minutes and 46 seconds
+PROGRESS:	8%	********::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 12 of 136
+TIME REMAINING:	47 minutes and 42 seconds
+PROGRESS:	8%	********::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 13 of 136
+TIME REMAINING:	45 minutes and 43 seconds
+PROGRESS:	9%	*********:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 14 of 136
+TIME REMAINING:	45 minutes and 45 seconds
+PROGRESS:	10%	**********::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 15 of 136
+TIME REMAINING:	45 minutes and 34 seconds
+PROGRESS:	11%	***********:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 16 of 136
+TIME REMAINING:	44 minutes and 0 seconds
+PROGRESS:	11%	***********:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 17 of 136
+TIME REMAINING:	42 minutes and 42 seconds
+PROGRESS:	12%	************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 18 of 136
+TIME REMAINING:	44 minutes and 28 seconds
+PROGRESS:	13%	*************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 19 of 136
+TIME REMAINING:	44 minutes and 51 seconds
+PROGRESS:	13%	*************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 20 of 136
+TIME REMAINING:	44 minutes and 33 seconds
+PROGRESS:	14%	**************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 21 of 136
+TIME REMAINING:	44 minutes and 26 seconds
+PROGRESS:	15%	***************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 22 of 136
+TIME REMAINING:	44 minutes and 18 seconds
+PROGRESS:	16%	****************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 23 of 136
+TIME REMAINING:	42 minutes and 59 seconds
+PROGRESS:	16%	****************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 24 of 136
+TIME REMAINING:	42 minutes and 46 seconds
+PROGRESS:	17%	*****************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 25 of 136
+TIME REMAINING:	41 minutes and 30 seconds
+PROGRESS:	18%	******************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 26 of 136
+TIME REMAINING:	41 minutes and 23 seconds
+PROGRESS:	19%	*******************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 27 of 136
+TIME REMAINING:	41 minutes and 6 seconds
+PROGRESS:	19%	*******************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 28 of 136
+TIME REMAINING:	40 minutes and 3 seconds
+PROGRESS:	20%	********************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 29 of 136
+TIME REMAINING:	39 minutes and 50 seconds
+PROGRESS:	21%	*********************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 30 of 136
+TIME REMAINING:	38 minutes and 55 seconds
+PROGRESS:	22%	**********************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 31 of 136
+TIME REMAINING:	38 minutes and 43 seconds
+PROGRESS:	22%	**********************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 32 of 136
+TIME REMAINING:	38 minutes and 27 seconds
+PROGRESS:	23%	***********************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 33 of 136
+TIME REMAINING:	37 minutes and 30 se[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2Jconds
+PROGRESS:	24%	************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 34 of 136
+TIME REMAINING:	36 minutes and 54 seconds
+PROGRESS:	25%	*************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 35 of 136
+TIME REMAINING:	37 minutes and 36 seconds
+PROGRESS:	25%	*************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 36 of 136
+TIME REMAINING:	37 minutes and 24 seconds
+PROGRESS:	26%	**************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 37 of 136
+TIME REMAINING:	37 minutes and 11 seconds
+PROGRESS:	27%	***************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 38 of 136
+TIME REMAINING:	37 minutes and 5 seconds
+PROGRESS:	27%	***************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 39 of 136
+TIME REMAINING:	36 minutes and 53 seconds
+PROGRESS:	28%	****************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 40 of 136
+TIME REMAINING:	36 minutes and 4 seconds
+PROGRESS:	29%	*****************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 41 of 136
+TIME REMAINING:	35 minutes and 52 seconds
+PROGRESS:	30%	******************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 42 of 136
+TIME REMAINING:	35 minutes and 1 seconds
+PROGRESS:	30%	******************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 43 of 136
+TIME REMAINING:	34 minutes and 53 seconds
+PROGRESS:	31%	*******************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 44 of 136
+TIME REMAINING:	34 minutes and 38 seconds
+PROGRESS:	32%	********************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 45 of 136
+TIME REMAINING:	33 minutes and 54 seconds
+PROGRESS:	33%	*********************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 46 of 136
+TIME REMAINING:	33 minutes and 35 seconds
+PROGRESS:	33%	*********************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 47 of 136
+TIME REMAINING:	32 minutes and 58 seconds
+PROGRESS:	34%	**********************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 48 of 136
+TIME REMAINING:	32 minutes and 41 seconds
+PROGRESS:	35%	***********************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 49 of 136
+TIME REMAINING:	32 minutes and 24 seconds
+PROGRESS:	36%	************************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 50 of 136
+TIME REMAINING:	31 minutes and 42 seconds
+PROGRESS:	36%	************************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 51 of 136
+TIME REMAINING:	31 minutes and 8 seconds
+PROGRESS:	37%	*************************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 52 of 136
+TIME REMAINING:	31 minutes and 17 seconds
+PROGRESS:	38%	**************************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 53 of 136
+TIME REMAINING:	31 minutes and 0 seconds
+PROGRESS:	38%	**************************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 54 of 136
+TIME REMAINING:	30 minutes and 41 seconds
+PROGRESS:	39%	***************************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 55 of 136
+TIME REMAINING:	30 minutes and 26 seconds
+PROGRESS:	40%	****************************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 56 of 136
+TIME REMAINING:	30 minutes and 11 seconds
+PROGRESS:	41%	*****************************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 57 of 136
+TIME REMAINING:	29 minutes and 34 seconds
+PROGRESS:	41%	*****************************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 58 of 136
+TIME REMAINING:	29 minutes and 16 seconds
+PROGRESS:	42%	******************************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 59 of 136
+TIME REMAINING:	28 minutes and 38 seconds
+PROGRESS:	43%	*******************************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 60 of 136
+TIME REMAINING:	28 minutes and 23 seconds
+PROGRESS:	44%	********************************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 61 of 136
+TIME REMAINING:	28 minutes and 8 seconds
+PROGRESS:	44%	********************************************::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 62 of 136
+TIME REMAINING:	27 minutes and 31 seconds
+PROGRESS:	45%	*********************************************:::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 63 of 136
+TIME REMAINING:	27 minutes and 11 seconds
+PROGRESS:	46%	**********************************************::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 64 of 136
+TIME REMAINING:	26 minutes and 36 seconds
+PROGRESS:	47%	***********************************************:::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 65 of 136
+TIME REMAINING:	26 minutes and 17 seconds
+PROGRESS:	47%	***********************************************:::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 66 of 136
+TIME REMAINING:	25 minutes and 58 seconds
+PROGRESS:	48%	************************************************::::::::::::[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 67 of 136
+TIME REMAINING:	25 minutes and 24 seconds
+PROGRESS:	49%	*************************************************:::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 68 of 136
+TIME REMAINING:	24 minutes and 53 seconds
+PROGRESS:	50%	**************************************************::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 69 of 136
+TIME REMAINING:	24 minutes and 46 seconds
+PROGRESS:	50%	**************************************************::::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 70 of 136
+TIME REMAINING:	24 minutes and 28 seconds
+PROGRESS:	51%	***************************************************:::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 71 of 136
+TIME REMAINING:	24 minutes and 8 seconds
+PROGRESS:	52%	****************************************************::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 72 of 136
+TIME REMAINING:	23 minutes and 53 seconds
+PROGRESS:	52%	****************************************************::::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 73 of 136
+TIME REMAINING:	23 minutes and 35 seconds
+PROGRESS:	53%	*****************************************************:::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 74 of 136
+TIME REMAINING:	23 minutes and 4 seconds
+PROGRESS:	54%	******************************************************::::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 75 of 136
+TIME REMAINING:	22 minutes and 44 seconds
+PROGRESS:	55%	*******************************************************:::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 76 of 136
+TIME REMAINING:	22 minutes and 13 seconds
+PROGRESS:	55%	*******************************************************:::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 77 of 136
+TIME REMAINING:	21 minutes and 55 seconds
+PROGRESS:	56%	********************************************************::::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 78 of 136
+TIME REMAINING:	21 minutes and 37 seconds
+PROGRESS:	57%	*********************************************************:::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 79 of 136
+TIME REMAINING:	21 minutes and 8 seconds
+PROGRESS:	58%	**********************************************************::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 80 of 136
+TIME REMAINING:	20 minutes and 46 seconds
+PROGRESS:	58%	**********************************************************::::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 81 of 136
+TIME REMAINING:	20 minutes and 16 seconds
+PROGRESS:	59%	***********************************************************:::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 82 of 136
+TIME REMAINING:	19 minutes and 57 seconds
+PROGRESS:	60%	************************************************************::::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 83 of 136
+TIME REMAINING:	19 minutes and 36 seconds
+PROGRESS:	61%	*************************************************************:::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 84 of 136
+TIME REMAINING:	19 minutes and 7 seconds
+PROGRESS:	61%	*************************************************************:::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 85 of 136
+TIME REMAINING:	18 minutes and 39 seconds
+PROGRESS:	62%	**************************************************************::::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 86 of 136
+TIME REMAINING:	18 minutes and 27 seconds
+PROGRESS:	63%	***************************************************************:::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 87 of 136
+TIME REMAINING:	18 minutes and 8 seconds
+PROGRESS:	63%	***************************************************************:::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 88 of 136
+TIME REMAINING:	17 minutes and 48 seconds
+PROGRESS:	64%	****************************************************************::::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 89 of 136
+TIME REMAINING:	17 minutes and 29 seconds
+PROGRESS:	65%	*****************************************************************:::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 90 of 136
+TIME REMAINING:	17 minutes and 10 seconds
+PROGRESS:	66%	******************************************************************::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 91 of 136
+TIME REMAINING:	16 minutes and 42 seconds
+PROGRESS:	66%	******************************************************************::::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 92 of 136
+TIME REMAINING:	16 minutes and 23 seconds
+PROGRESS:	67%	*******************************************************************:::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 93 of 136
+TIME REMAINING:	15 minutes and 55 seconds
+PROGRESS:	68%	********************************************************************::::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 94 of 136
+TIME REMAINING:	15 minutes and 36 seconds
+PROGRESS:	69%	*********************************************************************:::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 95 of 136
+TIME REMAINING:	15 minutes and 16 seconds
+PROGRESS:	69%	*********************************************************************:::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 96 of 136
+TIME REMAINING:	14 minutes and 49 seconds
+PROGRESS:	70%	**********************************************************************::::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 97 of 136
+TIME REMAINING:	14 minutes and 28 seconds
+PROGRESS:	71%	***********************************************************************:::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 98 of 136
+TIME REMAINING:	14 minutes and 1 seconds
+PROGRESS:	72%	************************************************************************::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 99 of 136
+TIME REMAINING:	13 minutes and 39 seconds
+PROGRESS:	72%	************************************************************************::::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement compu[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2Jtation
+PHASE:		Displacement computation 100 of 136
+TIME REMAINING:	13 minutes and 18 seconds
+PROGRESS:	73%	*************************************************************************:::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 101 of 136
+TIME REMAINING:	12 minutes and 52 seconds
+PROGRESS:	74%	**************************************************************************::::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 102 of 136
+TIME REMAINING:	12 minutes and 27 seconds
+PROGRESS:	75%	***************************************************************************:::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 103 of 136
+TIME REMAINING:	12 minutes and 10 seconds
+PROGRESS:	75%	***************************************************************************:::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 104 of 136
+TIME REMAINING:	11 minutes and 50 seconds
+PROGRESS:	76%	****************************************************************************::::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 105 of 136
+TIME REMAINING:	11 minutes and 29 seconds
+PROGRESS:	77%	*****************************************************************************:::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 106 of 136
+TIME REMAINING:	11 minutes and 8 seconds
+PROGRESS:	77%	*****************************************************************************:::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 107 of 136
+TIME REMAINING:	10 minutes and 48 seconds
+PROGRESS:	78%	******************************************************************************::::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 108 of 136
+TIME REMAINING:	10 minutes and 22 seconds
+PROGRESS:	79%	*******************************************************************************:::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 109 of 136
+TIME REMAINING:	10 minutes and 1 seconds
+PROGRESS:	80%	********************************************************************************::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 110 of 136
+TIME REMAINING:	9 minutes and 36 seconds
+PROGRESS:	80%	********************************************************************************::::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 111 of 136
+TIME REMAINING:	9 minutes and 16 seconds
+PROGRESS:	81%	*********************************************************************************:::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 112 of 136
+TIME REMAINING:	8 minutes and 54 seconds
+PROGRESS:	82%	**********************************************************************************::::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 113 of 136
+TIME REMAINING:	8 minutes and 30 seconds
+PROGRESS:	83%	***********************************************************************************:::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 114 of 136
+TIME REMAINING:	8 minutes and 8 seconds
+PROGRESS:	83%	***********************************************************************************:::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 115 of 136
+TIME REMAINING:	7 minutes and 44 seconds
+PROGRESS:	84%	************************************************************************************::::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 116 of 136
+TIME REMAINING:	7 minutes and 22 seconds
+PROGRESS:	85%	*************************************************************************************:::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 117 of 136
+TIME REMAINING:	7 minutes and 1 seconds
+PROGRESS:	86%	**************************************************************************************::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 118 of 136
+TIME REMAINING:	6 minutes and 37 seconds
+PROGRESS:	86%	**************************************************************************************::::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 119 of 136
+TIME REMAINING:	6 minutes and 13 seconds
+PROGRESS:	87%	***************************************************************************************:::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 120 of 136
+TIME REMAINING:	5 minutes and 53 seconds
+PROGRESS:	88%	****************************************************************************************::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 121 of 136
+TIME REMAINING:	5 minutes and 32 seconds
+PROGRESS:	88%	****************************************************************************************::::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 122 of 136
+TIME REMAINING:	5 minutes and 10 seconds
+PROGRESS:	89%	*****************************************************************************************:::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 123 of 136
+TIME REMAINING:	4 minutes and 48 seconds
+PROGRESS:	90%	******************************************************************************************::::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 124 of 136
+TIME REMAINING:	4 minutes and 27 seconds
+PROGRESS:	91%	*******************************************************************************************:::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 125 of 136
+TIME REMAINING:	4 minutes and 3 seconds
+PROGRESS:	91%	*******************************************************************************************:::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 126 of 136
+TIME REMAINING:	3 minutes and 41 seconds
+PROGRESS:	92%	********************************************************************************************::::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 127 of 136
+TIME REMAINING:	3 minutes and 18 seconds
+PROGRESS:	93%	*********************************************************************************************:::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 128 of 136
+TIME REMAINING:	2 minutes and 57 seconds
+PROGRESS:	94%	**********************************************************************************************::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 129 of 136
+TIME REMAINING:	2 minutes and 35 seconds
+PROGRESS:	94%	**********************************************************************************************::::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 130 of 136
+TIME REMAINING:	2 minutes and 12 seconds
+PROGRESS:	95%	***********************************************************************************************:::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 131 of 136
+TIME REMAINING:	1 minutes and 50 seconds
+PROGRESS:	96%	************************************************************************************************::::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 132 of 136
+TIME REMAINING:	1 minutes and 28 seconds
+PROGRESS:	97%	*************************************************************************************************:::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 133 of 136
+TIME REMAINING:	1 [3;J[H[2J[3;J[H[2J[3;J[H[2J[3;J[H[2Jminutes and 6 seconds
+PROGRESS:	97%	*************************************************************************************************:::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 134 of 136
+TIME REMAINING:	0 minutes and 44 seconds
+PROGRESS:	98%	**************************************************************************************************::
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 135 of 136
+TIME REMAINING:	0 minutes and 21 seconds
+PROGRESS:	99%	***************************************************************************************************:
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Displacement computation 136 of 136
+TIME REMAINING:	0 minutes and 0 seconds
+PROGRESS:	100%	****************************************************************************************************
+
+OPERATION:	Pairwise displacement computation
+PHASE:		Ended!
+TIME REMAINING:	0 minutes and 0 seconds
+PROGRESS:	100%	****************************************************************************************************
+
