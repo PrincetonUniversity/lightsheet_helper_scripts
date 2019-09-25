@@ -4,3 +4,4 @@ credentials.json
 token.pickle
 *.out #slurm files
 *.err
+logs/
