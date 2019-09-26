@@ -212,7 +212,7 @@ if __name__ == "__main__":
             
             c = detectSpots(img, detectSpotsParameter = None, correctIlluminationParameter = None, 
                     removeBackgroundParameter = {"size": (bckgrd, bckgrd)},
-                    filterDoGParameter = {"size": (DoG, DoG, int(DoG/3))}, findExtendedMaximaParameter = {"h-max": None, 
+                    filterDoGParameter = {"size": (int(DoG/3), DoG, DoG)}, findExtendedMaximaParameter = {"h-max": None, 
                                           "size": sz, "threshold": max_thres},
                     findIntensityParameter = {"size": (10,10,10), "method": "Max"}, #size is based on cell size/resolution
                     detectCellShapeParameter = {"threshold": int_thres}, verbose = False)
