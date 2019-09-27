@@ -186,25 +186,32 @@ if __name__ == "__main__":
     
     #run it on cfos volumes
     inputs = "/jukebox/wang/pisano/conv_net/annotations/all_better_res/h129/input_files"
-    vols = [os.path.join(inputs, xx) for xx in os.listdir(inputs) if "tif" in xx]
-    fn = os.path.join(inputs, "20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y1000-1350_x2050-2400.tif")
+    test_imgs = ["20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_05_500-550.tif",
+                 "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_00.tif",
+                 "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_04.tif",
+                 "20170130_tp_bl6_sim_1750r_03_647_010na_1hfds_z7d5um_50msec_10povlp_ch00_z200-400_y2050-2400_x1350-1700.tif",
+                 "20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y1000-1350_x2050-2400.tif"]
+    
+    vols = [os.path.join(inputs, xx) for xx in test_imgs]
+
     #sweep
-    max_thresholds = np.arange(5, 35, 5)
-    DoGs = np.arange(5, 25, 5)
-    backgrounds = np.arange(3, 13, 2)
-    sizes = np.arange(100, 600, 100)
-    int_thresholds = np.arange(100, 1000, 200)
+    max_thresholds = [25]
+    DoGs = [10]
+    backgrounds = [3]
+    sizes = np.arange(5, 100, 5)
+    int_thresholds = [700]
     
-    
-    dst = "/home/wanglab/Desktop/cnn_to_clearmap"
-    iterlst = [(fn, dst, max_thres, DoG, bckgrd, sz, int_thres) for max_thres in max_thresholds for DoG in DoGs for bckgrd in backgrounds for sz in sizes for int_thres in int_thresholds]
+    dst = "/home/wanglab/Desktop/cnn_to_clearmap/all_volumes/cell_arrays"
+    iterlst = [(fn, dst, max_thres, DoG, bckgrd, sz, int_thres) for fn in vols for max_thres in max_thresholds for DoG in DoGs for bckgrd in backgrounds for sz in sizes for int_thres in int_thresholds]
     
     print("\n\niterations: %d\n\n" % (len(iterlst)))
     
     def sweep_params(params):
         
         fn, dst, max_thres, DoG, bckgrd, sz, int_thres = params
-        svdst = os.path.join(dst, "int_thres%05d_max_thres%03d_DoG%02d_sz%05d_bckgrd%02d.npy" % (int_thres,
+        brain_dst = os.path.join(dst, os.path.basename(fn)[:-4])
+        if not os.path.exists(brain_dst): os.mkdir(brain_dst)
+        svdst = os.path.join(brain_dst, "int_thres%05d_max_thres%03d_DoG%02d_sz%05d_bckgrd%02d.npy" % (int_thres,
                                                              max_thres, DoG, sz, bckgrd))
         if not os.path.exists(svdst): #if params have not been tried already
             img = tifffile.imread(fn) #read as z,y,x
@@ -217,8 +224,6 @@ if __name__ == "__main__":
                     findIntensityParameter = {"size": (10,10,10), "method": "Max"}, #size is based on cell size/resolution
                     detectCellShapeParameter = {"threshold": int_thres}, verbose = False)
             
-            svdst = os.path.join(dst, "int_thres%04d_max_thres%02d_DoG%02d_sz%02d_bckgrd%02d.npy" % (int_thres,
-                                                                 max_thres, DoG, sz, bckgrd))
             np.save(svdst, c[0].astype(int)) #save cells wth volume name, c in z,y,x
             
             print("saved to %s\nnumber of cells = %d" % (svdst, len(c[0])))
