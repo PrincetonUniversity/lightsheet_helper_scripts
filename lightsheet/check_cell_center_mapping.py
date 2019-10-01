@@ -80,7 +80,7 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
     resize_merged_stack(rbg, os.path.join(dst, "{}_raw_cell_centers_resized_z{}-{}.tif".format(os.path.basename(brain), 
                                           zstart, zstop)), "uint16", 6)
     
-    print("took {} seconds to make merged maps".format(time.time() - start))
+    print("took %0.1f seconds to make merged maps" % (time.time() - start))
     
 def check_cell_center_to_resampled(brain, zstart, zstop, dst):
     """ 
@@ -113,17 +113,18 @@ def check_cell_center_to_resampled(brain, zstart, zstop, dst):
     resize_merged_stack(rbg, os.path.join(dst, "{}_raw_cell_centers_resized_z{}-{}.tif".format(os.path.basename(brain), 
                                           zstart, zstop)), "uint16", 6)
     
-    print("took {} seconds to make merged maps".format(time.time() - start))
+    print("took %0.1f seconds to make merged maps" % (time.time() - start))
     
-#%%    
+    
 if __name__ == "__main__":
     
-    ids = ['20160920_tp_bl6_lob7_ml_01']
+    ids = ["20180322_jg_bl6f_prv_28",
+           "20180326_jg_bl6f_prv_37"]
     
     for i in ids:
-        brain = "/jukebox/wang/pisano/tracing_output/antero_4x/"+i
+        brain = "/jukebox/wang/pisano/tracing_output/retro_4x/"+i
         zstart = 550; zstop = 570
-        dst = "/jukebox/wang/zahra/cnn_validation/201903"
+        dst = "/jukebox/wang/zahra/prv/cnn_validation"
         if not os.path.exists(dst): os.mkdir(dst)
         
         check_cell_center_to_fullsizedata(brain, zstart, zstop, dst)

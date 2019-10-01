@@ -182,15 +182,13 @@ def overlay_qc(args):
             #####check at the resampled for elastix phase before transform
             #make zyx numpy arry
             zyx = dataframe[["z","y","x"]].values
-            kwargs = load_kwargs(lightsheet_parameter_dictionary)
-            vol = [xx for xx in kwargs["volumes"] if xx.ch_type =="cellch"][0]
-            fullsizedimensions = get_fullsizedimensions(kwargs) 
+            fullsizedimensions = get_fullsizedimensions(lightsheet_parameter_dictionary) 
             zyx = fix_contour_orientation(zyx, verbose=verbose, **kwargs) #now in orientation of resample
             zyx = points_resample(zyx, original_dims = fix_dimension_orientation(fullsizedimensions, **kwargs), 
-                                  resample_dims = tifffile.imread(vol.resampled_for_elastix_vol).shape, verbose = verbose)[:, :3]
+                                  resample_dims = resampled_dims, verbose = verbose)[:, :3]
             
             #cell channel
-            cell_ch = tifffile.imread(vol.resampled_for_elastix_vol)
+            cell_ch = tifffile.imread(resampled_vol)
             cell_cnn = np.zeros_like(cell_ch)
             tarr = []; badlist=[]
             for _zyx in zyx:
@@ -200,7 +198,7 @@ def overlay_qc(args):
                     cell_cnn[z,y,x] = 100
                 except:
                     badlist.append([z,y,x])
-            tarr=np.asarray(tarr)        
+            tarr = np.asarray(tarr)        
             merged = np.stack([cell_ch, cell_cnn, np.zeros_like(cell_ch)], -1)
             tifffile.imsave(os.path.join(transformed_vol, "resampled_merged.tif"), merged)#, compress=1)
             
@@ -221,8 +219,7 @@ if __name__ == "__main__":
     output_folder = os.path.join(dst, "prv_transformed_cells"); makedir(output_folder)
     
     #inputs
-    brains = ["20180322_jg_bl6f_prv_29",
-              "20180323_jg_bl6f_prv_31"]
+    brains = ["20180322_jg_bl6f_prv_28"]
     
     brains = [os.path.join(input_folder, xx) for xx in brains]
     input_list = [xx for xx in brains if os.path.exists(os.path.join(xx, folder_suffix))]
