@@ -118,12 +118,11 @@ def check_cell_center_to_resampled(brain, zstart, zstop, dst):
     
 if __name__ == "__main__":
     
-    ids = ["20180322_jg_bl6f_prv_28",
-           "20180326_jg_bl6f_prv_37"]
+    ids = ["20180313_jg_bl6f_prv_20"]
     
     for i in ids:
         brain = "/jukebox/wang/pisano/tracing_output/retro_4x/"+i
-        zstart = 550; zstop = 570
+        zstart = 400; zstop = 420
         dst = "/jukebox/wang/zahra/prv/cnn_validation"
         if not os.path.exists(dst): os.mkdir(dst)
         
