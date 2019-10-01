@@ -10,12 +10,86 @@ import os, sys, numpy as np, pandas as pd, cv2, multiprocessing as mp
 from skimage.external import tifffile
 from skimage.morphology import ball
 sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
-from tools.utils.io import makedir, load_dictionary, listdirfull, listall
-from tools.registration.transform_list_of_points import modify_transform_files
+from tools.utils.io import makedir, load_kwargs, listdirfull, listall
+from tools.registration.transform_list_of_points import modify_transform_files, point_transformix, unpack_pnts, create_text_file_for_elastix
 from tools.registration.register import transformix_command_line_call
 from tools.imageprocessing.orientation import fix_contour_orientation, fix_dimension_orientation
-from tools.registration.transform_cell_counts import generate_transformed_cellcount, get_fullsizedims_from_kwargs, points_resample
+from tools.registration.transform_cell_counts import change_transform_parameter_initial_transform, points_resample
 
+def get_fullsizedimensions(dct):
+    """ works around param dict in case paths were missaved """    
+    try:
+        kwargs = load_kwargs(dct)
+        vol = [xx for xx in kwargs["volumes"] if xx.ch_type =="cellch"][0]
+        zf = len(listdirfull(vol.full_sizedatafld_vol, ".tif"))
+        yf,xf = tifffile.imread(listdirfull(vol.full_sizedatafld_vol, "tif")[0]).shape
+        fullsizedimensions = tuple((zf, yf, xf))
+    except: #if param dict is messed up
+        fsz = os.path.join(os.path.dirname(dct), "full_sizedatafld")
+        vols = os.listdir(fsz); vols.sort()
+        src = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
+        if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2])     
+        zf = len(listdirfull(src, ".tif"))
+        yf,xf = tifffile.imread(listdirfull(src, "tif")[0]).shape
+        fullsizedimensions = tuple((zf, yf, xf))
+    
+    return fullsizedimensions
+    
+def get_resampledvol_n_dimensions(dct):
+    """ works around param dict in case paths were missaved """
+    try:
+        kwargs = load_kwargs(dct)
+        vol = [xx for xx in kwargs["volumes"] if xx.ch_type =="cellch"][0]
+        resampled_vol = vol.resampled_for_elastix_vol
+        resampled_dims = tifffile.imread(resampled_vol).shape        
+    except FileNotFoundError:
+        fls = listdirfull(os.path.dirname(dct), ".tif"); fls.sort()
+        resampled_vol = fls[-1] #will be the last one, bc of the 647 channel
+        resampled_dims = tifffile.imread(resampled_vol).shape
+        
+    return resampled_dims, resampled_vol
+
+def generate_transformed_cellcount(dataframe, dst, transformfiles, lightsheet_parameter_dictionary, verbose=False):
+    """Function to take a csv file and generate an input to transformix
+    
+    Inputs
+    ----------------
+    dataframe = preloaded pandas dataframe
+    dst = destination to save files
+    transformfiles = list of all elastix transform files used, and in order of the original transform****
+    lightsheet_parameter_file = .p file generated from lightsheet package
+    """
+    #set up locations
+    transformed_dst = os.path.join(dst, "transformed_points"); makedir(transformed_dst)
+    
+    #make zyx numpy arry
+    zyx = dataframe[["z","y","x"]].values
+    
+    #adjust for reorientation THEN rescaling, remember full size data needs dimension change releative to resample
+    fullsizedimensions = get_fullsizedimensions(lightsheet_parameter_dictionary)
+    kwargs = load_kwargs(lightsheet_parameter_dictionary)
+     
+    zyx = fix_contour_orientation(zyx, verbose=verbose, **kwargs) #now in orientation of resample
+    resampled_dims, resampled_vol = get_resampledvol_n_dimensions(lightsheet_parameter_dictionary)
+    
+    zyx = points_resample(zyx, original_dims = fix_dimension_orientation(fullsizedimensions, 
+            **kwargs), resample_dims = resampled_dims, verbose = verbose)[:, :3]
+         
+    #make into transformix-friendly text file
+    pretransform_text_file = create_text_file_for_elastix(zyx, transformed_dst)
+        
+    #copy over elastix files
+    transformfiles = modify_transform_files(transformfiles, transformed_dst) 
+    change_transform_parameter_initial_transform(transformfiles[0], "NoInitialTransform")
+   
+    #run transformix on points
+    points_file = point_transformix(pretransform_text_file, transformfiles[-1], transformed_dst)
+    
+    #convert registered points into structure counts
+    converted_points = unpack_pnts(points_file, transformed_dst)   
+    
+    return converted_points
+    
 def overlay_qc(args):  
     #unpacking this way for multiprocessing
     fld, folder_suffix, output_folder, verbose, doubletransform, make_volumes = args
@@ -58,14 +132,14 @@ def overlay_qc(args):
         #check...
         if make_volumes:
             #manually call transformix
-            kwargs = load_dictionary(lightsheet_parameter_dictionary)
-            vol = [xx for xx in kwargs["volumes"] if xx.ch_type == "cellch"][0].resampled_for_elastix_vol
+            kwargs = load_kwargs(lightsheet_parameter_dictionary)
+            resampled_dims, resampled_vol = get_resampledvol_n_dimensions(lightsheet_parameter_dictionary)
             transformed_vol = os.path.join(dst, "transformed_volume"); makedir(transformed_vol)
             if not doubletransform:
                 transformfiles = [os.path.join(fld, "elastix/TransformParameters.0.txt"), os.path.join(fld, 
                                   "elastix/TransformParameters.1.txt")]
                 transformfiles = modify_transform_files(transformfiles, transformed_vol) #copy over elastix files
-                transformix_command_line_call(vol, transformed_vol, transformfiles[-1])
+                transformix_command_line_call(resampled_vol, transformed_vol, transformfiles[-1])
             else:
                 v=[xx for xx in kwargs["volumes"] if xx.ch_type == "cellch"][0]
                 #sig to reg
@@ -75,7 +149,7 @@ def overlay_qc(args):
                 transformfiles = tps+[os.path.join(fld, "elastix/TransformParameters.0.txt"), 
                                       os.path.join(fld, "elastix/TransformParameters.1.txt")]
                 transformfiles = modify_transform_files(transformfiles, transformed_vol) #copy over elastix files
-                transformix_command_line_call(vol, transformed_vol, transformfiles[-1])
+                transformix_command_line_call(resampled_vol, transformed_vol, transformfiles[-1])
             
 
             #cell_registered channel
@@ -101,17 +175,16 @@ def overlay_qc(args):
             if len(badlist)>0: 
                 print("{} errors in mapping with cell_cnn shape {}, each max dim {}, \npossibly due to a registration overshoot \
                       or not using double transform\n\n{}".format(len(badlist), cell_cnn.shape, np.max(tarr,0), badlist))
-            merged = np.stack([cell_cnn, cell_reg, np.zeros_like(cell_reg)], -1)
+            merged = np.stack([cell_reg, cell_cnn, np.zeros_like(cell_reg)], -1)
             tifffile.imsave(os.path.join(transformed_vol, "merged.tif"), merged)#, compress=1)
             #out = np.concatenate([cell_cnn, cell_reg, ], 0)
         
-        #####check at the resampled for elastix phase before transform...this mapping looks good...
-        if make_volumes:
+            #####check at the resampled for elastix phase before transform
             #make zyx numpy arry
             zyx = dataframe[["z","y","x"]].values
-            kwargs = load_dictionary(lightsheet_parameter_dictionary)
+            kwargs = load_kwargs(lightsheet_parameter_dictionary)
             vol = [xx for xx in kwargs["volumes"] if xx.ch_type =="cellch"][0]
-            fullsizedimensions = get_fullsizedims_from_kwargs(kwargs) #don"t get from kwargs["volumes"][0].fullsizedimensions it"s bad! use this instead
+            fullsizedimensions = get_fullsizedimensions(kwargs) 
             zyx = fix_contour_orientation(zyx, verbose=verbose, **kwargs) #now in orientation of resample
             zyx = points_resample(zyx, original_dims = fix_dimension_orientation(fullsizedimensions, **kwargs), 
                                   resample_dims = tifffile.imread(vol.resampled_for_elastix_vol).shape, verbose = verbose)[:, :3]
@@ -148,23 +221,8 @@ if __name__ == "__main__":
     output_folder = os.path.join(dst, "prv_transformed_cells"); makedir(output_folder)
     
     #inputs
-    brains = ["20180313_jg_bl6f_prv_23",
-             "20180322_jg_bl6f_prv_28",
-             "20180313_jg_bl6f_prv_20",
-             "20180323_jg_bl6f_prv_31",
-             "20180322_jg_bl6f_prv_27",
-             "20180313_jg_bl6f_prv_21",
-             "20180326_jg_bl6f_prv_34",
-             "20180326_jg_bl6f_prv_36",
-             "20180323_jg_bl6f_prv_30",
-             "20180326_jg_bl6f_prv_32",
-             "20180322_jg_bl6f_prv_29",
-             "20180326_jg_bl6f_prv_33",
-             "20180326_jg_bl6f_prv_37",
-             "20180322_jg_bl6f_prv_26",
-             "20180313_jg_bl6f_prv_25",
-             "20180326_jg_bl6f_prv_35",
-             "20180313_jg_bl6f_prv_24"]
+    brains = ["20180322_jg_bl6f_prv_29",
+              "20180323_jg_bl6f_prv_31"]
     
     brains = [os.path.join(input_folder, xx) for xx in brains]
     input_list = [xx for xx in brains if os.path.exists(os.path.join(xx, folder_suffix))]
