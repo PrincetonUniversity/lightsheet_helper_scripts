@@ -80,7 +80,7 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
     resize_merged_stack(rbg, os.path.join(dst, "{}_raw_cell_centers_resized_z{}-{}.tif".format(os.path.basename(brain), 
                                           zstart, zstop)), "uint16", 6)
     
-    print("took %0.1f seconds to make merged maps" % (time.time() - start))
+    print("took %0.1f seconds to make merged maps for %s" % ((time.time()-start), brain))
     
 def check_cell_center_to_resampled(brain, zstart, zstop, dst):
     """ 
@@ -113,7 +113,7 @@ def check_cell_center_to_resampled(brain, zstart, zstop, dst):
     resize_merged_stack(rbg, os.path.join(dst, "{}_raw_cell_centers_resized_z{}-{}.tif".format(os.path.basename(brain), 
                                           zstart, zstop)), "uint16", 6)
     
-    print("took %0.1f seconds to make merged maps" % (time.time() - start))
+    print("took %0.1f seconds to make merged maps for %s" % ((time.time()-start), brain))
     
     
 if __name__ == "__main__":
