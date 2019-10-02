@@ -73,7 +73,7 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
     cell_centers = np.zeros(raw.shape)
     
     for i, r in cells.iterrows():
-        cell_centers[r["z"]-zstart, r["y"]-5:r["y"]+5, r["x"]-5:r["x"]+5] = 1
+        cell_centers[r["z"]-zstart-5:r["z"]-zstart+5, r["y"]-10:r["y"]+5, r["x"]-5:r["x"]+5] = 50000
         
     rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), np.zeros_like(raw)], -1)
 
@@ -106,7 +106,7 @@ def check_cell_center_to_resampled(brain, zstart, zstop, dst):
     cell_centers = np.zeros(raw.shape)
     
     for i, r in cells.iterrows():
-        cell_centers[r["z"]-zstart, r["y"]-5:r["y"]+5, r["x"]-5:r["x"]+5] = 1
+        cell_centers[r["z"]-zstart-5:r["z"]-zstart+5, r["y"]-10:r["y"]+5, r["x"]-5:r["x"]+5] = 50000
         
     rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), np.zeros_like(raw)], -1)
 
