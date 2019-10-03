@@ -6,11 +6,12 @@ Created on Wed Oct  2 16:14:37 2019
 @author: wanglab
 """
 
-import os, subprocess as sp, tifffile, numpy as np, shutil
+import os, subprocess as sp, tifffile, numpy as np, shutil, matplotlib.pyplot as plt, matplotlib as mpl
 from tools.analysis.analyze_injection_inverse_transform import pool_injections_inversetransform
 from tools.utils.io import makedir, load_kwargs, listdirfull
+from tools.imageprocessing.orientation import fix_orientation
 
-def apply_transformix(invol, outpth, transformfile):
+def run_transformix(invol, outpth, transformfile):
     
     #run transformix        
     sp.call(["transformix", "-in", invol, "-out", outpth, "-tp", transformfile])
@@ -37,6 +38,7 @@ if __name__ == "__main__":
        "20180215_jg_bl6f_prv_07", "20180305_jg_bl6f_prv_13", "20180326_jg_bl6f_prv_37",
        "20180215_jg_bl6f_prv_06", "20180322_jg_bl6f_prv_26","20180313_jg_bl6f_prv_24",
        "20180313_jg_bl6f_prv_25", "20180326_jg_bl6f_prv_35"]
+
     
     #run
     inputlist = [os.path.join(src, xx) for xx in brains]
@@ -56,8 +58,8 @@ if __name__ == "__main__":
       "save_tif": True,
       "colormap": "plasma", 
       "atlas": "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif",
-      "annotation": "/home/wanglab/mounts/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif",
-      "id_table": "/home/wanglab/mounts/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
+      "annotation": "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif",
+      "id_table": "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
     }
     
     df = pool_injections_inversetransform(**dct)    
@@ -89,7 +91,7 @@ if __name__ == "__main__":
     
         invol = os.path.join(dct["dst"], os.path.basename(fld)+".tif")
         outpth = os.path.join(dct["dst"], os.path.basename(fld)); makedir(outpth)
-        outpth = apply_transformix(invol, outpth, transformfile)
+        outpth = run_transformix(invol, outpth, transformfile)
         
         #fix the negative #'s around the site, and overwrite the tif onto the resampled version
         #this was checked and is consistent w the transform
@@ -99,10 +101,19 @@ if __name__ == "__main__":
         tifffile.imsave(invol, img.astype("uint16"))
         shutil.rmtree(outpth) #delete original transformed file
         
-#%%
-#inspect injection sites for the brains i currently have
-    
+    #inspect injection sites for the brains i currently have
     imgs = listdirfull(dct["dst"], "tif"); imgs.sort()
-    arr = np.array([tifffile.imread(xx)[:, 423:, :] for xx in imgs]) #the y-axis cutoff is the same as the h129 dataset
-    atl = tifffile.imread(dct["atlas"])[:, 423:, :]
+    sites = np.array([fix_orientation(tifffile.imread(xx)[:, 450:, :], dct["reorientation"]) for xx in imgs]) #the y-axis cutoff for visualization
+    atl = fix_orientation(tifffile.imread(dct["atlas"])[:, 450:, :], dct["reorientation"])
     
+    my_cmap = eval("plt.cm.{}(np.arange(plt.cm.RdBu.N))".format("viridis"))
+    my_cmap[:1,:4] = 0.0  
+    my_cmap = mpl.colors.ListedColormap(my_cmap)
+    my_cmap.set_under("w")
+    plt.figure()
+    plt.imshow(np.max(atl, axis=0), cmap="gray")
+    plt.imshow(np.max(np.sum(sites, axis=0), axis = 0), alpha=0.90, cmap=my_cmap); plt.colorbar(); plt.axis("off")
+    
+    plt.savefig(os.path.join(dct["dst"],"heatmap.pdf"), dpi = 300, transparent = True);
+    plt.close()
+#    
