@@ -50,7 +50,7 @@ if __name__ == "__main__":
       "injectionscale": 45000, 
       "imagescale": 2,
       "reorientation": ("2","0","1"),
-      "crop": "[:,:,:]", #limits injection site search to cerebellum
+      "crop": "[:,:,:]",
       "dst": "/jukebox/wang/zahra/prv/prv_injection_sites",
       "save_individual": False, 
       "save_tif": True,
@@ -61,8 +61,6 @@ if __name__ == "__main__":
     }
     
     df = pool_injections_inversetransform(**dct)    
-
-#%%
 
     #only get brains for which the inj segmentation was successful
     inj_brains = [os.path.join(src, xx[:-4]) for xx in os.listdir(dct["dst"]) if "tif" in xx]
@@ -101,3 +99,10 @@ if __name__ == "__main__":
         tifffile.imsave(invol, img.astype("uint16"))
         shutil.rmtree(outpth) #delete original transformed file
         
+#%%
+#inspect injection sites for the brains i currently have
+    
+    imgs = listdirfull(dct["dst"], "tif"); imgs.sort()
+    arr = np.array([tifffile.imread(xx)[:, 423:, :] for xx in imgs]) #the y-axis cutoff is the same as the h129 dataset
+    atl = tifffile.imread(dct["atlas"])[:, 423:, :]
+    
