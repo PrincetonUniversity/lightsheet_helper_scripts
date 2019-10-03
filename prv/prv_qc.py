@@ -135,6 +135,7 @@ def overlay_qc(args):
             kwargs = load_kwargs(lightsheet_parameter_dictionary)
             resampled_dims, resampled_vol = get_resampledvol_n_dimensions(lightsheet_parameter_dictionary)
             transformed_vol = os.path.join(dst, "transformed_volume"); makedir(transformed_vol)
+            
             if not doubletransform:
                 transformfiles = [os.path.join(fld, "elastix/TransformParameters.0.txt"), os.path.join(fld, 
                                   "elastix/TransformParameters.1.txt")]
