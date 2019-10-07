@@ -31,13 +31,13 @@ tifffile.imsave(new_erode_path, eann)
 
 #######################################
 #%%Example eroding edges and ventricles
-ann_path = '/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans_16bit.tif'
-new_erode_path = '/home/wanglab/mounts/wang/zahra/prv/sagittal_allen_ann_25um_iso_16bit_60um_edge_80um_ventricular_erosion.tif'
+ann_path = '/home/wanglab/mounts/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif'
+new_erode_path = '/home/wanglab/mounts/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit_60um_edge_80um_vntric_erosion.tif'
 #get ventricles - these are the values of ventricles in the annotation image (also the same as the look up file)
 ventricle_values = [108.0, 81.0, 116.0, 129.0, 145.0, 73.0]
 ventricular_microns_to_erode = 80
 edge_microns_to_erode = 60
-zyx_scale = (25,25,25)
+zyx_scale = (20,20,20)
 
 #NOTE THIS ESSENTIALLY SCALES PIXEL SPACE*****
 import numpy as np
