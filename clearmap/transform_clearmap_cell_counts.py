@@ -125,7 +125,7 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
             table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             
-            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities_75um_erosion.csv"))
+            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities_60um_edge_80um_vntric_erosion.csv"))
                 
             #Without weigths (pure cell number):
             ids, counts = countPointsInRegions(points, labeledImage = ann, intensities = None)
@@ -142,7 +142,7 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
             table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             
-            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_75um_erosion.csv"))
+            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_60um_edge_80um_vntric_erosion.csv"))
                 
             print ("\n Analysis Completed\n") 
         else:
@@ -162,4 +162,4 @@ if __name__ == "__main__":
     pth = "/jukebox/wang/Jess/lightsheet_output/201908_tpham_ymaze_cfos/processed"
     
     for src in os.listdir(pth):
-        make_table_of_transformed_cells(os.path.join(pth, src))
+        make_table_of_transformed_cells(os.path.join(pth, src), ann, ann_lut)
