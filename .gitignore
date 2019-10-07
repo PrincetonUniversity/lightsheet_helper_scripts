@@ -2,3 +2,6 @@
 *__pycache__*
 credentials.json
 token.pickle
+*.out #slurm files
+*.err
+logs/

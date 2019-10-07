@@ -73,14 +73,14 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst):
     cell_centers = np.zeros(raw.shape)
     
     for i, r in cells.iterrows():
-        cell_centers[r["z"]-zstart, r["y"]-5:r["y"]+5, r["x"]-5:r["x"]+5] = 1
+        cell_centers[r["z"]-zstart-5:r["z"]-zstart+5, r["y"]-10:r["y"]+5, r["x"]-5:r["x"]+5] = 50000
         
     rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), np.zeros_like(raw)], -1)
 
     resize_merged_stack(rbg, os.path.join(dst, "{}_raw_cell_centers_resized_z{}-{}.tif".format(os.path.basename(brain), 
                                           zstart, zstop)), "uint16", 6)
     
-    print("took {} seconds to make merged maps".format(time.time() - start))
+    print("took %0.1f seconds to make merged maps for %s" % ((time.time()-start), brain))
     
 def check_cell_center_to_resampled(brain, zstart, zstop, dst):
     """ 
@@ -106,24 +106,24 @@ def check_cell_center_to_resampled(brain, zstart, zstop, dst):
     cell_centers = np.zeros(raw.shape)
     
     for i, r in cells.iterrows():
-        cell_centers[r["z"]-zstart, r["y"]-5:r["y"]+5, r["x"]-5:r["x"]+5] = 1
+        cell_centers[r["z"]-zstart-5:r["z"]-zstart+5, r["y"]-10:r["y"]+5, r["x"]-5:r["x"]+5] = 50000
         
     rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), np.zeros_like(raw)], -1)
 
     resize_merged_stack(rbg, os.path.join(dst, "{}_raw_cell_centers_resized_z{}-{}.tif".format(os.path.basename(brain), 
                                           zstart, zstop)), "uint16", 6)
     
-    print("took {} seconds to make merged maps".format(time.time() - start))
+    print("took %0.1f seconds to make merged maps for %s" % ((time.time()-start), brain))
     
-#%%    
+    
 if __name__ == "__main__":
     
-    ids = ['20160920_tp_bl6_lob7_ml_01']
+    ids = ["20180313_jg_bl6f_prv_20"]
     
     for i in ids:
-        brain = "/jukebox/wang/pisano/tracing_output/antero_4x/"+i
-        zstart = 550; zstop = 570
-        dst = "/jukebox/wang/zahra/cnn_validation/201903"
+        brain = "/jukebox/wang/pisano/tracing_output/retro_4x/"+i
+        zstart = 400; zstop = 420
+        dst = "/jukebox/wang/zahra/prv/cnn_validation"
         if not os.path.exists(dst): os.mkdir(dst)
         
         check_cell_center_to_fullsizedata(brain, zstart, zstop, dst)
