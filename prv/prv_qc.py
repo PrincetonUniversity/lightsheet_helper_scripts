@@ -213,14 +213,14 @@ if __name__ == "__main__":
     
     #goal is to transform cooridnates, voxelize based on number of cells and overlay with reigstered cell signal channel...
     #set paths and make folders
-    dst = "/jukebox/wang/zahra/prv/20190930"
+    dst = "/jukebox/wang/zahra/prv/"
     input_folder = "/jukebox/wang/pisano/tracing_output/retro_4x/"
     folder_suffix = "3dunet_output/pooled_cell_measures"
 
     output_folder = os.path.join(dst, "prv_transformed_cells"); makedir(output_folder)
     
     #inputs
-    brains = ["20180326_jg_bl6f_prv_37"]
+    brains = ["20180326_jg_bl6f_prv_32"]
     
     brains = [os.path.join(input_folder, xx) for xx in brains]
     input_list = [xx for xx in brains if os.path.exists(os.path.join(xx, folder_suffix))]

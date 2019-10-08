@@ -36,10 +36,11 @@ plt.imshow(ann_left[120])
 
 #collect 
 #brains should be in this order as they were saved in this order for inj analysis
-brains = ["20180313_jg_bl6f_prv_23", "20180322_jg_bl6f_prv_27",
- "20180313_jg_bl6f_prv_21", "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_36",
- "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33",
- "20180322_jg_bl6f_prv_26", "20180313_jg_bl6f_prv_25", "20180326_jg_bl6f_prv_35", "20180313_jg_bl6f_prv_24"]
+brains = ["20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
+       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_15", "20180312_jg_bl6f_prv_17", 
+       "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180313_jg_bl6f_prv_25", 
+       "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
+       "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35", "20180326_jg_bl6f_prv_37"]
     
 inj_src = os.path.join(dst, "prv_injection_sites")
 imgs = [os.path.join(inj_src, xx+".tif") for xx in brains]
@@ -60,7 +61,7 @@ for img in imgs:
     dist = z_c-(z/2)
     #save to dict 
     lr_dist[brain[:-4]] = dist
-    inj_vox[brain[:-4]] = np.sum(inj_vol)
+    inj_vox[brain[:-4]] = inj_vol
     
     if dist < 0:
         print("brain {} has a left-sided injection\n".format(brain))
@@ -70,19 +71,65 @@ for img in imgs:
         print("brain has an injection close to midline so not considering it rn\n")
 
 
+#%%
+#get injection fractions
+inj_raw = np.array([inj.astype(bool) for inj in inj_vox.values()])
+    
+atl_raw = tifffile.imread("/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif")
+ann_raw = tifffile.imread("/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif")
+anns = np.unique(ann_raw).astype(int)
+print(ann_raw.shape)
+     
+#annotation IDs of the cerebellum ONLY that are actually represented in annotation file
+iids = {"Lingula (I)": 912,
+        "Lobule II": 976,
+        "Lobule III": 984,
+        "Lobule IV-V": 1091,
+        "Lobule VIa": 936,
+        "Lobule VIb": 1134,
+        "Lobule VII": 944,
+        "Lobule VIII": 951,
+        "Lobule IX": 957, #uvula IX
+        "Lobule X": 968, #nodulus X
+        "Simplex lobule": 1007, #simplex
+        "Crus 1": 1056, #crus 1
+        "Crus 2": 1064, #crus 2
+        "Paramedian lobule": 1025, #paramedian lob
+        "Copula pyramidis": 1033 #copula pyramidis
+        }
+ak = np.asarray([k for k,v in iids.items()])
+
+atlas_rois = {}
+for nm, iid in iids.items():
+    z,y,x = np.where(ann_raw == iid) #find where structure is represented
+    ann_blank = np.zeros_like(ann_raw)
+    ann_blank[z,y,x] = 1 #make a mask of structure in annotation space
+    atlas_rois[nm] = ann_blank.astype(bool) #add mask of structure to dictionary
+
+expr_all_as_frac_of_lob = np.array([[(mouse.ravel()[lob.ravel()].astype(int)).sum() / lob.sum() for nm, lob in atlas_rois.items()] for mouse in inj_raw])    
+expr_all_as_frac_of_inj = np.array([[(mouse.ravel()[lob.ravel()].astype(int)).sum() / mouse.sum() for nm, lob in atlas_rois.items()] for mouse in inj_raw])    
+primary = np.array([np.argmax(e) for e in expr_all_as_frac_of_inj])
+primary_as_frac_of_lob = np.array([np.argmax(e) for e in expr_all_as_frac_of_lob])
+secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
+
+#pooled injections
+ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
+                 "Simplex", "Crura", "PM, CP"])
+frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]),xx[10],np.sum(xx[11:13]),np.sum(xx[14:16])] for xx in expr_all_as_frac_of_inj])
+
+#%%
 #make structures
 #FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
-
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
+#%%
+#set variables
 lr_brains = list(lr_dist.keys())
 
 atl_dst = os.path.join(dst, "pma_to_aba"); makedir(atl_dst)
 id_table = pd.read_excel(df_pth)
 
-#%%
-#get brains that we actually need to get cell counts from
 cells_src = os.path.join(dst, "prv_transformed_cells")
 post_transformed = [os.path.join(cells_src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
 transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
@@ -187,7 +234,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
                     if k == soi:
                         counts.append(v)                    
                 #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0]
+                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])
                 c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
                 d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
                         
@@ -286,6 +333,7 @@ sort_dipsi = _dipsi.T[np.argsort(_dist, axis = 0)]
 sort_dratio = _dratio.T[np.argsort(_dist, axis = 0)]
 sort_vox_per_region = volume_per_brain_left[np.argsort(_dist, axis = 0)]
 sort_brains = np.array(lr_brains)[np.argsort(_dist)]
+sort_inj = frac_of_inj_pool[np.argsort(_dist)]   
 
 print(sort_dist.shape)
 print(sort_cratio.shape)
@@ -301,17 +349,39 @@ sort_ratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in r
 
 #%%
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 4, figsize = (8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [1,1,1,0.3]})
+fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (12,8), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [1.2,1,1,1,0.3]})
 
 #set colorbar features 
-maxdensity = 40
-whitetext = 5
-label_coordsy, label_coordsx  = -0.25,0.5 #for placement of vertical labels
+maxdensity = 60
+whitetext = 10
+label_coordsy, label_coordsx  = -0.20,0.5 #for placement of vertical labels
 annotation_size = "small" #for the number annotations inside the heatmap
 brain_lbl_size = "small"
 
+#inj fractions
 ax = axes[0]
+
+show = np.fliplr(sort_inj).T
+
+vmin = 0
+vmax = 0.8
+cmap = plt.cm.Reds 
+cmap.set_over('darkred')
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+
+ax = axes[1]
 show = sort_dcontra_pool.T
 yaxis = grps
 
@@ -345,7 +415,7 @@ ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "tha
 ax.set_ylabel("Contra", fontsize="small")
 ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
-ax = axes[1]
+ax = axes[2]
 show = sort_dipsi_pool.T
 yaxis = grps
 
@@ -380,14 +450,14 @@ ax.set_ylabel("Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
 
-ax = axes[2]
+ax = axes[3]
 show = sort_ratio_pool.T
 yaxis = grps
 
 vmin = 0.7
 vmax = 1.5
 cmap = plt.cm.Blues
-cmap.set_over("navy")
+cmap.set_over((0.03137254901960784, 0.18823529411764706, 0.4196078431372549, 1.0))
 #colormap
 bounds = np.linspace(vmin,vmax,5)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
@@ -414,14 +484,14 @@ ax.set_yticklabels(yaxis, fontsize="x-small")#plt.savefig(os.path.join(dst, "tha
 ax.set_ylabel("Contra/Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
-ax = axes[3]
+ax = axes[4]
 show = np.asarray([sort_dist])
 
 vmin = -100
 vmax = 80
 cmap = plt.cm.RdBu_r
-cmap.set_over('maroon')
-cmap.set_under('midnightblue')
+cmap.set_over("maroon")
+cmap.set_under("midnightblue")
 #colormap
 bounds = np.linspace(vmin,vmax,4)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
@@ -441,7 +511,7 @@ for ri,row in enumerate(show):
         else:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize=annotation_size)        
 
-#remaking labeles so it doesn't look squished
+#remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
@@ -450,3 +520,18 @@ ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
 plt.savefig(os.path.join(dst, "density_w_ratios.pdf"), bbox_inches = "tight")
+
+#%%
+#basic statistics for these ratios
+from scipy.stats import median_absolute_deviation as mad
+
+df = pd.DataFrame()
+
+df["median"] = np.median(sort_ratio_pool, axis = 0)
+df["mean"] = np.mean(sort_ratio_pool, axis = 0)
+df["std"] = np.std(sort_ratio_pool, axis = 0)
+df["est std"] = mad(sort_ratio_pool, axis = 0)/0.6745
+
+df.index = grps
+
+df.to_csv(os.path.join(dst, "ratio_stats.csv"))

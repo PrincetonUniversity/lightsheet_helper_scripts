@@ -26,19 +26,7 @@ if __name__ == "__main__":
 
     src = "/jukebox/wang/pisano/tracing_output/retro_4x"
     
-    brains = ["20180313_jg_bl6f_prv_23", "20180215_jg_bl6f_prv_10", "20170611_bl6_prv08",
-       "20180322_jg_bl6f_prv_28", "20180205_jg_bl6f_prv_02" ,"20180313_jg_bl6f_prv_20",
-       "20180305_jg_bl6f_prv_12", "20180205_jg_bl6f_prv_01", "20180323_jg_bl6f_prv_31", 
-       "20180322_jg_bl6f_prv_27", "20180305_jg_bl6f_prv_11","20180215_jg_bl6f_prv_05", 
-       "20180326_jg_bl6f_prv_34", "20180305_jg_bl6f_prv_14","20180205_jg_bl6f_prv_03", 
-       "20180306_jg_bl6f_prv_16", "20180326_jg_bl6f_prv_36", "20180313_jg_bl6f_prv_21",
-       "20180323_jg_bl6f_prv_30","20180306_jg_bl6f_prv_16", "20180326_jg_bl6f_prv_32",
-       "20180215_jg_bl6f_prv_08", "20180322_jg_bl6f_prv_29", "20180205_jg_bl6f_prv_04",
-       "20180312_jg_bl6f_prv_17", "20180215_jg_bl6f_prv_09", "20180326_jg_bl6f_prv_33",
-       "20180215_jg_bl6f_prv_07", "20180305_jg_bl6f_prv_13", "20180326_jg_bl6f_prv_37",
-       "20180215_jg_bl6f_prv_06", "20180322_jg_bl6f_prv_26","20180313_jg_bl6f_prv_24",
-       "20180313_jg_bl6f_prv_25", "20180326_jg_bl6f_prv_35"]
-
+    brains = ["20180305_jg_bl6f_prv_15"]
     
     #run
     inputlist = [os.path.join(src, xx) for xx in brains]
@@ -70,7 +58,6 @@ if __name__ == "__main__":
     #even though we have the voxel counts in the csv file, i would still prefer to have the registered volumes just in case
     #that is how we did the segmentation for the h129 anyways
     #btw this will take long, and i don't recommend parallelizing bc of transformix
-     
     for fld in inj_brains:
         
         kwargs = load_kwargs(fld)
