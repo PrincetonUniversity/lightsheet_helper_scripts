@@ -6,7 +6,8 @@ Created on Mon Oct  7 11:36:08 2019
 @author: wanglab
 """
 
-import os, numpy as np, pandas as pd, scipy, itertools
+import os, numpy as np, pandas as pd, scipy, itertools, sys
+sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 from tools.analysis.network_analysis import make_structure_objects
 
 src = "/jukebox/wang/Jess/lightsheet_output/201908_tpham_ymaze_cfos/pooled_analysis"
@@ -25,11 +26,13 @@ cond = ["DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREAD
         "control", "control"]
 
 conditions = {n:c for n,c in zip(nms, cond)}
-pth = os.path.join(src, "cell_counts.csv")
 
+#set appropriate paths
+pth = os.path.join(src, "cell_counts.csv")
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+curated_structures = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
 
 #build structures class
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
@@ -112,9 +115,7 @@ def generate_percent_counts_and_density_per_region(src, csv_pth):
 #run
 percent_density_csv_pth = generate_percent_counts_and_density_per_region(src, csv_pth)
 
-
-curated_structures = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
-
+#do stats for previously curated structures
 sois = pd.read_csv(curated_structures)
 sois = [xx[0] for xx in sois.values]
 
