@@ -188,9 +188,9 @@ if __name__ == "__main__":
     inputs = "/jukebox/wang/pisano/conv_net/annotations/all_better_res/h129/input_files"
     test_imgs = ["20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_05_500-550.tif",
                  "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_00.tif",
-                 "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_04.tif",
-                 "20170130_tp_bl6_sim_1750r_03_647_010na_1hfds_z7d5um_50msec_10povlp_ch00_z200-400_y2050-2400_x1350-1700.tif",
-                 "20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y1000-1350_x2050-2400.tif"]
+                 "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_04.tif"]
+#                 "20170130_tp_bl6_sim_1750r_03_647_010na_1hfds_z7d5um_50msec_10povlp_ch00_z200-400_y2050-2400_x1350-1700.tif",
+#                 "20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y1000-1350_x2050-2400.tif"]
     
     vols = [os.path.join(inputs, xx) for xx in test_imgs]
 
@@ -198,10 +198,10 @@ if __name__ == "__main__":
     max_thresholds = [25]
     DoGs = [10]
     backgrounds = [3]
-    sizes = np.arange(5, 100, 5)
+    sizes = np.arange(0, 100, 1)
     int_thresholds = [700]
     
-    dst = "/home/wanglab/Desktop/cnn_to_clearmap/all_volumes/cell_arrays"
+    dst = "/jukebox/wang/zahra/cnn_to_clearmap_comparison/roc_curve/cell_arrays"
     iterlst = [(fn, dst, max_thres, DoG, bckgrd, sz, int_thres) for fn in vols for max_thres in max_thresholds for DoG in DoGs for bckgrd in backgrounds for sz in sizes for int_thres in int_thresholds]
     
     print("\n\niterations: %d\n\n" % (len(iterlst)))
