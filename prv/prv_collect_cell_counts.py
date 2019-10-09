@@ -29,7 +29,7 @@ plt.imshow(ann[300])
 z,y,x = ann.shape
 #make sure each halves are same dimension as original ann
 ann_left = np.zeros_like(ann)
-ann_left[:int(z/2), :, :] = ann[:int(z/2), :, :] #cut in the middle in x
+ann_left[:int(z/2), :, :] = ann[:int(z/2), :, :] #cut in the middle in z
 ann_right = np.zeros_like(ann)
 ann_right[int(z/2):, :, :] = ann[int(z/2):, :, :]
 plt.imshow(ann_left[120])
