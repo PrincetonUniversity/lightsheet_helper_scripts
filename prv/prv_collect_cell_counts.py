@@ -6,7 +6,7 @@ Created on Thu Oct  3 15:20:36 2019
 @author: wanglab
 """
 
-import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
+import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, statsmodels.api as sm
 from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister
 from tools.registration.register import change_transform_parameter_initial_transform
 from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files
@@ -36,11 +36,11 @@ plt.imshow(ann_left[120])
 
 #collect 
 #brains should be in this order as they were saved in this order for inj analysis
-brains = ["20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
-       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_15", "20180312_jg_bl6f_prv_17", 
-       "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180313_jg_bl6f_prv_25", 
+brains = ["20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
+       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_15", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
+       "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180313_jg_bl6f_prv_25", "20180305_jg_bl6f_prv_11",
        "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
-       "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35", "20180326_jg_bl6f_prv_37"]
+       "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35"]
     
 inj_src = os.path.join(dst, "prv_injection_sites")
 imgs = [os.path.join(inj_src, xx+".tif") for xx in brains]
@@ -123,13 +123,13 @@ frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]),xx
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
-#%%
 #set variables
 lr_brains = list(lr_dist.keys())
 
 atl_dst = os.path.join(dst, "pma_to_aba"); makedir(atl_dst)
 id_table = pd.read_excel(df_pth)
 
+#%%
 cells_src = os.path.join(dst, "prv_transformed_cells")
 post_transformed = [os.path.join(cells_src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
 transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
@@ -274,7 +274,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
 cells_regions = pckl.load(open(os.path.join(dst, "right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
 
-nc_areas = ["Inferior olivary complex", "Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
+nc_areas = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
             "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
             "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
@@ -338,18 +338,18 @@ sort_inj = frac_of_inj_pool[np.argsort(_dist)]
 print(sort_dist.shape)
 print(sort_cratio.shape)
 
-grps = np.array(["Inferior Olive", "Frontal\n(IL,PL,ACC,ORB,FRP,\nGU,AI,VISC)" , "Medial\n(MO,SS)", "Posterior\n(RSP,PTL,TE,PERI,ECT)"])
-sort_ccontra_pool = np.asarray([[xx[0], np.sum(xx[1:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])
-sort_dcontra_pool = np.asarray([[xx[0], np.sum(xx[1:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])/(np.asarray([[xx[0], np.sum(xx[1:7]), 
+grps = np.array(["Frontal\n(IL,PL,ACC,ORB,FRP,\nGU,AI,VISC)" , "Medial\n(MO,SS)", "Posterior\n(RSP,PTL,TE,PERI,ECT)"])
+sort_ccontra_pool = np.asarray([[np.sum(xx[:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])
+sort_dcontra_pool = np.asarray([[np.sum(xx[:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])/(np.asarray([[np.sum(xx[:7]), 
                                         np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_vox_per_region])*(scale_factor**3))
-sort_cipsi_pool = np.asarray([[xx[0], np.sum(xx[1:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_cipsi])
-sort_dipsi_pool = np.asarray([[xx[0], np.sum(xx[1:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_cipsi])/(np.asarray([[xx[0], np.sum(xx[1:7]), 
+sort_cipsi_pool = np.asarray([[np.sum(xx[:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_cipsi])
+sort_dipsi_pool = np.asarray([[np.sum(xx[:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_cipsi])/(np.asarray([[np.sum(xx[:7]), 
                                       np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_ratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 
 #%%
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (12,8), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (13,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [1.2,1,1,1,0.3]})
 
 #set colorbar features 
@@ -519,7 +519,7 @@ ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right"
 ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
-plt.savefig(os.path.join(dst, "density_w_ratios.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "density_w_contra_ipsi_ratios.pdf"), bbox_inches = "tight")
 
 #%%
 #basic statistics for these ratios
@@ -535,3 +535,313 @@ df["est std"] = mad(sort_ratio_pool, axis = 0)/0.6745
 df.index = grps
 
 df.to_csv(os.path.join(dst, "ratio_stats.csv"))
+
+#%%
+#make density map like the h129 dataset (nc only for now)
+
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (10,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,5]})
+
+#set colorbar features 
+maxdensity = 50
+whitetext = 7
+label_coordsy, label_coordsx  = -0.30,0.5 #for placement of vertical labels
+annotation_size = "x-small" #for the number annotations inside the heatmap
+brain_lbl_size = "small"
+yaxis = nc_areas #for density by nc areas map
+
+#make density array
+volume_per_brain = volume_per_brain_right+volume_per_brain_left
+cell_counts_per_brain = cell_counts_per_brain_right+cell_counts_per_brain_left
+density = np.asarray([xx/(volume_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(cell_counts_per_brain)])
+    
+#inj fractions
+ax = axes[0]
+show = np.fliplr(frac_of_inj_pool).T
+
+vmin = 0
+vmax = 0.8
+cmap = plt.cm.Reds 
+cmap.set_over('darkred')
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+
+ax = axes[1]
+show = np.fliplr(density).T
+
+vmin = 0
+vmax = maxdensity
+cmap = plt.cm.viridis
+cmap.set_over("gold")
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+
+# exact value annotations
+#for ri,row in enumerate(show):
+#    for ci,col in enumerate(row):
+#        if col < whitetext:
+#            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize=annotation_size)
+#        else:
+#            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize=annotation_size)
+
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_ylabel("Neocortical areas, Allen Atlas", fontsize="small")
+ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
+
+ax.set_xticks(np.arange(len(brains))+.5)
+lbls = np.asarray(sort_brains)
+ax.set_xticklabels(brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+
+plt.savefig(os.path.join(dst, "density_nc.pdf"), bbox_inches = "tight")
+
+#%%
+#make % counts map like the h129 dataset (nc only for now)
+
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,5]})
+
+#set colorbar features 
+maxdensity = 20
+whitetext = 3
+label_coordsy, label_coordsx  = -0.37,0.5 #for placement of vertical labels
+annotation_size = "x-small" #for the number annotations inside the heatmap
+brain_lbl_size = "x-small"
+yaxis = nc_areas #for density by nc areas map
+
+#make pcounts array
+cell_counts_per_brain = cell_counts_per_brain_right+cell_counts_per_brain_left
+total_counts_per_brain = np.sum(cell_counts_per_brain, axis=1)
+pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(cell_counts_per_brain)])
+    
+#inj fractions
+ax = axes[0]
+show = np.fliplr(frac_of_inj_pool).T
+
+vmin = 0
+vmax = 0.8
+cmap = plt.cm.Reds 
+cmap.set_over('darkred')
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+
+ax = axes[1]
+show = np.fliplr(pcounts).T
+
+vmin = 0
+vmax = maxdensity
+cmap = plt.cm.viridis
+cmap.set_over("gold")
+#colormap
+bounds = np.linspace(vmin,vmax,6)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("% of total neocortical counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+
+# exact value annotations
+#for ri,row in enumerate(show):
+#    for ci,col in enumerate(row):
+#        if col < whitetext:
+#            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize=annotation_size)
+#        else:
+#            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize=annotation_size)
+
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_ylabel("Neocortical areas, Allen Atlas", fontsize="small")
+ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
+
+ax.set_xticks(np.arange(len(brains))+.5)
+lbls = np.asarray(sort_brains)
+ax.set_xticklabels(brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+
+plt.savefig(os.path.join(dst, "pcounts_nc.pdf"), bbox_inches = "tight")
+
+#%%
+#glm?
+#VARIABLES FOR GLM           
+#POOL NC REGIONS!!
+#took out post. parietal as no counts
+pcounts_pool = np.array([np.array([xx[0]+xx[1]+xx[2]+xx[4], xx[3], xx[6], xx[5]+xx[7], 
+                                          xx[8]+xx[9], xx[10], xx[12], 
+                                          xx[13]+xx[14], xx[15]+xx[16]]) for xx in pcounts])
+
+
+#for display
+regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
+       "Frontal pole", "Agranular insula", "Gustatory, Visceral",
+       "Somatomotor, Somatosensory", "Retrosplenial", "Visual",
+       "Temporal, Auditory", "Peririhinal, Ectorhinal"])
+primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
+#get n"s after pooling
+primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
+
+    
+X = np.array([brain/brain.sum() for brain in frac_of_inj_pool])
+Y = pcounts_pool    
+#%%
+
+##  glm
+c_mat = []
+mat = []
+pmat = []
+mat_shuf = []
+p_shuf = []
+fit = []
+fit_shuf = []
+
+for itera in range(1000):
+    if itera%100 == 0: print(itera)
+    if itera == 0:
+        shuffle = False
+        inj = X.copy()
+    else:
+        shuffle = True
+        mat_shuf.append([])
+        p_shuf.append([])
+        fit_shuf.append([])
+        inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
+    for count, region in zip(Y.T, regions):
+        inj_ = inj[~np.isnan(count)]
+        count = count[~np.isnan(count)]
+
+        # intercept:
+        inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
+        
+#        glm = sm.OLS(count, inj_)
+        glm = sm.GLM(count, inj_, family=sm.families.Poisson())
+        res = glm.fit()
+        
+        coef = res.params[:-1]
+        se = res.bse[:-1]
+        pvals = res.pvalues[:-1] 
+
+        val = coef/se
+
+        if not shuffle:
+            c_mat.append(coef)
+            mat.append(val)
+            pmat.append(pvals)
+            fit.append(res.fittedvalues)
+            
+        elif shuffle:
+            mat_shuf[-1].append(val)
+            p_shuf[-1].append(pvals)
+            fit_shuf[-1].append(res.fittedvalues)
+        # inspect residuals
+        """
+        if not shuffle:
+            plt.clf()
+            plt.scatter(res.fittedvalues, res.resid)
+            plt.hlines(0, res.fittedvalues.min(), res.fittedvalues.max())
+            plt.title(region)
+            plt.xlabel("Fit-vals")
+            plt.ylabel("Residuals")
+            plt.savefig(os.path.join(dst, "resid_inspection-{}.png").format(region))
+        """
+        
+c_mat = np.array(c_mat)
+mat = np.array(mat) # region x inj
+mat_shuf = np.array(mat_shuf) # region x inj
+pmat = np.array(pmat) # region x inj
+p_shuf = np.array(p_shuf)
+fit = np.array(fit)
+fit_shuf = np.array(fit_shuf)
+
+#%%
+## display
+fig = plt.figure(figsize=(6,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#set white text limit here
+whitetext = 5
+annotation_size = "small"#annotation/number sizes
+
+# map 1: weights
+show = np.flipud(mat) # NOTE abs
+
+vmin = 0
+vmax = 7
+cmap = plt.cm.Reds
+cmap.set_under("w")
+cmap.set_over("maroon")
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,8)
+#bounds = np.linspace(0,5,11)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", shrink=0.2, aspect=10)
+cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(True)
+
+#annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col > whitetext:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize=annotation_size)
+        else:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize=annotation_size)   
+            
+# signif
+sig = np.flipud(pmat) < .05#/np.size(pmat)
+p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
+null = (p_shuf_pos < .05).sum(axis=(1,2))
+nullmean = null.mean()
+nullstd = null.std()
+for y,x in np.argwhere(sig):
+    pass
+    ax.text(x, y+0.3, "*", fontsize=10, ha="left", va="bottom", color = "black", transform=ax.transData)
+#ax.text(.5, 1.06, "X: p<0.05".format(nullmean, nullstd), ha="center", va="center", fontsize="small", transform=ax.transAxes)
+ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
+
+# aesthetics
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize="x-small", ha="right")
+# yticks
+ax.set_yticks(np.arange(len(regions))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="small")
+plt.savefig(os.path.join(dst, "nc_glm.pdf"), bbox_inches = "tight")
