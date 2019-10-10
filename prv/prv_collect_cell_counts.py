@@ -6,16 +6,14 @@ Created on Thu Oct  3 15:20:36 2019
 @author: wanglab
 """
 
-import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, statsmodels.api as sm
-from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister
-from tools.registration.register import change_transform_parameter_initial_transform
-from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files
-from tools.registration.transform_list_of_points import point_transformix, unpack_pnts
-from tools.utils.io import makedir
+import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, statsmodels.api as sm, itertools
 from skimage.external import tifffile
-from tools.analysis.network_analysis import make_structure_objects
 from scipy.ndimage.measurements import center_of_mass
-import itertools
+
+from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister, change_transform_parameter_initial_transform
+from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files, point_transformix, unpack_pnts
+from tools.utils.io import makedir
+from tools.analysis.network_analysis import make_structure_objects
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
@@ -39,7 +37,7 @@ plt.imshow(ann_left[120])
 #brains should be in this order as they were saved in this order for inj analysis
 brains = ["20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
        "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_15", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
-       "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180313_jg_bl6f_prv_25", "20180305_jg_bl6f_prv_11",
+       "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180305_jg_bl6f_prv_11", "20180313_jg_bl6f_prv_25",
        "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
        "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35"]
     
@@ -614,9 +612,9 @@ ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
 ax.set_ylabel("Neocortical areas, Allen Atlas", fontsize="small")
 ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
-ax.set_xticks(np.arange(len(brains))+.5)
+ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
-ax.set_xticklabels(brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
 
 plt.savefig(os.path.join(dst, "density_nc.pdf"), bbox_inches = "tight")
 
@@ -689,9 +687,9 @@ ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
 ax.set_ylabel("Neocortical areas, Allen Atlas", fontsize="small")
 ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
-ax.set_xticks(np.arange(len(brains))+.5)
+ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
-ax.set_xticklabels(brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
 
 plt.savefig(os.path.join(dst, "pcounts_nc.pdf"), bbox_inches = "tight")
 
