@@ -15,6 +15,7 @@ from tools.utils.io import makedir
 from skimage.external import tifffile
 from tools.analysis.network_analysis import make_structure_objects
 from scipy.ndimage.measurements import center_of_mass
+import itertools
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
@@ -116,6 +117,9 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
                  "Simplex", "Crura", "PM, CP"])
 frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]),xx[10],np.sum(xx[11:13]),np.sum(xx[14:16])] for xx in expr_all_as_frac_of_inj])
+primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
+#get n"s after pooling
+primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
 
 #%%
 #make structures
@@ -556,9 +560,17 @@ volume_per_brain = volume_per_brain_right+volume_per_brain_left
 cell_counts_per_brain = cell_counts_per_brain_right+cell_counts_per_brain_left
 density = np.asarray([xx/(volume_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(cell_counts_per_brain)])
     
+#sort inj fractions by primary lob
+sort_density = [density[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
+sort_brains = list(itertools.chain.from_iterable(sort_brains))
+sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
+
 #inj fractions
 ax = axes[0]
-show = np.fliplr(frac_of_inj_pool).T
+show = np.fliplr(sort_inj).T
 
 vmin = 0
 vmax = 0.8
@@ -578,7 +590,7 @@ ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 
 ax = axes[1]
-show = np.fliplr(density).T
+show = np.fliplr(sort_density).T
 
 vmin = 0
 vmax = maxdensity
@@ -595,18 +607,10 @@ cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
 
-# exact value annotations
-#for ri,row in enumerate(show):
-#    for ci,col in enumerate(row):
-#        if col < whitetext:
-#            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize=annotation_size)
-#        else:
-#            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize=annotation_size)
-
 # aesthetics
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
-ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
 ax.set_ylabel("Neocortical areas, Allen Atlas", fontsize="small")
 ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
@@ -624,7 +628,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,6), sharex = True, g
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxdensity = 20
+maxdensity = 30
 whitetext = 3
 label_coordsy, label_coordsx  = -0.37,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
@@ -635,17 +639,20 @@ yaxis = nc_areas #for density by nc areas map
 cell_counts_per_brain = cell_counts_per_brain_right+cell_counts_per_brain_left
 total_counts_per_brain = np.sum(cell_counts_per_brain, axis=1)
 pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(cell_counts_per_brain)])
-    
+#sort inj fractions by primary lob
+sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_pcounts = np.array(list(itertools.chain.from_iterable(sort_pcounts)))
+
 #inj fractions
 ax = axes[0]
-show = np.fliplr(frac_of_inj_pool).T
+show = np.fliplr(sort_inj).T
 
 vmin = 0
 vmax = 0.8
 cmap = plt.cm.Reds 
 cmap.set_over('darkred')
 #colormap
-bounds = np.linspace(vmin,vmax,6)
+bounds = np.linspace(vmin,vmax,4)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
@@ -658,14 +665,14 @@ ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 
 ax = axes[1]
-show = np.fliplr(pcounts).T
+show = np.fliplr(sort_pcounts).T
 
 vmin = 0
 vmax = maxdensity
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
-bounds = np.linspace(vmin,vmax,6)
+bounds = np.linspace(vmin,vmax,7)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
@@ -675,18 +682,10 @@ cb.set_label("% of total neocortical counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
 
-# exact value annotations
-#for ri,row in enumerate(show):
-#    for ci,col in enumerate(row):
-#        if col < whitetext:
-#            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize=annotation_size)
-#        else:
-#            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize=annotation_size)
-
 # aesthetics
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
-ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
 ax.set_ylabel("Neocortical areas, Allen Atlas", fontsize="small")
 ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
@@ -705,16 +704,11 @@ pcounts_pool = np.array([np.array([xx[0]+xx[1]+xx[2]+xx[4], xx[3], xx[6], xx[5]+
                                           xx[8]+xx[9], xx[10], xx[12], 
                                           xx[13]+xx[14], xx[15]+xx[16]]) for xx in pcounts])
 
-
 #for display
 regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
        "Frontal pole", "Agranular insula", "Gustatory, Visceral",
        "Somatomotor, Somatosensory", "Retrosplenial", "Visual",
        "Temporal, Auditory", "Peririhinal, Ectorhinal"])
-primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
-#get n"s after pooling
-primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
-
     
 X = np.array([brain/brain.sum() for brain in frac_of_inj_pool])
 Y = pcounts_pool    
