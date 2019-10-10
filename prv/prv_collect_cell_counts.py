@@ -116,10 +116,10 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 #pooled injections
 ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
                  "Simplex", "Crura", "PM, CP"])
-frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]),xx[10],np.sum(xx[11:13]),np.sum(xx[14:16])] for xx in expr_all_as_frac_of_inj])
+frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]),xx[10],xx[11:13].sum(),np.sum(xx[13:16])] for xx in expr_all_as_frac_of_inj])
 primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
 #get n"s after pooling
-primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
+primary_lob_n = np.array([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
 
 #%%
 #make structures
@@ -290,7 +290,7 @@ cells_regions = pckl.load(open(os.path.join(dst, "left_side_no_prog_at_each_leve
 cells_regions = cells_regions.to_dict(orient = "dict")      
 cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
 
-
+#%%
 #preprocessing into contra/ipsi counts per brain, per structure
 scale_factor = 0.025
 nc_left_counts = cell_counts_per_brain_left
