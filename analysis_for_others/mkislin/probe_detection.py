@@ -39,7 +39,6 @@ size = (1,20,1) #size of dilatation in zyx
 otsu_factor=1
 
 for pnt in pnts:
-    #print pnt
     vol = np.copy(imcor[np.max((pnt[0]-size[0],0)):pnt[0]+size[0], np.max((pnt[1]-size[1],0)):pnt[1]+size[1], 
                         np.max((pnt[2]-size[2],0)):pnt[2]+size[2]])*1.0
     v=filters.threshold_otsu(vol)/float(otsu_factor)
