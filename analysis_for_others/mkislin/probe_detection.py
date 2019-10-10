@@ -34,20 +34,14 @@ impth = [vol for vol in kwargs["volumes"] if vol.ch_type == "injch" or vol.ch_ty
 im = tifffile.imread(impth)
 imcor = fix_orientation(im, ("2", "0", "1")) #points clicked in coronal vol
 
-#track = np.zeros_like(imcor)
-#for pnt in pnts:
-#    z,y,x = pnt
-#    track[z, y-10:y+10, x] = 50000 #dilate in y to make a line
-
 track = np.zeros_like(imcor)
-size = (1,20,1) #size of dilatation
+size = (1,20,1) #size of dilatation in zyx
 otsu_factor=1
 
 for pnt in pnts:
     #print pnt
     vol = np.copy(imcor[np.max((pnt[0]-size[0],0)):pnt[0]+size[0], np.max((pnt[1]-size[1],0)):pnt[1]+size[1], 
                         np.max((pnt[2]-size[2],0)):pnt[2]+size[2]])*1.0
-    #vol = filters.gaussian(vol, 1)
     v=filters.threshold_otsu(vol)/float(otsu_factor)
     vol[vol<v]=0
     vol[vol>=v]=1
@@ -63,8 +57,8 @@ tifffile.imsave(os.path.join(brain, "%s_probe_track_overlay.tif" % brainname), m
 #export coordinates
 if os.path.exists(os.path.join(brain, "{}_allen_coordinates.txt".format(brainname))): os.remove(os.path.join(brain, "{}_allen_coordinates.txt".format(brainname)))
 with open(os.path.join(brain, "{}_allen_coordinates.txt".format(brainname)), "a") as txt:
-    txt.write("\nAllen Atlas CCF coordinates (zyx) in the saggital orientation:\n%s\n" % pnts_sag)
-    txt.write("\nAllen Atlas CCF coordinates (zyx) in the coronal orientation:\n%s" % pnts)
+    txt.write("\nAtlas coordinates (zyx) in the saggital orientation:\n%s\n" % pnts_sag)
+    txt.write("\nAtlas coordinates (zyx) in the coronal orientation:\n%s" % pnts)
 
             
 #convert to structure
@@ -74,6 +68,6 @@ zpnts, ypnts, xpnts = np.nonzero(fix_orientation(track, ("1", "2", "0"))) #make 
 points = transformed_pnts_to_allen_helper_func([(zi,ypnts[i],xpnts[i]) for i, zi in enumerate(zpnts)], ann, order = "ZYX")    
 
 #make dataframe
-lut_path = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+lut_path = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx" #corresponds with the atlas, change if changing atlas
 df = count_structure_lister(lut_path, *points)
 df.to_excel(os.path.join(brain, "%s_allen_structures.xlsx" % brainname))
