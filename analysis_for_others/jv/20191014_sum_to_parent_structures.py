@@ -1,7 +1,7 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri May 17 14:26:37 2019
+Created on Mon Oct 14 10:29:36 2019
 
 @author: wanglab
 """
@@ -10,8 +10,8 @@ import pandas as pd, os
 import numpy as np
 
 #set the id table, and annotation file paths
-df_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
-ann_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.nrrd"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
 
 #path to appropriate csv file
 percent_density_csv_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv"
@@ -20,7 +20,7 @@ percent_density_csv_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfo
 dst = "/home/wanglab/Desktop"
  
 #give list of structures you want to pool
-pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
+pth = "/home/wanglab/Desktop/one_way_anova_all_structures.csv"
 
 #run this first cell the way it is, imports tom"s class for allen ontology
 class structure:
@@ -156,77 +156,16 @@ structures = make_structure_objects(df_pth, remove_childless_structures_not_reps
 
 """ pools regions together based on allen name """    
 
-sois = pd.read_csv(pth)
-sois = [xx[0] for xx in sois.values]
+df = pd.read_csv(pth).drop(columns = ["Unnamed: 0"])
+sois = df.name.values
+
+#import the main excel sheet from which you will get all the voxel counts
+ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
+
+#loop through and find downstream structures of a given parent
+for soi in sois:
+    soi = [s for s in structures if s.name==soi][0]
+    print(soi.name)
+    df.loc[df.name == soi.name, "voxels_in_structure"] = soi.volume_progeny
    
-#set variables
-orgdf = pd.read_csv(percent_density_csv_pth)
-
-#init
-tdf = orgdf.copy()
-
-#we have to do this per animal
-#get the brains
-brains = tdf.Brain.unique()
-
-#make a big dicitionary to put it all together
-pooled_counts_an = {}
-
-#iterate through the conditions
-for an in brains:
-    df = tdf[tdf.Brain == an]
-    condition = df["Condition"].unique()
-    pooled_counts = {}
-    
-    #loop through and find downstream structures of a given parent
-    for soi in sois:
-        soi = [s for s in structures if s.name==soi][0]
-        print(soi.name)
-        progeny = [str(xx.name) for xx in soi.progeny]
-        counts = [] #store counts in this list
-        val = df.loc[(df.name == soi.name), "percent"].values
-        if val.shape[0] > 0: counts.append(val[0])
-        if len(progeny) > 0:
-            for progen in progeny:
-                val = df.loc[(df.name == progen), "percent"].values
-                if val.shape[0] > 0: counts.append(val[0])
-                
-        #sum counts in parent structures            
-        pooled_counts[soi.name] = np.sum(np.asarray(counts))
-    
-    #fill other details and add to big dict
-    pooled_counts_an[an] = pooled_counts
-    pooled_counts["group"] = condition[0]
-    
-#make into giant dataframe
-main_df = pd.DataFrame.from_dict(pooled_counts_an, orient = "index")
-#sort by group so makes more sense
-main_df = main_df.sort_values(by=["group"])
-main_df.index.name = "animal"
-
-main_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_visualization.csv"))
-
-import itertools
-
-rotate_df = pd.DataFrame()
-struct = [list(itertools.repeat(xx, 33)) for xx in main_df.columns.values[:-1]]
-struct = pd.Series(list(itertools.chain.from_iterable(struct)))
-rotate_df["name"] = struct
-
-vals = [pd.Series(main_df[xx].values) for xx in main_df.columns.values[:-1]]    
-rotate_df["percent"] = pd.concat(vals, ignore_index = True)
-
-ans = list(itertools.repeat(main_df.index.values, len(struct)))
-ans = pd.Series(list(itertools.chain.from_iterable(ans)))
-rotate_df["animal"] = ans
-
-groups = list(itertools.repeat(main_df.group.values, len(struct)))
-groups = pd.Series(list(itertools.chain.from_iterable(groups)))
-rotate_df["condition"] = groups
-
-#save
-rotate_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_plots.csv"), index = False)
-
-print("saved in :{}".format(dst))
-    
-
+df.to_csv(pth, index = None)
