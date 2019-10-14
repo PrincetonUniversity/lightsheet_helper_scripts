@@ -6,8 +6,9 @@ Created on Mon Oct 14 10:29:36 2019
 @author: wanglab
 """
 
-import pandas as pd, os
+import pandas as pd, os, matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import f_oneway
 
 #set the id table, and annotation file paths
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
@@ -148,24 +149,100 @@ def make_structure_objects(excelfl, remove_childless_structures_not_repsented_in
     structures = create_progenitor_chain(structures, df)
     ###        
     return structures
+
+if __name__ == "__main__":
  
-#build structures class
-structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
+    #build structures class
+    structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
+        
+    orgdf = pd.read_csv("/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density_noHC.csv")
+    
+    #get unique structures
+    structs = orgdf["name"].unique()
+    
+    #make new df to store individual progenitors of structures
+    rankdf = pd.DataFrame()
+    rankdf["rank 0"] = structs
+    
+    #loop through and find the parent of a given child
+    for s, soi in enumerate(structs):
+        soi = [s for s in structures if s.name==soi][0]
+        progenitor_chain = soi.progenitor_chain
+        for i in np.arange(1,len(progenitor_chain)+1):
+            rankdf.loc[rankdf["rank 0"] == soi.name, "rank %s" % i] = progenitor_chain[i-1]
+            
+    rankdf.to_csv(os.path.join(dst, "ranks.csv"))   
 
-#%%
-
-""" pools regions together based on allen name """    
-
-df = pd.read_csv(pth).drop(columns = ["Unnamed: 0"])
-sois = df.name.values
-
-#import the main excel sheet from which you will get all the voxel counts
-ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
-
-#loop through and find downstream structures of a given parent
-for soi in sois:
-    soi = [s for s in structures if s.name==soi][0]
-    print(soi.name)
-    df.loc[df.name == soi.name, "voxels_in_structure"] = soi.volume_progeny
-   
-df.to_csv(pth, index = None)
+    #now take all the structures in rank 0,1,2..., do an anova on the percent cell counts...?        
+    ranks = rankdf.columns
+    
+    df_anova = pd.DataFrame()
+    
+    for rank in ranks:
+        if rank == "rank 0":
+            structs = rankdf[rank]
+            df_anova[rank] = structs
+            for nm in structs:
+                f, pval = f_oneway(orgdf[(orgdf.name == nm) & (orgdf.Condition == "DREADDs")]["percent"].values, 
+                             orgdf[(orgdf.name == nm) & (orgdf.Condition == "CNO_control_no_reversal")]["percent"].values, 
+                             orgdf[(orgdf.name == nm) & (orgdf.Condition == "CNO_control_reversal")]["percent"].values)
+                
+                df_anova.loc[(df_anova[rank] == nm), rank + " anova pcounts pval"] = pval
+                #add volume column also
+                df_anova.loc[(df_anova[rank] == nm), rank + " voxels"] = orgdf.loc[orgdf.name == nm, "voxels_in_structure"].unique()[0]
+        else:
+            structs = [xx for xx in rankdf[rank].dropna().unique() if xx != "Basic cell groups and regions"] #not represented in hierarchy?
+            df_anova[rank] = pd.Series(structs)
+            #save pcounts per condition in this
+            pcount = {}
+            voxels = {} #for sois only
+            #init condition keys
+            for cond in orgdf["Condition"].unique():
+                pcount[cond] = {}
+            #loop through per brain...
+            for an in orgdf["Brain"].unique():
+                andf = orgdf[orgdf["Brain"] == an]
+                condition = orgdf.loc[orgdf["Brain"] == an, "Condition"].unique()[0]
+                #loop through and find downstream structures of a given parent
+                for soinm in structs:
+                    try:
+                        soi = [s for s in structures if s.name==soinm][0]
+                        progeny = [str(xx.name) for xx in soi.progeny]
+                        pcounts = [] #store counts in this list
+                        val = andf.loc[(andf.name == soi.name), "percent"].values
+                        if val.shape[0] > 0: pcounts.append(val[0])
+                        if len(progeny) > 0:
+                            for progen in progeny:
+                                val = andf.loc[(andf.name == progen), "percent"].values
+                                if val.shape[0] > 0: pcounts.append(val[0])
+                        #add to dict
+                        if soi.name in pcount[condition].keys():
+                            pcount[condition][soi.name].append(np.array(pcounts).sum())
+                        else:
+                            pcount[condition][soi.name] = [np.array(pcounts).sum()]
+                            voxels[soi.name] = soi.volume_progeny
+                    except:
+                        print("%s not in structures list" % soinm)
+                
+            #now that we have all the pcounts per brain, make them into arrays per structure per condition and find pvals
+            for nm in structs:
+                DREADDs = [v for k,v in pcount["DREADDs"].items() if k == nm][0]
+                norev = [v for k,v in pcount["CNO_control_no_reversal"].items() if k == nm][0]
+                rev = [v for k,v in pcount["CNO_control_reversal"].items() if k == nm][0]
+                
+                f, pval = f_oneway(DREADDs, norev, rev)
+                
+                df_anova.loc[(df_anova[rank] == nm), rank + " anova pcounts pval"] = pval
+                df_anova.loc[(df_anova[rank] == nm), rank + " voxels"] = [v for k,v in voxels.items() if k == nm][0]
+                    
+        
+    df_anova.to_csv(os.path.join(dst, "rank_anovas.csv"))
+    
+    #%%
+    #plot
+    
+    plt.hist(df_anova["rank 0 anova pcounts pval"].dropna().values, bins = 50)
+    plt.hist(df_anova["rank 1 anova pcounts pval"].dropna().values, bins = 50)
+    plt.hist(df_anova["rank 2 anova pcounts pval"].dropna().values, bins = 50)
+    plt.hist(df_anova["rank 3 anova pcounts pval"].dropna().values, bins = 50)
+    plt.axvline(x=0.05, color = "grey", ls = "--")
