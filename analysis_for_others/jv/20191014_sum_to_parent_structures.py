@@ -1,17 +1,18 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri May 17 14:26:37 2019
+Created on Mon Oct 14 10:29:36 2019
 
 @author: wanglab
 """
 
-import pandas as pd, os
+import pandas as pd, os, matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import f_oneway
 
 #set the id table, and annotation file paths
-df_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
-ann_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.nrrd"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
 
 #path to appropriate csv file
 percent_density_csv_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv"
@@ -20,7 +21,7 @@ percent_density_csv_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfo
 dst = "/home/wanglab/Desktop"
  
 #give list of structures you want to pool
-pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
+pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/one_way_anova_all_structures.csv"
 
 #run this first cell the way it is, imports tom"s class for allen ontology
 class structure:
@@ -148,85 +149,100 @@ def make_structure_objects(excelfl, remove_childless_structures_not_repsented_in
     structures = create_progenitor_chain(structures, df)
     ###        
     return structures
+
+if __name__ == "__main__":
  
-#build structures class
-structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
-
-#%%
-
-""" pools regions together based on allen name """    
-
-sois = pd.read_csv(pth)
-sois = [xx[0] for xx in sois.values]
-   
-#set variables
-orgdf = pd.read_csv(percent_density_csv_pth)
-
-#init
-tdf = orgdf.copy()
-
-#we have to do this per animal
-#get the brains
-brains = tdf.Brain.unique()
-
-#make a big dicitionary to put it all together
-pooled_counts_an = {}
-
-#iterate through the conditions
-for an in brains:
-    df = tdf[tdf.Brain == an]
-    condition = df["Condition"].unique()
-    pooled_counts = {}
+    #build structures class
+    structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
+        
+    orgdf = pd.read_csv("/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density_noHC.csv")
     
-    #loop through and find downstream structures of a given parent
-    for soi in sois:
+    #get unique structures
+    structs = orgdf["name"].unique()
+    
+    #make new df to store individual progenitors of structures
+    rankdf = pd.DataFrame()
+    rankdf["rank 0"] = structs
+    
+    #loop through and find the parent of a given child
+    for s, soi in enumerate(structs):
         soi = [s for s in structures if s.name==soi][0]
-        print(soi.name)
-        progeny = [str(xx.name) for xx in soi.progeny]
-        counts = [] #store counts in this list
-        val = df.loc[(df.name == soi.name), "percent"].values
-        if val.shape[0] > 0: counts.append(val[0])
-        if len(progeny) > 0:
-            for progen in progeny:
-                val = df.loc[(df.name == progen), "percent"].values
-                if val.shape[0] > 0: counts.append(val[0])
+        progenitor_chain = soi.progenitor_chain
+        for i in np.arange(1,len(progenitor_chain)+1):
+            rankdf.loc[rankdf["rank 0"] == soi.name, "rank %s" % i] = progenitor_chain[i-1]
+            
+    rankdf.to_csv(os.path.join(dst, "ranks.csv"))   
+
+    #now take all the structures in rank 0,1,2..., do an anova on the percent cell counts...?        
+    ranks = rankdf.columns
+    
+    df_anova = pd.DataFrame()
+    
+    for rank in ranks:
+        if rank == "rank 0":
+            structs = rankdf[rank]
+            df_anova[rank] = structs
+            for nm in structs:
+                f, pval = f_oneway(orgdf[(orgdf.name == nm) & (orgdf.Condition == "DREADDs")]["percent"].values, 
+                             orgdf[(orgdf.name == nm) & (orgdf.Condition == "CNO_control_no_reversal")]["percent"].values, 
+                             orgdf[(orgdf.name == nm) & (orgdf.Condition == "CNO_control_reversal")]["percent"].values)
                 
-        #sum counts in parent structures            
-        pooled_counts[soi.name] = np.sum(np.asarray(counts))
+                df_anova.loc[(df_anova[rank] == nm), rank + " anova pcounts pval"] = pval
+                #add volume column also
+                df_anova.loc[(df_anova[rank] == nm), rank + " voxels"] = orgdf.loc[orgdf.name == nm, "voxels_in_structure"].unique()[0]
+        else:
+            structs = [xx for xx in rankdf[rank].dropna().unique() if xx != "Basic cell groups and regions"] #not represented in hierarchy?
+            df_anova[rank] = pd.Series(structs)
+            #save pcounts per condition in this
+            pcount = {}
+            voxels = {} #for sois only
+            #init condition keys
+            for cond in orgdf["Condition"].unique():
+                pcount[cond] = {}
+            #loop through per brain...
+            for an in orgdf["Brain"].unique():
+                andf = orgdf[orgdf["Brain"] == an]
+                condition = orgdf.loc[orgdf["Brain"] == an, "Condition"].unique()[0]
+                #loop through and find downstream structures of a given parent
+                for soinm in structs:
+                    try:
+                        soi = [s for s in structures if s.name==soinm][0]
+                        progeny = [str(xx.name) for xx in soi.progeny]
+                        pcounts = [] #store counts in this list
+                        val = andf.loc[(andf.name == soi.name), "percent"].values
+                        if val.shape[0] > 0: pcounts.append(val[0])
+                        if len(progeny) > 0:
+                            for progen in progeny:
+                                val = andf.loc[(andf.name == progen), "percent"].values
+                                if val.shape[0] > 0: pcounts.append(val[0])
+                        #add to dict
+                        if soi.name in pcount[condition].keys():
+                            pcount[condition][soi.name].append(np.array(pcounts).sum())
+                        else:
+                            pcount[condition][soi.name] = [np.array(pcounts).sum()]
+                            voxels[soi.name] = soi.volume_progeny
+                    except:
+                        print("%s not in structures list" % soinm)
+                
+            #now that we have all the pcounts per brain, make them into arrays per structure per condition and find pvals
+            for nm in structs:
+                DREADDs = [v for k,v in pcount["DREADDs"].items() if k == nm][0]
+                norev = [v for k,v in pcount["CNO_control_no_reversal"].items() if k == nm][0]
+                rev = [v for k,v in pcount["CNO_control_reversal"].items() if k == nm][0]
+                
+                f, pval = f_oneway(DREADDs, norev, rev)
+                
+                df_anova.loc[(df_anova[rank] == nm), rank + " anova pcounts pval"] = pval
+                df_anova.loc[(df_anova[rank] == nm), rank + " voxels"] = [v for k,v in voxels.items() if k == nm][0]
+                    
+        
+    df_anova.to_csv(os.path.join(dst, "rank_anovas.csv"))
     
-    #fill other details and add to big dict
-    pooled_counts_an[an] = pooled_counts
-    pooled_counts["group"] = condition[0]
+    #%%
+    #plot
     
-#make into giant dataframe
-main_df = pd.DataFrame.from_dict(pooled_counts_an, orient = "index")
-#sort by group so makes more sense
-main_df = main_df.sort_values(by=["group"])
-main_df.index.name = "animal"
-
-main_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_visualization.csv"))
-
-import itertools
-
-rotate_df = pd.DataFrame()
-struct = [list(itertools.repeat(xx, 33)) for xx in main_df.columns.values[:-1]]
-struct = pd.Series(list(itertools.chain.from_iterable(struct)))
-rotate_df["name"] = struct
-
-vals = [pd.Series(main_df[xx].values) for xx in main_df.columns.values[:-1]]    
-rotate_df["percent"] = pd.concat(vals, ignore_index = True)
-
-ans = list(itertools.repeat(main_df.index.values, len(struct)))
-ans = pd.Series(list(itertools.chain.from_iterable(ans)))
-rotate_df["animal"] = ans
-
-groups = list(itertools.repeat(main_df.group.values, len(struct)))
-groups = pd.Series(list(itertools.chain.from_iterable(groups)))
-rotate_df["condition"] = groups
-
-#save
-rotate_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_plots.csv"), index = False)
-
-print("saved in :{}".format(dst))
-    
-
+    plt.hist(df_anova["rank 0 anova pcounts pval"].dropna().values, bins = 50)
+    plt.hist(df_anova["rank 1 anova pcounts pval"].dropna().values, bins = 50)
+    plt.hist(df_anova["rank 2 anova pcounts pval"].dropna().values, bins = 50)
+    plt.hist(df_anova["rank 3 anova pcounts pval"].dropna().values, bins = 50)
+    plt.axvline(x=0.05, color = "grey", ls = "--")

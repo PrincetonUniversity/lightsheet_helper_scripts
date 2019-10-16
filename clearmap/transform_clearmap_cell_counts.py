@@ -74,7 +74,7 @@ def countPointsInRegions(points, labeledImage, intensities = None, intensityRow 
             else:
                 return cci;
             
-def make_table_of_transformed_cells(src):
+def make_table_of_transformed_cells(src, ann, ann_lut):
     """ 
     incorporates new atlas and look up table for anatomical analysis of cfos data done using:
         https://github.com/PrincetonUniversity/clearmap_cluster
@@ -92,10 +92,6 @@ def make_table_of_transformed_cells(src):
         
         if points.shape == raw.shape:
             intensities = np.load(os.path.join(src, "clearmap_cluster_output/intensities.npy"))
-            
-            #LUT
-            ann = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/atlas/annotation_25_ccf2015_forDVscans_z_thru_240_75um_erosion.tif"
-            ann_lut = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
             
             #open LUT excel sheet
             wb = xlrd.open_workbook(ann_lut)
@@ -129,7 +125,7 @@ def make_table_of_transformed_cells(src):
             table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             
-            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities_75um_erosion.csv"))
+            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities_60um_edge_80um_vntric_erosion.csv"))
                 
             #Without weigths (pure cell number):
             ids, counts = countPointsInRegions(points, labeledImage = ann, intensities = None)
@@ -146,7 +142,7 @@ def make_table_of_transformed_cells(src):
             table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             
-            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_75um_erosion.csv"))
+            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_60um_edge_80um_vntric_erosion.csv"))
                 
             print ("\n Analysis Completed\n") 
         else:
@@ -154,15 +150,16 @@ def make_table_of_transformed_cells(src):
     except:
         print("\n Path for transformed cells doesn't exist\n")
     
-#%%
         
 if __name__ == "__main__":
     #goal is to transform cooridnates, voxelize based on number of cells and overlay with reigstered cell signal channel...
     #inputs
-    src = "/jukebox/wang/pisano/tracing_output/cfos/201902_reim_201701_cfos/201701_tp02"
-    make_table_of_transformed_cells(src)
+    
+    #LUT
+    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit_60um_edge_80um_vntric_erosion.tif"
+    ann_lut = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
 
-#    pth = "/jukebox/wang/pisano/tracing_output/cfos/201902_reim_201701_cfos"
-#    
-#    for src in os.listdir(pth):
-#        make_table_of_transformed_cells(os.path.join(pth, src))
+    pth = "/jukebox/wang/Jess/lightsheet_output/201908_tpham_ymaze_cfos/processed"
+    
+    for src in os.listdir(pth):
+        make_table_of_transformed_cells(os.path.join(pth, src), ann, ann_lut)

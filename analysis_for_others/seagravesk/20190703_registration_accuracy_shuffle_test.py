@@ -63,29 +63,26 @@ def elastix_command_line_call(fx, mv, out, parameters, fx_mask=False, verbose=Fa
 if __name__ == "__main__":
     
     #setup
-    print(sys.argv)
-    stepid = int(sys.argv[1]) #0 or 1
-    jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
+#    print(sys.argv)
+#    jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
+    jobid = 1 #local run
     
     #paths
-    outdr = "/jukebox/scratch/zmd/registration_accuracy_iters/inverse_registration"
+    outdr = "/jukebox/scratch/zmd/registration_accuracy_iters/elastix"
     src = "/jukebox/scratch/zmd/registration_accuracy_iters/volumes"
     vols = [os.path.join(src, xx) for xx in os.listdir(src)]
     
     #pick reg vol based on step ID (will only need 2) 
     start = time.time()
-    vol = vols[stepid]
-    mv = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
-    if stepid == 0:
-        out = os.path.join(os.path.join(outdr, "dorsal_up"), "iter"+str(jobid).zfill(3))
-    else:
-        out = os.path.join(os.path.join(outdr, "ventral_up"), "iter"+str(jobid).zfill(3))
+    vol = vols[0]
+    fx = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
+    out = os.path.join(outdr, "iter%04d" % jobid)
     #make output dir
     if not os.path.exists(out): os.mkdir(out)
     
-    fx = vol
+    mv = vol
     
-    params = ["/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order1_Par0000affine.txt", 
-              "/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order2_Par0000bspline.txt"]
+    params = ["/jukebox/scratch/zmd/registration_accuracy_iters/parameterfolder/Order1_Par0000affine.txt", 
+              "/jukebox/scratch/zmd/registration_accuracy_iters/parameterfolder/Order2_Par0000bspline.txt"]
     
     elastix_command_line_call(fx, mv, out, params, fx_mask=False, verbose=False)

@@ -9,7 +9,6 @@ from skimage.external import tifffile as tif
 from skimage.morphology import ball
 from scipy.ndimage.interpolation import zoom
 import matplotlib.pyplot as plt, numpy as np, cv2, os, pandas as pd
-from collections import Counter
 import matplotlib.colors
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -122,7 +121,7 @@ class Sagittal():
             
         #get full size dimensions - have to do this without importing pickle
         fullszflds = [os.path.join(os.path.join(os.path.dirname(os.path.dirname(self.src)), "full_sizedatafld"), xx) 
-                        for xx in os.listdir(os.path.join(os.path.dirname(os.path.dirname(self.src)), "full_sizedatafld"))]
+                        for xx in os.listdir(os.path.join(os.path.dirname(os.path.dirname(self.src)), "full_sizedatafld")) if not xx == "process.txt"]
         y,x = tif.imread(os.path.join(fullszflds[0], os.listdir(fullszflds[0])[0])).shape
         
         z = len(os.listdir(fullszflds[0])) 
@@ -193,10 +192,10 @@ class Sagittal():
 #%%
 if __name__ == "__main__":
     #grabbing sagittal volume
-    dst = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/qc"
+    dst = "/jukebox/wang/Jess/lightsheet_output/201908_tpham_ymaze_cfos/qc"
     if not os.path.exists(dst): os.mkdir(dst)
 
-    pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed"
+    pth = "/jukebox/wang/Jess/lightsheet_output/201908_tpham_ymaze_cfos/processed"
     flds = os.listdir(pth)
     
     for fld in flds:
