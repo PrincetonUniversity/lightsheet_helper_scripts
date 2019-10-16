@@ -8,19 +8,19 @@ Created on Fri May 17 14:26:37 2019
 
 import pandas as pd, os
 import numpy as np
-
+import json
 #set the id table, and annotation file paths
-df_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-ann_pth = "/home/wanglab/mounts/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_erosion.tif"
-ontology_file = "/path/to/.json file"
+df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.nrrd"
+ontology_file = "allen_ontology.json"
 #path to appropriate csv file
 percent_density_csv_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv"
 
 #SET THE DESTINATION DIRECTORY HERE
-dst = "/home/wanglab/Desktop"
+dst = "/home/ahoag/progs/cell_counter/code/output"
  
 #give list of structures you want to pool
-pth = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
+pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
 
 # Now write the function to get all progeny of an input nodename
 def get_progeny(dic,parent_structure,progeny_list):
@@ -38,16 +38,16 @@ def get_progeny(dic,parent_structure,progeny_list):
     """
     name = dic.get('name')
     children = dic.get('children')
-    if name == input_nodename:
+    if name == parent_structure:
         for child in children: # child is a dict
             child_name = child.get('name')
             progeny_list.append(child_name)
-            get_progeny(child,input_nodename=child_name,progeny_list=progeny_list)
+            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
         return
     
     for child in children:
         child_name = child.get('name')
-        get_progeny(child,input_nodename=input_nodename,progeny_list=progeny_list)
+        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
     return 
 
 if __name__ == '__main__':
@@ -86,9 +86,11 @@ if __name__ == '__main__':
             # print(soi.name)
             # progeny = [str(xx.name) for xx in soi.progeny]
             progeny = []
-            progeny = get_progeny(dic=ontology_dict,parent_structure=soi,progeny_list=progeny)
+            print(soi)
+            get_progeny(dic=ontology_dict,parent_structure=soi,progeny_list=progeny)
+            print(progeny)
             counts = [] #store counts in this list
-            val = df.loc[(df.name == soi.name), "percent"].values
+            val = df.loc[(df.name == soi), "percent"].values
             if val.shape[0] > 0: counts.append(val[0])
             if len(progeny) > 0:
                 for progen in progeny:
@@ -96,7 +98,7 @@ if __name__ == '__main__':
                     if val.shape[0] > 0: counts.append(val[0])
                     
             #sum counts in parent structures            
-            pooled_counts[soi.name] = np.sum(np.asarray(counts))
+            pooled_counts[soi] = np.sum(np.asarray(counts))
         
         #fill other details and add to big dict
         pooled_counts_an[an] = pooled_counts
