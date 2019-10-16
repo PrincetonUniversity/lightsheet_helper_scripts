@@ -1,0 +1,52 @@
+{
+ "id": 997,
+ "name":"root",
+ "acronym":"root",
+ "parent_structure_id":"null",
+ "st_level":0,
+ "graph_order":0,
+ "children": [
+  {
+   "id": 8,
+  "name": "Basic cell groups and regions",
+  "acronym":"Grey",
+  "st_level":1,
+  "graph_order":1,
+   "parent_structure_id": 997,
+   "children": []},
+    {
+     "id": 567,
+     "st_level":2,
+     "name":"Cerebrum",
+     "acronym":"CH",
+     "children": [
+      {
+       "id": 688,
+       "name": "Cerebral Cortex",
+       "atlas_id": 85,
+       "ontology_id": 1,
+       "graph_order":2,
+       "acronym": "CTX",
+       "name": "Cerebral cortex",
+       "color_hex_triplet": "B0FFB8",
+       "graph_order": 3,
+       "st_level": 3,
+       "hemisphere_id": 3,
+       "parent_structure_id": 567,
+       "children": []},
+        {
+         "id": 695,
+         "atlas_id": 86,
+         "ontology_id": 1,
+         "acronym": "CTXpl",
+         "name": "Cortical plate",
+         "color_hex_triplet": "70FF70",
+         "graph_order": 4,
+         "st_level": 3,
+         "hemisphere_id": 3,
+         "parent_structure_id": 688,
+         "children": []}
+       ]
+   }
+   ]
+}
