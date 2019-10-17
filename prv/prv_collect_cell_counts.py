@@ -70,7 +70,6 @@ for img in imgs:
         print("brain has an injection close to midline so not considering it rn\n")
 
 
-#%%
 #get injection fractions
 inj_raw = np.array([inj.astype(bool) for inj in inj_vox.values()])
     
@@ -119,7 +118,7 @@ primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
 #get n"s after pooling
 primary_lob_n = np.array([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
 
-#%%
+
 #make structures
 #FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
@@ -707,8 +706,16 @@ regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
        "Frontal pole", "Agranular insula", "Gustatory, Visceral",
        "Somatomotor, Somatosensory", "Retrosplenial", "Visual",
        "Temporal, Auditory", "Peririhinal, Ectorhinal"])
-    
-X = np.array([brain/brain.sum() for brain in frac_of_inj_pool])
+
+#pooled injections, vermis and hemisphere
+ak_vh = np.array(["Ant. Vermis", "Post. Vermis", "Hemisphere"])
+frac_of_inj_vh = np.array([[xx[0], np.sum(xx[1:3]),np.sum(xx[3:])] for xx in frac_of_inj_pool])    
+
+primary_vh_pool = np.array([np.argmax(e) for e in frac_of_inj_vh])
+#get n"s after pooling
+primary_vh_n = np.array([np.where(primary_vh_pool == i)[0].shape[0] for i in np.unique(primary_vh_pool)])
+
+X = np.array([brain/brain.sum() for brain in frac_of_inj_vh])
 Y = pcounts_pool    
 #%%
 
@@ -781,24 +788,24 @@ fit_shuf = np.array(fit_shuf)
 
 #%%
 ## display
-fig = plt.figure(figsize=(6,5))
+fig = plt.figure(figsize=(3,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 #set white text limit here
-whitetext = 5
+whitetext = 8
 annotation_size = "small"#annotation/number sizes
 
 # map 1: weights
 show = np.flipud(mat) # NOTE abs
 
 vmin = 0
-vmax = 7
+vmax = 10
 cmap = plt.cm.Reds
 cmap.set_under("w")
 cmap.set_over("maroon")
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,8)
+bounds = np.linspace(vmin,vmax,11)
 #bounds = np.linspace(0,5,11)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
@@ -830,10 +837,11 @@ for y,x in np.argwhere(sig):
 ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize="x-small", ha="right")
+ax.set_xticks(np.arange(len(ak_vh))+.5)
+lbls = np.asarray(ak_vh)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_vh_n)], rotation=30, fontsize="x-small", ha="right")
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="small")
-plt.savefig(os.path.join(dst, "nc_glm.pdf"), bbox_inches = "tight")
+#plt.savefig(os.path.join(dst, "nc_glm.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "nc_glm_vermis_hemisphere.pdf"), bbox_inches = "tight")

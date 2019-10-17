@@ -20,9 +20,6 @@ percent_density_csv_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfo
 #SET THE DESTINATION DIRECTORY HERE
 dst = "/home/wanglab/Desktop"
  
-#give list of structures you want to pool
-pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/one_way_anova_all_structures.csv"
-
 #run this first cell the way it is, imports tom"s class for allen ontology
 class structure:
     """Class to represent a brain structure
