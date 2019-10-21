@@ -121,13 +121,14 @@ primary_lob_n = np.array([np.where(primary_pool == i)[0].shape[0] for i in np.un
 
 #make structures
 #FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
-df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 #set variables
 lr_brains = list(lr_dist.keys())
 
 atl_dst = os.path.join(dst, "pma_to_aba"); makedir(atl_dst)
+trnsfrm_dst = os.path.join(dst, "prv_transformed_cells")
 id_table = pd.read_excel(df_pth)
 
 #%%
@@ -137,24 +138,24 @@ transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
                   "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
 ##########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
 #collect 
-for fl in post_transformed:
-    arr = np.load(fl)
-    #make into transformix-friendly text file
-    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
-    print(brain)
-    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
-    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
-        
-    #copy over elastix files
-    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
-    change_transform_parameter_initial_transform(trfm_fl[0], "NoInitialTransform")
-   
-    #run transformix on points
-    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
-    
-    #convert registered points into structure counts
-    converted_points = unpack_pnts(points_file, transformed_dst) 
-
+#for fl in post_transformed:
+#    arr = np.load(fl)
+#    #make into transformix-friendly text file
+#    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
+#    print(brain)
+#    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
+#    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
+#        
+#    #copy over elastix files
+#    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
+#    change_transform_parameter_initial_transform(trfm_fl[0], "NoInitialTransform")
+#   
+#    #run transformix on points
+#    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
+#    
+#    #convert registered points into structure counts
+#    converted_points = unpack_pnts(points_file, transformed_dst) 
+#
 
 def transformed_cells_to_ann(fld, ann, dst, fl_nm):
     """ consolidating to one function """
@@ -163,7 +164,8 @@ def transformed_cells_to_ann(fld, ann, dst, fl_nm):
     
     for fl in fld:
         converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
-        print(converted_points)
+        if not os.path.exists(converted_points): 
+            converted_points = os.path.join(fl, "transformed_points/posttransformed_zyx_voxels.npy")
         point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
         df = count_structure_lister(id_table, *point_lst).fillna(0)
         #for some reason duplicating columns, so use this
@@ -182,19 +184,22 @@ def transformed_cells_to_ann(fld, ann, dst, fl_nm):
     
     return os.path.join(dst, fl_nm)
 
-pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
-
+#pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
+trnsfrmd = [os.path.join(trnsfrm_dst, xx) for xx in lr_brains]
 #collect counts from right side
-right = transformed_cells_to_ann(pma2aba_transformed, ann_right, dst, "right_side_no_prog_at_each_level_allen_atl.p")
+#right = transformed_cells_to_ann(trnsfrmd, ann_right, dst, "right_side_no_prog_at_each_level_allen_atl.p")
 #collect counts from left side
-left = transformed_cells_to_ann(pma2aba_transformed, ann_left, dst, "left_side_no_prog_at_each_level_allen_atl.p")
+#left = transformed_cells_to_ann(trnsfrmd, ann_left, dst, "left_side_no_prog_at_each_level_allen_atl.p")
+pma_ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
+pma_ann = tifffile.imread(pma_ann_pth)
+whl_brain = transformed_cells_to_ann(trnsfrmd, pma_ann, dst, "whl_brain_no_prog_at_each_level_pma_atl.p")
 ##########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
 #%%
-def get_cell_n_density_counts(brains, structure, structures, cells_regions, scale_factor = 0.025):
+def get_cell_n_density_counts(brains, structure, structures, cells_regions, id_table, scale_factor = 0.025):
     """ consolidating to one function bc then no need to copy/paste """
     #get cell counts adn densities
     #get densities for all the structures
-    df = pd.read_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx", index_col = None)
+    df = pd.read_excel(id_table, index_col = None)
     df = df.drop(columns = ["Unnamed: 0"])
     df = df.sort_values(by = ["name"])
     
@@ -281,11 +286,11 @@ nc_areas = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Fr
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
 #RIGHT SIDE
-cell_counts_per_brain_right, density_per_brain_right, volume_per_brain_right = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
+cell_counts_per_brain_right, density_per_brain_right, volume_per_brain_right = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions, df_pth)
 #LEFT SIDE
 cells_regions = pckl.load(open(os.path.join(dst, "left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
-cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
+cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions, df_pth)
 
 #%%
 #preprocessing into contra/ipsi counts per brain, per structure

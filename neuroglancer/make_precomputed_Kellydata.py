@@ -77,7 +77,6 @@ if __name__ == '__main__':
 	to_upload = [ int(z) for z in list(all_files.difference(done_files)) ]
 	to_upload.sort()
 
-	
+
 	with ProcessPoolExecutor(max_workers=8) as executor:
 	    executor.map(process, to_upload)
-

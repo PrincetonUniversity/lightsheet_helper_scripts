@@ -9,20 +9,21 @@ Created on Fri May 17 14:26:37 2019
 import pandas as pd, os
 import numpy as np
 import json
+
 #set the id table, and annotation file paths
 df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.nrrd"
-ontology_file = "allen_ontology.json"
+ontology_file = "/jukebox/wang/zahra/python/lightsheet_helper_scripts/ontology_analysis/allen_ontology_16bit.json"
 #path to appropriate csv file
 percent_density_csv_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv"
 
 #SET THE DESTINATION DIRECTORY HERE
-dst = "/home/ahoag/progs/cell_counter/code/output"
+dst = "/home/wanglab/Desktop"
  
 #give list of structures you want to pool
 pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
 
-# Now write the function to get all progeny of an input nodename
+    # Now write the function to get all progeny of an input nodename
 def get_progeny(dic,parent_structure,progeny_list):
     """ 
     ---PURPOSE---
@@ -49,6 +50,7 @@ def get_progeny(dic,parent_structure,progeny_list):
         child_name = child.get('name')
         get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
     return 
+                                    
 
 if __name__ == '__main__':
 
@@ -75,20 +77,20 @@ if __name__ == '__main__':
     pooled_counts_an = {}
 
     #iterate through the conditions
-    for an in brains[0:1]:
+    for an in brains:
         df = tdf[tdf.Brain == an]
         condition = df["Condition"].unique()
         pooled_counts = {}
         
         #loop through and find downstream structures of a given parent
-        for soi in sois[0:1]:
+        for soi in sois:
             # soi = [s for s in structures if s.name==soi][0]
             # print(soi.name)
             # progeny = [str(xx.name) for xx in soi.progeny]
             progeny = []
             print(soi)
             get_progeny(dic=ontology_dict,parent_structure=soi,progeny_list=progeny)
-            print(progeny)
+#            print(progeny)
             counts = [] #store counts in this list
             val = df.loc[(df.name == soi), "percent"].values
             if val.shape[0] > 0: counts.append(val[0])
@@ -111,28 +113,4 @@ if __name__ == '__main__':
     main_df.index.name = "animal"
 
     main_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_visualization.csv"))
-
-    import itertools
-
-    rotate_df = pd.DataFrame()
-    struct = [list(itertools.repeat(xx, 33)) for xx in main_df.columns.values[:-1]]
-    struct = pd.Series(list(itertools.chain.from_iterable(struct)))
-    rotate_df["name"] = struct
-
-    vals = [pd.Series(main_df[xx].values) for xx in main_df.columns.values[:-1]]    
-    rotate_df["percent"] = pd.concat(vals, ignore_index = True)
-
-    ans = list(itertools.repeat(main_df.index.values, len(struct)))
-    ans = pd.Series(list(itertools.chain.from_iterable(ans)))
-    rotate_df["animal"] = ans
-
-    groups = list(itertools.repeat(main_df.group.values, len(struct)))
-    groups = pd.Series(list(itertools.chain.from_iterable(groups)))
-    rotate_df["condition"] = groups
-
-    #save
-    rotate_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_plots.csv"), index = False)
-
-    print("saved in :{}".format(dst))
-    
 
