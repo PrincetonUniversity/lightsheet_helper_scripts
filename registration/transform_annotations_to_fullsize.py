@@ -12,7 +12,6 @@ sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 from tools.utils.io import makedir, load_memmap_arr, listall, load_kwargs
 from tools.registration.register import change_interpolation_order, transformix_command_line_call
 from tools.registration.transform_list_of_points import modify_transform_files
-from tools.registration.transform_cell_counts import get_fullsizedims_from_kwargs
 from scipy.ndimage.interpolation import zoom
 
 #setting paths
@@ -21,7 +20,7 @@ scratch_dir = "/jukebox/scratch/zmd"
 src = "/jukebox/wang/pisano/tracing_output/antero_4x"
 
 #set brain name
-brain = os.path.join(src, "20170411_db_bl6_crii_mid_53hr")
+brain = os.path.join(src, "20161205_tp_bl6_lob45_1000r_01")
 
 start = time.time()
 
@@ -41,27 +40,28 @@ braindst = os.path.join(scratch_dir, os.path.basename(brain))
 makedir(braindst)
     
 aldst = os.path.join(braindst, "transformed_annotations"); makedir(aldst)
-
-#transformix
-transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0, r2s1], dst = aldst)
-[change_interpolation_order(xx,0) for xx in transformfiles]
-
-#change the parameter in the transform files that outputs 16bit images instead
-for fl in transformfiles:# Read in the file
-    with open(fl, "r") as file:
-        filedata = file.read()
-    # Replace the target string
-    filedata = filedata.replace('(ResultImagePixelType "short")', '(ResultImagePixelType "float")')
-    # Write the file out again
-    with open(fl, "w") as file:
-      file.write(filedata)
-#run transformix  
-transformix_command_line_call(ann, aldst, transformfiles[-1])
+#
+##transformix
+#transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0, r2s1], dst = aldst)
+#[change_interpolation_order(xx,0) for xx in transformfiles]
+#
+##change the parameter in the transform files that outputs 16bit images instead
+#for fl in transformfiles:# Read in the file
+#    with open(fl, "r") as file:
+#        filedata = file.read()
+#    # Replace the target string
+#    filedata = filedata.replace('(ResultImagePixelType "short")', '(ResultImagePixelType "float")')
+#    # Write the file out again
+#    with open(fl, "w") as file:
+#      file.write(filedata)
+##run transformix  
+#transformix_command_line_call(ann, aldst, transformfiles[-1])
 
 #now zoom out - this is heavy!
 transformed_ann = os.path.join(aldst, "result.tif")
 tann = tifffile.imread(transformed_ann)
-dv0,ap0,ml0 = get_fullsizedims_from_kwargs(kwargs)
+pl0 = tifffile.imread(os.path.join(cellvol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox"), os.listdir(cellvol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox"))[0]))
+dv0,ap0,ml0 = len(os.listdir(cellvol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox"))), pl0.shape[0], pl0.shape[1]
 
 ml1,ap1,dv1 = tann.shape
 
