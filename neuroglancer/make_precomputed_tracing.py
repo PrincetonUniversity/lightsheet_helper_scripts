@@ -22,7 +22,7 @@ shape = (822, 7166, 6046) # z,y,x
 
 home_dir = '/home/wanglab/Documents/neuroglancer'
 # tif = '/jukebox/LightSheetTransfer/kelly/201908_cfos/190821_m61467_demons_20190702_1d3x_647_008na_1hfds_z5um_250msec_14-09-11/14-09-11_UltraII_raw_RawDataStack [00 x 00\]_C00_xyz-Table\ Z0156_UltraII\ Filter0000.ome.tif'
-tif_dir = '/home/wanglab/mounts/wang/pisano/tracing_output/antero_4x/20170411_db_bl6_crii_mid_53hr/full_sizedatafld/20170411_db_bl6_crii_mid_53h_4x_647_008na_1hfds_z7d5um_200msec_10povlp_ch00'
+tif_dir = '/home/wanglab/mounts/scratch/zmd/20170411_db_bl6_crii_mid_53hr/transformed_annotations/single_tifs'
 # home_dir = '/home/ahoag/ngdemo'
 # atlas_file = '/home/ahoag/mounts/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif'
 # # processed_data_file = '/mounts/wang/Jess/lightsheet_output/201908_testing_ahoag/processed/an31/\
@@ -41,7 +41,7 @@ def make_info_file(commit=True):
 	)
 
 	# If you're using amazon or the local file system, you can replace 'gs' with 's3' or 'file'
-	vol = CloudVolume('file:///home/wanglab/Documents/neuroglancer/20170411_db_bl6_crii_mid_53hr/647', info=info)
+	vol = CloudVolume('file:///home/wanglab/Documents/neuroglancer/20170411_db_bl6_crii_mid_53hr/atlas', info=info)
 	vol.provenance.description = "TP thalamic timepoint"
 	vol.provenance.owners = ['zmd@princeton.edu'] # list of contact email addresses
 	if commit:
@@ -51,7 +51,7 @@ def make_info_file(commit=True):
 	return vol
 
 def process(z):
-	img_name = os.path.join(tif_dir, '20170411_db_bl6_crii_mid_53h_4x_647_008na_1hfds_z7d5um_200msec_10povlp_ch00_C00_Z%04d.tif' % z)
+	img_name = os.path.join(tif_dir, '20170411_db_bl6_crii_mid_53hr_annotation_Z%04d.tif' % z)
 	print('Processing ', img_name)
 	image = Image.open(img_name)
 	width, height = image.size 
@@ -62,7 +62,7 @@ def process(z):
 	touch(os.path.join(progress_dir, str(z)))
 
 def make_demo_downsample(mip_start=0,num_mips=3):
-	cloudpath = 'file:///home/wanglab/Documents/neuroglancer/20170411_db_bl6_crii_mid_53hr/647'
+	cloudpath = 'file:///home/wanglab/Documents/neuroglancer/20170411_db_bl6_crii_mid_53hr/atlas'
 	with LocalTaskQueue(parallel=8) as tq:
 		tasks = tc.create_downsampling_tasks(
 			cloudpath, 
@@ -76,13 +76,12 @@ def make_demo_downsample(mip_start=0,num_mips=3):
 		tq.insert_all(tasks)
 	print("Done!")
 
-if __name__ == '__main__':
-
+#if __name__ == '__main__':
+#
 #	vol = make_info_file()
-#	progress_dir = mkdir(home_dir + '/progress_20170411_db_bl6_crii_mid_53hr/') # unlike os.mkdir doesn't crash on prexisting 
+#	progress_dir = mkdir(home_dir + '/progress_20170411_db_bl6_crii_mid_53hr_atlas/') # unlike os.mkdir doesn't crash on prexisting 
 #	done_files = set([ int(z) for z in os.listdir(progress_dir) ])
 #	all_files = set(range(vol.bounds.minpt.z, vol.bounds.maxpt.z)) 
-#
 #	to_upload = [ int(z) for z in list(all_files.difference(done_files)) ]
 #	to_upload.sort()
 #
@@ -90,8 +89,7 @@ if __name__ == '__main__':
 #	with ProcessPoolExecutor(max_workers=8) as executor:
 #	    executor.map(process, to_upload)
 
-#if __name__ == '__main__':
+if __name__ == '__main__':
 
     #make different resolutions
     make_demo_downsample(mip_start=0,num_mips=3)
-
