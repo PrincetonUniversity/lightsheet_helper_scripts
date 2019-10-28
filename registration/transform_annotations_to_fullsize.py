@@ -41,21 +41,21 @@ makedir(braindst)
     
 aldst = os.path.join(braindst, "transformed_annotations"); makedir(aldst)
 #
-##transformix
-#transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0, r2s1], dst = aldst)
-#[change_interpolation_order(xx,0) for xx in transformfiles]
-#
-##change the parameter in the transform files that outputs 16bit images instead
-#for fl in transformfiles:# Read in the file
-#    with open(fl, "r") as file:
-#        filedata = file.read()
-#    # Replace the target string
-#    filedata = filedata.replace('(ResultImagePixelType "short")', '(ResultImagePixelType "float")')
-#    # Write the file out again
-#    with open(fl, "w") as file:
-#      file.write(filedata)
-##run transformix  
-#transformix_command_line_call(ann, aldst, transformfiles[-1])
+#transformix
+transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0, r2s1], dst = aldst)
+[change_interpolation_order(xx,0) for xx in transformfiles]
+
+#change the parameter in the transform files that outputs 16bit images instead
+for fl in transformfiles:# Read in the file
+    with open(fl, "r") as file:
+        filedata = file.read()
+    # Replace the target string
+    filedata = filedata.replace('(ResultImagePixelType "short")', '(ResultImagePixelType "float")')
+    # Write the file out again
+    with open(fl, "w") as file:
+      file.write(filedata)
+#run transformix  
+transformix_command_line_call(ann, aldst, transformfiles[-1])
 
 #now zoom out - this is heavy!
 transformed_ann = os.path.join(aldst, "result.tif")
