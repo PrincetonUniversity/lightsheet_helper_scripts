@@ -11,7 +11,7 @@ import os, cv2
 pth = '/home/wanglab/Documents/neuroglancer/screenshots/20170411_db_bl6_crii_mid_53hr/rtn_vpm_vpl_md'
 list_of_tif_files = [os.path.join(pth, xx) for xx in os.listdir(pth) if "png" in xx]; list_of_tif_files.sort()
 
-#make tif into video
+#make pngs into video
 dst = os.path.join(pth, '20170411_db_bl6_crii_mid_53hr_rtn_vpm_vpl_md.avi')
 
 frame_array = []
