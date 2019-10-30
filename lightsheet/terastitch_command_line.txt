@@ -1,0 +1,9 @@
+
+
+
+terastitcher --import --volin=/home/wanglab/Documents/folder_hierarchy_test --ref1=1 --ref2=2 --ref3=3 --vxl1=5.91 --vxl2=5.91 --vxl3=10.0 --projout=xml_import
+terastitcher --displcompute --projin="xml_import.xml" --oV=1024 --oH=864 --sD=50
+terastitcher --displproj --projin="xml_import.xml"
+terastitcher --displthres --projin="xml_displproj.xml" --projout="xml_displthres.xml" --threshold=0.5
+terastitcher --placetiles --projin="xml_displthres.xml" --projout="xml_placetiles.xml" --algorithm=MIPNCC
+terastitcher --merge --projin="xml_placetiles.xml" --volout=test --imout_depth=16 --resolutions=1 --oV=1024 --oH=864 --sD=50
