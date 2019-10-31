@@ -17,22 +17,17 @@ from scipy.ndimage.interpolation import zoom
 #setting paths
 ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif"
 scratch_dir = "/jukebox/scratch/zmd"
-src = "/jukebox/wang/pisano/tracing_output/antero_4x"
+src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed"
 
 #set brain name
-brain = os.path.join(src, "20161205_tp_bl6_lob45_1000r_01")
+brain = os.path.join(src, "an19")
 
 start = time.time()
 
-kwargs = load_kwargs(brain)
-
-#accessing parameter dictionary
-cellvol = [xx for xx in kwargs["volumes"] if xx.ch_type == "cellch"][0]
-
-a2r0 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.0" in xx and "cellch" in xx][0]
-a2r1 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.1" in xx and "cellch" in xx][0]
-r2s0 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "reg2sig_TransformParameters.0" in xx and "cellch" in xx][0]
-r2s1 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "reg2sig_TransformParameters.1" in xx and "cellch" in xx][0]
+a2r0 = os.path.join(brain, "clearmap_cluster_output/elastix_auto_to_atlas/TransformParameters.0.txt")
+a2r1 = os.path.join(brain, "clearmap_cluster_output/elastix_auto_to_atlas/TransformParameters.1.txt")
+r2s0 = os.path.join(brain, "clearmap_cluster_output/elastix_cfos_to_auto/TransformParameters.0.txt")
+r2s1 = os.path.join(brain, "clearmap_cluster_output/elastix_cfos_to_auto/TransformParameters.1.txt")
 
 #set destination directory
 braindst = os.path.join(scratch_dir, os.path.basename(brain))
@@ -60,8 +55,10 @@ transformix_command_line_call(ann, aldst, transformfiles[-1])
 #now zoom out - this is heavy!
 transformed_ann = os.path.join(aldst, "result.tif")
 tann = tifffile.imread(transformed_ann)
-pl0 = tifffile.imread(os.path.join(cellvol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox"), os.listdir(cellvol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox"))[0]))
-dv0,ap0,ml0 = len(os.listdir(cellvol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox"))), pl0.shape[0], pl0.shape[1]
+flszdt = os.path.join(brain, "full_sizedatafld")
+cellfld = [os.path.join(flszdt, xx) for xx in os.listdir(flszdt) if "647" in xx][0]
+pl0 = tifffile.imread(os.path.join(cellfld, os.listdir(cellfld)[0]))
+dv0,ap0,ml0 = len(os.listdir(cellfld)), pl0.shape[0], pl0.shape[1]
 
 ml1,ap1,dv1 = tann.shape
 

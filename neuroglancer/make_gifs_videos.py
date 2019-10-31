@@ -8,15 +8,15 @@ Created on Mon Oct 28 13:56:34 2019
 
 import os, cv2
 
-pth = '/home/wanglab/Documents/neuroglancer/screenshots/20170411_db_bl6_crii_mid_53hr/rtn_vpm_vpl_md'
+pth = '/home/wanglab/Documents/neuroglancer/screenshots/20161205_tp_bl6_lob45_1000r_01/amygdala'
 list_of_tif_files = [os.path.join(pth, xx) for xx in os.listdir(pth) if "png" in xx]; list_of_tif_files.sort()
 
 #make pngs into video
-dst = os.path.join(pth, '20170411_db_bl6_crii_mid_53hr_rtn_vpm_vpl_md.avi')
+dst = os.path.join(os.path.dirname(pth), '20161205_tp_bl6_lob45_1000r_01_amygdala.avi')
 
 frame_array = []
 
-fps = 20
+fps = 10
 
 for png in list_of_tif_files:
     #reading each files
