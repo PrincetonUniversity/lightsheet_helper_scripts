@@ -35,7 +35,7 @@ def make_info_file(commit=True):
 		layer_type = 'image', # 'image' or 'segmentation'
 		data_type = 'uint16', # 32 not necessary for Princeton atlas, but was for Allen atlas 
 		encoding = 'raw', # other options: 'jpeg', 'compressed_segmentation' (req. uint32 or uint64)
-		resolution = [ 5000, 5000, 1000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
+		resolution = [ 5000, 5000, 10000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
 		voxel_offset = [ 0, 0, 0 ], # values X,Y,Z values in voxels
 		chunk_size = [ 1024, 1024, 1 ], # rechunk of image X,Y,Z in voxels, 
 		volume_size = [2160,2560,690], # X,Y,Z size in voxels
@@ -77,8 +77,8 @@ def make_demo_downsample(mip_start=0,num_mips=3):
 		tq.insert_all(tasks)
 	print("Done!")
 
-if __name__ == '__main__':
-
+#if __name__ == '__main__':
+#
 #	vol = make_info_file()
 #	progress_dir = mkdir(home_dir + '/progress_an19_atlas/') # unlike os.mkdir doesn't crash on prexisting 
 #	done_files = set([ int(z) for z in os.listdir(progress_dir) ])
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 #	with ProcessPoolExecutor(max_workers=8) as executor:
 #	    executor.map(process, to_upload)
 
-#if __name__ == '__main__':
+if __name__ == '__main__':
 
     #make different resolutions
     make_demo_downsample(mip_start=0,num_mips=3)

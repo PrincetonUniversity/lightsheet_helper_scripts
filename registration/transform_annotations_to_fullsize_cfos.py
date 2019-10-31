@@ -24,10 +24,10 @@ brain = os.path.join(src, "an19")
 
 start = time.time()
 
-a2r0 = os.path.join(brain, "clearmap_cluster_output/elastix_auto_to_atlas/TransformParameters.0.txt")
-a2r1 = os.path.join(brain, "clearmap_cluster_output/elastix_auto_to_atlas/TransformParameters.1.txt")
-r2s0 = os.path.join(brain, "clearmap_cluster_output/elastix_cfos_to_auto/TransformParameters.0.txt")
-r2s1 = os.path.join(brain, "clearmap_cluster_output/elastix_cfos_to_auto/TransformParameters.1.txt")
+a2r0 = os.path.join(brain, "clearmap_cluster_output/elastix_cfos_to_auto/TransformParameters.0.txt")
+a2r1 = os.path.join(brain, "clearmap_cluster_output/elastix_cfos_to_auto/TransformParameters.1.txt")
+r2s0 = os.path.join(brain, "clearmap_cluster_output/elastix_auto_to_atlas/TransformParameters.0.txt")
+r2s1 = os.path.join(brain, "clearmap_cluster_output/elastix_auto_to_atlas/TransformParameters.1.txt")
 
 #set destination directory
 braindst = os.path.join(scratch_dir, os.path.basename(brain))

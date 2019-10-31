@@ -19,4 +19,4 @@ module load elastix/4.8
 . activate lightsheet
 
 
-python transform_annotations_to_fullsize.py
+python transform_annotations_to_fullsize_tracing.py
