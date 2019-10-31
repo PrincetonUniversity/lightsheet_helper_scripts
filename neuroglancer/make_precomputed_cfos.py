@@ -63,7 +63,7 @@ def process(z):
 	touch(os.path.join(progress_dir, str(z)))
 
 def make_demo_downsample(mip_start=0,num_mips=3):
-	cloudpath = 'file:///home/wanglab/Documents/neuroglancer/an19/atlas'
+	cloudpath = 'file:///home/wanglab/Documents/neuroglancer/an19/647'
 	with LocalTaskQueue(parallel=8) as tq:
 		tasks = tc.create_downsampling_tasks(
 			cloudpath, 
@@ -71,7 +71,7 @@ def make_demo_downsample(mip_start=0,num_mips=3):
 			fill_missing=False, # Ignore missing chunks and fill them with black
 			axis='z', 
 			num_mips=num_mips, # number of downsamples to produce. Downloaded shape is chunk_size * 2^num_mip
-			chunk_size=[ 128, 128, 8 ], # manually set chunk size of next scales, overrides preserve_chunk_size
+			chunk_size=[ 128, 128, 32 ], # manually set chunk size of next scales, overrides preserve_chunk_size
 			preserve_chunk_size=True, # use existing chunk size, don't halve to get more downsamples
 		  )
 		tq.insert_all(tasks)
@@ -93,4 +93,4 @@ def make_demo_downsample(mip_start=0,num_mips=3):
 if __name__ == '__main__':
 
     #make different resolutions
-    make_demo_downsample(mip_start=0,num_mips=3)
+    make_demo_downsample(mip_start=0,num_mips=4)
