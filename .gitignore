@@ -5,4 +5,4 @@ token.pickle
 *.out #slurm files
 *.err
 logs/
-neuroglancer/.ipynb_checkpoints/
+*.ipynb_checkpoints/
