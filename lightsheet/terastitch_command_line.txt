@@ -1,9 +1,8 @@
 
 
 
-terastitcher --import --volin=/home/wanglab/mounts/LightSheetTransfer/brody/191031_e111_1_1x_488_008na_1hfds_z10um_100msec_60povlp_16-57-24/e111_1_1x_488_008na_1hfds_z10um_100msec_60povlp_ch00_left_lightsheet --ref1=1 --ref2=2 --ref3=3 --vxl1=5.91 --vxl2=5.91 --vxl3=10.0 --projout=xml_import
-terastitcher --displcompute --projin="xml_import.xml"
-terastitcher --displproj --projin="xml_import.xml"
-terastitcher --displthres --projin="xml_displproj.xml" --projout="xml_displthres.xml" --threshold=0.5
-terastitcher --placetiles --projin="xml_displthres.xml" --projout="xml_placetiles.xml" --algorithm=MIPNCC
-terastitcher --merge --projin="xml_placetiles.xml" --volout=test --imout_depth=16 --resolutions=1 --oV=1024 --oH=864 --sD=50
+terastitcher --displcompute --projin="xml_import.xml" --algorithm=MIPNCC --D0=350 --D1=351
+terastitcher --displproj --projin="xml_displcomp.xml"
+terastitcher --displthres --projin="xml_displproj.xml" --projout="xml_displthres.xml" --threshold=0.4
+terastitcher --placetiles --projin="xml_displthres.xml" --projout="xml_placetiles.xml" --algorithm=MST
+terastitcher --merge --projin="xml_placetiles.xml" --volout=test_2 --imout_depth=16 --resolutions=0 --algorithm=SINBLEND --D0=350 --D1=351
