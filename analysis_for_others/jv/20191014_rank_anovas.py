@@ -172,7 +172,7 @@ if __name__ == "__main__":
 
     #now take all the structures in rank 0,1,2..., do an anova on the percent cell counts...?        
     ranks = rankdf.columns
-    
+#%%    
     df_anova = pd.DataFrame()
     
     for rank in ranks:

@@ -1,0 +1,8 @@
+
+
+
+terastitcher --displcompute --projin="xml_import.xml" --algorithm=MIPNCC --D0=350 --D1=351
+terastitcher --displproj --projin="xml_displcomp.xml"
+terastitcher --displthres --projin="xml_displproj.xml" --projout="xml_displthres.xml" --threshold=0.4
+terastitcher --placetiles --projin="xml_displthres.xml" --projout="xml_placetiles.xml" --algorithm=MST
+terastitcher --merge --projin="xml_placetiles.xml" --volout=test_2 --imout_depth=16 --resolutions=0 --algorithm=SINBLEND --D0=350 --D1=351
