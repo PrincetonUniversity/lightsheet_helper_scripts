@@ -8,15 +8,15 @@ Created on Mon Oct 28 13:56:34 2019
 
 import os, cv2, matplotlib.pyplot as plt
 
-pth = '/jukebox/wang/zahra/neuroglancer/screenshots/20161205_tp_bl6_lob45_1000r_01/thalamus_5'
+pth = '/jukebox/wang/zahra/neuroglancer/screenshots/20170204_tp_bl6_cri_1750r_03/amygdala'
 list_of_tif_files = [os.path.join(pth, xx) for xx in os.listdir(pth) if "png" in xx]; list_of_tif_files.sort()
 
 #make pngs into video
-dst = os.path.join(os.path.dirname(pth), '20161205_tp_bl6_lob45_1000r_01_thalamus_5.avi')
+dst = os.path.join(os.path.dirname(pth), '20170204_tp_bl6_cri_1750r_03_amyg.avi')
 
 frame_array = []
 
-fps = 10
+fps = 10 #frame rate
 
 for png in list_of_tif_files:
     #reading each files
