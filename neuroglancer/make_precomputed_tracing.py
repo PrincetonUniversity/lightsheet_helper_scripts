@@ -6,24 +6,19 @@ Created on Mon Oct 21 14:07:40 2019
 @author: wanglab
 """
 
-import os
+import os, numpy as np, igneous.task_creation as tc
 from concurrent.futures import ProcessPoolExecutor
-
-import numpy as np
 from PIL import Image
-
 from cloudvolume import CloudVolume
 from cloudvolume.lib import mkdir, touch
-
 from taskqueue import LocalTaskQueue
-import igneous.task_creation as tc
 
-shape = (822, 7166, 6046) # z,y,x
+shape = (866, 7166, 6046) # z,y,x
 
 home_dir = '/home/wanglab/Documents/neuroglancer'
 # tif = '/jukebox/LightSheetTransfer/kelly/201908_cfos/190821_m61467_demons_20190702_1d3x_647_008na_1hfds_z5um_250msec_14-09-11/14-09-11_UltraII_raw_RawDataStack [00 x 00\]_C00_xyz-Table\ Z0156_UltraII\ Filter0000.ome.tif'
-#tif_dir = '/home/wanglab/mounts/wang/pisano/tracing_output/antero_4x/20170204_tp_bl6_cri_1750r_03/full_sizedatafld/20170204_tp_bl6_cri_1750r_03_4x_647_008na_1hfds_z7d5um_75msec_10povlp_ch00'
-tif_dir = '/home/wanglab/mounts/scratch/zmd/20170204_tp_bl6_cri_1750r_03/transformed_annotations/single_tifs'
+#tif_dir = '/jukebox/wang/pisano/tracing_output/antero_4x/20170116_tp_bl6_lob45_500r_12/full_sizedatafld/20170116_tp_bl6_lob45_500r_12_647_010na_z7d5um_150msec_10povlp_ch00'
+tif_dir = '/home/wanglab/mounts/scratch/zmd/20170116_tp_bl6_lob45_500r_12/transformed_annotations/single_tifs'
 
 def make_info_file(commit=True):
 	info = CloudVolume.create_new_info(
@@ -34,11 +29,11 @@ def make_info_file(commit=True):
 		resolution = [ 1630, 1630, 7500 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
 		voxel_offset = [ 0, 0, 0 ], # values X,Y,Z values in voxels
 		chunk_size = [ 1024, 1024, 1 ], # rechunk of image X,Y,Z in voxels, 
-		volume_size = [6046,7166,822], # X,Y,Z size in voxels
+		volume_size = [6046,7166,866], # X,Y,Z size in voxels
 	)
 
 	# If you're using amazon or the local file system, you can replace 'gs' with 's3' or 'file'
-	vol = CloudVolume('file:///home/wanglab/Documents/neuroglancer/20170204_tp_bl6_cri_1750r_03/atlas', info=info)
+	vol = CloudVolume('file:///home/wanglab/Documents/neuroglancer/20170116_tp_bl6_lob45_500r_12/atlas', info=info)
 	vol.provenance.description = "TP NC timepoint"
 	vol.provenance.owners = ['zmd@princeton.edu'] # list of contact email addresses
 	if commit:
@@ -48,7 +43,7 @@ def make_info_file(commit=True):
 	return vol
 
 def process(z):
-	img_name = os.path.join(tif_dir, '20170204_tp_bl6_cri_1750r_03_annotation_Z%04d.tif' % z)
+	img_name = os.path.join(tif_dir, '20170116_tp_bl6_lob45_500r_12_annotation_Z%04d.tif' % z)
 	print('Processing ', img_name)
 	image = Image.open(img_name)
 	width, height = image.size 
@@ -59,7 +54,7 @@ def process(z):
 	touch(os.path.join(progress_dir, str(z)))
 
 def make_demo_downsample(mip_start=0,num_mips=3):
-	cloudpath = 'file:///home/wanglab/Documents/neuroglancer/20170204_tp_bl6_cri_1750r_03/atlas'
+	cloudpath = 'file:///home/wanglab/Documents/neuroglancer/20170116_tp_bl6_lob45_500r_12/atlas'
 	with LocalTaskQueue(parallel=8) as tq:
 		tasks = tc.create_downsampling_tasks(
 			cloudpath, 
@@ -73,20 +68,20 @@ def make_demo_downsample(mip_start=0,num_mips=3):
 		tq.insert_all(tasks)
 	print("Done!")
 
-#if __name__ == '__main__':
-#
-#	vol = make_info_file()
-#	progress_dir = mkdir(home_dir + '/progress_atlas/') # unlike os.mkdir doesn't crash on prexisting 
-#	done_files = set([ int(z) for z in os.listdir(progress_dir) ])
-#	all_files = set(range(vol.bounds.minpt.z, vol.bounds.maxpt.z)) 
-#	to_upload = [ int(z) for z in list(all_files.difference(done_files)) ]
-#	to_upload.sort()
-#
-#
-#	with ProcessPoolExecutor(max_workers=8) as executor:
-#	    executor.map(process, to_upload)
-
 if __name__ == '__main__':
 
-    #make different resolutions
-    make_demo_downsample(mip_start=0,num_mips=3)
+	vol = make_info_file()
+	progress_dir = mkdir(home_dir + '/progress/') # unlike os.mkdir doesn't crash on prexisting 
+	done_files = set([ int(z) for z in os.listdir(progress_dir) ])
+	all_files = set(range(vol.bounds.minpt.z, vol.bounds.maxpt.z)) 
+	to_upload = [ int(z) for z in list(all_files.difference(done_files)) ]
+	to_upload.sort()
+
+
+	with ProcessPoolExecutor(max_workers=8) as executor:
+	    executor.map(process, to_upload)
+
+#if __name__ == '__main__':
+#
+#    #make different resolutions
+#    make_demo_downsample(mip_start=0,num_mips=4)

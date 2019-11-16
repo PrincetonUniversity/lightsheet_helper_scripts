@@ -19,7 +19,7 @@ scratch_dir = "/jukebox/scratch/zmd"
 src = "/jukebox/wang/pisano/tracing_output/antero_4x"
 
 #set brain name
-brain = os.path.join(src, "20170204_tp_bl6_cri_1750r_03")
+brain = os.path.join(src, "20170115_tp_bl6_lob6b_ml_04")
 
 start = time.time()
 
