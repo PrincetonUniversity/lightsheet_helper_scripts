@@ -7,16 +7,16 @@ Created on Sat Nov 16 13:10:18 2019
 """
 
 import os, tifffile, cv2, numpy as np, multiprocessing as mp, sys, shutil
-sys.path.append('/jukebox/wang/zahra/python/lightsheet_py3')
+sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 from tools.utils.io import load_kwargs
 
-src = '/jukebox//LightSheetData/brodyatlas/processed'
+src = "/jukebox//LightSheetData/brodyatlas/processed"
 
-brains = ['w118',
-         'w122',
-         'k293',
-         'k302',
-         'k307']
+brains = ["w118",
+         "w122",
+         "k293",
+         "k302",
+         "k307"]
 
 pths = [os.path.join(src, xx) for xx in brains]
 
@@ -32,7 +32,7 @@ def run_downsizing(pth):
     
     print(os.path.basename(pth))
     kwargs = load_kwargs(pth)
-    regvol = [xx for xx in kwargs['volumes'] if xx.ch_type == 'regch'][0]
+    regvol = [xx for xx in kwargs["volumes"] if xx.ch_type == "regch"][0]
     fszdt = regvol.full_sizedatafld_vol
     dst = os.path.join(pth, "downsized_for_atlas") #set destination for downsized planes
     if not os.path.exists(dst): os.mkdir(dst) #make dest directory
@@ -53,7 +53,7 @@ def export_to_tiff(pth):
     #remove folder with indiviudal tifs
     shutil.rmtree(fld)
     
-if __name__ == '__main__':
+if __name__ == "__main__":
     
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])

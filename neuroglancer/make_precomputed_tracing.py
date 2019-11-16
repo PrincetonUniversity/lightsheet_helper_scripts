@@ -68,20 +68,20 @@ def make_demo_downsample(mip_start=0,num_mips=3):
 		tq.insert_all(tasks)
 	print("Done!")
 
-if __name__ == '__main__':
-
-	vol = make_info_file()
-	progress_dir = mkdir(home_dir + '/progress/') # unlike os.mkdir doesn't crash on prexisting 
-	done_files = set([ int(z) for z in os.listdir(progress_dir) ])
-	all_files = set(range(vol.bounds.minpt.z, vol.bounds.maxpt.z)) 
-	to_upload = [ int(z) for z in list(all_files.difference(done_files)) ]
-	to_upload.sort()
-
-
-	with ProcessPoolExecutor(max_workers=8) as executor:
-	    executor.map(process, to_upload)
-
 #if __name__ == '__main__':
 #
-#    #make different resolutions
-#    make_demo_downsample(mip_start=0,num_mips=4)
+#	vol = make_info_file()
+#	progress_dir = mkdir(home_dir + '/progress/') # unlike os.mkdir doesn't crash on prexisting 
+#	done_files = set([ int(z) for z in os.listdir(progress_dir) ])
+#	all_files = set(range(vol.bounds.minpt.z, vol.bounds.maxpt.z)) 
+#	to_upload = [ int(z) for z in list(all_files.difference(done_files)) ]
+#	to_upload.sort()
+#
+#
+#	with ProcessPoolExecutor(max_workers=8) as executor:
+#	    executor.map(process, to_upload)
+
+if __name__ == '__main__':
+
+    #make different resolutions
+    make_demo_downsample(mip_start=0,num_mips=4)
