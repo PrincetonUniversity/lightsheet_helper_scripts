@@ -19,7 +19,7 @@ scratch_dir = "/jukebox/scratch/zmd"
 src = "/jukebox/wang/pisano/tracing_output/antero_4x"
 
 #set brain name
-brain = os.path.join(src, "20170115_tp_bl6_lob6b_ml_04")
+brain = os.path.join(src, "20170116_tp_bl6_lob45_500r_12")
 
 start = time.time()
 
@@ -31,7 +31,7 @@ cellvol = [xx for xx in kwargs["volumes"] if xx.ch_type == "cellch"][0]
 a2r0 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.0" in xx and "cellch" in xx][0]
 a2r1 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.1" in xx and "cellch" in xx][0]
 r2s0 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "reg2sig_TransformParameters.0" in xx and "cellch" in xx][0]
-r2s1 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "reg2sig_TransformParameters.1" in xx and "cellch" in xx][0]
+#r2s1 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "reg2sig_TransformParameters.1" in xx and "cellch" in xx][0] #does not using this one improve the registration quality?
 
 #set destination directory
 braindst = os.path.join(scratch_dir, os.path.basename(brain))
