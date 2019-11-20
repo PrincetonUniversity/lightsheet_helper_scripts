@@ -17,8 +17,8 @@ shape = (813, 7166, 6046) # z,y,x
 
 home_dir = '/home/wanglab/Documents/neuroglancer'
 
-tif_dir = '/home/wanglab/mounts/wang/pisano/tracing_output/antero_4x/20170115_tp_bl6_lob6b_ml_04/full_sizedatafld/20170115_tp_bl6_lob6b_ml_04_4x_647_008na_1hfds_z7d5um_75msec_10povlp_ch00'
-#tif_dir = '/home/wanglab/mounts/scratch/zmd/20170115_tp_bl6_lob6b_ml_04/transformed_annotations/single_tifs'
+#tif_dir = '/home/wanglab/mounts/wang/pisano/tracing_output/antero_4x/20170115_tp_bl6_lob6b_ml_04/full_sizedatafld/20170115_tp_bl6_lob6b_ml_04_4x_647_008na_1hfds_z7d5um_75msec_10povlp_ch00'
+tif_dir = '/home/wanglab/mounts/scratch/zmd/20170115_tp_bl6_lob6b_ml_04/cell_map_single_tifs'
 
 def make_info_file(commit=True):
 	info = CloudVolume.create_new_info(
@@ -33,7 +33,7 @@ def make_info_file(commit=True):
 	)
 
 	# If you're using amazon or the local file system, you can replace 'gs' with 's3' or 'file'
-	vol = CloudVolume('file:///home/wanglab/Documents/neuroglancer/20170115_tp_bl6_lob6b_ml_04/647', info=info)
+	vol = CloudVolume('file:///home/wanglab/Documents/neuroglancer/20170115_tp_bl6_lob6b_ml_04/cells', info=info)
 	vol.provenance.description = "TP NC timepoint"
 	vol.provenance.owners = ['zmd@princeton.edu'] # list of contact email addresses
 	if commit:
@@ -43,7 +43,7 @@ def make_info_file(commit=True):
 	return vol
 
 def process(z):
-	img_name = os.path.join(tif_dir, '20170115_tp_bl6_lob6b_ml_04_4x_647_008na_1hfds_z7d5um_75msec_10povlp_ch00_C00_Z%04d.tif' % z)
+	img_name = os.path.join(tif_dir, '20170115_tp_bl6_lob6b_ml_04_cell_map_Z%04d.tif' % z)
 	print('Processing ', img_name)
 	image = Image.open(img_name)
 	width, height = image.size 
@@ -54,7 +54,7 @@ def process(z):
 	touch(os.path.join(progress_dir, str(z)))
 
 def make_demo_downsample(mip_start=0,num_mips=3):
-	cloudpath = 'file:///home/wanglab/Documents/neuroglancer/20170115_tp_bl6_lob6b_ml_04/647'
+	cloudpath = 'file:///home/wanglab/Documents/neuroglancer/20170115_tp_bl6_lob6b_ml_04/cells'
 	with LocalTaskQueue(parallel=8) as tq:
 		tasks = tc.create_downsampling_tasks(
 			cloudpath, 
@@ -71,7 +71,7 @@ def make_demo_downsample(mip_start=0,num_mips=3):
 #if __name__ == '__main__':
 #
 #	vol = make_info_file()
-#	progress_dir = mkdir(home_dir + '/progress_20170115_tp_bl6_lob6b_ml_04_647/') # unlike os.mkdir doesn't crash on prexisting 
+#	progress_dir = mkdir(home_dir + '/progress_20170115_tp_bl6_lob6b_ml_04_cells/') # unlike os.mkdir doesn't crash on prexisting 
 #	done_files = set([ int(z) for z in os.listdir(progress_dir) ])
 #	all_files = set(range(vol.bounds.minpt.z, vol.bounds.maxpt.z)) 
 #	to_upload = [ int(z) for z in list(all_files.difference(done_files)) ]

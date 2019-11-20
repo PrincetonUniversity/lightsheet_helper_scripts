@@ -12,11 +12,19 @@ from tools.utils.io import load_kwargs
 
 src = "/jukebox//LightSheetData/brodyatlas/processed"
 
-brains = ["w118",
-         "w122",
-         "k293",
-         "k302",
-         "k307"]
+brains = ["h170",
+	 "k292",
+	 "k293",
+	 "k295",
+	 "k301", 
+	 "k303",
+	 "k304",
+	 "k305"]
+	 #"w118",
+         #"w122",
+         #"k293",
+         #"k302",
+         #"k307"]
 
 pths = [os.path.join(src, xx) for xx in brains]
 
@@ -61,7 +69,7 @@ if __name__ == "__main__":
     pth = pths[jobid]
     print(pth)
     #run
-    run_downsizing(pth)
+    #run_downsizing(pth)
     #FIXME: can combine these 2 functions
     export_to_tiff(pth)
     
