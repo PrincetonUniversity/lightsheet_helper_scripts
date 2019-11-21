@@ -21,10 +21,13 @@ if __name__ == "__main__":
 	 "k292",
 	 "k293",
 	 "k295",
-	 "k301", 
+	 "k301",
+     "k302",
 	 "k303",
 	 "k304",
-	 "k305"]
+	 "k305",
+     "w118",
+     "w122"]
     
     inputs = [os.path.join(src, xx+"/downsized_for_atlas.tif") for xx in brains]
     
@@ -34,17 +37,17 @@ if __name__ == "__main__":
     data_fld = "/jukebox/LightSheetData/brodyatlas/atlas/2019_meta_atlas/volumes"
     if not os.path.exists(data_fld): os.mkdir(data_fld)
     
-    for vol in inputs:
-        arr = tifffile.imread(vol)
-        arr_dwnsz = zoom(arr, ((2/5), 1, 1), order = 1) #horizontal image, downsizing z by 10um (z step) / 25 um (desired resolution)
-        arr_dwnsz_sag = fix_orientation(arr_dwnsz, axes = ("2", "1", "0"))
-        tifffile.imsave(os.path.join(data_fld, os.path.basename(os.path.dirname(vol))+".tif"), arr_dwnsz_sag)
-    
+#    for vol in inputs:
+#        arr = tifffile.imread(vol)
+#        arr_dwnsz = zoom(arr, ((2/5), 1, 1), order = 1) #horizontal image, downsizing z by 10um (z step) / 25 um (desired resolution)
+#        arr_dwnsz_sag = fix_orientation(arr_dwnsz, axes = ("2", "1", "0"))
+#        tifffile.imsave(os.path.join(data_fld, os.path.basename(os.path.dirname(vol))+".tif"), arr_dwnsz_sag)
+#    
     #registration to seed
     parameterfld = "/jukebox/LightSheetData/brodyatlas/atlas/2019_meta_atlas/parameters" #start with basic affine/bspile
     parameters = [os.path.join(parameterfld, xx) for xx in os.listdir(parameterfld)]
     #brain to register all other brains to 
-    seed = os.path.join(data_fld, "k307.tif")
+    seed = os.path.join(data_fld, "k305.tif")
     #Location to make a memory mapped array
     memmappth = os.path.join(output_fld, "memmap.npy")
     #Location to save out our atlas (median image)
