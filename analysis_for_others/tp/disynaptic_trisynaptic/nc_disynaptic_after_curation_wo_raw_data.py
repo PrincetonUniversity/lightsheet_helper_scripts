@@ -14,7 +14,6 @@ mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['ps.fonttype'] = 42
 
 #import data
-#REPLACE FOLDER WITH STRIATUM for striatum quant (done separately for now but should be exactly the same format)
 pth = "/jukebox/wang/zahra/h129_qc/data/nc_density_at_thal_nc_timepoint_data_all_brains.p"
 data = pckl.load(open(pth, "rb"), encoding = "latin1")
 

@@ -33,7 +33,8 @@ sns.regplot(df.x, df.y);
 #%%
 # split features and target
 X = df[['constant','x']]# fit model and summarize
-sm.OLS(y,X).fit().summary()
+sm.GLM(y, X, family=sm.families.Poisson()).fit().summary()
+#sm.OLS(y,X)
 
 # define likelihood function
 def MLERegression(params):

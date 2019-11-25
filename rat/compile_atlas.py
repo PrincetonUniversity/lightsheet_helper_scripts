@@ -7,7 +7,6 @@ Created on Sat Nov 16 13:49:34 2019
 """
 
 import os, tifffile, cv2, numpy as np, multiprocessing as mp, sys, shutil
-from scipy.ndimage import zoom
 sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 from tools.imageprocessing.orientation import fix_orientation
 sys.path.append("/jukebox/wang/zahra/python/pytlas")

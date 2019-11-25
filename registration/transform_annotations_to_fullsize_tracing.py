@@ -19,7 +19,7 @@ scratch_dir = "/jukebox/scratch/zmd"
 src = "/jukebox/wang/pisano/tracing_output/antero_4x"
 
 #set brain name
-brain = os.path.join(src, "20170116_tp_bl6_lob45_500r_12")
+brain = os.path.join(src, "20170116_tp_bl6_lob6b_lpv_07")
 
 start = time.time()
 
@@ -41,7 +41,7 @@ makedir(braindst)
 aldst = os.path.join(braindst, "transformed_annotations"); makedir(aldst)
 #
 #transformix
-transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0, r2s1], dst = aldst)
+transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0], dst = aldst)
 [change_interpolation_order(xx,0) for xx in transformfiles]
 
 #change the parameter in the transform files that outputs 16bit images instead
