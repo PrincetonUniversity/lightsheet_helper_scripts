@@ -16,10 +16,10 @@ from scipy.ndimage.interpolation import zoom
 #setting paths
 ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif"
 scratch_dir = "/jukebox/scratch/zmd"
-src = "/jukebox/wang/pisano/tracing_output/antero_4x"
+src = "/jukebox/wang/pisano/tracing_output/retro_4x"
 
 #set brain name
-brain = os.path.join(src, "20170116_tp_bl6_lob6b_lpv_07")
+brain = os.path.join(src, "20180322_jg_bl6f_prv_28")
 
 start = time.time()
 
