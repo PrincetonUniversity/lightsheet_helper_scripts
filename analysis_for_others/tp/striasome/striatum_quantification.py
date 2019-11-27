@@ -629,6 +629,7 @@ plt.savefig(os.path.join(dst,"pal_mean_percent_counts.pdf"), bbox_inches = "tigh
 
 #%%
 
+#mean density counts
 mean_counts = np.asarray([np.mean(density_per_brain[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
 fig = plt.figure(figsize=(4,3))

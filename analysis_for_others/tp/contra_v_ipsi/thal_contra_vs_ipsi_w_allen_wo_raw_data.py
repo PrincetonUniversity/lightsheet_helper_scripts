@@ -54,7 +54,7 @@ vols = np.array(vols)[curated_brains]
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 #preprocessing
-scale_factor = 0.020
+scale_factor = 0.025
 thal_left_counts = cell_counts_per_brain_left
 thal_right_counts = cell_counts_per_brain_right
 thal_density_left = density_per_brain_left
