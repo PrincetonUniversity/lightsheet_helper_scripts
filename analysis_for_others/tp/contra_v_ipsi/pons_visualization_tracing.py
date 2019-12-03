@@ -28,17 +28,20 @@ if __name__ == "__main__":
     
     src = "/jukebox/wang/pisano/tracing_output/antero_4x"
     dst = "/home/wanglab/Desktop/pons_mask_figs"
+    if not os.path.exists(dst): os.mkdir(dst)
     atl_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif"
     
-    #animals = ["an01", "an02", "an03", "an04", "an05", "an06", "an07", "an09", "an10", "an12", "an13", "an14", "an15", "an16", "an17"]
-    animals = ["20170410_tp_bl6_lob6a_ml_repro_01", "20160823_tp_bl6_cri_500r_02", "20180417_jg59_bl6_cri_03",
-            "20170207_db_bl6_crii_1300r_02", "20160622_db_bl6_unk_01", "20161205_tp_bl6_sim_750r_03",
-            "20180410_jg51_bl6_lob6b_04", "20170419_db_bl6_cri_rpv_53hr", "20170116_tp_bl6_lob6b_lpv_07",
-            "20170411_db_bl6_crii_mid_53hr", "20160822_tp_bl6_crii_1500r_06", "20160920_tp_bl6_lob7_500r_03",
-            "20170207_db_bl6_crii_rpv_01", "20161205_tp_bl6_sim_250r_02", "20161207_db_bl6_lob6a_500r_53hr",
-            "20170130_tp_bl6_sim_rlat_05", "20170115_tp_bl6_lob6b_500r_05", "20170419_db_bl6_cri_mid_53hr",
-            "20161207_db_bl6_lob6a_850r_53hr", "20160622_db_bl6_crii_52hr_01", "20161207_db_bl6_lob6a_50rml_53d5hr",
-            "20161205_tp_bl6_lob45_1000r_01", "20160801_db_l7_cri_01_mid_64hr"]
+#    animals = ["20170410_tp_bl6_lob6a_ml_repro_01", "20160823_tp_bl6_cri_500r_02", #"20180417_jg59_bl6_cri_03",
+#            "20170207_db_bl6_crii_1300r_02", "20160622_db_bl6_unk_01", "20161205_tp_bl6_sim_750r_03",
+#            #"20180410_jg51_bl6_lob6b_04", 
+#            "20170419_db_bl6_cri_rpv_53hr", "20170116_tp_bl6_lob6b_lpv_07",
+#            "20170411_db_bl6_crii_mid_53hr", "20160822_tp_bl6_crii_1500r_06", "20160920_tp_bl6_lob7_500r_03",
+#            "20170207_db_bl6_crii_rpv_01", "20161205_tp_bl6_sim_250r_02", "20161207_db_bl6_lob6a_500r_53hr",
+#            "20170130_tp_bl6_sim_rlat_05", "20170115_tp_bl6_lob6b_500r_05", "20170419_db_bl6_cri_mid_53hr",
+#            "20161207_db_bl6_lob6a_850r_53hr", "20160622_db_bl6_crii_52hr_01", "20161207_db_bl6_lob6a_50rml_53d5hr",
+#            "20161205_tp_bl6_lob45_1000r_01", "20160801_db_l7_cri_01_mid_64hr"]
+    animals = ["20170410_tp_bl6_lob6a_ml_repro_01", "20170130_tp_bl6_sim_rlat_05", "20170116_tp_bl6_lob6b_lpv_07", 
+               "20170115_tp_bl6_lob6b_500r_05", "20170207_db_bl6_crii_rpv_01"]#, "20161205_tp_bl6_lob45_1000r_01"]
     
     brains = [os.path.join(src, xx) for xx in animals]
     
@@ -47,7 +50,7 @@ if __name__ == "__main__":
     
     #setting for masking regions
     maxip_scale = 4 #aka 60 um sections
-    atl_id = 771 #mask pons
+    atl_id = 771 #mask structure
     zplns,y,x, atl_hor = mask_atlas_w_coordinates(atl_pth, atl_id)
     maxip_stop = max(zplns)-50
     maxip_start = min(zplns)+50
@@ -70,7 +73,7 @@ if __name__ == "__main__":
         for i in range(ncols):
             for j in range(nrows):
                 #crop after max projection
-                axes[i,j].imshow(np.max(vol_hor[slcs[k]:slcs[k]+maxip_scale]*8,
+                axes[i,j].imshow(np.max(vol_hor[slcs[k]:slcs[k]+maxip_scale]*1.2,
                     axis=0)[yrange[0]:yrange[1], xrange[0]:xrange[1]], cmap="Greys")
                 axes[i,j].imshow(np.max(atl_hor[slcs[k]:slcs[k]+maxip_scale], 
                     axis=0)[yrange[0]:yrange[1], xrange[0]:xrange[1]], alpha = 0.2, cmap=cmap)
@@ -78,7 +81,7 @@ if __name__ == "__main__":
                 k += 1        
         
         #done with the page
-        plt.savefig(os.path.join(dst, os.path.basename(brain)+"_h129_pons_z%d-%d_zstep%d.png" % (maxip_start, 
+        plt.savefig(os.path.join(dst, os.path.basename(brain)+"_h129_rtn_z%d-%d_zstep%d.png" % (maxip_start, 
                                           maxip_stop, maxip_scale)), bbox_inches = "tight")             
         
         plt.close()
