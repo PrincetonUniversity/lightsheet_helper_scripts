@@ -414,26 +414,6 @@ df["density"] = df[df.voxels_in_structure > 0].apply(lambda x:x.Count/(float(x.v
 df.to_csv(os.path.join(dst, "cell_counts_w_percent_density.csv"), index = None)
 
 #%%
-#helper functions
-def correct_cm_to_sturctures(struc):
-    """function to correct naming issues
-    """
-    if struc == "Anterior cingulate area, ventral part, layer 6a": struc = "Anterior cingulate area, ventral part, 6a"
-    if struc == "Anterior cingulate area, ventral part, layer 6b": struc = "Anterior cingulate area, ventral part, 6b"
-    if struc == "Simple lobule": struc = "Simplex lobule"
-    if struc == "Primary somatosensory area, barrel field, layer 5 ": struc = "Primary somatosensory area, barrel field, layer 5"
-    return struc
-
-def correct_sturctures_to_cm(struc):
-    """function to correct naming issues
-    """
-    if struc == "Anterior cingulate area, ventral part, 6a": struc = "Anterior cingulate area, ventral part, layer 6a"
-    if struc == "Anterior cingulate area, ventral part, 6b": struc = "Anterior cingulate area, ventral part, layer 6b"
-    if struc == "Simplex lobule": struc = "Simple lobule"
-    if struc == "Primary somatosensory area, barrel field, layer 5": struc = "Primary somatosensory area, barrel field, layer 5 "
-    return struc  
-
-#################################################################################################################################################################
 
 #build structures class
 structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx", 

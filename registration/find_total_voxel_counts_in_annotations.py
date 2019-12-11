@@ -33,7 +33,7 @@ def transformed_pnts_to_allen_helper_func(arr, ann, order = 'XYZ'):
         pnt = [x for x in arr[i]]
         if order == 'XYZ': pnt_lst.append(ann[pnt[2], pnt[1], pnt[0]]) ###find pixel id; arr=XYZ; ann=ZYX
         elif order == 'ZYX': pnt_lst.append(ann[pnt[0], pnt[1], pnt[2]]) ###find pixel id; arr=ZYX; ann=ZYX
-    return pnt_lst
+    return np.array(pnt_lst).astype(int)
         
 def count_structure_lister(allen_id_table, args):
     '''Function that generates a pd table of structures 
@@ -116,10 +116,10 @@ if __name__ == "__main__":
         areas[struct] = np.where(ann == struct)
         
     ##test
-    #nz = areas[1085.0]    
-    #pos = transformed_pnts_to_allen_helper_func(np.asarray(zip(*[nz[0], nz[1], nz[2]])), ann, "ZYX")    
-    #
-    #tdf = count_structure_lister(id_table, *pos)
+    nz = areas[672]    
+    pos = transformed_pnts_to_allen_helper_func(list(zip(*[nz[0], nz[1], nz[2]])), ann, "ZYX")    
+    
+    tdf = count_structure_lister(id_table, pos)
     
     #heavy
     pos = {}

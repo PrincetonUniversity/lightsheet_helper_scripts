@@ -22,6 +22,7 @@ mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
+fig_dst = "/home/wanglab/Desktop"
 
 ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
 
@@ -187,7 +188,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
                             if k == progen and progen != "Primary somatosensory area, unassigned, layer 4,5,6":
                                 counts.append(v)
                                 #add to volume list from LUT
-                                volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
+                                volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0]/2) #divide by 2 since these are half brains!!!
                 c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
                 d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
             except Exception as e:
@@ -196,7 +197,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
                     if k == soi:
                         counts.append(v)                    
                 #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))                c_pooled_regions[soi] = np.sum(np.asarray(counts))
+                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0]/2)#*(scale_factor**3))                c_pooled_regions[soi] = np.sum(np.asarray(counts))
                 c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
                 d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
                         
@@ -298,8 +299,7 @@ for i in range(len(lr_brains)):
 
 _ccontra = np.asarray(_ccontra).T; _dcontra = np.asarray(_dcontra).T
 _cipsi = np.asarray(_cipsi).T; _dipsi = np.asarray(_dipsi).T
-_dratio = np.asarray([_dcontra[i]/_dipsi[i] for i in range(len(_dcontra))])
-_cratio = np.asarray([_ccontra[i]/_cipsi[i] for i in range(len(_ccontra))])
+_ratio = np.asarray([_ccontra[i]/_cipsi[i] for i in range(len(_ccontra))])
 #make into one
 _dist = np.asarray(list(lr_dist.values()))
 
@@ -322,7 +322,7 @@ _primary_pool = np.asarray([primary_pool[i] for i in range(len(primary_pool)) if
 sort_dist = np.sort(_dist)
 sort_ccontra = _ccontra.T[np.argsort(_dist, axis = 0)]
 sort_cipsi = _cipsi.T[np.argsort(_dist, axis = 0)]
-sort_ratio = _cratio.T[np.argsort(_dist, axis = 0)]
+sort_ratio = _ratio.T[np.argsort(_dist, axis = 0)]
 sort_dcontra = _dcontra.T[np.argsort(_dist, axis = 0)]
 sort_dipsi = _dipsi.T[np.argsort(_dist, axis = 0)]
 sort_vox_per_region = volume_per_brain_left[np.argsort(_dist, axis = 0)]
@@ -333,216 +333,22 @@ print(sort_dist.shape)
 print(sort_ratio.shape)
 
 #%%
-#figures 
-sv_dst = "/home/wanglab/Desktop"
+#filter results by contra/ipsi ratio > 1 in thalamus
 
-#show contra/ipsi counts for all thalamic nuclei
-#mean density counts
-mean_density = np.asarray([np.mean(_dcontra.T[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+threshold = 1.5
+filter_dcontra = np.array([struct[_ratio[0]>threshold] for struct in _dcontra])
+filter_dipsi = np.array([struct[_ratio[0]>threshold] for struct in _dipsi])
+filter_ccontra = np.array([struct[_ratio[0]>threshold] for struct in _ccontra])
+filter_cipsi = np.array([struct[_ratio[0]>threshold] for struct in _cipsi])
 
-fig = plt.figure(figsize=(4,8))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-show = mean_density.T 
-
-vmin = 0
-vmax = 30
-cmap = plt.cm.viridis
-cmap.set_over('gold')
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,7)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.1, aspect=10)
-cb.set_label("Cells/$mm^3$", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(True)
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col < 5:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
-        
-#remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
-# yticks
-ax.set_yticks(np.arange(len(nuclei))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
-ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
-plt.savefig(os.path.join(sv_dst, "thal_contra_mean_density.pdf"), bbox_inches = "tight")
-
-
-mean_density = np.asarray([np.mean(_dipsi.T[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
-
-fig = plt.figure(figsize=(4,8))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-show = mean_density.T 
-
-vmin = 0
-vmax = 30
-cmap = plt.cm.viridis
-cmap.set_over('gold')
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,7)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.1, aspect=10)
-cb.set_label("Cells/$mm^3$", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(True)
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col < 5:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
-        
-#remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
-# yticks
-ax.set_yticks(np.arange(len(nuclei))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
-ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
-plt.savefig(os.path.join(sv_dst, "thal_ipsi_mean_density.pdf"), bbox_inches = "tight")
-
-#%%
-#show contra/ipsi counts for all thalamic nuclei
-#mean percent counts
-_pccontra = np.nan_to_num(np.array([xx/np.nansum(xx) for xx in _ccontra.T])*100)
-mean_pcounts = np.array([np.mean(_pccontra[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
-
-#get acronyms of nuclei
-short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nuclei]
-#choose whether to annotate the numbers in the heatmap
-annotate = False
-
-#figure
-fig = plt.figure(figsize=(4,8))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-show = mean_pcounts.T 
-
-vmin = 0
-vmax = 10
-cmap = plt.cm.viridis
-cmap.set_over('gold')
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.1, aspect=10)
-cb.set_label("% of thalamic cells", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(True)
-# exact value annotations
-if annotate:
-    for ri,row in enumerate(show):
-        for ci,col in enumerate(row):
-            if col < 1:
-                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
-            else:
-                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
-        
-#remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
-# yticks
-ax.set_yticks(np.arange(len(nuclei))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
-ax.set_yticklabels(["{}".format(bi) for bi in short_nuclei], fontsize="xx-small")
-plt.savefig(os.path.join(sv_dst, "thal_contra_mean_pcounts.pdf"), bbox_inches = "tight")
-
-#ipsi side
-_pcipsi = np.array([xx/np.sum(xx) for xx in _cipsi.T])*100
-mean_pcounts = np.asarray([np.mean(_pcipsi[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
-
-fig = plt.figure(figsize=(4,8))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-show = mean_pcounts.T 
-
-vmin = 0
-vmax = 10
-cmap = plt.cm.viridis
-cmap.set_over('gold')
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.1, aspect=10)
-cb.set_label("% of thalamic cells", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(True)
-# exact value annotations
-if annotate:
-    for ri,row in enumerate(show):
-        for ci,col in enumerate(row):
-            if col < 1:
-                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
-            else:
-                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
-        
-#remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
-# yticks
-ax.set_yticks(np.arange(len(nuclei))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in short_nuclei], fontsize="xx-small")
-plt.savefig(os.path.join(sv_dst, "thal_ipsi_mean_pcounts.pdf"), bbox_inches = "tight")
-
-#%%
+filter_primary_pool = _primary_pool[_ratio[0]>threshold]
+filter_ak_pool = ak_pool[np.unique(filter_primary_pool)]
+filter_primary_lob_n = np.asarray([np.where(filter_primary_pool == i)[0].shape[0] for i in np.unique(filter_primary_pool)])
 #show contra, ipsi, and contra+ipsi heatmaps side by side
 
 #mean percent counts
-_pccontra = np.nan_to_num(np.array([xx[1:]/xx[0] for xx in _ccontra.T])*100) #note that the whole thalamus is the first element in nthe array
-mean_contra_pcounts = np.array([np.mean(_pccontra[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+_pccontra = np.nan_to_num(np.array([xx[1:]/xx[0] for xx in filter_ccontra.T])*100) #note that the whole thalamus is the first element in nthe array
+mean_contra_pcounts = np.array([np.mean(_pccontra[np.where(filter_primary_pool == idx)[0]], axis=0) for idx in np.unique(filter_primary_pool)])
 
 #get acronyms of nuclei
 short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nuclei][1:]
@@ -552,7 +358,7 @@ annotate = False
 xaxis_label_x,xaxis_label_y = 0.7, 0.1
 #set range of colormap
 vmin = 0
-vmax = 6
+vmax = 10
 
 fig, axes = plt.subplots(ncols = 3, nrows = 1, figsize = (8,6), sharey = True, gridspec_kw = {"wspace":0, "hspace":0})
 
@@ -563,7 +369,7 @@ cmap = plt.cm.viridis
 cmap.set_over('gold')
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
+bounds = np.linspace(vmin,vmax,((vmax-vmin)/2)+1)
 #bounds = np.linspace(-2,5,8)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
@@ -585,9 +391,9 @@ if annotate:
         
 
 # xticks
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+ax.set_xticks(np.arange(len(filter_ak_pool))+.5)
+lbls = np.asarray(filter_ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, filter_primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(nuclei))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in short_nuclei], fontsize="small")
@@ -598,8 +404,8 @@ ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
 #ipsi side
 ax = axes[1]
 
-_pcipsi = np.array([xx[1:]/xx[0] for xx in _cipsi.T])*100
-mean_ipsi_pcounts = np.asarray([np.mean(_pcipsi[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+_pcipsi = np.array([xx[1:]/xx[0] for xx in filter_cipsi.T])*100
+mean_ipsi_pcounts = np.asarray([np.mean(_pcipsi[np.where(filter_primary_pool == idx)[0]], axis=0) for idx in np.unique(filter_primary_pool)])
 
 show = mean_ipsi_pcounts.T 
 
@@ -628,9 +434,9 @@ if annotate:
                 ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
         
 # xticks
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+ax.set_xticks(np.arange(len(filter_ak_pool))+.5)
+lbls = np.asarray(filter_ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, filter_primary_lob_n)], rotation=30, fontsize=5, ha="right")
 #make x label
 ax.set_xlabel("Ipsi", fontsize="small")
 ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
@@ -639,8 +445,8 @@ ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
 #ipsi side
 ax = axes[2]
 
-_pcounts = np.array([xx[1:]/xx[0] for xx in (_cipsi+_ccontra).T])*100
-mean_pcounts = np.asarray([np.mean(_pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+_pcounts = np.array([xx[1:]/xx[0] for xx in (filter_cipsi+filter_ccontra).T])*100
+mean_pcounts = np.asarray([np.mean(_pcounts[np.where(filter_primary_pool == idx)[0]], axis=0) for idx in np.unique(filter_primary_pool)])
 
 show = mean_pcounts.T 
 
@@ -669,16 +475,19 @@ if annotate:
                 ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
         
 # xticks
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+ax.set_xticks(np.arange(len(filter_ak_pool))+.5)
+lbls = np.asarray(filter_ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, filter_primary_lob_n)], rotation=30, fontsize=5, ha="right")
 #make x label
 ax.set_xlabel("Bilateral", fontsize="small")
 ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
 
-plt.savefig(os.path.join(sv_dst, "thal_contra_n_ipsi_mean_pcounts.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "thal_contra_n_ipsi_mean_pcounts_threshold_%s.pdf" % threshold), bbox_inches = "tight")
 
-#%%
+plt.close()
+
+#filter results by contra/ipsi ratio > 1 in thalamus
+
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
 pcounts_descending_order = np.sort(_pccontra)
 order = np.argsort(np.mean(_pccontra, axis = 0))
@@ -733,9 +542,179 @@ for i in range(ngroup):
 #label which boxplot belongs to which side
 ax.set_xlabel("Bilateral")
 
-plt.savefig(os.path.join(sv_dst, "thal_contra_n_ipsi_pcounts_boxplots.svg"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "thal_contra_n_ipsi_pcounts_boxplots_threshold_%s.pdf" % threshold), bbox_inches = "tight")
+
+plt.close()
+
+#do a rank correlation between nuclei for contra vs. ipsi side
+
+import statsmodels.api as sm
+
+ak_vh = np.array(["Vermis", "Hemisphere"])
+func = lambda xx: 0 if xx < 2 else 1
+filter_primary_pool_vh = np.array([func(xx) for xx in filter_primary_pool])
+
+_pccontra_vermis = _pccontra[np.where(filter_primary_pool_vh == 0)]
+_pccontra_hem = _pccontra[np.where(filter_primary_pool_vh == 1)]
+_pcipsi_vermis = _pcipsi[np.where(filter_primary_pool_vh == 0)]
+_pcipsi_hem = _pcipsi[np.where(filter_primary_pool_vh == 1)]
+
+#vermis
+contra_pcounts_descending_order = np.sort(_pccontra_vermis)
+contra_order = np.argsort(np.mean(_pccontra_vermis, axis = 0))
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nuclei][1:]
+contra_sois_descending_pcounts = np.array(short_nuclei)[contra_order]
+contra_sois_ascending_pcounts = contra_sois_descending_pcounts[::-1]
+
+ipsi_pcounts_descending_order = np.sort(_pcipsi_vermis)
+ipsi_order = np.argsort(np.mean(_pcipsi_vermis, axis = 0))
+ipsi_sois_descending_pcounts = np.array(short_nuclei)[ipsi_order]
+ipsi_sois_ascending_pcounts = ipsi_sois_descending_pcounts[::-1]
+
+contra_ranks = [i for i,nuc in enumerate(contra_sois_ascending_pcounts)]
+ipsi_ranks = [i for j,nu in enumerate(ipsi_sois_ascending_pcounts) 
+    for i,nuc in enumerate(contra_sois_ascending_pcounts) if ipsi_sois_ascending_pcounts[j] == nuc]
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#size of scatter
+size = 70
+
+Y = contra_ranks
+X = ipsi_ranks
+
+results = sm.OLS(Y,sm.add_constant(X)).fit()
+
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]
+
+#plot as scatter   
+ax.scatter(y = Y, x = X, s = size)
+
+#plot fit line
+ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+    
+ax.set_xlabel("Contralateral thalamus rank order (vermis injections)")
+ax.set_ylabel("Ipsilateral thalamus rank order (vermis injections)")
+
+#make text box
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+textstr = "\n".join((
+    "slope: {:0.2f}".format(mean_slope),
+    "$R^2$: {:0.2f}".format(mean_r2)))
+
+ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', bbox=props)
+
+
+plt.savefig(os.path.join(fig_dst, "thal_contra_v_ipsi_rank_order_vermis_threshold_%s.pdf" % threshold), bbox_inches = "tight")
+
+plt.close()
+
+#hemisphere
+contra_pcounts_descending_order = np.sort(_pccontra_hem)
+contra_order = np.argsort(np.mean(_pccontra_hem, axis = 0))
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nuclei][1:]
+contra_sois_descending_pcounts = np.array(short_nuclei)[contra_order]
+contra_sois_ascending_pcounts = contra_sois_descending_pcounts[::-1]
+
+ipsi_pcounts_descending_order = np.sort(_pcipsi_hem)
+ipsi_order = np.argsort(np.mean(_pcipsi_hem, axis = 0))
+ipsi_sois_descending_pcounts = np.array(short_nuclei)[ipsi_order]
+ipsi_sois_ascending_pcounts = ipsi_sois_descending_pcounts[::-1]
+
+contra_ranks = [i for i,nuc in enumerate(contra_sois_ascending_pcounts)]
+ipsi_ranks = [i for j,nu in enumerate(ipsi_sois_ascending_pcounts) 
+    for i,nuc in enumerate(contra_sois_ascending_pcounts) if ipsi_sois_ascending_pcounts[j] == nuc]
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#size of scatter
+size = 70
+
+Y = contra_ranks
+X = ipsi_ranks
+
+results = sm.OLS(Y,sm.add_constant(X)).fit()
+
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]
+
+#plot as scatter   
+ax.scatter(y = Y, x = X, s = size)
+
+#plot fit line
+ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+    
+ax.set_xlabel("Contralateral thalamus rank order (hemisphere injections)")
+ax.set_ylabel("Ipsilateral thalamus rank order (hemisphere injections)")
+
+#make text box
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+textstr = "\n".join((
+    "slope: {:0.2f}".format(mean_slope),
+    "$R^2$: {:0.2f}".format(mean_r2)))
+
+ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', bbox=props)
+
+
+plt.savefig(os.path.join(fig_dst, "thal_contra_v_ipsi_rank_order_hemisphere_threshold_%s.pdf" % threshold), bbox_inches = "tight")
+
+plt.close()
 
 #%%
+#regression of total thalamic density over contra/ipsi ratio
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#size of scatter
+size = 70
+
+_Y = _ratio[1]
+#filter out zeros
+Y = _Y[_Y > 0]
+X = (density_per_brain_left[:,0]+density_per_brain_right[:,0])[_Y > 0]
+
+results = sm.OLS(np.log10(Y),sm.add_constant(X)).fit()
+
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]
+
+#plot as scatter   
+ax.scatter(y = np.log10(Y), x = X, s = size)
+
+#plot fit line
+#ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+    
+ax.set_xlabel("SM thalamic density (Cells/$mm^3$)")
+ax.set_ylabel("Contra/Ipsi ratio (log 10)")
+#make text box
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+textstr = "\n".join((
+    "slope: {:0.5f}".format(mean_slope),
+    "$R^2$: {:0.2f}".format(mean_r2)))
+
+ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', bbox=props)
+
+plt.savefig(os.path.join(fig_dst, "sm_thal_contra_ipsi_ratio_v_density.png"), bbox_inches = "tight")
+
+plt.close()
+
+#%%
+
+#large panel figures 
+
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (10,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,0.8,0.8,0.8,0.5]})
@@ -901,8 +880,7 @@ ax.set_xticklabels(sort_brains, rotation=30, fontsize=5, ha="right")
 ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
-fig_dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(sv_dst, "thal_contra_ipsi_ratio_w_density.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "thal_contra_ipsi_ratio_w_density.pdf"), bbox_inches = "tight")
 
 #%%
 ## display
@@ -1082,7 +1060,7 @@ ax.set_xticklabels(br, rotation=30, fontsize=5, ha="right")
 ax.set_yticks(np.arange(1)+.5)
 ax.set_yticklabels(["M-L distance"], fontsize="x-small")
 
-plt.savefig(os.path.join(sv_dst, "thal_contra_ipsi_ratio_w_counts.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "thal_contra_ipsi_ratio_w_counts.pdf"), bbox_inches = "tight")
 
 #%%
 #basic statistics for these ratios
@@ -1098,16 +1076,16 @@ df["est std"] = np.round(mad(sort_ratio, axis = 0)/0.6745, d)
 
 df.index = yaxis
 
-df.to_csv(os.path.join(sv_dst, "thal_contra_ipsi_ratio_stats.csv"))
+df.to_csv(os.path.join(fig_dst, "thal_contra_ipsi_ratio_stats.csv"))
 
 #%%
 #regress pons ratios against contra/ipsi rations for sensory-motor thalamus
 
 import statsmodels.api as sm
 
-pons_ratio = _dratio[0,:]
-sm_thal_ratio = _dratio[1,:]
-poly_thal_ratio = _dratio[2,:]
+pons_ratio = _ratio[0,:]
+sm_thal_ratio = _ratio[1,:]
+poly_thal_ratio = _ratio[2,:]
 
 fig = plt.figure(figsize=(10,5))
 ax = fig.add_axes([.4,.1,.5,.8])

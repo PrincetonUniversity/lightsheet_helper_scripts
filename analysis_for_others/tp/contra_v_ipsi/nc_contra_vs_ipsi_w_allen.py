@@ -20,6 +20,7 @@ mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
+fig_dst = "/home/wanglab/Desktop"
 
 ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
 
@@ -78,6 +79,7 @@ for img in imgs:
 #make structures
 #FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ann_df = pd.read_excel(df_pth)
 
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 lr_brains = list(lr_dist.keys())
@@ -168,7 +170,6 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
         d_pooled_regions = {}
         
         for soi in structure:
-            print(soi)
             try:
                 soi = [s for s in structures if s.name==soi][0]
                 counts = [] #store counts in this list
@@ -186,16 +187,15 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
                             if k == progen and progen != "Primary somatosensory area, unassigned, layer 4,5,6":
                                 counts.append(v)
                                 #add to volume list from LUT
-                                volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
+                                volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0]/2) #divide by 2 since these are half brains!!!
                 c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
                 d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-            except Exception as e:
-                print(e)
+            except:
                 for k, v in cells_regions[brain].items():
                     if k == soi:
                         counts.append(v)                    
                 #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))                c_pooled_regions[soi] = np.sum(np.asarray(counts))
+                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0]/2) #divide by 2 since these are half brains!!!
                 c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
                 d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
                         
@@ -235,7 +235,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
 cells_regions = pckl.load(open(os.path.join(dst, "nc_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
 
-nc_areas = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
+nc_areas = ["Isocortex","Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
             "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
             "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
@@ -247,10 +247,9 @@ cells_regions = pckl.load(open(os.path.join(dst, "nc_left_side_no_prog_at_each_l
 cells_regions = cells_regions.to_dict(orient = "dict")      
 cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
 
-
 #%%
 #preprocessing into contra/ipsi counts per brain, per structure
-scale_factor = 0.020
+scale_factor = 0.025
 nc_left_counts = cell_counts_per_brain_left
 nc_right_counts = cell_counts_per_brain_right
 nc_density_left = density_per_brain_left
@@ -280,8 +279,7 @@ for i in range(len(lr_brains)):
 
 _ccontra = np.asarray(_ccontra).T; _dcontra = np.asarray(_dcontra).T
 _cipsi = np.asarray(_cipsi).T; _dipsi = np.asarray(_dipsi).T
-_dratio = np.asarray([_dcontra[i]/_dipsi[i] for i in range(len(_dcontra))])
-_cratio = np.asarray([_ccontra[i]/_cipsi[i] for i in range(len(_ccontra))])
+_ratio = np.asarray([_ccontra[i]/_cipsi[i] for i in range(len(_ccontra))])
 #make into one
 _dist = np.asarray(list(lr_dist.values()))
 
@@ -296,32 +294,19 @@ inj = data["expr_all_as_frac_of_inj_pool"]
  
 _inj = np.asarray([inj[i] for i in range(len(inj)) if brains[i] in lr_brains])
 _primary_pool = np.asarray([primary_pool[i] for i in range(len(primary_pool)) if brains[i] in lr_brains])
-
 #sort by distance
 sort_dist = np.sort(_dist)
 sort_ccontra = _ccontra.T[np.argsort(_dist, axis = 0)]
 sort_cipsi = _cipsi.T[np.argsort(_dist, axis = 0)]
-sort_cratio = _cratio.T[np.argsort(_dist, axis = 0)]
+sort_ratio = _ratio.T[np.argsort(_dist, axis = 0)]
 sort_dcontra = _dcontra.T[np.argsort(_dist, axis = 0)]
 sort_dipsi = _dipsi.T[np.argsort(_dist, axis = 0)]
-sort_dratio = _dratio.T[np.argsort(_dist, axis = 0)]
 sort_vox_per_region = volume_per_brain_left[np.argsort(_dist, axis = 0)]
 sort_inj = _inj[np.argsort(_dist)]   
 sort_brains = np.array(lr_brains)[np.argsort(_dist)]
 
 print(sort_dist.shape)
-print(sort_cratio.shape)
-
-#group nc regions in smaller, meta regions
-#frontal, medial, posterior?
-#['Infralimbic area', 'Prelimbic area', 'Anterior cingulate area',
-#       'Frontal pole, cerebral cortex', 'Orbital area', 'Gustatory areas',
-#       'Agranular insular area', 'Visceral area', 'Somatosensory areas',
-#       'Somatomotor areas', 'Retrosplenial area',
-#       'Posterior parietal association areas', 'Visual areas',
-#       'Temporal association areas', 'Auditory areas', 'Ectorhinal area',
-#       'Perirhinal area']
-#group_ind = [[0:7], [8:10], [10:]]
+print(sort_ratio.shape)
 
 grps = np.array(["Frontal\n(IL,PL,ACC,ORB,FRP,\nGU,AI,VISC)" , "Medial\n(MO,SS)", "Posterior\n(RSP,PTL,TE,PERI,ECT)"])
 sort_ccontra_pool = np.asarray([[np.sum(xx[0:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in sort_ccontra])
@@ -334,6 +319,399 @@ sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in 
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
 
 #%%
+#filter results by contra/ipsi ratio > 1 in neocortex
+
+threshold = 0.5
+filter_dcontra = np.array([struct[_ratio[0]>threshold] for struct in _dcontra])
+filter_dipsi = np.array([struct[_ratio[0]>threshold] for struct in _dipsi])
+filter_ccontra = np.array([struct[_ratio[0]>threshold] for struct in _ccontra])
+filter_cipsi = np.array([struct[_ratio[0]>threshold] for struct in _cipsi])
+
+filter_primary_pool = _primary_pool[_ratio[0]>threshold]
+filter_ak_pool = ak_pool[np.unique(filter_primary_pool)]
+filter_primary_lob_n = np.asarray([np.where(filter_primary_pool == i)[0].shape[0] for i in np.unique(filter_primary_pool)])
+#show contra, ipsi, and contra+ipsi heatmaps side by side
+
+##mean percent counts
+_pccontra = np.nan_to_num(np.array([xx[1:]/xx[0] for xx in filter_ccontra.T])*100) #note that the whole thalamus is the first element in nthe array
+_pcipsi = np.array([xx[1:]/xx[0] for xx in filter_cipsi.T])*100
+
+#mean density
+mean_contra_d = np.array([np.mean(filter_dcontra.T[np.where(filter_primary_pool == idx)[0]], axis=0) for idx in np.unique(filter_primary_pool)])
+
+#get acronyms of nuclei
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nc_areas][1:]
+#choose whether to annotate the numbers in the heatmap
+annotate = False
+#set label coords
+xaxis_label_x,xaxis_label_y = 0.7, 0.1
+#set range of colormap
+vmin = 0
+vmax = 400
+
+fig, axes = plt.subplots(ncols = 3, nrows = 1, figsize = (8,6), sharey = True, gridspec_kw = {"wspace":0, "hspace":0})
+
+ax = axes[0]
+show = mean_contra_d[:, 1:].T #remove isocortex
+
+cmap = plt.cm.viridis
+cmap.set_over('gold')
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,((vmax-vmin)/2)+1)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.1, aspect=10)
+cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(False)
+# exact value annotations
+if annotate:
+    for ri,row in enumerate(show):
+        for ci,col in enumerate(row):
+            if col < 1:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+            else:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        
+
+# xticks
+ax.set_xticks(np.arange(len(filter_ak_pool))+.5)
+lbls = np.asarray(filter_ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, filter_primary_lob_n)], rotation=30, fontsize=5, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(nc_areas))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in short_nuclei], fontsize="small")
+#make x label
+ax.set_xlabel("Contra", fontsize="small")
+ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
+
+#ipsi side
+ax = axes[1]
+
+mean_ipsi_d = np.asarray([np.mean(filter_dipsi.T[np.where(filter_primary_pool == idx)[0]], axis=0) for idx in np.unique(filter_primary_pool)])
+
+show = mean_ipsi_d[:, 1:].T 
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,6)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
+#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.1, aspect=10)
+cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(False)
+# exact value annotations
+if annotate:
+    for ri,row in enumerate(show):
+        for ci,col in enumerate(row):
+            if col < 1:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+            else:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        
+# xticks
+ax.set_xticks(np.arange(len(filter_ak_pool))+.5)
+lbls = np.asarray(filter_ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, filter_primary_lob_n)], rotation=30, fontsize=5, ha="right")
+#make x label
+ax.set_xlabel("Ipsi", fontsize="small")
+ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
+
+#combined sides
+#ipsi side
+ax = axes[2]
+
+mean_density = mean_ipsi_d[:, 1:]+mean_contra_d[:, 1:]
+
+show = mean_density.T 
+
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,6)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
+#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.1, aspect=10)
+cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(True)
+# exact value annotations
+if annotate:
+    for ri,row in enumerate(show):
+        for ci,col in enumerate(row):
+            if col < 1:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+            else:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        
+# xticks
+ax.set_xticks(np.arange(len(filter_ak_pool))+.5)
+lbls = np.asarray(filter_ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, filter_primary_lob_n)], rotation=30, fontsize=5, ha="right")
+#make x label
+ax.set_xlabel("Bilateral", fontsize="small")
+ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
+
+plt.savefig(os.path.join(fig_dst, "nc_contra_n_ipsi_mean_density_threshold_%s.pdf" % threshold), bbox_inches = "tight")
+
+plt.close()
+
+
+#first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
+pcounts_descending_order = np.sort(_pccontra)
+order = np.argsort(np.mean(_pccontra, axis = 0))
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nc_areas][1:]
+sois_descending_pcounts = np.array(short_nuclei)[order]
+
+#boxplots of percent counts - contra
+fig, axes = plt.subplots(ncols = 3, nrows = 1, figsize = (15,8), sharey = False, sharex = True, gridspec_kw = {"wspace":0, "hspace":0})
+
+#first boxplot
+ax = axes[0]
+
+ax.boxplot(pcounts_descending_order, vert = False, labels = sois_descending_pcounts, sym = "", showcaps = False)
+ngroup = len(pcounts_descending_order.T)
+for i in range(ngroup):
+    ax.scatter(pcounts_descending_order[:,i], 
+                y=np.ones(len(pcounts_descending_order[:,0]))*i+1, color = "k", s = 10)
+
+
+ax.set_xlabel("Density\nContra")
+ax.set_ylabel("Neocortical areas")
+
+#second boxplot, ipsi
+ax = axes[1]
+
+pcounts_descending_order = np.sort(_pcipsi)
+order = np.argsort(np.mean(_pcipsi, axis = 0))
+sois_descending_pcounts = np.array(short_nuclei)[order]
+
+ax.boxplot(pcounts_descending_order, vert = False, labels = sois_descending_pcounts, sym = "", showcaps = False)
+ngroup = len(pcounts_descending_order.T)
+for i in range(ngroup):
+    ax.scatter(pcounts_descending_order[:,i], 
+                y=np.ones(len(pcounts_descending_order[:,0]))*i+1, color = "k", s = 10)
+
+
+ax.set_xlabel("Ipsi")
+
+#final boxplot, combined
+ax = axes[2]
+
+_pcounts = _pccontra+_pcipsi
+pcounts_descending_order = np.sort(_pcounts)
+order = np.argsort(np.mean(_pcounts, axis = 0))
+sois_descending_pcounts = np.array(short_nuclei)[order]
+
+ax.boxplot(pcounts_descending_order, vert = False, labels = sois_descending_pcounts, sym = "", showcaps = False)
+ngroup = len(pcounts_descending_order.T)
+for i in range(ngroup):
+    ax.scatter(pcounts_descending_order[:,i], 
+                y=np.ones(len(pcounts_descending_order[:,0]))*i+1, color = "k", s = 10)
+
+#label which boxplot belongs to which side
+ax.set_xlabel("Bilateral")
+
+plt.savefig(os.path.join(fig_dst, "nc_contra_n_ipsi_pcounts_boxplots_threshold_%s.pdf" % threshold), bbox_inches = "tight")
+
+plt.close()
+
+#%%
+#do a rank correlation between nuclei for contra vs. ipsi side
+
+import statsmodels.api as sm
+
+threshold = 0.5
+
+filter_dcontra = np.array([struct[_ratio[0]>threshold] for struct in _dcontra])
+filter_dipsi = np.array([struct[_ratio[0]>threshold] for struct in _dipsi])
+filter_ccontra = np.array([struct[_ratio[0]>threshold] for struct in _ccontra])
+filter_cipsi = np.array([struct[_ratio[0]>threshold] for struct in _cipsi])
+
+filter_primary_pool = _primary_pool[_ratio[0]>threshold]
+filter_ak_pool = ak_pool[np.unique(filter_primary_pool)]
+filter_primary_lob_n = np.asarray([np.where(filter_primary_pool == i)[0].shape[0] for i in np.unique(filter_primary_pool)])
+
+ak_vh = np.array(["Vermis", "Hemisphere"])
+func = lambda xx: 0 if xx < 3 else 1
+filter_primary_pool_vh = np.array([func(xx) for xx in filter_primary_pool])
+
+_dcontra_vermis = filter_dcontra.T[np.where(filter_primary_pool_vh == 0)][:,1:]
+_dcontra_hem = filter_dcontra.T[np.where(filter_primary_pool_vh == 1)][:,1:]
+_dipsi_vermis = filter_dipsi.T[np.where(filter_primary_pool_vh == 0)][:,1:]
+_dipsi_hem = filter_dipsi.T[np.where(filter_primary_pool_vh == 1)][:,1:]
+
+#vermis
+contra_pcounts_descending_order = np.sort(_dcontra_vermis)
+contra_order = np.argsort(np.mean(_dcontra_vermis, axis = 0))
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nc_areas][1:]
+contra_sois_descending_pcounts = np.array(short_nuclei)[contra_order]
+contra_sois_ascending_pcounts = contra_sois_descending_pcounts[::-1]
+
+ipsi_pcounts_descending_order = np.sort(_dipsi_vermis)
+ipsi_order = np.argsort(np.mean(_dipsi_vermis, axis = 0))
+ipsi_sois_descending_pcounts = np.array(short_nuclei)[ipsi_order]
+ipsi_sois_ascending_pcounts = ipsi_sois_descending_pcounts[::-1]
+
+contra_ranks = [i for i,nuc in enumerate(contra_sois_ascending_pcounts)]
+ipsi_ranks = [i for j,nu in enumerate(ipsi_sois_ascending_pcounts) 
+    for i,nuc in enumerate(contra_sois_ascending_pcounts) if ipsi_sois_ascending_pcounts[j] == nuc]
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#size of scatter
+size = 70
+
+Y = contra_ranks
+X = ipsi_ranks
+
+results = sm.OLS(Y,sm.add_constant(X)).fit()
+
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]
+
+#plot as scatter   
+ax.scatter(y = Y, x = X, s = size)
+
+#plot fit line
+ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+    
+ax.set_xlabel("Contralateral NC density rank order (vermis injections)")
+ax.set_ylabel("Ipsilateral NC density rank order (vermis injections)")
+
+#make text box
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+textstr = "\n".join((
+    "slope: {:0.2f}".format(mean_slope),
+    "$R^2$: {:0.2f}".format(mean_r2)))
+
+ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', bbox=props)
+
+
+plt.savefig(os.path.join(fig_dst, "nc_contra_v_ipsi_rank_order_vermis_threshold_%s.png" % threshold), bbox_inches = "tight")
+
+plt.close()
+
+#hemisphere
+contra_pcounts_descending_order = np.sort(_dcontra_hem)
+contra_order = np.argsort(np.mean(_dcontra_hem, axis = 0))
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nc_areas][1:]
+contra_sois_descending_pcounts = np.array(short_nuclei)[contra_order]
+contra_sois_ascending_pcounts = contra_sois_descending_pcounts[::-1]
+
+ipsi_pcounts_descending_order = np.sort(_dipsi_hem)
+ipsi_order = np.argsort(np.mean(_dipsi_hem, axis = 0))
+ipsi_sois_descending_pcounts = np.array(short_nuclei)[ipsi_order]
+ipsi_sois_ascending_pcounts = ipsi_sois_descending_pcounts[::-1]
+
+contra_ranks = [i for i,nuc in enumerate(contra_sois_ascending_pcounts)]
+ipsi_ranks = [i for j,nu in enumerate(ipsi_sois_ascending_pcounts) 
+    for i,nuc in enumerate(contra_sois_ascending_pcounts) if ipsi_sois_ascending_pcounts[j] == nuc]
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#size of scatter
+size = 70
+
+Y = contra_ranks
+X = ipsi_ranks
+
+results = sm.OLS(Y,sm.add_constant(X)).fit()
+
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]
+
+#plot as scatter   
+ax.scatter(y = Y, x = X, s = size)
+
+#plot fit line
+ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+    
+ax.set_xlabel("Contralateral NC rank order (hemisphere injections)")
+ax.set_ylabel("Ipsilateral NC rank order (hemisphere injections)")
+
+#make text box
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+textstr = "\n".join((
+    "slope: {:0.2f}".format(mean_slope),
+    "$R^2$: {:0.2f}".format(mean_r2)))
+
+ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', bbox=props)
+
+
+plt.savefig(os.path.join(fig_dst, "nc_contra_v_ipsi_rank_order_hemisphere_threshold_%s.png" % threshold), bbox_inches = "tight")
+
+plt.close()
+
+#%%
+#regression of total neocortical density over contra/ipsi ratio
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#size of scatter
+size = 70
+
+Y = _ratio[0]
+X = density_per_brain_left[:,0]+density_per_brain_right[:,0]
+
+results = sm.OLS(np.log10(Y),sm.add_constant(X)).fit()
+
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]
+
+#plot as scatter   
+ax.scatter(y = np.log10(Y), x = X, s = size)
+
+#plot fit line
+#ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+    
+ax.set_xlabel("Neocortical density (Cells/$mm^3$)")
+ax.set_ylabel("Contra/Ipsi ratio (log 10)")
+
+#make text box
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+textstr = "\n".join((
+    "slope: {:0.5f}".format(mean_slope),
+    "$R^2$: {:0.2f}".format(mean_r2)))
+
+ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', bbox=props)
+
+
+plt.savefig(os.path.join(fig_dst, "nc_contra_ipsi_ratio_v_density.png"), bbox_inches = "tight")
+
+plt.close()
+
+#%%
+
+#large panel figures
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 5, figsize = (15,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [1.5,1,1,1,0.3]})
