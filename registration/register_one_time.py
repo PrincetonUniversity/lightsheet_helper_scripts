@@ -9,15 +9,14 @@ Created on Mon Sep 16 13:52:38 2019
 import os
 from tools.registration.register import elastix_command_line_call
 
-mv = "/home/wanglab/mounts/wang/pisano/tracing_output/antero/20170308_tp_bl6F_cri_2x_03/registration_to_aba/20170308_tp_bl6F_cri_2x_03_488_555_647_0005na_1hfsds_z3um_225msec_resized_ch01_resampledforelastix.tif"
+mv = "/jukebox/LightSheetData/brodyatlas/atlas/for_registration_to_lightsheet/WHS_SD_rat_T2star_v1.01_atlas.tif"
 
-fx = "/home/wanglab/mounts/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+fx = "/jukebox/LightSheetData/brodyatlas/atlas/2019_meta_atlas/median_image.tif"
 
-out = "/home/wanglab/mounts/wang/zahra/h129_contra_vs_ipsi/rtn/20170308_tp_bl6f_cri_2x_03_reg"
+out = "/jukebox/LightSheetData/brodyatlas/atlas/for_registration_to_lightsheet/waxholm_to_pra"
 if not os.path.exists(out): os.mkdir(out)
 
-
-params = ["/home/wanglab/mounts/wang/zahra/python/lightsheet_py3/parameterfolder/Order1_Par0000affine.txt",
-          "/home/wanglab/mounts/wang/zahra/python/lightsheet_py3/parameterfolder/Order2_Par0000bspline.txt"]
+param_fld = "/jukebox/LightSheetData/brodyatlas/atlas/for_registration_to_lightsheet/rat_registration_parameter_folder"
+params = [os.path.join(param_fld, xx) for xx in os.listdir(param_fld)]
 
 e_out, transformfiles = elastix_command_line_call(fx, mv, out, params)

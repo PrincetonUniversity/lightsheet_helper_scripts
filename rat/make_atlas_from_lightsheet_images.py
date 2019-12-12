@@ -57,28 +57,28 @@ if __name__ == "__main__":
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
     
-    src = "/jukebox//LightSheetData/brodyatlas/processed"
+    src = "/jukebox/LightSheetData/brodyatlas/processed"
     
-    brains = ["k304",
-             "c514",
-             "w118",
-             "c223",
-             "k303",
-             "k301",
-             "e106",
-             "k295",
-             "w122",
-             "h208",
-             "k293",
-             "k305",
-             "k281",
-             "k302",
-             "k307",
-             "c516",
-             "h170",
-             "k292",
-             "e109",
-             "c515"]
+    brains = ["k293"] 
+#            ["a235",
+#             "a237",
+#             "c223",
+#             "c514",
+#             "c515",
+#             "c516",
+#             "e106",
+#             "f119",
+#             "h170",
+#             "h208",
+#             "k281",
+#             "k292",
+#             "k301",
+#             "k302",
+#             "k303",
+#             "k304",
+#             "k307",
+#             "w118",
+#             "w128"]
     
     pths = [os.path.join(src, xx) for xx in brains]
 

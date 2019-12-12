@@ -18,4 +18,6 @@ module load anacondapy/5.3.1
 module load elastix/4.8
 . activate lightsheet
 
-python compile_atlas.py
+echo "Array Index: $SLURM_ARRAY_TASK_ID"
+
+python compile_atlas.py ${SLURM_ARRAY_TASK_ID}
