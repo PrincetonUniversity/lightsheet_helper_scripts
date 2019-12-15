@@ -6,7 +6,7 @@ Created on Mon Sep 16 11:14:42 2019
 @author: wanglab
 """
 
-import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
+import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, itertools
 from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister
 from tools.registration.register import change_transform_parameter_initial_transform
 from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files
@@ -76,7 +76,8 @@ brains = ["20160622_db_bl6_crii_52hr_01", "20160622_db_bl6_unk_01", "20160801_db
           "20170308_tp_bl6f_cri_2x_03","20170308_tp_bl6f_lob7_2x_02", 
           "20170410_tp_bl6_lob6a_ml_repro_01", "20170410_tp_bl6_lob6a_ml_repro_02",
           "20170411_db_bl6_crii_lat_53hr", "20170411_db_bl6_crii_mid_53hr",
-          "20170411_db_bl6_crii_rpv_53hr", "20170419_db_lob6b_rpv_53hr"]    
+          "20170411_db_bl6_crii_rpv_53hr", "20170419_db_lob6b_rpv_53hr", "20170419_db_bl6_cri_rpv_53hr", "20170207_db_bl6_crii_rpv_01",
+        "20170419_db_bl6_cri_mid_53hr", "20161207_db_bl6_lob6a_50rml_53d5hr", "20161205_tp_bl6_lob45_1000r_01"]    
 
 brains_w_no_inj_vol = ["20170308_tp_bl6f_cri_2x_03", "20160920_tp_bl6_lob7_ml_01", "20170207_db_bl6_crii_1300r_02",
                        "20160801_db_cri_02_1200rlow_52hr", "20170115_tp_bl6_lob6b_500r_05"]
@@ -96,39 +97,39 @@ sv_dst = os.path.join(dst, "injection"); makedir(sv_dst)
 for img in imgs:
     brain = os.path.basename(img)
     kwargs = load_kwargs(img)
-    if not os.path.exists(os.path.join(sv_dst, brain+".tif")):
-        print(brain)
-        try:
-            if brain in brains_w_no_inj_vol:
-                inj_vol_pth = os.path.join(dst, brain+"_reg/result.1.tif")
-                inj_vol = tifffile.imread(inj_vol_pth)
-            else:
-                inj_vol_pth = [xx for xx in kwargs["volumes"] if xx.ch_type == "injch"][0]
-                inj_vol = tifffile.imread(inj_vol_pth.ch_to_reg_to_atlas)
-            inj_vol[inj_vol < 0] = 10000
-            assert np.sum(inj_vol < 0) == 0
-            z,y,x = inj_vol.shape
-            
-            arr = find_site(inj_vol[:, 423:, :])
-            #save segment
-            tifffile.imsave(os.path.join(sv_dst, brain+".tif"), arr.astype("uint16"))
-            
-            z_c,y_c,x_c = center_of_mass(arr)
-            #take distance from center to arbitrary "midline" (aka half of z axis)
-            dist = z_c-(z/2)
-            #save to dict 
-            lr_dist[brain] = dist
-            thal_inj_vol[brain] = np.sum(inj_vol)
-            
-            if dist < 0:
-                print("brain {} has a left-sided injection\n".format(brain))
-            elif dist > 0:
-                print("brain {} has a right-sided injection\n".format(brain))
-            else:
-                print("brain has an injection close to midline so not considering it rn\n")
-        except:
-            print("brain %s has no injection volume, segment from elsewhere\n" % brain)
-            brains_w_no_inj.append(img)
+    
+    print(brain)
+    try:
+        if brain in brains_w_no_inj_vol:
+            inj_vol_pth = os.path.join(dst, brain+"_reg/result.1.tif")
+            inj_vol = tifffile.imread(inj_vol_pth)
+        else:
+            inj_vol_pth = [xx for xx in kwargs["volumes"] if xx.ch_type == "injch"][0]
+            inj_vol = tifffile.imread(inj_vol_pth.ch_to_reg_to_atlas)
+        inj_vol[inj_vol < 0] = 10000
+        assert np.sum(inj_vol < 0) == 0
+        z,y,x = inj_vol.shape
+        
+        arr = find_site(inj_vol[:, 423:, :])
+        #save segment
+        tifffile.imsave(os.path.join(sv_dst, brain+".tif"), arr.astype("uint16"))
+        
+        z_c,y_c,x_c = center_of_mass(arr)
+        #take distance from center to arbitrary "midline" (aka half of z axis)
+        dist = z_c-(z/2)
+        #save to dict 
+        lr_dist[brain] = dist
+        thal_inj_vol[brain] = np.sum(inj_vol)
+        
+        if dist < 0:
+            print("brain {} has a left-sided injection\n".format(brain))
+        elif dist > 0:
+            print("brain {} has a right-sided injection\n".format(brain))
+        else:
+            print("brain has an injection close to midline so not considering it rn\n")
+    except:
+        print("brain %s has no injection volume, segment from elsewhere\n" % brain)
+        brains_w_no_inj.append(img)
 
 #FIXME: temporarily dropping these brains with no inj, might use them again later
 #%%
@@ -147,29 +148,29 @@ id_table = pd.read_excel(df_pth)
 #transform points to allen atlas space
 
 #get brains that we actually need to get cell counts from
-src = "/jukebox/wang/zahra/h129_qc/rtn_thal_transformed_points"
-post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
-transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
-                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
-
-#collect 
-for fl in post_transformed:
-    arr = np.load(fl)
-    #make into transformix-friendly text file
-    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
-    print(brain)
-    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
-    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
-        
-    #copy over elastix files
-    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
-    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
-   
-    #run transformix on points
-    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
-    
-    #convert registered points into structure counts
-    converted_points = unpack_pnts(points_file, transformed_dst)
+#src = "/jukebox/scratch/zmd/h129_qc/rtn_thal_transformed_points"
+#post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
+#transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
+#                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
+#
+##collect 
+#for fl in post_transformed:
+#    arr = np.load(fl)
+#    #make into transformix-friendly text file
+#    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
+#    print(brain)
+#    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
+#    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
+#        
+#    #copy over elastix files
+#    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
+#    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
+#   
+#    #run transformix on points
+#    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
+#    
+#    #convert registered points into structure counts
+#    converted_points = unpack_pnts(points_file, transformed_dst)
     
 #%%
 #------------------------------------------------------------------------------------------------------------------------------    
@@ -224,7 +225,6 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
         d_pooled_regions = {}
         
         for soi in structure:
-            print(soi)
             try:
                 soi = [s for s in structures if s.name==soi][0]
                 counts = [] #store counts in this list
@@ -233,7 +233,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
                     if k == soi.name:
                         counts.append(v)
                 #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))
+                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0]/2)#divide by 2 bc its half brain
                 progeny = [str(xx.name) for xx in soi.progeny]
                 #now sum up progeny
                 if len(progeny) > 0:
@@ -251,7 +251,7 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
                     if k == soi:
                         counts.append(v)                    
                 #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3)
+                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0]/2)#divide by 2 bc its half brain
                 c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
                 d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
                         
@@ -291,12 +291,12 @@ def get_cell_n_density_counts(brains, structure, structures, cells_regions, scal
 cells_regions = pckl.load(open(os.path.join(dst, "thal_rtn_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
 
-nuclei = ["Ventral anterior-lateral complex of the thalamus", "Ventral medial nucleus of the thalamus", 
-          "Ventral posterolateral nucleus of the thalamus", "Ventral posteromedial nucleus of the thalamus", "Subparafascicular nucleus", "Subparafascicular area",
-          "Peripeduncular nucleus", "Geniculate group, dorsal thalamus", "Lateral group of the dorsal thalamus",
-          "Anterior group of the dorsal thalamus", "Medial group of the dorsal thalamus", "Midline group of the dorsal thalamus",
-          "Intralaminar nuclei of the dorsal thalamus", "Reticular nucleus of the thalamus", "Geniculate group, ventral thalamus",
-          "Epithalamus"]
+nuclei = ["Thalamus", "Ventral posteromedial nucleus of the thalamus", "Ventral posterolateral nucleus of the thalamus",
+          "Ventral anterior-lateral complex of the thalamus", "Ventral medial nucleus of the thalamus", "Anteroventral nucleus of thalamus", 
+          "Reticular nucleus of the thalamus", "Ventral part of the lateral geniculate complex", "Mediodorsal nucleus of thalamus",
+          "Submedial nucleus of the thalamus", "Nucleus of reuniens", "Paraventricular nucleus of the thalamus", 
+          "Central lateral nucleus of the thalamus", "Parafascicular nucleus", "Posterior complex of the thalamus",
+          "Lateral dorsal nucleus of thalamus", "Lateral posterior nucleus of the thalamus", "Lateral habenula"]
 
 #RIGHT SIDE
 cell_counts_per_brain_right, density_per_brain_right, volume_per_brain_right = get_cell_n_density_counts(lr_brains, 
@@ -307,32 +307,32 @@ cells_regions = cells_regions.to_dict(orient = "dict")
 cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_cell_n_density_counts(lr_brains, 
                                                                                nuclei, structures, cells_regions)
 
-#%%
+
 #regression total count on reticular thalamus count (y) for these brains
 #will sum left and right for this
-plt.figure()
-#X = np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1)
-x = np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1)
-#mask high count brain
-X = x[x < 1000]
-#plot vpm and vpl alongside also
-lbls = ["VPL", "VPM", "RTN"]
-cols = ["r", "g", "b"]
-idxs = [2, 3]
-for i,idx in enumerate(idxs):
-    Y = cell_counts_per_brain_right[:,idx]+cell_counts_per_brain_left[:,idx]
-    #mask 
-    Y = Y[x < 1000]
-    plt.scatter(x = X, y = Y, facecolors="none", edgecolors=cols[i], label = lbls[i])
+#plt.figure()
+##X = np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1)
+#x = np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1)
+##mask high count brain
+#X = x[x < 1000]
+##plot vpm and vpl alongside also
+#lbls = ["VPL", "VPM", "RTN"]
+#cols = ["r", "g", "b"]
+#idxs = [2, 3]
+#for i,idx in enumerate(idxs):
+#    Y = cell_counts_per_brain_right[:,idx]+cell_counts_per_brain_left[:,idx]
+#    #mask 
+#    Y = Y[x < 1000]
+#    plt.scatter(x = X, y = Y, facecolors="none", edgecolors=cols[i], label = lbls[i])
+#
+#plt.xlabel("Total thalamic counts")    
+#plt.ylabel("Thalamic nuclei counts")
+#plt.xlim([0, 200])
+#plt.ylim([0, 30])
+#plt.legend()
+#plt.savefig(os.path.join(fig_dst, "thal_nuclei_reg.pdf"))
 
-plt.xlabel("Total thalamic counts")    
-plt.ylabel("Thalamic nuclei counts")
-plt.xlim([0, 200])
-plt.ylim([0, 30])
-plt.legend()
-plt.savefig(os.path.join(fig_dst, "thal_nuclei_reg.pdf"))
 
-#%%
 #get inj fractions, using GLM code
 #making dictionary of injection sites
 injections = {}
@@ -352,9 +352,7 @@ anns = np.unique(ann_raw).astype(int)
 print(ann_raw.shape)
 
 #annotation IDs of the cerebellum ONLY that are actually represented in annotation file
-iids = {"Lingula (I)": 912,
-        "Lobule II": 976,
-        "Lobule III": 984,
+iids = {"Lobule III": 984,
         "Lobule IV-V": 1091,
         "Lobule VIa": 936,
         "Lobule VIb": 1134,
@@ -387,60 +385,81 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 primary_lob_n = np.asarray([np.where(primary == i)[0].shape[0] for i in np.unique(primary)])
 
 #%%
+
+#make injection heatmap figure
+from tools.imageprocessing.orientation import fix_orientation
+
+atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+
+sites = np.array([fix_orientation(xx, ("2","0","1")) for i,xx in enumerate(inj_raw) 
+                    if not lr_brains[i] == "20170419_db_bl6_cri_mid_53hr"]) #the y-axis cutoff for visualization
+atl = fix_orientation(tifffile.imread(atl_pth)[:, 450:, :], ("2","0","1"))
+
+my_cmap = eval("plt.cm.{}(np.arange(plt.cm.RdBu.N))".format("viridis"))
+my_cmap[:1,:4] = 0.0  
+my_cmap = mpl.colors.ListedColormap(my_cmap)
+my_cmap.set_under("w")
+plt.figure()
+plt.imshow(np.max(atl, axis=0), cmap="gray")
+plt.imshow(np.max(np.sum(sites, axis=0), axis = 0), alpha=0.90, cmap=my_cmap); plt.colorbar(); plt.axis("off")
+
+plt.savefig(os.path.join(fig_dst, "inj_heatmap.pdf"), dpi = 300, transparent = True);
+plt.close()
+#%%
 #regression total count on reticular thalamus count (y) for these brains
 #will sum left and right for this
 #ONLY VERMIS
 #X = (np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1))[primary < 10]
-plt.figure()
-x = (np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1))[primary < 10]
-#mask high count brain
-X = x[x < 1000]
-#plot vpm and vpl alongside also
-lbls = ["VPL", "VPM", "RTN"]
-cols = ["r", "g", "b"]
-idxs = [2, 3, 13]
-for i,idx in enumerate(idxs):
-    Y = (cell_counts_per_brain_right[:,idx]+cell_counts_per_brain_left[:,idx])[primary < 10]
-    #mask 
-    Y = Y[x < 1000]
-    plt.scatter(x = X, y = Y, facecolors="none", edgecolors=cols[i], label = lbls[i])
-
-plt.xlabel("Total thalamic counts")    
-plt.ylabel("Thalamic nuclei counts")
-plt.title("Only vermis injections")
-#plt.xlim([0, 200])
-#plt.ylim([0, 30])
-plt.legend()
-plt.savefig(os.path.join(fig_dst, "thal_nuclei_reg_only_vermis.pdf"))
-
-
-#%%
-#get ratios of vpm/rtn over total thalamic counts
-fig = plt.figure(figsize=(8,5))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-X = (np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1))[cell_counts_per_brain_left[:,13] > 0]
-Y = (cell_counts_per_brain_right[:,2:4].sum(axis=1)/cell_counts_per_brain_left[:,13])[cell_counts_per_brain_left[:,13] > 0]
-results = sm.OLS(Y,sm.add_constant(X)).fit()
-
-plt.scatter(x = X, y = Y, facecolors="none", edgecolors="k")
-plt.xlabel("Total thalamic counts")    
-plt.ylabel("VPM+VPL/RTN counts")
-#plt.xlim([0, 200])
-#plt.ylim([0, 30])
-
-textstr = "\n".join((
-    "slope: {:0.5f}".format(results.params[1]),
-    "$R^2$: {:0.5f}".format(results.rsquared)))
-
-props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-# place a text box in upper left in axes coords
-ax.text(0.7, 0.95, textstr, transform=ax.transAxes, fontsize=12,
-        verticalalignment='top', bbox=props)
-#plt.xlim([0, 400])
-#plt.ylim([0, 20])
-
-plt.savefig(os.path.join(fig_dst, "thal_rtn_ratio.pdf"))
+#plt.figure()
+#x = (np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1))[primary < 10]
+##mask high count brain
+#X = x[x < 1000]
+##plot vpm and vpl alongside also
+#lbls = ["VPL", "VPM", "RTN"]
+#cols = ["r", "g", "b"]
+#idxs = [2, 3, 13]
+#for i,idx in enumerate(idxs):
+#    Y = (cell_counts_per_brain_right[:,idx]+cell_counts_per_brain_left[:,idx])[primary < 10]
+#    #mask 
+#    Y = Y[x < 1000]
+#    plt.scatter(x = X, y = Y, facecolors="none", edgecolors=cols[i], label = lbls[i])
+#
+#plt.xlabel("Total thalamic counts")    
+#plt.ylabel("Thalamic nuclei counts")
+#plt.title("Only vermis injections")
+##plt.xlim([0, 200])
+##plt.ylim([0, 30])
+#plt.legend()
+#plt.savefig(os.path.join(fig_dst, "thal_nuclei_reg_only_vermis.pdf"))
+#
+#
+##%%
+##get ratios of vpm/rtn over total thalamic counts
+#fig = plt.figure(figsize=(8,5))
+#ax = fig.add_axes([.4,.1,.5,.8])
+#
+#X = (np.sum(cell_counts_per_brain_left, axis=1)+np.sum(cell_counts_per_brain_right, axis=1))[cell_counts_per_brain_left[:,13] > 0]
+#Y = (cell_counts_per_brain_right[:,2:4].sum(axis=1)/cell_counts_per_brain_left[:,13])[cell_counts_per_brain_left[:,13] > 0]
+#results = sm.OLS(Y,sm.add_constant(X)).fit()
+#
+#plt.scatter(x = X, y = Y, facecolors="none", edgecolors="k")
+#plt.xlabel("Total thalamic counts")    
+#plt.ylabel("VPM+VPL/RTN counts")
+##plt.xlim([0, 200])
+##plt.ylim([0, 30])
+#
+#textstr = "\n".join((
+#    "slope: {:0.5f}".format(results.params[1]),
+#    "$R^2$: {:0.5f}".format(results.rsquared)))
+#
+#props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+## place a text box in upper left in axes coords
+#ax.text(0.7, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+#        verticalalignment='top', bbox=props)
+##plt.xlim([0, 400])
+##plt.ylim([0, 20])
+#
+#plt.savefig(os.path.join(fig_dst, "thal_rtn_ratio.pdf"))
 #%%
 #preprocessing into contra/ipsi counts per brain, per structure
 scale_factor = 0.025
@@ -473,10 +492,10 @@ for i in range(len(lr_brains)):
 
 _ccontra = np.asarray(_ccontra).T; _dcontra = np.asarray(_dcontra).T
 _cipsi = np.asarray(_cipsi).T; _dipsi = np.asarray(_dipsi).T
-_dratio = np.asarray([_dcontra[i]/_dipsi[i] for i in range(len(_dcontra))])
-_cratio = np.asarray([_ccontra[i]/_cipsi[i] for i in range(len(_ccontra))])
+_ratio = np.asarray([_ccontra[i]/_cipsi[i] for i in range(len(_ccontra))])
 #make into one
 _dist = np.asarray(list(lr_dist.values()))
+
 
 _inj = expr_all_as_frac_of_inj
  
@@ -486,16 +505,15 @@ _primary = np.asarray([primary[i] for i in range(len(primary)) if brains[i] in l
 sort_dist = np.sort(_dist)
 sort_ccontra = _ccontra.T[np.argsort(_dist, axis = 0)]
 sort_cipsi = _cipsi.T[np.argsort(_dist, axis = 0)]
-sort_cratio = _cratio.T[np.argsort(_dist, axis = 0)]
 sort_dcontra = _dcontra.T[np.argsort(_dist, axis = 0)]
 sort_dipsi = _dipsi.T[np.argsort(_dist, axis = 0)]
-sort_dratio = _dratio.T[np.argsort(_dist, axis = 0)]
+sort_ratio = _ratio.T[np.argsort(_dist, axis = 0)]
 sort_vox_per_region = volume_per_brain_left[np.argsort(_dist, axis = 0)]
 sort_inj = _inj[np.argsort(_dist)]   
 sort_brains = np.array(lr_brains)[np.argsort(_dist)]
 
 print(sort_dist.shape)
-print(sort_cratio.shape)
+print(sort_ratio.shape)
 
 #group thalamus regions in smaller, meta regions
 grps = np.array(["Sensory-motor thalamus" , "Polymodal thalamus"])
@@ -507,6 +525,464 @@ sort_dipsi_pool = np.asarray([[np.sum(xx[:8]), np.sum(xx[8:-1])] for xx in sort_
                                  np.sum(xx[8:])] for xx in sort_vox_per_region])*(scale_factor**3))
 sort_cratio_pool = np.asarray([sort_ccontra_pool[i]/sort_cipsi_pool[i] for i in range(len(sort_ccontra_pool))])
 sort_dratio_pool = np.asarray([sort_dcontra_pool[i]/sort_dipsi_pool[i] for i in range(len(sort_dcontra_pool))])
+
+#pooled injections
+ak_pool = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII-X", 
+                 "Simplex", "Crus I", "Crus II", "PM, CP"])
+
+#pooling injection regions
+expr_all_as_frac_of_lob_pool = np.asarray([[xx[0]+xx[1], xx[2]+xx[3]+xx[4]+xx[5]+xx[6]+xx[7], 
+                                            xx[8], xx[9], xx[10], xx[11]+xx[12]] for xx in expr_all_as_frac_of_lob])
+
+expr_all_as_frac_of_inj_pool = np.asarray([[xx[0]+xx[1], xx[2]+xx[3]+xx[4]+xx[5]+xx[6]+xx[7], 
+                                            xx[8], xx[9], xx[10], xx[11]+xx[12]] for xx in expr_all_as_frac_of_inj])
+    
+primary_pool = np.asarray([np.argmax(e) for e in expr_all_as_frac_of_inj_pool])
+primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
+
+sort_inj_pool = np.array([expr_all_as_frac_of_lob_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)])
+sort_inj_pool = np.array(list(itertools.chain.from_iterable(sort_inj_pool)))
+
+#%%
+
+#make % counts map like the h129 dataset (nc only for now)
+
+#drop brains which have < 10 cells in thalamus
+lowest_count = 10
+mask = np.array([xx[0] for xx in cell_counts_per_brain_left[:, :1] > lowest_count])
+sort_inj_pool_filtered = sort_inj_pool[mask]
+primary_pool_filtered = primary_pool[mask]
+
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (15,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,5]})
+
+#set colorbar features 
+maxpcount = 30
+whitetext = 3
+label_coordsy, label_coordsx  = -0.37,0.5 #for placement of vertical labels
+annotation_size = "x-small" #for the number annotations inside the heatmap
+brain_lbl_size = "x-small"
+yaxis = nuclei[1:] #for density by nc areas map
+
+#make pcounts array
+cell_counts_per_brain = (cell_counts_per_brain_left+cell_counts_per_brain_right)[mask]
+total_counts_per_brain = cell_counts_per_brain_left[:, :1][mask]
+pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(cell_counts_per_brain[:, 1:])])
+#sort inj fractions by primary lob
+sort_pcounts = [pcounts[np.where(primary_pool_filtered == idx)[0]] for idx in np.unique(primary_pool_filtered)]
+sort_pcounts = np.array(list(itertools.chain.from_iterable(sort_pcounts)))
+
+sort_brains = [np.array(lr_brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = np.array(list(itertools.chain.from_iterable(sort_brains)))[mask]
+
+#inj fractions
+ax = axes[0]
+show = np.fliplr(sort_inj_pool_filtered).T
+
+vmin = 0
+vmax = 0.3
+cmap = plt.cm.Reds 
+cmap.set_over('darkred')
+#colormap
+bounds = np.linspace(vmin,vmax,4)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+
+ax = axes[1]
+show = np.fliplr(sort_pcounts).T
+
+vmin = 0
+vmax = maxpcount
+cmap = plt.cm.viridis
+cmap.set_over("gold")
+#colormap
+bounds = np.linspace(vmin,vmax,((vmax-vmin)/5)+1)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("% of total thalamic counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
+ax.set_ylabel("Thalamic nuclei", fontsize="small")
+ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
+
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+lbls = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+
+plt.savefig(os.path.join(fig_dst, "pcounts_thal.pdf"), bbox_inches = "tight")
+
+#%%
+#filter results by contra/ipsi ratio > 1 in thalamus
+
+threshold = 1
+
+#drop brains which have < 10 cells in thalamus
+lowest_count = 10
+mask = np.array([xx[0] for xx in cell_counts_per_brain_left[:, :1] > lowest_count])
+
+_dcontra_hc = _dcontra.T[mask].T #remove thalamus soi
+_dipsi_hc = _dipsi.T[mask].T
+_ccontra_hc = _ccontra.T[mask].T
+_cipsi_hc = _cipsi.T[mask].T
+_ratio_hc = _ratio.T[mask].T
+
+filter_dcontra = np.array([struct[_ratio_hc[0]>threshold] for struct in _dcontra_hc])
+filter_dipsi = np.array([struct[_ratio_hc[0]>threshold] for struct in _dipsi_hc])
+filter_ccontra = np.array([struct[_ratio_hc[0]>threshold] for struct in _ccontra_hc])
+filter_cipsi = np.array([struct[_ratio_hc[0]>threshold] for struct in _cipsi_hc])
+
+filter_primary_pool = primary_pool_filtered[_ratio_hc[0]>threshold]
+filter_ak_pool = ak_pool[np.unique(filter_primary_pool)]
+filter_primary_lob_n = np.asarray([np.where(filter_primary_pool == i)[0].shape[0] 
+                                    for i in np.unique(filter_primary_pool)])
+#show contra, ipsi, and contra+ipsi heatmaps side by side
+
+#mean percent counts
+_pccontra = np.nan_to_num(np.array([xx[1:]/xx[0] for xx in filter_ccontra.T])*100) #note that the whole thalamus is the first element in nthe array
+mean_contra_pcounts = np.array([np.median(_pccontra[np.where(filter_primary_pool == idx)[0]], axis=0) 
+                for idx in np.unique(filter_primary_pool)])
+
+#get acronyms of nuclei
+ann_df = pd.read_excel(df_pth)
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nuclei][1:]
+#choose whether to annotate the numbers in the heatmap
+annotate = False
+#set label coords
+xaxis_label_x,xaxis_label_y = 0.7, 0.1
+#set range of colormap
+vmin = 0
+vmax = 7
+
+fig, axes = plt.subplots(ncols = 3, nrows = 1, figsize = (8,6), sharey = True, gridspec_kw = {"wspace":0, "hspace":0})
+
+ax = axes[0]
+show = mean_contra_pcounts.T 
+
+cmap = plt.cm.viridis
+cmap.set_over('gold')
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,((vmax-vmin)/2)+1)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.1, aspect=10)
+cb.set_label("% of thalamic cells", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(False)
+# exact value annotations
+if annotate:
+    for ri,row in enumerate(show):
+        for ci,col in enumerate(row):
+            if col < 1:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+            else:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        
+
+# xticks
+ax.set_xticks(np.arange(len(filter_ak_pool))+.5)
+lbls = np.asarray(filter_ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, filter_primary_lob_n)], 
+                    rotation=30, fontsize="x-small", ha="right")
+# yticks
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in short_nuclei], fontsize="small")
+#make x label
+ax.set_xlabel("Contra", fontsize="small")
+ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
+
+#ipsi side
+ax = axes[1]
+
+_pcipsi = np.array([xx[1:]/xx[0] for xx in filter_cipsi.T])*100
+mean_ipsi_pcounts = np.asarray([np.median(_pcipsi[np.where(filter_primary_pool == idx)[0]], axis=0) 
+            for idx in np.unique(filter_primary_pool)])
+
+show = mean_ipsi_pcounts.T 
+
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,6)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
+#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.1, aspect=10)
+cb.set_label("% of thalamic cells", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(False)
+# exact value annotations
+if annotate:
+    for ri,row in enumerate(show):
+        for ci,col in enumerate(row):
+            if col < 1:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+            else:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        
+# xticks
+ax.set_xticks(np.arange(len(filter_ak_pool))+.5)
+lbls = np.asarray(filter_ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, filter_primary_lob_n)], 
+                    rotation=30, fontsize="x-small", ha="right")
+#make x label
+ax.set_xlabel("Ipsi", fontsize="small")
+ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
+
+#combined sides
+#ipsi side
+ax = axes[2]
+
+_pcounts = np.array([xx[1:]/xx[0] for xx in (filter_cipsi+filter_ccontra).T])*100
+mean_pcounts = np.asarray([np.mean(_pcounts[np.where(filter_primary_pool == idx)[0]], axis=0) for idx 
+                           in np.unique(filter_primary_pool)])
+
+show = mean_pcounts.T 
+
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,6)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
+#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.1, aspect=10)
+cb.set_label("% of thalamic cells", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(True)
+# exact value annotations
+if annotate:
+    for ri,row in enumerate(show):
+        for ci,col in enumerate(row):
+            if col < 1:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
+            else:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+        
+# xticks
+ax.set_xticks(np.arange(len(filter_ak_pool))+.5)
+lbls = np.asarray(filter_ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, filter_primary_lob_n)], 
+                    rotation=30, fontsize="x-small", ha="right")
+#make x label
+ax.set_xlabel("Bilateral", fontsize="small")
+ax.yaxis.set_label_coords(xaxis_label_x,xaxis_label_y)
+
+plt.savefig(os.path.join(fig_dst, "thal_contra_n_ipsi_mean_pcounts_threshold_%s.jpg" % threshold), 
+            bbox_inches = "tight", dpi = 300)
+
+plt.close()
+
+#%%
+#filter results by contra/ipsi ratio > 1 in thalamus
+
+#first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
+pcounts_descending_order = np.sort(_pccontra)
+order = np.argsort(np.median(_pccontra, axis = 0))
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nuclei][1:]
+sois_descending_pcounts = np.array(short_nuclei)[order]
+
+#boxplots of percent counts - contra
+fig, axes = plt.subplots(ncols = 3, nrows = 1, figsize = (15,8), sharey = False, sharex = True, gridspec_kw = {"wspace":0, "hspace":0})
+
+#first boxplot
+ax = axes[0]
+
+ax.boxplot(pcounts_descending_order, vert = False, labels = sois_descending_pcounts, sym = "", showcaps = False)
+ngroup = len(pcounts_descending_order.T)
+for i in range(ngroup):
+    ax.scatter(pcounts_descending_order[:,i], 
+                y=np.ones(len(pcounts_descending_order[:,0]))*i+1, color = "k", s = 10)
+
+
+ax.set_xlabel("% of thalamic cells\nContra")
+ax.set_ylabel("Thalamic nuclei")
+
+#second boxplot, ipsi
+ax = axes[1]
+
+pcounts_descending_order = np.sort(_pcipsi)
+order = np.argsort(np.median(_pcipsi, axis = 0))
+sois_descending_pcounts = np.array(short_nuclei)[order]
+
+ax.boxplot(pcounts_descending_order, vert = False, labels = sois_descending_pcounts, sym = "", showcaps = False)
+ngroup = len(pcounts_descending_order.T)
+for i in range(ngroup):
+    ax.scatter(pcounts_descending_order[:,i], 
+                y=np.ones(len(pcounts_descending_order[:,0]))*i+1, color = "k", s = 10)
+
+
+ax.set_xlabel("Ipsi")
+
+#final boxplot, combined
+ax = axes[2]
+
+pcounts_descending_order = np.sort(_pcounts)
+order = np.argsort(np.median(_pcounts, axis = 0))
+sois_descending_pcounts = np.array(short_nuclei)[order]
+
+ax.boxplot(pcounts_descending_order, vert = False, labels = sois_descending_pcounts, sym = "", showcaps = False)
+ngroup = len(pcounts_descending_order.T)
+for i in range(ngroup):
+    ax.scatter(pcounts_descending_order[:,i], 
+                y=np.ones(len(pcounts_descending_order[:,0]))*i+1, color = "k", s = 10)
+
+#label which boxplot belongs to which side
+ax.set_xlabel("Bilateral")
+
+plt.savefig(os.path.join(fig_dst, "thal_contra_n_ipsi_pcounts_boxplots_threshold_%s.pdf" % threshold), bbox_inches = "tight")
+
+plt.close()
+#%%
+#do a rank correlation between nuclei for contra vs. ipsi side
+
+ak_vh = np.array(["Vermis", "Hemisphere"])
+func = lambda xx: 0 if xx < 2 else 1
+filter_primary_pool_vh = np.array([func(xx) for xx in filter_primary_pool])
+
+_pccontra_vermis = _pccontra[np.where(filter_primary_pool_vh == 0)]
+_pccontra_hem = _pccontra[np.where(filter_primary_pool_vh == 1)]
+_pcipsi_vermis = _pcipsi[np.where(filter_primary_pool_vh == 0)]
+_pcipsi_hem = _pcipsi[np.where(filter_primary_pool_vh == 1)]
+
+#vermis
+contra_pcounts_descending_order = np.sort(_pccontra_vermis)
+contra_order = np.argsort(np.mean(_pccontra_vermis, axis = 0))
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nuclei][1:]
+contra_sois_descending_pcounts = np.array(short_nuclei)[contra_order]
+contra_sois_ascending_pcounts = contra_sois_descending_pcounts[::-1]
+
+ipsi_pcounts_descending_order = np.sort(_pcipsi_vermis)
+ipsi_order = np.argsort(np.mean(_pcipsi_vermis, axis = 0))
+ipsi_sois_descending_pcounts = np.array(short_nuclei)[ipsi_order]
+ipsi_sois_ascending_pcounts = ipsi_sois_descending_pcounts[::-1]
+
+contra_ranks = [i for i,nuc in enumerate(contra_sois_ascending_pcounts)]
+ipsi_ranks = [i for j,nu in enumerate(ipsi_sois_ascending_pcounts) 
+    for i,nuc in enumerate(contra_sois_ascending_pcounts) if ipsi_sois_ascending_pcounts[j] == nuc]
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#size of scatter
+size = 70
+
+Y = contra_ranks
+X = ipsi_ranks
+
+results = sm.OLS(Y,sm.add_constant(X)).fit()
+
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]
+
+#plot as scatter   
+ax.scatter(y = Y, x = X, s = size)
+
+#plot fit line
+ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+    
+ax.set_xlabel("Contralateral thalamus rank order (vermis injections)")
+ax.set_ylabel("Ipsilateral thalamus rank order (vermis injections)")
+
+#make text box
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+textstr = "\n".join((
+    "slope: {:0.2f}".format(mean_slope),
+    "$R^2$: {:0.2f}".format(mean_r2)))
+
+ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', bbox=props)
+
+
+plt.savefig(os.path.join(fig_dst, "thal_contra_v_ipsi_rank_order_vermis_threshold_%s.pdf" % threshold), bbox_inches = "tight")
+
+plt.close()
+
+#hemisphere
+contra_pcounts_descending_order = np.sort(_pccontra_hem)
+contra_order = np.argsort(np.mean(_pccontra_hem, axis = 0))
+short_nuclei = [ann_df.loc[ann_df.name == nuc, "acronym"].values[0] for nuc in nuclei][1:]
+contra_sois_descending_pcounts = np.array(short_nuclei)[contra_order]
+contra_sois_ascending_pcounts = contra_sois_descending_pcounts[::-1]
+
+ipsi_pcounts_descending_order = np.sort(_pcipsi_hem)
+ipsi_order = np.argsort(np.mean(_pcipsi_hem, axis = 0))
+ipsi_sois_descending_pcounts = np.array(short_nuclei)[ipsi_order]
+ipsi_sois_ascending_pcounts = ipsi_sois_descending_pcounts[::-1]
+
+contra_ranks = [i for i,nuc in enumerate(contra_sois_ascending_pcounts)]
+ipsi_ranks = [i for j,nu in enumerate(ipsi_sois_ascending_pcounts) 
+    for i,nuc in enumerate(contra_sois_ascending_pcounts) if ipsi_sois_ascending_pcounts[j] == nuc]
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#size of scatter
+size = 70
+
+Y = contra_ranks
+X = ipsi_ranks
+
+results = sm.OLS(Y,sm.add_constant(X)).fit()
+
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]
+
+#plot as scatter   
+ax.scatter(y = Y, x = X, s = size)
+
+#plot fit line
+ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+    
+ax.set_xlabel("Contralateral thalamus rank order (hemisphere injections)")
+ax.set_ylabel("Ipsilateral thalamus rank order (hemisphere injections)")
+
+#make text box
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+textstr = "\n".join((
+    "slope: {:0.2f}".format(mean_slope),
+    "$R^2$: {:0.2f}".format(mean_r2)))
+
+ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', bbox=props)
+
+
+plt.savefig(os.path.join(fig_dst, "thal_contra_v_ipsi_rank_order_hemisphere_threshold_%s.pdf" % threshold), bbox_inches = "tight")
+
+plt.close()
 
 #%%
 fig, axes = plt.subplots(ncols = 1, nrows = 6, figsize = (18,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,

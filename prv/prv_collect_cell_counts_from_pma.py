@@ -101,9 +101,10 @@ primary_as_frac_of_lob = np.array([np.argmax(e) for e in expr_all_as_frac_of_lob
 secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 
 #pooled injections
-ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
-                 "Simplex", "Crura", "PM, CP"])
-frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]),xx[10],xx[11:13].sum(),np.sum(xx[13:16])] for xx in expr_all_as_frac_of_inj])
+ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X", #no simpplex injections
+                 "Crus I", "Crus II", "PM, CP"])
+frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[11], xx[12], np.sum(xx[13:16])] 
+                                for xx in expr_all_as_frac_of_inj])
 primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
 #get n"s after pooling
 primary_lob_n = np.array([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
@@ -426,19 +427,24 @@ plt.savefig(os.path.join(dst, "pcounts_nc.pdf"), bbox_inches = "tight")
 #VARIABLES FOR GLM           
 #POOL NC REGIONS!!
 #took out post. parietal as no counts
+
+#make pcounts array
+total_counts_per_brain = np.sum(cell_counts_per_brain, axis=1)
+pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(cell_counts_per_brain)])
+
 pcounts_pool = np.array([np.array([xx[0]+xx[1]+xx[2]+xx[4], xx[3], xx[6], xx[5]+xx[7], 
-                                          xx[8]+xx[9], xx[10], xx[12], 
+                                          xx[8]+xx[9], xx[10], xx[11], xx[12], 
                                           xx[13]+xx[14], xx[15]+xx[16]]) for xx in pcounts])
 
 #for display
 regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
        "Frontal pole", "Agranular insula", "Gustatory, Visceral",
-       "Somatomotor, Somatosensory", "Retrosplenial", "Visual",
+       "Somatomotor, Somatosensory", "Retrosplenial", "Post. Parietal", "Visual",
        "Temporal, Auditory", "Peririhinal, Ectorhinal"])
 
 #pooled injections, vermis and hemisphere
-ak_vh = np.array(["Ant. Vermis", "Post. Vermis", "Hemisphere"])
-frac_of_inj_vh = np.array([[xx[0], np.sum(xx[1:3]),np.sum(xx[3:])] for xx in frac_of_inj_pool])    
+ak_vh = np.array(["Ant. Vermis", "Post. Vermis", "Crus I", "Crus II", "PM, CP"])
+frac_of_inj_vh = np.array([[xx[0], np.sum(xx[1:3]) ,xx[3], xx[4], xx[5]] for xx in frac_of_inj_pool])    
 
 primary_vh_pool = np.array([np.argmax(e) for e in frac_of_inj_vh])
 #get n"s after pooling
@@ -516,18 +522,18 @@ fit_shuf = np.array(fit_shuf)
 
 #%%
 ## display
-fig = plt.figure(figsize=(3,5))
+fig = plt.figure(figsize=(6,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 #set white text limit here
-whitetext = 5
+whitetext = 6
 annotation_size = "small"#annotation/number sizes
 
 # map 1: weights
 show = np.flipud(mat) # NOTE abs
 
 vmin = 0
-vmax = 10
+vmax = 8
 cmap = plt.cm.Reds
 cmap.set_under("w")
 cmap.set_over("maroon")
@@ -545,7 +551,7 @@ cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
 
 #annotations
-for ri,row in enumerate(c_mat): #plotting raw coefficient values
+for ri,row in enumerate(show): #plotting raw coefficient values
     for ci,col in enumerate(row):
         if col > whitetext:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize=annotation_size)
@@ -572,7 +578,7 @@ ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_vh
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="small")
 #plt.savefig(os.path.join(dst, "nc_glm.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "nc_glm_vermis_hemisphere.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "nc_glm_vermis_hemisphere_split_crura.jpg"), bbox_inches = "tight", dpi = 300)
 
 #%%
 
@@ -766,7 +772,8 @@ textstr = "\n".join((
 ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
             verticalalignment='top', bbox=props)
 
-plt.savefig(os.path.join(dst, "prv_hsv_density_rank_order_vermis_median_no_frontal.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_hsv_density_rank_order_vermis_median_no_frontal.pdf"), 
+            bbox_inches = "tight")
 
 plt.close()
 
@@ -811,13 +818,16 @@ with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
 #rank by cfos mean cells /mm3 vs mean cells /mm3. Or make cfos/mm3 delta between the two..
-cs = pd.read_pickle('/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/2018_sfn_poster/cfos/stat_dataframe.p')
+cs = pd.read_pickle("/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/2018_sfn_poster/cfos/stat_dataframe.p")
 
 #adding up to hierarchy
-#FIXME: add means which may not be ideal, but could work for rank ordering
+#add parent regions to df
+df = pd.DataFrame(columns = cs.columns)
+df["Structure"] = nc_areas
+cs = cs.append(df, ignore_index = True)
 
 for soi in nc_areas:
-    progeny = [soi]
+    progeny = []
     get_progeny(ontology_dict, soi, progeny)
     counts = [cs.loc[cs.Structure == xx, "Stimulation mean"].values[0] for xx in progeny if len(cs.loc[cs.Structure == xx, "Stimulation mean"].values)]
     vol = [cs.loc[cs.Structure == xx, "structure_vol"].values[0] for xx in progeny if len(cs.loc[cs.Structure == xx, "structure_vol"].values)]
@@ -827,42 +837,46 @@ for soi in nc_areas:
 
 cfos = cs[['Structure','Stimulation mean', "structure_vol"]].copy()
 
-cfos = cfos.set_index('Structure')
-for p in nc_areas:
-    pp = [xx for xx in structures if xx.name == p][0]
-    progeny = [xx.name for xx in pp.progeny]
-    cfos.loc[p]= cfos[cfos.index.isin(progeny)]['Stimulation mean'].sum()
-
 cfos["Stimulation density mean"] = cfos["Stimulation mean"]/(cfos["structure_vol"]/(0.020**3))
-cfos = cfos.reset_index()
-cfos = cfos.rename({'index': 'Structure'})
+
 cfos = cfos[cfos.Structure.isin(nc_areas)]
-cfos_nc = cfos.index.tolist()
 cfos = cfos.sort_values('Stimulation density mean', ascending=False)
 cfos['cfos_order'] = range(1,len(cfos)+1)
-#tracing dataframes
-ncl = pd.read_pickle('/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/nc_dataframe_no_prog_at_each_level.p')
-#raw counts
-nct = pd.read_pickle('/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/nc_dataframe.p')
-nct = pd.DataFrame(nct.mean(1).reset_index().values, columns=['Structure', 'mean'])
-for p in nc_areas:
-    pp = [xx for xx in structures if xx.name == p][0]
-    progeny = [xx.name for xx in pp.progeny]
-    nct.loc[p]= nct[nct.index.isin(progeny)]['mean'].sum()
 
-nct = nct[nct.Structure.isin(nc_areas)]
-nct = nct.sort_values('mean', ascending=False)
-nct = nct.set_index('Structure')
+prv_nc_areas_rank = np.array(nc_areas)[np.argsort(np.median(prv_density, axis = 0))][::-1]
+cfos_nc_areas_rank = cfos.Structure.values
+#%%
+
+cfos_ranks = [i+1 for i,nuc in enumerate(cfos_nc_areas_rank)]
+prv_ranks = []
+#make proper ranks
+for soi in cfos_nc_areas_rank :
+    for i,s in enumerate(prv_nc_areas_rank):
+        if soi == s:
+            prv_ranks.append(i+1)
 
 
-nct['tracing_order'] = range(1,len(nct)+1)
-df = pd.merge(nct.reset_index(), cfos.reset_index())
-#plot  
-slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(df[['tracing_order', 'cfos_order']].values)
+X = prv_ranks
+Y = cfos_ranks
 
-g=sns.regplot(data=df, x='tracing_order', y = 'cfos_order')
-g.text(100,0,'slope {}, intercept {},\n r_value {}, p_value {},'.format(slope, intercept, r_value, p_value))
-#plt.savefig(os.path.join(dst, 'all_nc_structures_cfosbyactivationratio.pdf'), transparent=True, dpi=300); plt.close()
+df = pd.DataFrame()
+df["cfos_ranks"] = cfos_ranks
+df["prv_ranks"] = prv_ranks
+
+slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(df[['prv_ranks', 'cfos_ranks']].values)
+
+g = sns.regplot(data=df, x='prv_ranks', y = 'cfos_ranks')
+g.text(19,17,'slope {:0.2f}\nr_value {:0.2f}\np_value {:0.2f}'.format(slope, r_value, p_value))
+
+ytick_spacing = 1; xtick_spacing = 1
+g.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
+g.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
+
+#plot nc area labels
+for i, txt in enumerate(cfos_nc_areas_rank):
+    g.annotate(txt, (X[i], Y[i]), fontsize = "x-small")
+
+plt.savefig(os.path.join(dst, 'cfos_v_prv.jpg'), bbox_inches = "tight", dpi=300); plt.close()
 #with open(os.path.join(dst, 'all_nc_structures_cfosbyactivationratio.txt'), 'a') as fl:
 #    fl.write('slope {}, intercept {},\n r_value {}, p_value {},'.format(slope, intercept, r_value, p_value))
 #    fl.close()

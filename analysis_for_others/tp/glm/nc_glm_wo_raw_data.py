@@ -41,7 +41,7 @@ ax = fig.add_axes([.4,.1,.5,.8])
 show = np.flipud(mat) # NOTE abs
 
 #tp local
-tp = True
+tp = False
 if tp:
 #    dst = "/Users/tjp7rr1/Downloads"
     vmin = 0
@@ -58,27 +58,28 @@ if tp:
 else:
 
     vmin = 0
-    vmax = 4
+    vmax = 5
     cmap = plt.cm.Reds
     cmap.set_under('w')
     cmap.set_over('maroon')
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,9)
+bounds = np.linspace(vmin,vmax,6)
 #bounds = np.linspace(0,5,11)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm)
 #cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
 #cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.2, aspect=10)
 cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
 
 # exact value annotations
-for ri,row in enumerate(c_mat):
+for ri,row in enumerate(show):
     for ci,col in enumerate(row):
         if col < 3:
             ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
@@ -107,7 +108,7 @@ ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lo
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="xx-small")
-plt.savefig(os.path.join(dst, "nc_glm.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "nc_glm.jpg"), bbox_inches = "tight", dpi = 300)
 
 #%%
 #mean counts
