@@ -175,36 +175,36 @@ id_table = pd.read_excel(df_pth)
 #%%
 #------------------------------------------------------------------------------------------------------------------------------    
 #NOTE THAT ONLY HAVE TO DO THIS ONCE!!!! DO NOT NEED TO DO AGAIN UNLESS DOUBLE CHECKIHG
-def transformed_cells_to_ann(fld, ann, dst, fl_nm):
-    """ consolidating to one function bc then no need to copy/paste """
-    dct = {}
-    
-    for fl in fld:
-        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
-        print(converted_points)
-        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
-        df = count_structure_lister(id_table, *point_lst).fillna(0)
-        #for some reason duplicating columns, so use this
-        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
-        fl_name = os.path.basename(fl)
-        dct[fl_name]= nm_cnt
-        
-    #unpack
-    index = dct[list(dct.keys())[0]].keys()
-    columns = dct.keys()
-    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
-    df = pd.DataFrame(data.T, columns=columns, index=index)
-    
-    #save before adding projeny counts at each level
-    df.to_pickle(os.path.join(dst, fl_nm))
-    
-    return os.path.join(dst, fl_nm)
-
-pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
-#collect counts from right side
-right = transformed_cells_to_ann(pma2aba_transformed, ann_right, dst, "thal_rtn_right_side_no_prog_at_each_level_allen_atl.p")
-#collect counts from left side
-left = transformed_cells_to_ann(pma2aba_transformed, ann_left, dst, "thal_rtn_left_side_no_prog_at_each_level_allen_atl.p")
+#def transformed_cells_to_ann(fld, ann, dst, fl_nm):
+#    """ consolidating to one function bc then no need to copy/paste """
+#    dct = {}
+#    
+#    for fl in fld:
+#        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
+#        print(converted_points)
+#        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
+#        df = count_structure_lister(id_table, *point_lst).fillna(0)
+#        #for some reason duplicating columns, so use this
+#        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
+#        fl_name = os.path.basename(fl)
+#        dct[fl_name]= nm_cnt
+#        
+#    #unpack
+#    index = dct[list(dct.keys())[0]].keys()
+#    columns = dct.keys()
+#    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
+#    df = pd.DataFrame(data.T, columns=columns, index=index)
+#    
+#    #save before adding projeny counts at each level
+#    df.to_pickle(os.path.join(dst, fl_nm))
+#    
+#    return os.path.join(dst, fl_nm)
+#
+#pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
+##collect counts from right side
+#right = transformed_cells_to_ann(pma2aba_transformed, ann_right, dst, "thal_rtn_right_side_no_prog_at_each_level_allen_atl.p")
+##collect counts from left side
+#left = transformed_cells_to_ann(pma2aba_transformed, ann_left, dst, "thal_rtn_left_side_no_prog_at_each_level_allen_atl.p")
 
 #%%
 def get_cell_n_density_counts(brains, structure, structures, cells_regions, scale_factor = 0.025):

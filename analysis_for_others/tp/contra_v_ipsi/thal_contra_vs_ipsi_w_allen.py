@@ -80,7 +80,7 @@ for img in imgs:
 
 #make structures
 #FIXME: for some reason the allen table does not work on this, is it ok to use PMA...    
-df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 ann_df = pd.read_excel(df_pth)
 
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)

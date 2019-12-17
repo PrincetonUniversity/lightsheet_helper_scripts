@@ -13,6 +13,29 @@ import os, pickle as pckl
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
 data = {}
 
+data["lr_dist"] = lr_dist
+data["thal_inj_vol"] = thal_inj_vol
+#store data (serialize)
+with open(os.path.join(dst, "thal_contra_counts.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+
+
+#%%
+
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
+data = {}
+
+data["lr_dist"] = lr_dist
+data["thal_inj_vol"] = thal_inj_vol
+#store data (serialize)
+with open(os.path.join(dst, "thal_inj_contra_v_ipsi.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+
+#%%
+
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
+data = {}
+
 data["nc_inj_vol"] = nc_inj_vol
 #store data (serialize)
 with open(os.path.join(dst, "nc_inj_vol.p"), "wb") as handle:
