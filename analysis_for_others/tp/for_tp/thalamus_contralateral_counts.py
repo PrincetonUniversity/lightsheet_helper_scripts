@@ -44,161 +44,51 @@ thal_inj_vol = data["thal_inj_vol"]
 df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 ann_df = pd.read_excel(df_pth)
 
-structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 lr_brains = list(lr_dist.keys())
-atl_dst = os.path.join(dst, "pma_to_aba"); makedir(atl_dst)
 id_table = pd.read_excel(df_pth)
 
+#import dict of cells by region
+r_cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
 
-def get_cell_n_density_counts(brains, structure, structures, cells_regions, scale_factor = 0.025):
-    """ consolidating to one function bc then no need to copy/paste """
-    #get cell counts adn densities
-    #get densities for all the structures
-    df = pd.read_excel("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx", index_col = None)
-    df = df.drop(columns = ["Unnamed: 0"])
-    df = df.sort_values(by = ["name"])
-    
-    #make new dict - for all brains
-    cells_pooled_regions = {} #for raw counts
-    volume_pooled_regions = {} #for density
-    
-    for brain in brains:    
-        #make new dict - this is for EACH BRAIN
-        c_pooled_regions = {}
-        d_pooled_regions = {}
-        
-        for soi in structure:
-            try:
-                soi = [s for s in structures if s.name==soi][0]
-                counts = [] #store counts in this list
-                volume = [] #store volume in this list
-                for k, v in cells_regions[brain].items():
-                    if k == soi.name:
-                        counts.append(v)
-                #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0]/2) #divide by 2 since these are half brains!!!
-                progeny = [str(xx.name) for xx in soi.progeny]
-                #now sum up progeny
-                if len(progeny) > 0:
-                    for progen in progeny:
-                        for k, v in cells_regions[brain].items():
-                            if k == progen and progen != "Primary somatosensory area, unassigned, layer 4,5,6":
-                                counts.append(v)
-                                #add to volume list from LUT
-                                volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0]/2) #divide by 2 since these are half brains!!!
-                c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-                d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-            except Exception as e:
-                print(e)
-                for k, v in cells_regions[brain].items():
-                    if k == soi:
-                        counts.append(v)                    
-                #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0]/2) #divide by 2 since these are half brains!!!
-                c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-                d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-                        
-        #add to big dict
-        cells_pooled_regions[brain] = c_pooled_regions
-        volume_pooled_regions[brain] = d_pooled_regions
-    #making the proper array per brain where regions are removed
-    cell_counts_per_brain = []
-    #initialise dummy var
-    i = []
-    for k,v in cells_pooled_regions.items():
-        dct = cells_pooled_regions[k]
-        for j,l in dct.items():
-            i.append(l)  
-        cell_counts_per_brain.append(i)
-        #re-initialise for next
-        i = []  
-    cell_counts_per_brain = np.asarray(cell_counts_per_brain)
-    
-    volume_per_brain = []
-    #initialise dummy var
-    i = []
-    for k,v in volume_pooled_regions.items():
-        dct = volume_pooled_regions[k]
-        for j,l in dct.items():
-            i.append(l)  
-        volume_per_brain.append(i)
-        #re-initialise for next
-        i = []  
-    volume_per_brain = np.asarray(volume_per_brain)
-    #calculate denisty
-    density_per_brain = np.asarray([xx/(volume_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(cell_counts_per_brain)])
-    
-    return cell_counts_per_brain, density_per_brain, volume_per_brain
+contra = {}; ipsi = {} #collect contra and ipsi frame
+for k,v in r_cells_regions.items():
+    if lr_dist[k] < 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
 
-#making dictionary of cells by region
-cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
-cells_regions = cells_regions.to_dict(orient = "dict")      
-
-#nuclei = ["Pons", "Thalamus, sensory-motor cortex related", "Thalamus, polymodal association cortex related"]
-nuclei = ["Thalamus", "Ventral posteromedial nucleus of the thalamus", "Ventral posterolateral nucleus of the thalamus",
-          "Ventral anterior-lateral complex of the thalamus", "Ventral medial nucleus of the thalamus", "Anteroventral nucleus of thalamus", 
-          "Reticular nucleus of the thalamus", "Ventral part of the lateral geniculate complex", "Mediodorsal nucleus of thalamus",
-          "Submedial nucleus of the thalamus", "Nucleus of reuniens", "Paraventricular nucleus of the thalamus", 
-          "Central lateral nucleus of the thalamus", "Parafascicular nucleus", "Posterior complex of the thalamus",
-          "Lateral dorsal nucleus of thalamus", "Lateral posterior nucleus of the thalamus", "Lateral habenula"]
-#nuclei = ["Ventral anterior-lateral complex of the thalamus", "Ventral medial nucleus of the thalamus", 
-#          "Ventral posterolateral nucleus of the thalamus", "Ventral posteromedial nucleus of the thalamus",
-#          "Subparafascicular nucleus", "Subparafascicular area",
-#          "Peripeduncular nucleus", "Medial geniculate complex", "Dorsal part of the lateral geniculate complex",
-#          "Lateral posterior nucleus of the thalamus", "Posterior complex of the thalamus",
-#          "Posterior limiting nucleus of the thalamus", "Suprageniculate nucleus", "Anteroventral nucleus of thalamus", 
-#          "Anteromedial nucleus", "Anterodorsal nucleus", "Interanteromedial nucleus of the thalamus", 
-#          "Interanterodorsal nucleus of the thalamus", "Lateral dorsal nucleus of thalamus", 
-#          "Intermediodorsal nucleus of the thalamus", "Mediodorsal nucleus of thalamus", "Submedial nucleus of the thalamus", 
-#          "Perireunensis nucleus", "Paraventricular nucleus of the thalamus", "Parataenial nucleus", "Nucleus of reuniens", 
-#          "Rhomboid nucleus", "Central medial nucleus of the thalamus", "Paracentral nucleus",
-#          "Central lateral nucleus of the thalamus", "Parafascicular nucleus", 
-#          "Reticular nucleus of the thalamus", "Ventral part of the lateral geniculate complex", "Epithalamus"]
-
-#RIGHT SIDE
-cell_counts_per_brain_right, density_per_brain_right, volume_per_brain_right = get_cell_n_density_counts(brains, nuclei, 
-                                                                                                         structures, cells_regions)
 #LEFT SIDE
-cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
-cells_regions = cells_regions.to_dict(orient = "dict")      
-cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_cell_n_density_counts(brains, nuclei, 
-                                                                                                      structures, cells_regions)
+l_cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
 
-#preprocessing into contra/ipsi counts per brain, per structure
-scale_factor = 0.025
-nc_left_counts = cell_counts_per_brain_left
-nc_right_counts = cell_counts_per_brain_right
-nc_density_left = density_per_brain_left
-nc_density_right = density_per_brain_right
+for k,v in l_cells_regions.items():
+    if lr_dist[k] > 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
 
-lrv = list(lr_dist.values())
-lr_brains = list(lr_dist.keys())
 
-#dct is just for my sanity, so im not mixing up brains
-_ccontra = []; _cipsi = []; _dcontra = []; _dipsi = []
-for i in range(len(lr_brains)):
-    if lrv[i] > 0: #right
-        #counts
-        _ccontra.append(nc_left_counts[i])
-        _cipsi.append(nc_right_counts[i])
-        #density
-        _dcontra.append(nc_density_left[i])
-        _dipsi.append(nc_density_right[i])
-    elif lrv[i] < 0: #left
-        #counts
-        _ccontra.append(nc_right_counts[i])
-        _cipsi.append(nc_left_counts[i])
-        #density
-        _dcontra.append(nc_density_right[i])
-        _dipsi.append(nc_density_left[i])
-        
-#############################################################################################################################################
-#USE THESE ARRAY FOR THE CONTRA COUNTS + DENSITIES
-#NOTE: orientation is nuclei (x) vs. brains (y)
-_ccontra = np.asarray(_ccontra).T; _dcontra = np.asarray(_dcontra).T
-_cipsi = np.asarray(_cipsi).T; _dipsi = np.asarray(_dipsi).T
+#%%
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
+
+contra_df = pd.DataFrame(contra)
+contra_df.to_csv(os.path.join(dst, "thal_contra_counts_23_brains.csv")) 
+
+ipsi_df = pd.DataFrame(contra)
+ipsi_df.to_csv(os.path.join(dst, "thal_ipsi_counts_23_brains.csv")) 
+
+data["contra"] = contra
+data["ipsi"] = ipsi
+data["lr_brains"] = lr_brains
+#store data (serialize)
+with open(os.path.join(dst, "thal_contra_ipsi_counts_23_brains.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+
+
 #############################################################################################################################################
 
+#%%
 _ratio = np.asarray([_ccontra[i]/_cipsi[i] for i in range(len(_ccontra))])
 #make into one
 _dist = np.asarray(list(lr_dist.values()))
@@ -213,7 +103,6 @@ _primary_pool = data["primary_pool"]
 ak_pool = data["cb_regions_pool"]
 _inj = data["expr_all_as_frac_of_inj_pool"]
 primary_lob_n = model_data["primary_lob_n"]
-
 
 #%%
 #filter results by contra/ipsi ratio > 1 in thalamus

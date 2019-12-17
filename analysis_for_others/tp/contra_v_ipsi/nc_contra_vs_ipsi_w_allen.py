@@ -85,70 +85,72 @@ structures = make_structure_objects(df_pth, remove_childless_structures_not_reps
 lr_brains = list(lr_dist.keys())
 atl_dst = os.path.join(dst, "pma_to_aba"); makedir(atl_dst)
 id_table = pd.read_excel(df_pth)
+
+
 #%%
 #------------------------------------------------------------------------------------------------------------------------------
 #NOTE THAT ONLY HAVE TO DO THIS ONCE!!!! DO NOT NEED TO DO AGAIN UNLESS DOUBLE CHECKIHG
 #transform points to allen atlas space
-nc_lst = brains
-
-#get brains that we actually need to get cell counts from
-src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/transformed_points"
-post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
-transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
-                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
-
-#collect 
-for fl in post_transformed:
-    arr = np.load(fl)
-    #make into transformix-friendly text file
-    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
-    print(brain)
-    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
-    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
-        
-    #copy over elastix files
-    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
-    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
-   
-    #run transformix on points
-    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
-    
-    #convert registered points into structure counts
-    converted_points = unpack_pnts(points_file, transformed_dst) 
+#nc_lst = brains
+#
+##get brains that we actually need to get cell counts from
+#src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/transformed_points"
+#post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
+#transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
+#                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
+#
+##collect 
+#for fl in post_transformed:
+#    arr = np.load(fl)
+#    #make into transformix-friendly text file
+#    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
+#    print(brain)
+#    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
+#    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
+#        
+#    #copy over elastix files
+#    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
+#    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
+#   
+#    #run transformix on points
+#    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
+#    
+#    #convert registered points into structure counts
+#    converted_points = unpack_pnts(points_file, transformed_dst) 
     
 #%%
 #------------------------------------------------------------------------------------------------------------------------------    
 #NOTE THAT ONLY HAVE TO DO THIS ONCE!!!! DO NOT NEED TO DO AGAIN UNLESS DOUBLE CHECKIHG
-def transformed_cells_to_ann(fld, ann, dst, fl_nm):
-    """ consolidating to one function bc then no need to copy/paste """
-    dct = {}
-    
-    for fl in fld:
-        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
-        print(converted_points)
-        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
-        df = count_structure_lister(id_table, *point_lst).fillna(0)
-        #for some reason duplicating columns, so use this
-        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
-        fl_name = os.path.basename(fl)
-        dct[fl_name]= nm_cnt
-        
-    #unpack
-    index = dct[list(dct.keys())[0]].keys()
-    columns = dct.keys()
-    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
-    df = pd.DataFrame(data.T, columns=columns, index=index)
-    
-    #save before adding projeny counts at each level
-    df.to_pickle(os.path.join(dst, fl_nm))
-    
-    return os.path.join(dst, fl_nm)
-
-pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
-#collect counts from right side
-right = transformed_cells_to_ann(pma2aba_transformed, ann_right, dst, "nc_right_side_no_prog_at_each_level_allen_atl.p")
-#collect counts from left side
-left = transformed_cells_to_ann(pma2aba_transformed, ann_left, dst, "nc_left_side_no_prog_at_each_level_allen_atl.p")
+#def transformed_cells_to_ann(fld, ann, dst, fl_nm):
+#    """ consolidating to one function bc then no need to copy/paste """
+#    dct = {}
+#    
+#    for fl in fld:
+#        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
+#        print(converted_points)
+#        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
+#        df = count_structure_lister(id_table, *point_lst).fillna(0)
+#        #for some reason duplicating columns, so use this
+#        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
+#        fl_name = os.path.basename(fl)
+#        dct[fl_name]= nm_cnt
+#        
+#    #unpack
+#    index = dct[list(dct.keys())[0]].keys()
+#    columns = dct.keys()
+#    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
+#    df = pd.DataFrame(data.T, columns=columns, index=index)
+#    
+#    #save before adding projeny counts at each level
+#    df.to_pickle(os.path.join(dst, fl_nm))
+#    
+#    return os.path.join(dst, fl_nm)
+#
+#pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
+##collect counts from right side
+#right = transformed_cells_to_ann(pma2aba_transformed, ann_right, dst, "nc_right_side_no_prog_at_each_level_allen_atl.p")
+##collect counts from left side
+#left = transformed_cells_to_ann(pma2aba_transformed, ann_left, dst, "nc_left_side_no_prog_at_each_level_allen_atl.p")
 
 #%%
 
@@ -241,11 +243,43 @@ nc_areas = ["Isocortex","Infralimbic area", "Prelimbic area", "Anterior cingulat
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
 #RIGHT SIDE
-cell_counts_per_brain_right, density_per_brain_right, volume_per_brain_right = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
+cell_counts_per_brain_right, density_per_brain_right, volume_per_brain_right = get_cell_n_density_counts(brains, 
+                                                                                                         nc_areas, structures, cells_regions)
 #LEFT SIDE
 cells_regions = pckl.load(open(os.path.join(dst, "nc_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
 cells_regions = cells_regions.to_dict(orient = "dict")      
 cell_counts_per_brain_left, density_per_brain_left, volume_per_brain_left = get_cell_n_density_counts(brains, nc_areas, structures, cells_regions)
+
+#%%
+
+#import dict of cells by region
+r_cells_regions = pckl.load(open(os.path.join(dst, "nc_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
+
+contra = {}; ipsi = {} #collect contra and ipsi frame
+for k,v in r_cells_regions.items():
+    if lr_dist[k] < 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
+
+#LEFT SIDE
+l_cells_regions = pckl.load(open(os.path.join(dst, "nc_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
+
+for k,v in l_cells_regions.items():
+    if lr_dist[k] > 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
+        
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
+
+contra_df = pd.DataFrame(contra)
+contra_df.to_csv(os.path.join(dst, "nc_contra_counts_33_brains.csv")) 
+
+ipsi_df = pd.DataFrame(contra)
+ipsi_df.to_csv(os.path.join(dst, "nc_ipsi_counts_33_brains.csv")) 
 
 #%%
 #preprocessing into contra/ipsi counts per brain, per structure
