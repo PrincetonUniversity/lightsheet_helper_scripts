@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri May 17 18:21:39 2019
+Created on Tue Dec 17 18:57:00 2019
 
 @author: wanglab
 """
@@ -18,7 +18,7 @@ import pandas as pd
 inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-cells_regions_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/nc_dataframe.p"
+cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_contra_counts_33_brains_pma.csv"
 dst = "/home/wanglab/Desktop"
 
 #making dictionary of injection sites
@@ -127,18 +127,18 @@ primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.
 
 #normalization  of inj site
 expr_all_as_frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in expr_all_as_frac_of_inj_pool])
-    
+
 #%%
+
 #making dictionary of cells by region
 cells_regions = pd.read_csv(cells_regions_pth)
-
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
 #pooling regions
-structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", 
+structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx", 
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
-#%%
-#atlas res
-scale_factor = 0.020 #mm/voxel
 
 #GET ONLY NEOCORTICAL POOLS
 sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
@@ -146,55 +146,32 @@ sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Fronta
             "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
-#get densities for all the structures
-df = pd.read_excel("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", index_col = None)
-df = df.drop(columns = ["Unnamed: 0"])
-df = df.sort_values(by = ["name"])
-
 #make new dict - for all brains
 cells_pooled_regions = {} #for raw counts
-volume_pooled_regions = {} #for density
 
 for brain in brains:    
     #make new dict - this is for EACH BRAIN
     c_pooled_regions = {}
-    d_pooled_regions = {}
     
     for soi in sois:
+        counts = []
         try:
             soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            volume = [] #store volume in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
+            counts.append(cells_regions.loc[cells_regions.Structure == soi.name, brain].values[0]) #store counts in this list
             #add to volume list from LUT
-            volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))
             progeny = [str(xx.name) for xx in soi.progeny]
             #now sum up progeny
             if len(progeny) > 0:
                 for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
+                    counts.append(cells_regions.loc[cells_regions.Structure == progen, brain].values[0])
                             #add to volume list from LUT
-                    volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
             c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
         except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)                    
-            #add to volume list from LUT
-            volume.append(df.loc[df.name == soi, "voxels_in_structure"].values[0])
+            counts.append(cells_regions.loc[cells_regions.Structure == soi, brain].values[0])                    
             c_pooled_regions[soi] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi] = np.sum(np.asarray(volume))
-                    
     #add to big dict
     cells_pooled_regions[brain] = c_pooled_regions
-    volume_pooled_regions[brain] = d_pooled_regions
 
-    
 #making the proper array per brain where regions are removed
 cell_counts_per_brain = []
 
@@ -209,62 +186,14 @@ for k,v in cells_pooled_regions.items():
     i = []  
     
 cell_counts_per_brain = np.asarray(cell_counts_per_brain)
-
-#get counts for all of neocortex
-sois = ["Isocortex"]    
-
-#make new dict - for all brains
-all_nc_counts = {}
-
-for brain in brains:    
-    #make new dict - this is for EACH BRAIN
-    nc = {}
-    
-    for soi in sois:
-        try:
-            soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
-            progeny = [str(xx.name) for xx in soi.progeny]
-            #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-            nc[soi.name] = np.sum(np.asarray(counts))
-        except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)
-            nc[soi] = np.sum(np.asarray(counts))
-                    
-    #add to big dict
-    all_nc_counts[brain] = nc
-    
-#making the proper array per brain where BRAIN NAMES are removed
-nc_counts = []
-
-#initialise dummy var
-i = []
-for k,v in all_nc_counts.items():
-    dct = all_nc_counts[k]
-    for j,l in dct.items():
-        i.append(l)  
-    nc_counts.append(i[0])
-    #re-initialise for next
-    i = []    
-    
 #make into % counts the proper way
-cell_counts_per_brain_p = np.asarray([(brain/nc_counts[i]*100) for i, brain in enumerate(cell_counts_per_brain)])    
-#%%    
-#VARIABLES FOR GLM           
-#POOL NC REGIONS!!
-cell_counts_per_brain_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], brain[3], brain[6], brain[5]+brain[7], 
+pcounts = np.asarray([((brain/np.sum(brain))*100) for brain in cell_counts_per_brain])    
+
+#%%
+
+pcounts_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], brain[3], brain[6], brain[5]+brain[7], 
                                           brain[8]+brain[9], brain[10], brain[12], brain[11], 
-                                          brain[13]+brain[14], brain[15]+brain[16]] for brain in cell_counts_per_brain_p])
+                                          brain[13]+brain[14], brain[15]+brain[16]] for brain in pcounts])
 
 
 regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
@@ -274,7 +203,8 @@ regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
     
     
 X = expr_all_as_frac_of_inj_pool_norm
-Y = cell_counts_per_brain_pool    
+Y = pcounts_pool    
+
 #%%
 
 ##  glm
@@ -345,40 +275,41 @@ fit = np.array(fit)
 fit_shuf = np.array(fit_shuf)
 
 #%%
+
 ## display
-fig = plt.figure(figsize=(6,5))
+fig = plt.figure(figsize=(5,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 # map 1: weights
 show = np.flipud(mat) # NOTE abs
 
-vmin = 0
-vmax = 4
+vmin = 1
+vmax = 6
+whitetext = 4
 cmap = plt.cm.Reds
 cmap.set_under("w")
 cmap.set_over("maroon")
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,9)
+bounds = np.linspace(vmin,vmax,(vmax-vmin) + 1)
 #bounds = np.linspace(0,5,11)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.3, aspect=10)
 cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
 
 # exact value annotations
-for ri,row in enumerate(c_mat):
+for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < 3:
-            ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
+        if col < whitetext:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
         else: 
-            ax.text(ci+.5, ri+.5, "{:0.2f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
 
 # signif
 sig = np.flipud(pmat) < .05#/np.size(pmat)
@@ -394,87 +325,12 @@ ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance
 
 # aesthetics
 # xticksjt -t monokai -m 200
-ax.set_xticks(np.arange(len(ak))+.5)
+ax.set_xticks(np.arange(len(ak_pool))+.5)
 
 #remaking labeles so it doesn"t look squished
-lbls = np.asarray(ak)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=6, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="xx-small")
+ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="small")
 plt.savefig(os.path.join(dst, "nc_glm.pdf"), bbox_inches = "tight")
-
-#%%
-
-import seaborn as sns
-alpha = 0.3
-#make boxplots to make fit and shuffle fit vs. actual
-df = pd.DataFrame()
-df["count"] = cell_counts_per_brain_pool.T.ravel()
-df["fit"] = fit.ravel()
-df["shuffle"] = fit_shuf.mean(axis = 0).ravel()
-df["shuffle_log"] = np.log10(fit_shuf.mean(axis = 0).ravel())
-df["fit_log"] = np.log10(df["count"].values)
-df["brain"] = np.array(brains*10)
-df["region"] = np.repeat(np.asarray(regions), 33)
-df["inj"] = np.array([ak[idx] for idx in primary_pool]*10)
-
-sns.set_style("white")
-g = sns.FacetGrid(df[(df.region != "Somatomotor, Somatosensory") & 
-                     (df.region != "Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital")], 
-    col="inj", height=5, aspect=.5, sharex = True, sharey = True)
-
-g.map(sns.barplot, "count", "region", facecolor=(1, 1, 1, 0), ci = "sd", linewidth=2.5, capsize = 0.2,
-      edgecolor = "darkblue") 
-g.map(sns.swarmplot, "count", "region", color = "darkblue", size = 4)
-#g.map(sns.barplot, "fit", "region", facecolor=(1, 1, 1, 0), ci = None, capsize = 0.2, edgecolor = "firebrick") 
-g.map(sns.swarmplot, "fit", "region", color = "firebrick", size = 3) 
-g.map(sns.barplot, "shuffle", "region", alpha = alpha, color = "gray", ci = None) 
-
-g.set_xlabels("% of neocortical counts")
-
-sns.despine(offset=10)
-
-#save out
-dst = "/home/wanglab/Desktop"    
-plt.savefig(os.path.join(dst, "nc_boxplot_1.svg"), bbox_inches = "tight")
-
-#%%
-g = sns.FacetGrid(df[(df.region == "Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital")], 
-    col="inj", height=1.5, aspect=1.5, sharex = True, sharey = True)
-
-g.map(sns.barplot, "count", "region", facecolor=(1, 1, 1, 0), ci = "sd", linewidth=2.5, capsize = 0.2,
-      edgecolor = "darkblue") 
-g.map(sns.swarmplot, "count", "region", color = "darkblue", size = 4)
-#g.map(sns.barplot, "fit", "region", facecolor=(1, 1, 1, 0), ci = None, capsize = 0.2, edgecolor = "firebrick") 
-g.map(sns.swarmplot, "fit", "region", color = "firebrick", size = 3) 
-g.map(sns.barplot, "shuffle", "region", alpha = alpha, color = "gray", ci = None) 
-
-g.set_xlabels("% of neocortical counts")
-
-sns.despine(offset=10)
-
-#save out
-plt.tight_layout()
-dst = "/home/wanglab/Desktop"    
-plt.savefig(os.path.join(dst, "nc_boxplot_2.svg"), bbox_inches = "tight")
-
-#%%
-g = sns.FacetGrid(df[(df.region == "Somatomotor, Somatosensory")], 
-    col="inj", height=1.5, aspect=1.5, sharex = True, sharey = True)
-
-g.map(sns.barplot, "count", "region", facecolor=(1, 1, 1, 0), ci = "sd", linewidth=2.5, capsize = 0.2,
-      edgecolor = "darkblue") 
-g.map(sns.swarmplot, "count", "region", color = "darkblue", size = 4)
-#g.map(sns.barplot, "fit", "region", facecolor=(1, 1, 1, 0), ci = None, capsize = 0.2, edgecolor = "firebrick") 
-g.map(sns.swarmplot, "fit", "region", color = "firebrick", size = 3) 
-g.map(sns.barplot, "shuffle", "region", alpha = alpha, color = "gray", ci = None) 
-g.add_legend()
-g.set_xlabels("% of neocortical counts")
-
-sns.despine(offset=10)
-
-#save out
-plt.tight_layout()
-dst = "/home/wanglab/Desktop"    
-plt.savefig(os.path.join(dst, "nc_boxplot_3.svg"), bbox_inches = "tight")

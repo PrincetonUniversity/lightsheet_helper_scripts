@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu May 23 13:38:57 2019
+Created on Tue Dec 17 19:22:25 2019
 
 @author: wanglab
 """
+
 
 from tools.analysis.network_analysis import make_structure_objects
 import statsmodels.api as sm
@@ -17,7 +18,7 @@ from skimage.external import tifffile
 inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/injection_sites"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-cells_regions_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/dataframe_no_prog_at_each_level.p"
+cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_contra_counts_23_brains.csv"
 dst = "/home/wanglab/Desktop"
 
 #making dictionary of injection sites
@@ -101,13 +102,12 @@ print(expr_all_as_frac_of_lob[15])
 
 #%%
 #making dictionary of cells by region
-cells_regions = pckl.load(open(cells_regions_pth, "rb"), encoding = "latin1")
-cells_regions = cells_regions.to_dict(orient = "dict")      
-#make sure brains are the same order
-assert brains == list(cells_regions.keys())
-
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
 #pooling regions
-structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", 
+structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx", 
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 #%%
@@ -115,7 +115,8 @@ structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_tab
 scale_factor = 0.020 #mm/voxel
 
 #GET ONLY THALAMIC POOLS
-nuclei = ["Parafascicular nucleus",
+nuclei = ["Thalamus",
+        "Parafascicular nucleus",
         "Posterior complex of the thalamus",        
         "Posterior triangular thalamic nucleus",
         "Lateral posterior nucleus of the thalamus",
@@ -135,55 +136,32 @@ nuclei = ["Parafascicular nucleus",
         "Ventral anterior-lateral complex of the thalamus"
 ]
 
-#get densities for all the structures
-df = pd.read_excel("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", index_col = None)
-df = df.drop(columns = ["Unnamed: 0"])
-df = df.sort_values(by = ["name"])
-
 #make new dict - for all brains
 cells_pooled_regions = {} #for raw counts
-volume_pooled_regions = {} #for density
 
 for brain in brains:    
     #make new dict - this is for EACH BRAIN
     c_pooled_regions = {}
-    d_pooled_regions = {}
     
     for soi in nuclei:
+        counts = []
         try:
             soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            volume = [] #store volume in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
+            counts.append(cells_regions.loc[cells_regions.Structure == soi.name, brain].values[0]) #store counts in this list
             #add to volume list from LUT
-            volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))
             progeny = [str(xx.name) for xx in soi.progeny]
             #now sum up progeny
             if len(progeny) > 0:
                 for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-                #add to volume list from LUT
-                volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
+                    counts.append(cells_regions.loc[cells_regions.Structure == progen, brain].values[0])
+                            #add to volume list from LUT
             c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
         except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)                    
-            #add to volume list from LUT
-            volume.append(df.loc[df.name == soi, "voxels_in_structure"].values[0])
+            counts.append(cells_regions.loc[cells_regions.Structure == soi, brain].values[0])                    
             c_pooled_regions[soi] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi] = np.sum(np.asarray(volume))
-                    
     #add to big dict
     cells_pooled_regions[brain] = c_pooled_regions
-    volume_pooled_regions[brain] = d_pooled_regions
 
-#%%    
 #making the proper array per brain where regions are removed
 cell_counts_per_brain = []
 
@@ -198,73 +176,8 @@ for k,v in cells_pooled_regions.items():
     i = []  
     
 cell_counts_per_brain = np.asarray(cell_counts_per_brain)
-
-volume_per_brain = []
-
-#initialise dummy var
-i = []
-for k,v in volume_pooled_regions.items():
-    dct = volume_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    volume_per_brain.append(i)
-    #re-initialise for next
-    i = []  
-    
-volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
-
-#calculate denisty
-density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
-
-#get counts for all of thalamus
-sois = ["Thalamus"]    
-
-#make new dict - for all brains
-all_thal_counts = {}
-
-for brain in brains:    
-    #make new dict - this is for EACH BRAIN
-    thalamus = {}
-    
-    for soi in sois:
-        try:
-            soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
-            progeny = [str(xx.name) for xx in soi.progeny]
-            #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-            thalamus[soi.name] = np.sum(np.asarray(counts))
-        except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)
-            thalamus[soi] = np.sum(np.asarray(counts))
-                    
-    #add to big dict
-    all_thal_counts[brain] = thalamus
-    
-#making the proper array per brain where BRAIN NAMES are removed
-thal_counts = []
-
-#initialise dummy var
-i = []
-for k,v in all_thal_counts.items():
-    dct = all_thal_counts[k]
-    for j,l in dct.items():
-        i.append(l)  
-    thal_counts.append(i[0])
-    #re-initialise for next
-    i = []    
-    
 #make into % counts the proper way
-cell_counts_per_brain_p = np.asarray([(brain/thal_counts[i]*100) for i, brain in enumerate(cell_counts_per_brain)])
+pcounts = np.asarray([((brain[1:]/brain[0])*100) for brain in cell_counts_per_brain])    
     
 #%%
 
@@ -291,7 +204,7 @@ expr_all_as_frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in e
 regions = np.asarray(nuclei)
 #%%
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
-mean_counts = np.asarray([np.mean(cell_counts_per_brain_p[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
 fig = plt.figure(figsize=(5,7))
 ax = fig.add_axes([.4,.1,.5,.8])
@@ -340,7 +253,7 @@ dst = "/home/wanglab/Desktop"
 #%%
 #glm
 X = expr_all_as_frac_of_inj_pool_norm
-Y = cell_counts_per_brain_p
+Y = pcounts
 
 c_mat = []
 mat = []
@@ -496,143 +409,3 @@ ax.set_yticks(np.arange(len(nuclei))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 
 plt.savefig(os.path.join(dst,"thal_glm.pdf"), bbox_inches = "tight")
-
-#%%
-
-##only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
-#mean_fit = np.asarray([np.mean(fit.T[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
-#
-#fig = plt.figure(figsize=(5,7))
-#ax = fig.add_axes([.4,.1,.5,.8])
-#
-#show = mean_fit.T #np.flip(mean_counts, axis = 1) # NOTE abs
-#
-#vmin = 0
-#vmax = 6
-#cmap = plt.cm.viridis
-#cmap.set_over("gold")
-##colormap
-## discrete colorbar details
-#bounds = np.linspace(vmin,vmax,vmax-vmin+1)
-##bounds = np.linspace(-2,5,8)
-#norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-#
-#pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-##cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-##cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-#                  shrink=0.3, aspect=10)
-#cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
-#cb.ax.tick_params(labelsize="x-small")
-#
-#cb.ax.set_visible(True)
-## exact value annotations
-#for ri,row in enumerate(show):
-#    for ci,col in enumerate(row):
-#        pass
-#        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
-#  
-## aesthetics
-## xticksjt -t monokai -m 200
-#ax.set_xticks(np.arange(len(ak_pool))+.5)
-#
-##remaking labeles so it doesn"t look squished
-#lbls = np.asarray(ak_pool)
-#ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=6, ha="right")
-## yticks
-#ax.set_yticks(np.arange(len(nuclei))+.5)
-#ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="x-small")
-#dst = "/home/wanglab/Desktop"
-##plt.savefig(os.path.join(dst,"thal_mean_fit.svg"), bbox_inches = "tight")
-#
-##%%
-##only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
-#mean_shuf_fit = np.asarray([np.mean(fit_shuf.mean(axis = 0).T[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
-#
-#fig = plt.figure(figsize=(5,7))
-#ax = fig.add_axes([.4,.1,.5,.8])
-#
-#show = mean_shuf_fit.T #np.flip(mean_counts, axis = 1) # NOTE abs
-#
-#vmin = 0
-#vmax = 6
-#cmap = plt.cm.viridis
-#cmap.set_over("gold")
-##colormap
-## discrete colorbar details
-#bounds = np.linspace(vmin,vmax,vmax-vmin+1)
-##bounds = np.linspace(-2,5,8)
-#norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-#
-#pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-##cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-##cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-#                  shrink=0.3, aspect=10)
-#cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
-#cb.ax.tick_params(labelsize="x-small")
-#
-#cb.ax.set_visible(True)
-## exact value annotations
-#for ri,row in enumerate(show):
-#    for ci,col in enumerate(row):
-#        pass
-#        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
-#        
-##remaking labeles so it doesn"t look squished
-#ax.set_xticks(np.arange(len(ak_pool))+.5)
-#lbls = np.asarray(ak_pool)
-#ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
-## yticks
-#ax.set_yticks(np.arange(len(nuclei))+.5)
-#ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
-#dst = "/home/wanglab/Desktop"
-##plt.savefig(os.path.join(dst,"thal_mean_fit_shuf.svg"), bbox_inches = "tight")
-#
-##%%
-#
-##make boxplots to make fit and shuffle fit vs. actual?
-#short_nuclei = ["Parafascicular n.",
-# "P. complex",
-# "P. triangular n.",
-# "LP",
-# "L. habenula",
-# "LD",
-# "CL",
-# "PV",
-# "Reuniens",
-# "MD",
-# "V. of lat. gen. complex",
-# "VPL",
-# "VPM",
-# "Submedial n.",
-# "RTN",
-# "VM",
-# "AV",
-# "VA-L"]
-#
-#df = pd.DataFrame()
-#df["count"] = cell_counts_per_brain_p.T.ravel()
-#df["fit"] = fit.ravel()
-#df["shuffle"] = fit_shuf.mean(axis = 0).ravel()
-#df["shuffle_log"] = np.log10(fit_shuf.mean(axis = 0).ravel())
-#df["fit_log"] = np.log10(df["count"].values)
-#df["brain"] = np.array(brains*18)
-#df["region"] = np.repeat(np.asarray(short_nuclei), 23)
-#df["inj"] = np.array([ak_pool[idx] for idx in primary_pool]*18)
-#
-#sns.set_style("white")
-#
-#colors = ["r", "darkgoldenrod", "darkblue", "olivedrab", "darkslategray", "saddlebrown", "purple"]
-#
-#g = sns.FacetGrid(df, col="inj", height=5, aspect=.5, palette = colors)
-#
-#g.map(sns.barplot, "fit", "region", facecolor=(1, 1, 1, 0), ci = "sd", capsize = 0.2, edgecolor = "darkblue") 
-#g.map(sns.swarmplot, "fit", "region", color = "darkblue", size = 3) 
-#g.map(sns.barplot, "shuffle", "region", alpha = 0.4, color = "gray", ci = None) 
-#
-#g.set_xlabels("% of thalamic counts")
-#
-#sns.despine(offset=10)
-#    
-#plt.savefig(os.path.join(dst,"boxplot.pdf"), bbox_inches = "tight")

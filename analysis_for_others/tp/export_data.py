@@ -231,7 +231,7 @@ with open(os.path.join(dst, "shuffle_figure_data.p"), "wb") as handle:
     
 #%%  
 
-dst = "/jukebox/wang/zahra/modeling/h129/thalamus/"
+dst = "/jukebox/wang/zahra/modeling/h129/neocortex/"
 
 data = {}
 
@@ -246,7 +246,7 @@ data["regions"] = regions
 data["primary_pool"] = primary_pool
 
 #store data (serialize)
-with open(os.path.join(dst, "model_data_v2.p"), "wb") as handle:
+with open(os.path.join(dst, "model_data_contra_pma.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
     
 #%%

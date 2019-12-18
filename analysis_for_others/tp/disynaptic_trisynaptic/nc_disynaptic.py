@@ -53,10 +53,9 @@ brains = ["20170410_tp_bl6_lob6a_ml_repro_01",
          "20161205_tp_bl6_lob45_1000r_01",
          "20160801_db_l7_cri_01_mid_64hr"]
 
-cells_regions_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/dataframe_no_prog_at_each_level.p"
+cells_regions_pth = "/home/wanglab/mounts/wang/zahra/h129_contra_vs_ipsi/data/thal_contra_counts_23_brains.csv"
 
-cells_regions = pckl.load(open(cells_regions_pth, "rb"), encoding = "latin1")
-cells_regions = cells_regions.to_dict(orient = "dict")      
+cells_regions = pd.read_csv(cells_regions_pth)
 
 #get counts for all of neocortex
 sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
