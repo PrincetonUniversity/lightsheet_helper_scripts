@@ -21,7 +21,16 @@ mpl.rcParams["ps.fonttype"] = 42
 #set paths, variables, etc.
 dst = "/jukebox/wang/zahra/tracing_projects/prv/"
 pma_ann_pth = os.path.join(dst, "pma_annotation_sagittal_atlas_20um_iso_60um_edge_160um_vntric_erosion.tif")
-pma_ann = tifffile.imread(pma_ann_pth)
+#cut annotation file in middle
+ann = tifffile.imread(pma_ann_pth)
+plt.imshow(ann[300])
+z,y,x = ann.shape
+#make sure each halves are same dimension as original ann
+ann_left = np.zeros_like(ann)
+ann_left[:int(z/2), :, :] = ann[:int(z/2), :, :] #cut in the middle in z
+ann_right = np.zeros_like(ann)
+ann_right[int(z/2):, :, :] = ann[int(z/2):, :, :]
+plt.imshow(ann_left[120])
 
 #collect 
 #brains should be in this order as they were saved in this order for inj analysis
@@ -123,10 +132,10 @@ trnsfrm_dst = os.path.join(dst, "prv_transformed_cells")
 id_table = pd.read_excel(df_pth)
 
 #%%
-cells_src = os.path.join(dst, "prv_transformed_cells")
-post_transformed = [os.path.join(cells_src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
-transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
-                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
+#cells_src = os.path.join(dst, "prv_transformed_cells")
+#post_transformed = [os.path.join(cells_src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
+#transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
+#                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
 ##########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
 #collect 
 #for fl in post_transformed:
@@ -178,101 +187,117 @@ def transformed_cells_to_ann(fld, ann, dst, fl_nm):
 #pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
 trnsfrmd = [os.path.join(trnsfrm_dst, xx) for xx in lr_brains]
 
-whl_brain = transformed_cells_to_ann(trnsfrmd, pma_ann, dst, "whl_brain_no_prog_at_each_level_pma_atl.p")
+right = transformed_cells_to_ann(trnsfrmd, ann_right, dst, "right_side_no_prog_at_each_level_pma.p")
+left = transformed_cells_to_ann(trnsfrmd, ann_left, dst, "left_side_no_prog_at_each_level_pma.p")
+
+#import dict of cells by region
+r_cells_regions = pckl.load(open(os.path.join(dst, "right_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
+r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
+
+contra = {}; ipsi = {} #collect contra and ipsi frame
+for k,v in r_cells_regions.items():
+    if lr_dist[k] < 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
+
+#LEFT SIDE
+l_cells_regions = pckl.load(open(os.path.join(dst, "left_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
+l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
+
+for k,v in l_cells_regions.items():
+    if lr_dist[k] > 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
+        
+dst = "/jukebox/wang/zahra/tracing_projects/prv/for_tp"
+
+contra_df = pd.DataFrame(contra)
+contra_df.to_csv(os.path.join(dst, "nc_contra_counts_21_brains_pma.csv")) 
+
+ipsi_df = pd.DataFrame(contra)
+ipsi_df.to_csv(os.path.join(dst, "nc_ipsi_counts_21_brains_pma.csv")) 
+
 ##########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
 #%%
-def get_cell_n_density_counts(brains, structure, structures, cells_regions, id_table, scale_factor = 0.025):
-    """ consolidating to one function bc then no need to copy/paste """
-    #get cell counts adn densities
-    #get densities for all the structures
-    df = pd.read_excel(id_table, index_col = None)
-    df = df.drop(columns = ["Unnamed: 0"])
-    df = df.sort_values(by = ["name"])
-    
-    #make new dict - for all brains
-    cells_pooled_regions = {} #for raw counts
-    volume_pooled_regions = {} #for density
-    
-    for brain in brains:    
-        #make new dict - this is for EACH BRAIN
-        c_pooled_regions = {}
-        d_pooled_regions = {}
-        
-        for soi in structure:
-            try:
-                soi = [s for s in structures if s.name==soi][0]
-                counts = [] #store counts in this list
-                volume = [] #store volume in this list
-                for k, v in cells_regions[brain].items():
-                    if k == soi.name:
-                        counts.append(v)
-                #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))
-                progeny = [str(xx.name) for xx in soi.progeny]
-                #now sum up progeny
-                if len(progeny) > 0:
-                    for progen in progeny:
-                        for k, v in cells_regions[brain].items():
-                            if k == progen and progen != "Primary somatosensory area, unassigned, layer 4,5,6":
-                                counts.append(v)
-                                #add to volume list from LUT
-                                volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
-                c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-                d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-            except:
-                for k, v in cells_regions[brain].items():
-                    if k == soi:
-                        counts.append(v)                    
-                #add to volume list from LUT
-                volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])
-                c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-                d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-                        
-        #add to big dict
-        cells_pooled_regions[brain] = c_pooled_regions
-        volume_pooled_regions[brain] = d_pooled_regions
-    #making the proper array per brain where regions are removed
-    cell_counts_per_brain = []
-    #initialise dummy var
-    i = []
-    for k,v in cells_pooled_regions.items():
-        dct = cells_pooled_regions[k]
-        for j,l in dct.items():
-            i.append(l)  
-        cell_counts_per_brain.append(i)
-        #re-initialise for next
-        i = []  
-    cell_counts_per_brain = np.asarray(cell_counts_per_brain)
-    
-    volume_per_brain = []
-    #initialise dummy var
-    i = []
-    for k,v in volume_pooled_regions.items():
-        dct = volume_pooled_regions[k]
-        for j,l in dct.items():
-            i.append(l)  
-        volume_per_brain.append(i)
-        #re-initialise for next
-        i = []  
-    volume_per_brain = np.asarray(volume_per_brain)
-    #calculate denisty
-    density_per_brain = np.asarray([xx/(volume_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(cell_counts_per_brain)])
-    
-    return cell_counts_per_brain, density_per_brain, volume_per_brain
 
-#making dictionary of cells by region
-cells_regions = pckl.load(open(os.path.join(dst, "whl_brain_no_prog_at_each_level_pma_atl.p"), "rb"), encoding = "latin1")
-cells_regions = cells_regions.to_dict(orient = "dict")      
+cells_regions_pth = os.path.join(dst, "nc_contra_counts_21_brains_pma.csv")
 
-nc_areas = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
+ann_df = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+scale_factor = 0.020
+ann_df = pd.read_excel(ann_df).drop(columns = ["Unnamed: 0"])
+
+#get counts for all of neocortex
+sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
             "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
             "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
-#RIGHT SIDE
-cell_counts_per_brain, density_per_brain, volume_per_brain = get_cell_n_density_counts(brains, nc_areas, structures, 
-                                                                                       cells_regions, df_pth, scale_factor = 0.020)
 
+#make new dict - for all brains
+cells_pooled_regions = {} #for raw counts
+vol_pooled_regions = {}
+
+for brain in brains:    
+    #make new dict - this is for EACH BRAIN
+    c_pooled_regions = {}
+    v_pooled_regions = {}
+    
+    for soi in sois:
+        counts = []; vol = []
+        soi = [s for s in structures if s.name==soi][0]
+        
+        counts.append(cells_regions.loc[cells_regions.Structure == soi.name, brain].values[0]) #store counts in this list
+        vol.append(ann_df.loc[ann_df.name == soi.name, "voxels_in_structure"].values[0]) #store vols in this list
+        #add to volume list from LUT
+        progeny = [str(xx.name) for xx in soi.progeny]
+        #now sum up progeny
+        if len(progeny) > 0:
+            for progen in progeny:
+                counts.append(cells_regions.loc[cells_regions.Structure == progen, brain].values[0])
+                vol.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+    
+        c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
+        v_pooled_regions[soi.name] = np.sum(np.asarray(vol))
+    
+    #add to big dict
+    cells_pooled_regions[brain] = c_pooled_regions
+    vol_pooled_regions[brain] = v_pooled_regions
+    
+#making the proper array per brain where regions are removed
+cell_counts_per_brain = []
+
+#initialise dummy var
+i = []
+for k,v in cells_pooled_regions.items():
+    dct = cells_pooled_regions[k]
+    for j,l in dct.items():
+        i.append(l)  
+    cell_counts_per_brain.append(i)
+    #re-initialise for next
+    i = []
+
+#making the proper array per brain where regions are removed
+vol_per_brain = []
+
+#initialise dummy var
+i = []
+for k,v in vol_pooled_regions.items():
+    dct = vol_pooled_regions[k]
+    for j,l in dct.items():
+        i.append(l)  
+    vol_per_brain.append(i)
+    #re-initialise for next
+    i = []
+    
+nc_cell_counts_per_brain = np.asarray(cell_counts_per_brain)
+nc_vol_per_brain = np.array(vol_per_brain)/2 #divide by 2 bc only half brain
+nc_density_per_brain = np.asarray([xx/(nc_vol_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(nc_cell_counts_per_brain)])
 #%%
 #make density map like the h129 dataset (nc only for now)
 
@@ -286,10 +311,10 @@ whitetext = 7
 label_coordsy, label_coordsx  = -0.30,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
 brain_lbl_size = "small"
-yaxis = nc_areas #for density by nc areas map
+yaxis = sois #for density by nc areas map
 
 #sort inj fractions by primary lob
-sort_density = [density_per_brain[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_density = [nc_density_per_brain[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
@@ -339,7 +364,7 @@ cb.ax.set_visible(True)
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
-ax.set_ylabel("Neocortical areas, PMA", fontsize="small")
+ax.set_ylabel("Neocortical areas", fontsize="small")
 ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
 ax.set_xticks(np.arange(len(sort_brains))+.5)
@@ -361,11 +386,11 @@ whitetext = 3
 label_coordsy, label_coordsx  = -0.37,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
 brain_lbl_size = "x-small"
-yaxis = nc_areas #for density by nc areas map
+yaxis = sois #for density by nc areas map
 
 #make pcounts array
-total_counts_per_brain = np.sum(cell_counts_per_brain, axis=1)
-pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(cell_counts_per_brain)])
+total_counts_per_brain = np.sum(nc_cell_counts_per_brain, axis=1)
+pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(nc_cell_counts_per_brain)])
 #sort inj fractions by primary lob
 sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_pcounts = np.array(list(itertools.chain.from_iterable(sort_pcounts)))
@@ -413,14 +438,14 @@ cb.ax.set_visible(True)
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
-ax.set_ylabel("Neocortical areas, PMA", fontsize="small")
+ax.set_ylabel("Neocortical areas", fontsize="small")
 ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
 ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
 
-plt.savefig(os.path.join(dst, "pcounts_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_pcounts_nc.pdf"), bbox_inches = "tight")
 
 #%%
 #glm?
@@ -526,14 +551,14 @@ fig = plt.figure(figsize=(6,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 #set white text limit here
-whitetext = 6
+whitetext = 8
 annotation_size = "small"#annotation/number sizes
 
 # map 1: weights
 show = np.flipud(mat) # NOTE abs
 
 vmin = 0
-vmax = 8
+vmax = 10
 cmap = plt.cm.Reds
 cmap.set_under("w")
 cmap.set_over("maroon")
@@ -551,7 +576,7 @@ cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
 
 #annotations
-for ri,row in enumerate(show): #plotting raw coefficient values
+for ri,row in enumerate(show): 
     for ci,col in enumerate(row):
         if col > whitetext:
             ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize=annotation_size)
@@ -567,7 +592,6 @@ nullstd = null.std()
 for y,x in np.argwhere(sig):
     pass
     ax.text(x, y+0.3, "*", fontsize=10, ha="left", va="bottom", color = "black", transform=ax.transData)
-#ax.text(.5, 1.06, "X: p<0.05".format(nullmean, nullstd), ha="center", va="center", fontsize="small", transform=ax.transAxes)
 ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
@@ -577,8 +601,8 @@ ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_vh
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="small")
-#plt.savefig(os.path.join(dst, "nc_glm.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "nc_glm_vermis_hemisphere_split_crura.jpg"), bbox_inches = "tight", dpi = 300)
+
+plt.savefig(os.path.join(dst, "prv_nc_glm.pdf"), bbox_inches = "tight")
 
 #%%
 

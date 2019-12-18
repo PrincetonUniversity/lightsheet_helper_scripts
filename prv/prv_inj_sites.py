@@ -10,6 +10,9 @@ import os, subprocess as sp, tifffile, numpy as np, shutil, matplotlib.pyplot as
 from tools.analysis.analyze_injection_inverse_transform import pool_injections_inversetransform
 from tools.utils.io import makedir, load_kwargs, listdirfull
 from tools.imageprocessing.orientation import fix_orientation
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
+
 
 def run_transformix(invol, outpth, transformfile):
     
@@ -45,7 +48,7 @@ if __name__ == "__main__":
       "imagescale": 2,
       "reorientation": ("2","0","1"),
       "crop": "[:,:,:]",
-      "dst": "/jukebox/wang/zahra/prv/prv_injection_sites",
+      "dst": "/jukebox/wang/zahra/tracing_projects/prv/prv_injection_sites",
       "save_individual": False, 
       "save_tif": True,
       "colormap": "plasma", 
@@ -103,6 +106,6 @@ if __name__ == "__main__":
     plt.imshow(np.max(atl, axis=0), cmap="gray")
     plt.imshow(np.max(np.sum(sites, axis=0), axis = 0), alpha=0.90, cmap=my_cmap); plt.colorbar(); plt.axis("off")
     
-    plt.savefig(os.path.join(dct["dst"],"heatmap.pdf"), dpi = 300, transparent = True);
+    plt.savefig(os.path.join("/home/wanglab/Desktop/heatmap.pdf"), dpi = 300, transparent = True);
     plt.close()
 #    

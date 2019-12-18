@@ -13,6 +13,7 @@ from tools.utils.io import listdirfull, makedir, load_memmap_arr, load_np, lista
 from skimage.external import tifffile
 from tools.analysis.network_analysis import make_structure_objects
 from scipy.ndimage.measurements import center_of_mass
+from scipy.stats import median_absolute_deviation as mad
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
@@ -25,9 +26,8 @@ df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelc
 
 dst = "/home/wanglab/Desktop"
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
-structures_names = [xx.name for xx in structures]
 
-
+#%%
 #THALAMUS
 brains = ["20170410_tp_bl6_lob6a_ml_repro_01",
          "20160823_tp_bl6_cri_500r_02",
@@ -56,6 +56,9 @@ brains = ["20170410_tp_bl6_lob6a_ml_repro_01",
 cells_regions_pth = "/home/wanglab/mounts/wang/zahra/h129_contra_vs_ipsi/data/thal_contra_counts_23_brains.csv"
 
 cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
 
 #get counts for all of neocortex
 sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
@@ -63,57 +66,40 @@ sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Fronta
             "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
-#get densities for all the structures
-df = pd.read_excel("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", index_col = None)
-df = df.drop(columns = ["Unnamed: 0"])
-df = df.sort_values(by = ["name"])
-
-#atlas res
-scale_factor = 0.020 #mm/voxel
+ann_df = "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+scale_factor = 0.025
+ann_df = pd.read_excel(ann_df).drop(columns = ["Unnamed: 0"])
 
 #make new dict - for all brains
 cells_pooled_regions = {} #for raw counts
-volume_pooled_regions = {} #for density
+vol_pooled_regions = {}
 
 for brain in brains:    
     #make new dict - this is for EACH BRAIN
     c_pooled_regions = {}
-    d_pooled_regions = {}
+    v_pooled_regions = {}
     
     for soi in sois:
-        try:
-            soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            volume = [] #store volume in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
-            #add to volume list from LUT
-            volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))
-            progeny = [str(xx.name) for xx in soi.progeny]
-            #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-                            #add to volume list from LUT
-                            volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
-            c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-        except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)                    
-            #add to volume list from LUT
-            volume.append(df.loc[df.name == soi, "voxels_in_structure"].values[0])
-            c_pooled_regions[soi] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi] = np.sum(np.asarray(volume))
-                    
+        counts = []; vol = []
+        soi = [s for s in structures if s.name==soi][0]
+        
+        counts.append(cells_regions.loc[cells_regions.Structure == soi.name, brain].values[0]) #store counts in this list
+        vol.append(ann_df.loc[ann_df.name == soi.name, "voxels_in_structure"].values[0]) #store vols in this list
+        #add to volume list from LUT
+        progeny = [str(xx.name) for xx in soi.progeny]
+        #now sum up progeny
+        if len(progeny) > 0:
+            for progen in progeny:
+                counts.append(cells_regions.loc[cells_regions.Structure == progen, brain].values[0])
+                if len(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values) > 0:
+                    vol.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+    
+        c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
+        v_pooled_regions[soi.name] = np.sum(np.asarray(vol))
+    
     #add to big dict
     cells_pooled_regions[brain] = c_pooled_regions
-    volume_pooled_regions[brain] = d_pooled_regions
-
+    vol_pooled_regions[brain] = v_pooled_regions
     
 #making the proper array per brain where regions are removed
 cell_counts_per_brain = []
@@ -126,78 +112,24 @@ for k,v in cells_pooled_regions.items():
         i.append(l)  
     cell_counts_per_brain.append(i)
     #re-initialise for next
-    i = []  
-    
-cell_counts_per_brain = np.asarray(cell_counts_per_brain)
+    i = []
 
-volume_per_brain = []
+#making the proper array per brain where regions are removed
+vol_per_brain = []
 
 #initialise dummy var
 i = []
-for k,v in volume_pooled_regions.items():
-    dct = volume_pooled_regions[k]
+for k,v in vol_pooled_regions.items():
+    dct = vol_pooled_regions[k]
     for j,l in dct.items():
         i.append(l)  
-    volume_per_brain.append(i)
+    vol_per_brain.append(i)
     #re-initialise for next
-    i = []  
+    i = []
     
-volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
-
-#calculate denisty
-thal_density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
-mean_thal_density_per_brain = thal_density_per_brain.mean(axis = 0)
-std_thal_density_per_brain = thal_density_per_brain.std(axis = 0)
-
-#%%
-## display
-fig = plt.figure(figsize=(15, 5))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-show = np.flipud(density_per_brain.T)
-
-vmin = 0
-vmax = 100
-cmap = plt.cm.viridis
-cmap.set_under("w")
-cmap.set_over("gold")
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%d", shrink=0.2, aspect=10)
-cb.set_label("Cells/$mm^3$", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(True)
-
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col < 20:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
-
-# aesthetics
-ax.set_xticks(np.arange(len(brains))+.5)
-
-#remaking labeles so it doesn"t look squished
-lbls = np.asarray(brains)
-ax.set_xticklabels(lbls, rotation=30, fontsize=6, ha="right")
-# yticks
-ax.set_yticks(np.arange(len(sois))+.5)
-ax.set_yticklabels(np.flipud(np.asarray(sois)), fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
-ax.set_ylabel("Thalamic 'disynaptic' timepoint", fontsize="x-small")
-ax.yaxis.set_label_coords(-0.32,0.5)
-
-plt.savefig(os.path.join(dst,"nc_density_at_thalamic_timepoint.pdf"), bbox_inches = "tight")
+thal_cell_counts_per_brain = np.asarray(cell_counts_per_brain)
+thal_vol_per_brain = np.array(vol_per_brain)/2
+thal_density_per_brain = np.asarray([xx/(thal_vol_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(thal_cell_counts_per_brain)])
 
 #%%
 #NC
@@ -235,62 +167,52 @@ brains = ["20180409_jg46_bl6_lob6a_04",
  "20170116_tp_bl6_lob7_ml_08",
  "20180409_jg47_bl6_lob6a_05"]
 
-cells_regions_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts/nc_dataframe_no_prog_at_each_level.p"
+cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_contra_counts_33_brains_pma.csv"
 
-cells_regions = pckl.load(open(cells_regions_pth, "rb"), encoding = "latin1")
-cells_regions = cells_regions.to_dict(orient = "dict")      
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
+ann_df = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+scale_factor = 0.020
+ann_df = pd.read_excel(ann_df).drop(columns = ["Unnamed: 0"])
 
-#get densities for all the structures
-df = pd.read_excel("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", index_col = None)
-df = df.drop(columns = ["Unnamed: 0"])
-df = df.sort_values(by = ["name"])
+#get counts for all of neocortex
+sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
+            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
+            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
+            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
-#atlas res
-scale_factor = 0.020 #mm/voxel
 
 #make new dict - for all brains
 cells_pooled_regions = {} #for raw counts
-volume_pooled_regions = {} #for density
+vol_pooled_regions = {}
 
 for brain in brains:    
     #make new dict - this is for EACH BRAIN
     c_pooled_regions = {}
-    d_pooled_regions = {}
+    v_pooled_regions = {}
     
     for soi in sois:
-        try:
-            soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            volume = [] #store volume in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
-            #add to volume list from LUT
-            volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))
-            progeny = [str(xx.name) for xx in soi.progeny]
-            #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-                            #add to volume list from LUT
-                            volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
-            c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-        except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)                    
-            #add to volume list from LUT
-            volume.append(df.loc[df.name == soi, "voxels_in_structure"].values[0])
-            c_pooled_regions[soi] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi] = np.sum(np.asarray(volume))
-                    
+        counts = []; vol = []
+        soi = [s for s in structures if s.name==soi][0]
+        
+        counts.append(cells_regions.loc[cells_regions.Structure == soi.name, brain].values[0]) #store counts in this list
+        vol.append(ann_df.loc[ann_df.name == soi.name, "voxels_in_structure"].values[0]) #store vols in this list
+        #add to volume list from LUT
+        progeny = [str(xx.name) for xx in soi.progeny]
+        #now sum up progeny
+        if len(progeny) > 0:
+            for progen in progeny:
+                counts.append(cells_regions.loc[cells_regions.Structure == progen, brain].values[0])
+                vol.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+    
+        c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
+        v_pooled_regions[soi.name] = np.sum(np.asarray(vol))
+    
     #add to big dict
     cells_pooled_regions[brain] = c_pooled_regions
-    volume_pooled_regions[brain] = d_pooled_regions
-
+    vol_pooled_regions[brain] = v_pooled_regions
     
 #making the proper array per brain where regions are removed
 cell_counts_per_brain = []
@@ -303,90 +225,45 @@ for k,v in cells_pooled_regions.items():
         i.append(l)  
     cell_counts_per_brain.append(i)
     #re-initialise for next
-    i = []  
-    
-cell_counts_per_brain = np.asarray(cell_counts_per_brain)
+    i = []
 
-volume_per_brain = []
+#making the proper array per brain where regions are removed
+vol_per_brain = []
 
 #initialise dummy var
 i = []
-for k,v in volume_pooled_regions.items():
-    dct = volume_pooled_regions[k]
+for k,v in vol_pooled_regions.items():
+    dct = vol_pooled_regions[k]
     for j,l in dct.items():
         i.append(l)  
-    volume_per_brain.append(i)
+    vol_per_brain.append(i)
     #re-initialise for next
-    i = []  
+    i = []
     
-volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
-
-#calculate denisty
-nc_density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
-mean_nc_density_per_brain = nc_density_per_brain.mean(axis = 0)
-std_nc_density_per_brain = nc_density_per_brain.std(axis = 0)
-
+nc_cell_counts_per_brain = np.asarray(cell_counts_per_brain)
+nc_vol_per_brain = np.array(vol_per_brain)/2
+nc_density_per_brain = np.asarray([xx/(nc_vol_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(nc_cell_counts_per_brain)])
 #%%
-## display
-fig = plt.figure(figsize=(22, 5))
-ax = fig.add_axes([.4,.1,.5,.8])
+est_std = 0.6745 #normal mad to get estimated standard dev
+mean_thal_counts = np.mean(thal_density_per_brain.sum(axis = 1), axis = 0)
+mean_nc_counts = np.mean(nc_density_per_brain.sum(axis = 1), axis = 0)
 
-show = np.flipud(density_per_brain.T)
+ratio_mean = mean_thal_counts/mean_nc_counts
 
-vmin = 0
-vmax = 500
-cmap = plt.cm.viridis
-cmap.set_under("w")
-cmap.set_over("gold")
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+#calculate median also
+median_thal_counts = np.median(thal_density_per_brain.sum(axis = 1), axis = 0)
+median_nc_counts = np.median(nc_density_per_brain.sum(axis = 1), axis = 0)
+ratio_median = median_thal_counts/median_nc_counts 
 
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%d", shrink=0.2, aspect=10)
-cb.set_label("Cells/$mm^3$", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
+#st
+ratio_std = np.std(thal_density_per_brain.sum(axis = 1), axis = 0)/np.std(nc_density_per_brain.sum(axis = 1), axis = 0)
 
-cb.ax.set_visible(True)
+#est std
+mad_thal_counts = mad(thal_density_per_brain.sum(axis = 1), axis = 0)
+mad_nc_counts = mad(nc_density_per_brain.sum(axis = 1), axis = 0)
+ratio_mad = mad_thal_counts/mad_nc_counts
+ratio_est_std = ratio_mad/est_std
 
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col < 100:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="xx-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
-
-# aesthetics
-ax.set_xticks(np.arange(len(brains))+.5)
-
-#remaking labeles so it doesn"t look squished
-lbls = np.asarray(brains)
-ax.set_xticklabels(lbls, rotation=30, fontsize=6, ha="right")
-# yticks
-ax.set_yticks(np.arange(len(sois))+.5)
-ax.set_yticklabels(np.flipud(np.asarray(sois)), fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
-ax.set_ylabel("Neocortical 'trisynaptic' timepoint", fontsize="x-small")
-ax.yaxis.set_label_coords(-0.22,0.5)
-
-plt.savefig(os.path.join(dst,"nc_density_at_nc_timepoint.pdf"), bbox_inches = "tight")
-
-#%%
-ratio_mean_density = np.array(mean_thal_density_per_brain/mean_nc_density_per_brain)
-ratio_std_density = np.array(std_thal_density_per_brain/std_nc_density_per_brain)
-
-import pandas as pd
-df = pd.DataFrame()
-df["structures"] = sois
-df["mean_thal_density"] = np.round(mean_thal_density_per_brain, decimals = 4)
-df["mean_nc_density"] = np.round(mean_nc_density_per_brain, decimals = 4)
-df["ratio_mean_density"] = np.round(ratio_mean_density, decimals = 4)
-df["ratio_std_density"] = np.round(ratio_std_density, decimals = 4)
 
 df.to_csv("/home/wanglab/Desktop/disynaptic.csv")
 
@@ -415,10 +292,11 @@ lbls = ['Infralimbic',
  'Auditory',
  'Ectorhinal',
  'Perirhinal']
+
 #linear regression
-Y = np.sort(mean_nc_density_per_brain)[:-1]
-X = mean_thal_density_per_brain[np.argsort(mean_nc_density_per_brain)][:-1]
-strcs = np.asarray(lbls)[np.argsort(mean_nc_density_per_brain)][:-1]
+Y = np.mean(nc_cell_counts_per_brain, axis = 0)
+X = np.mean(thal_cell_counts_per_brain, axis = 0)
+
 results = sm.OLS(Y,sm.add_constant(X)).fit()
 
 mean_slope = results.params[0]
@@ -434,9 +312,8 @@ color_map = ["dimgray", "rosybrown", "darkred", "tomato", "chocolate", "orange",
 
 size = 30
 for i in range(len(X)):
-    ax.scatter(y = Y[i], x = X[i], s = size, label = strcs[i], c = color_map[i])
+    ax.scatter(y = Y[i], x = X[i], s = size, label = lbls[i], c = color_map[i])
 #
-X = range(0, 30)
 ax.plot(X, X*mean_slope + mean_intercept, "--r", label = "Slope={}\n$R^2$={}".format(round(mean_slope, 2), 
                    round(mean_r2, 2)))
 
@@ -444,9 +321,9 @@ ax.plot(X, X*mean_slope + mean_intercept, "--r", label = "Slope={}\n$R^2$={}".fo
 #plt.scatter(y = thal_density_per_brain[:, i], x = range(thal_density_per_brain.shape[0]), color = "red")
 #    
 ax.set_ylim([0, 500])
-ax.set_xticks(np.arange(0, 30, 2))
+ax.set_xlim([0, 100])
 #ax.set_xlim([0, 100])
-ax.set_ylabel("Average neocortical densities at neocortical timepoint")
-ax.set_xlabel("Average neocortical densities at thalamic timepoint")
+ax.set_ylabel("Average neocortical counts at neocortical timepoint")
+ax.set_xlabel("Average neocortical counts at thalamic timepoint")
 plt.legend(prop={'size': 10}, bbox_to_anchor=(1,1), loc='upper left', ncol=1)
-plt.savefig("/home/wanglab/Desktop/disynaptic.pdf", bbox_inches = "tight")
+#plt.savefig("/home/wanglab/Desktop/disynaptic.pdf", bbox_inches = "tight")

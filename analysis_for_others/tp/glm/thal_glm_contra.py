@@ -26,7 +26,7 @@ injections = {}
 
 #MAKE SURE THEY ARE IN THIS ORDER
 brains = ["20170410_tp_bl6_lob6a_ml_repro_01",
-         "20160823_tp_bl6_cri_500r_02",
+#         "20160823_tp_bl6_cri_500r_02",
          "20180417_jg59_bl6_cri_03",
          "20170207_db_bl6_crii_1300r_02",
          "20160622_db_bl6_unk_01",
@@ -111,29 +111,22 @@ structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/allen_atl
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 #%%
-#atlas res
-scale_factor = 0.020 #mm/voxel
 
 #GET ONLY THALAMIC POOLS
 nuclei = ["Thalamus",
-        "Parafascicular nucleus",
-        "Posterior complex of the thalamus",        
-        "Posterior triangular thalamic nucleus",
-        "Lateral posterior nucleus of the thalamus",
-        "Lateral habenula",
-        "Lateral dorsal nucleus of thalamus",
-        "Central lateral nucleus of the thalamus",        
-        "Paraventricular nucleus of the thalamus",
-        "Nucleus of reuniens",        
-        "Mediodorsal nucleus of thalamus",
-        "Ventral part of the lateral geniculate complex",
-        "Ventral posterolateral nucleus of the thalamus",
-        "Ventral posteromedial nucleus of the thalamus",         
-        "Submedial nucleus of the thalamus",
-        "Reticular nucleus of the thalamus",
-        "Ventral medial nucleus of the thalamus",
-        "Anteroventral nucleus of thalamus",
-        "Ventral anterior-lateral complex of the thalamus"
+     "Ventral posteromedial nucleus of the thalamus",
+     "Ventral posterolateral nucleus of the thalamus",
+     "Ventral anterior-lateral complex of the thalamus",
+     "Anteroventral nucleus of thalamus",
+     "Lateral dorsal nucleus of thalamus",
+     "Paraventricular nucleus of the thalamus",
+     "Medial habenula",
+     "Lateral posterior nucleus of the thalamus",
+     "Posterior triangular thalamic nucleus",
+     "Mediodorsal nucleus of thalamus",
+     "Posterior complex of the thalamus",
+     "Ventral medial nucleus of the thalamus",
+     "Reticular nucleus of the thalamus"
 ]
 
 #make new dict - for all brains
@@ -201,23 +194,23 @@ print(expr_all_as_frac_of_lob_pool.shape)
 expr_all_as_frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in expr_all_as_frac_of_inj_pool])
 
 #change vars (consistent with NC)
-regions = np.asarray(nuclei)
+regions = np.asarray(nuclei)[1:]
 #%%
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
 mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
-fig = plt.figure(figsize=(5,7))
+fig = plt.figure(figsize=(5,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 0
-vmax = 6
+vmax = 8
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,vmax-vmin+1)
+bounds = np.linspace(vmin,vmax,(vmax-vmin)/2 +1)
 #bounds = np.linspace(-2,5,8)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
@@ -230,23 +223,23 @@ cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        pass
-        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="xx-small")
+## exact value annotations
+#for ri,row in enumerate(show):
+#    for ci,col in enumerate(row):
+#        pass
+#        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
         
 #remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(ak_pool))+.5)
 lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
-ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticks(np.arange(len(nuclei[1:]))+.5)
 #The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
 # only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
 # by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
 #ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
-ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="xx-small")
+ax.set_yticklabels(["{}".format(bi) for bi in nuclei[1:]], fontsize="small")
 dst = "/home/wanglab/Desktop"
 #plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
 
@@ -351,7 +344,7 @@ fit_shuf = np.array(fit_shuf)
 
 #%%
 ## display
-fig = plt.figure(figsize=(5,7))
+fig = plt.figure(figsize=(5,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 # map 1: weights
@@ -359,6 +352,7 @@ show = mat
 
 vmin = 0
 vmax = 5
+whitetext = 4
 cmap = plt.cm.Reds
 cmap.set_under("w")
 cmap.set_over("maroon")
@@ -379,12 +373,12 @@ cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
 
 # exact value annotations
-for ri,row in enumerate(c_mat):
+for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col > 0.7:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
+        if col > whitetext:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
         else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
 
 # signif
 sig = pmat < .05#/np.size(pmat)
@@ -405,7 +399,7 @@ ax.set_xticks(np.arange(len(ak_pool))+.5)
 lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=6, ha="right")
 # yticks
-ax.set_yticks(np.arange(len(nuclei))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in nuclei], fontsize="x-small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_yticks(np.arange(len(regions))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 
 plt.savefig(os.path.join(dst,"thal_glm.pdf"), bbox_inches = "tight")
