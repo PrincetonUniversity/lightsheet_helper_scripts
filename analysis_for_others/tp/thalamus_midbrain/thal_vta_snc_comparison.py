@@ -21,14 +21,14 @@ import seaborn as sns
 inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/injection_sites"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-cells_regions_pth = '/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/dataframe_no_prog_at_each_level.p'
+cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_contra_counts_23_brains.csv"
 dst = "/home/wanglab/Desktop"
 #making dictionary of injection sites
 injections = {}
 
 #MAKE SURE THEY ARE IN THIS ORDER
 brains = ['20170410_tp_bl6_lob6a_ml_repro_01',
-         '20160823_tp_bl6_cri_500r_02',
+#         '20160823_tp_bl6_cri_500r_02',
          '20180417_jg59_bl6_cri_03',
          '20170207_db_bl6_crii_1300r_02',
          '20160622_db_bl6_unk_01',
@@ -102,13 +102,12 @@ print(expr_all_as_frac_of_lob[15])
 
 #%%
 #making dictionary of cells by region
-cells_regions = pckl.load(open(cells_regions_pth, "rb"), encoding = "latin1")
-cells_regions = cells_regions.to_dict(orient = "dict")      
-#make sure brains are the same order
-assert brains == list(cells_regions.keys())
-
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
 #pooling regions
-structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", 
+structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx", 
                                     remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
 
@@ -117,7 +116,17 @@ structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/ls_id_tab
 scale_factor = 0.020 #mm/voxel
 
 #GET ONLY VPM + bonus thal nuclei?, VTA, AND SNC COUNTS TO COMPARE
-nuclei = ["Ventral tegmental area", #vta
+
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
+ann_df = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+scale_factor = 0.025
+ann_df = pd.read_excel(ann_df).drop(columns = ["Unnamed: 0"])
+
+#get counts for all of neocortex
+sois = ["Ventral tegmental area", #vta
         "Substantia nigra, reticular part", 
         "Substantia nigra, compact part",#snc
         "Reticular nucleus of the thalamus", #thal
@@ -125,55 +134,37 @@ nuclei = ["Ventral tegmental area", #vta
         "Ventral posteromedial nucleus of the thalamus"
         ]
 
-#get densities for all the structures
-df = pd.read_excel("/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx", index_col = None)
-df = df.drop(columns = ["Unnamed: 0"])
-df = df.sort_values(by = ["name"])
 
 #make new dict - for all brains
 cells_pooled_regions = {} #for raw counts
-volume_pooled_regions = {} #for density
+vol_pooled_regions = {}
 
 for brain in brains:    
     #make new dict - this is for EACH BRAIN
     c_pooled_regions = {}
-    d_pooled_regions = {}
+    v_pooled_regions = {}
     
-    for soi in nuclei:
-        try:
-            soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            volume = [] #store volume in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
-            #add to volume list from LUT
-            volume.append(df.loc[df.name == soi.name, "voxels_in_structure"].values[0])#*(scale_factor**3))
-            progeny = [str(xx.name) for xx in soi.progeny]
-            #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-                #add to volume list from LUT
-                volume.append(df.loc[df.name == progen, "voxels_in_structure"].values[0])
-            c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi.name] = np.sum(np.asarray(volume))
-        except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)                    
-            #add to volume list from LUT
-            volume.append(df.loc[df.name == soi, "voxels_in_structure"].values[0])
-            c_pooled_regions[soi] = np.sum(np.asarray(counts))
-            d_pooled_regions[soi] = np.sum(np.asarray(volume))
-                    
+    for soi in sois:
+        counts = []; vol = []
+        soi = [s for s in structures if s.name==soi][0]
+        
+        counts.append(cells_regions.loc[cells_regions.Structure == soi.name, brain].values[0]) #store counts in this list
+        vol.append(ann_df.loc[ann_df.name == soi.name, "voxels_in_structure"].values[0]) #store vols in this list
+        #add to volume list from LUT
+        progeny = [str(xx.name) for xx in soi.progeny]
+        #now sum up progeny
+        if len(progeny) > 0:
+            for progen in progeny:
+                counts.append(cells_regions.loc[cells_regions.Structure == progen, brain].values[0])
+                vol.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+    
+        c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
+        v_pooled_regions[soi.name] = np.sum(np.asarray(vol))
+    
     #add to big dict
     cells_pooled_regions[brain] = c_pooled_regions
-    volume_pooled_regions[brain] = d_pooled_regions
-
-#%%    
+    vol_pooled_regions[brain] = v_pooled_regions
+    
 #making the proper array per brain where regions are removed
 cell_counts_per_brain = []
 
@@ -185,34 +176,32 @@ for k,v in cells_pooled_regions.items():
         i.append(l)  
     cell_counts_per_brain.append(i)
     #re-initialise for next
-    i = []  
-    
-cell_counts_per_brain = np.asarray(cell_counts_per_brain)
+    i = []
 
-volume_per_brain = []
+#making the proper array per brain where regions are removed
+vol_per_brain = []
 
 #initialise dummy var
 i = []
-for k,v in volume_pooled_regions.items():
-    dct = volume_pooled_regions[k]
+for k,v in vol_pooled_regions.items():
+    dct = vol_pooled_regions[k]
     for j,l in dct.items():
         i.append(l)  
-    volume_per_brain.append(i)
+    vol_per_brain.append(i)
     #re-initialise for next
-    i = []  
+    i = []
     
-volume_per_brain = np.asarray(volume_per_brain)*(scale_factor**3)
-
-#calculate denisty
-density_per_brain = np.asarray([xx/volume_per_brain[i] for i, xx in enumerate(cell_counts_per_brain)])
+cell_counts_per_brain = np.asarray(cell_counts_per_brain)
+vol_per_brain = np.array(vol_per_brain)/2
+density_per_brain = np.asarray([xx/(vol_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(cell_counts_per_brain)])
 
 #rename
-short_nuclei = ["Ventral tegmental area", #vta
-        "Substantia nigra compacta", #snc
-        "Substantia nigra reticulata", #snc
-        "Reticular n.", #thal
-        "Mediodorsal n.",
-        "Ventral posteromedial n."
+short_nuclei = ["VTA", #vta
+        "SNc", #snc
+        "SNr", #snc
+        "RTN", #thal
+        "MD",
+        "VPM"
         ]
 
 #%%
@@ -438,12 +427,12 @@ plt.savefig(os.path.join(dst,"thalvtacomp_density_sorted.pdf"), bbox_inches = "t
     
 #%%
 ## mean density
-fig = plt.figure(figsize=(6,3))
+fig = plt.figure(figsize=(5,2))
 ax = fig.add_axes([.4,.1,.5,.8])
 
-mean_counts = np.asarray([np.mean(density_per_brain[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+mean_density = np.asarray([np.mean(density_per_brain[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
-show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
+show = mean_density.astype(int).T #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 0
 vmax = 75
@@ -457,27 +446,74 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", 
-                  ticks=bounds, boundaries=bounds, format="%0.1f", shrink=0.5, aspect=10)
-cb.set_label("Cells/mm3", fontsize="x-small", labelpad=2)
-cb.ax.tick_params(labelsize="x-small")
+                  ticks=bounds, boundaries=bounds, format="%d", shrink=0.5, aspect=10)
+cb.set_label("Cells/$mm^3$", fontsize="small", labelpad=2)
+cb.ax.tick_params(labelsize="small")
 
 cb.ax.set_visible(True)
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
         pass
-        if col < 25:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
+        if col < 20:
+            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="white", ha="center", va="center", fontsize="small")
         else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
+            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="k", ha="center", va="center", fontsize="small")
         
 #remaking labeles so it doesn't look squished
 ax.set_xticks(np.arange(len(ak_pool))+.5)
 lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(ak_pool, primary_lob_n)], rotation=45, fontsize=5, ha="right")
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(ak_pool, primary_lob_n)], rotation=45, fontsize=7, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(short_nuclei))+.5)
 
-ax.set_yticklabels(["{}".format(bi) for bi in short_nuclei], fontsize="xx-small")
+ax.set_yticklabels(["{}".format(bi) for bi in short_nuclei], fontsize="small")
 
 plt.savefig(os.path.join(dst,"thalvtacomp_mean_density.pdf"), bbox_inches = "tight")
+
+#%%
+
+## mean counts
+fig = plt.figure(figsize=(5,2))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+mean_counts = np.asarray([np.mean(cell_counts_per_brain[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+
+show = mean_counts.astype(int).T #np.flip(mean_counts, axis = 1) # NOTE abs
+
+vmin = 0
+vmax = 50
+cmap = plt.cm.viridis
+cmap.set_over('gold')
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,6)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", 
+                  ticks=bounds, boundaries=bounds, format="%d", shrink=0.5, aspect=10)
+cb.set_label("Count", fontsize="small", labelpad=2)
+cb.ax.tick_params(labelsize="small")
+
+cb.ax.set_visible(True)
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        pass
+        if col < 30:
+            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="white", ha="center", va="center", fontsize="small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:d}".format(col), color="k", ha="center", va="center", fontsize="small")
+        
+#remaking labeles so it doesn't look squished
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(ak_pool, primary_lob_n)], rotation=45, fontsize=7, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(short_nuclei))+.5)
+
+ax.set_yticklabels(["{}".format(bi) for bi in short_nuclei], fontsize="small")
+
+plt.savefig(os.path.join(dst,"thalvtacomp_mean_counts.pdf"), bbox_inches = "tight")

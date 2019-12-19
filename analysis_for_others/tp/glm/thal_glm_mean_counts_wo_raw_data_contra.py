@@ -9,6 +9,8 @@ Created on Wed Dec 18 17:50:18 2019
 import matplotlib as mpl, os
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
 
 #imports
 #path to pickle file
@@ -17,7 +19,7 @@ data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
 dst = "/home/wanglab/Desktop"
-#dst = "/Users/tjp7rr1/Downloads"
+dst = "/Users/tjp7rr1/Downloads"
 
 #set the appropritate variables
 c_mat = data["c_mat"]
@@ -50,9 +52,9 @@ show = mat
 vmin = 0
 vmax = 5
 whitetext = 4
-cmap = plt.cm.Reds
+cmap = plt.cm.Blues#cmap = plt.cm.Reds
 cmap.set_under("w")
-cmap.set_over("maroon")
+cmap.set_over(plt.cm.Blues(1.0))#cmap.set_over("maroon")
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,6)
@@ -147,3 +149,4 @@ ax.set_yticks(np.arange(len(regions))+.5)
 #ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="small")
 plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
+#%%

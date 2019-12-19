@@ -43,7 +43,7 @@ if tp:
     vmin = 0
     vmax = 4
     cmap = plt.cm.Blues#plt.cm.Reds
-    #cmap.set_over(plt.cm.Blues(1.0)) #cmap.set_over('maroon')
+    cmap.set_over(plt.cm.Blues(1.0)) #cmap.set_over('maroon')
     whitetext = 6
     cmap.set_under('w')
     #reorder xaxis

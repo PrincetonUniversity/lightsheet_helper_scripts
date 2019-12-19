@@ -265,8 +265,6 @@ ratio_mad = mad_thal_counts/mad_nc_counts
 ratio_est_std = ratio_mad/est_std
 
 
-df.to_csv("/home/wanglab/Desktop/disynaptic.csv")
-
 #%%
 
 import statsmodels.api as sm
@@ -275,55 +273,40 @@ fig = plt.figure(figsize=(10,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 #rewrite nc labels
-lbls = ['Infralimbic',
- 'Prelimbic',
- 'Anterior cingulate',
- 'Frontal pole',
- 'Orbital',
- 'Gustatory',
- 'Agranular insula',
- 'Visceral',
- 'Somatosensory',
- 'Somatomotor',
- 'Retrosplenial',
- 'Posterior parietal',
- 'Visual',
- 'Temporal',
- 'Auditory',
- 'Ectorhinal',
- 'Perirhinal']
+lbls = ['ILA',
+ 'PL',
+ 'ACA',
+ 'FRP',
+ 'ORB',
+ 'GU',
+ 'AI',
+ 'VISC',
+ 'SS',
+ 'MO',
+ 'RSP',
+ 'PTLp',
+ 'VIS',
+ 'TEa',
+ 'AUD',
+ 'ECT',
+ 'PERI']
 
 #linear regression
-Y = np.mean(nc_cell_counts_per_brain, axis = 0)
-X = np.mean(thal_cell_counts_per_brain, axis = 0)
+Y = np.mean(thal_density_per_brain, axis = 0)
+X = range(len(lbls))
+std = np.std(thal_density_per_brain, axis = 0)
 
-results = sm.OLS(Y,sm.add_constant(X)).fit()
-
-mean_slope = results.params[0]
-mean_r2 = results.rsquared
-mean_intercept = results.params[1]
-#fit_thal = np.polyfit(range(thal_density_per_brain.shape[1]), thal_density_per_brain.mean(axis = 0), 1)
-#fit_fn_thal = np.poly1d(fit_thal)
-#linreg_stats_thal = linregress(range(thal_density_per_brain.shape[1]), thal_density_per_brain.mean(axis = 0))
-#    
 #plot as scatter
 color_map = ["dimgray", "rosybrown", "darkred", "tomato", "chocolate", "orange", "gold", "olive", "darkseagreen", "springgreen", "teal",
              "darkturquoise", "steelblue", "navy", "indigo", "crimson", "deeppink"]
 
-size = 30
-for i in range(len(X)):
-    ax.scatter(y = Y[i], x = X[i], s = size, label = lbls[i], c = color_map[i])
-#
-ax.plot(X, X*mean_slope + mean_intercept, "--r", label = "Slope={}\n$R^2$={}".format(round(mean_slope, 2), 
-                   round(mean_r2, 2)))
+ax.errorbar(X, Y, std, color='black', marker='o', linestyle='dashed', linewidth=2, markersize=8)
 
-##%%    
-#plt.scatter(y = thal_density_per_brain[:, i], x = range(thal_density_per_brain.shape[0]), color = "red")
-#    
-ax.set_ylim([0, 500])
-ax.set_xlim([0, 100])
-#ax.set_xlim([0, 100])
-ax.set_ylabel("Average neocortical counts at neocortical timepoint")
-ax.set_xlabel("Average neocortical counts at thalamic timepoint")
-plt.legend(prop={'size': 10}, bbox_to_anchor=(1,1), loc='upper left', ncol=1)
-#plt.savefig("/home/wanglab/Desktop/disynaptic.pdf", bbox_inches = "tight")
+ax.set_ylabel("Neocortical density \nat thalamic timepoint \n(cells/$mm^3$)")
+ax.set_xticks(np.arange(len(lbls))+.5)
+ax.set_xticklabels(lbls, rotation=30, fontsize="small", ha="right")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+
+ax.set_xlabel("$\Longleftrightarrow$ \n Anterior-Posterior")
+#plt.legend(prop={'size': 10}, bbox_to_anchor=(1,1), loc='upper left', ncol=1)
+
+plt.savefig("/home/wanglab/Desktop/disynaptic.pdf", bbox_inches = "tight")

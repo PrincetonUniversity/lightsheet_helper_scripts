@@ -210,7 +210,7 @@ data["density_per_brain"] = density_per_brain
 data["short_nuclei"] = short_nuclei
 data["primary_lob_n"] = primary_lob_n
 #store data (serialize)
-with open(os.path.join(dst, "mean_count_and_density_data.p"), "wb") as handle:
+with open(os.path.join(dst, "mean_count_and_density_data_contra.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
     
 #%%
