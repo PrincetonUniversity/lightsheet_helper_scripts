@@ -42,7 +42,7 @@ def get_progeny(dic,parent_structure,progeny_list):
     This is a recursive function which is why progeny_list is an
     argument and is not returned.
     ---INPUT---
-    dic                  A dictionary representing the JSON file 
+    dic                  A dictionary representing the JSON file 191231_20180306_jg_bl6f_prv_14_488_049na_z7d5um_50msec_10povlp_16-41-17
                          which contains the ontology of interest
     parent_structure     The structure
     progeny_list         The list to which this function will 
