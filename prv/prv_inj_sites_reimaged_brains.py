@@ -6,7 +6,6 @@ Created on Thu Jan  2 17:32:54 2020
 @author: wanglab
 """
 
-
 import os, subprocess as sp, tifffile, numpy as np, shutil, matplotlib.pyplot as plt, matplotlib as mpl
 from tools.analysis.analyze_injection_inverse_transform import pool_injections_inversetransform
 from tools.utils.io import makedir, load_kwargs, listdirfull
@@ -68,7 +67,7 @@ if __name__ == "__main__":
 
     src = "/jukebox/wang/zahra/tracing_projects/prv/prv_inj_vols_from_reimaged_brains"
     
-    brains = ["20180205_jg_bl6f_01", "20180215_jg_bl6f_prv_08", "20180215_jg_bl6f_prv_10", "20180305_jg_bl6f_prv_13", 
+    brains = ["20180205_jg_bl6f_prv_01", "20180215_jg_bl6f_prv_08", "20180215_jg_bl6f_prv_10", "20180305_jg_bl6f_prv_13", 
               "20180305_jg_bl6f_prv_14"]
     
     #run
@@ -92,35 +91,41 @@ if __name__ == "__main__":
       "annotation": "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif",
       "id_table": "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
     }
-    
-    #only get brains for which the inj segmentation was successful
-    inj_brains = [os.path.join(src, xx) for xx in brains]
+        
+    #segment injection site
+    for brain in inputlist:
+        vol = [os.path.join(brain, xx) for xx in os.listdir(brain) if "tif" in xx][0]
+        arr = find_site(vol, dct["threshold"], dct["filter_kernel"])
+        tifffile.imsave(os.path.join(dct["dst"], os.path.basename(brain)+".tif"), arr.astype("uint16")*65535) #save to inj site destination
     
     #even though we have the voxel counts in the csv file, i would still prefer to have the registered volumes just in case
     #that is how we did the segmentation for the h129 anyways
     #btw this will take long, and i don't recommend parallelizing bc of transformix
-    for fld in inj_brains:
+    for fld in inputlist:
         
         svlc = [os.path.join(fld, xx) for xx in os.listdir(fld) if "tif" not in xx][0]
         #find transform file
         sig2reg_fld = os.path.join(svlc, "sig_to_reg")
-        transformfile = os.path.join(sig2reg_fld, "regtoatlas_TransformParameters.1.txt")
+        transformfiles = [os.path.join(sig2reg_fld, "TransformParameters.0.txt"),
+                          os.path.join(sig2reg_fld, "TransformParameters.1.txt"),
+                          os.path.join(sig2reg_fld, "regtoatlas_TransformParameters.0.txt"),
+                          os.path.join(sig2reg_fld, "regtoatlas_TransformParameters.1.txt")]
         
-        #change the output image type bc otherwise it iterpolates too much and looks weird
-        with open(transformfile, "r") as file:
-            filedata = file.read()
-        # Replace the target string
-        filedata = filedata.replace('(ResultImagePixelType "short")', '(ResultImagePixelType "float")')
-        # Write the file out again
-        with open(transformfile, "w") as file:
-          file.write(filedata)
-    
-        invol = [os.path.join(fld, xx) for xx in os.listdir(fld) if "tif" in xx][0]
+        for transformfile in transformfiles:
+            #change the output image type bc otherwise it iterpolates too much and looks weird
+            with open(transformfile, "r") as file:
+                filedata = file.read()
+            # Replace the target string
+            filedata = filedata.replace("/jukebox/wang/pisano/tracing_output/retro_4x/"+os.path.basename(fld)+"/elastix", fld)
+            filedata = filedata.replace('(ResultImagePixelType "short")', '(ResultImagePixelType "float")')
+            # Write the file out again
+            with open(transformfile, "w") as file:
+              file.write(filedata)
         
+        invol = os.path.join(dct["dst"], os.path.basename(fld)+".tif")
         #run inj detection
-        
         outpth = os.path.join(dct["dst"], os.path.basename(fld)); makedir(outpth)
-        outpth = run_transformix(invol, outpth, transformfile)
+        outpth = run_transformix(invol, outpth, os.path.join(sig2reg_fld, "regtoatlas_TransformParameters.1.txt"))
         
         #fix the negative #'s around the site, and overwrite the tif onto the resampled version
         #this was checked and is consistent w the transform

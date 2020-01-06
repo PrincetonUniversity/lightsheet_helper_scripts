@@ -16,17 +16,21 @@ mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 
 #brains should be in this order as they were saved in this order for inj analysis
-brains = ["20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
-       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_15", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
+brains = ["20180205_jg_bl6f_prv_01", "20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", 
+          "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
+       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_13","20180306_jg_bl6f_prv_14", 
+       "20180305_jg_bl6f_prv_15", "20180306_jg_bl6f_prv_16", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
        "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180305_jg_bl6f_prv_11", "20180313_jg_bl6f_prv_25",
        "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
        "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35"]
+
+fig_dst = "/home/wanglab/Desktop"
 
 dst = "/jukebox/wang/zahra/tracing_projects/prv/"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 pma_ann_pth = os.path.join(dst, "pma_annotation_sagittal_atlas_20um_iso_60um_edge_160um_vntric_erosion.tif")
 
-cells_regions_pth = os.path.join(dst, "for_tp/prv_nc_contra_counts_21_brains_pma.csv")
+cells_regions_pth = os.path.join(dst, "for_tp/nc_contra_counts_25_brains_pma.csv")
 
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
@@ -141,7 +145,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,6), sharex = True, g
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxpcount = 50
+maxpcount = 20
 whitetext = 3
 label_coordsy, label_coordsx  = -0.37,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
@@ -185,10 +189,12 @@ vmax = maxpcount
 cmap = plt.cm.viridis
 cmap.set_over("orange")
 #colormap
-norm = colors.PowerNorm(gamma=0.5, vmax = vmax)
+bounds = np.linspace(vmin,vmax,((vmax-vmin)/5)+1)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-pc = ax.pcolor(show, cmap=cmap, norm = norm)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, extend ="max", shrink = 0.6)
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.3, aspect=10)
 cb.set_label("% of total neocortical counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
@@ -204,7 +210,7 @@ ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
 
-plt.savefig(os.path.join(dst, "prv_pcounts_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "pcounts_nc.pdf"), bbox_inches = "tight")
 
 #%%
 
@@ -227,7 +233,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (10,6), sharex = True, 
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxdensity = 250
+maxdensity = 150
 whitetext = 7
 label_coordsy, label_coordsx  = -0.30,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
@@ -270,14 +276,15 @@ vmax = maxdensity
 cmap = plt.cm.viridis
 cmap.set_over("orange")
 #colormap
-norm = colors.PowerNorm(gamma=0.6, vmax = vmax)
+bounds = np.linspace(vmin,vmax,((vmax-vmin)/50)+1)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-pc = ax.pcolor(show, cmap=cmap, norm = norm)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, extend ="max", shrink = 0.6)
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.3, aspect=10)
 cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
-
 # aesthetics
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
@@ -289,5 +296,5 @@ ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
 
-plt.savefig(os.path.join(dst, "density_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "density_nc.pdf"), bbox_inches = "tight")
 

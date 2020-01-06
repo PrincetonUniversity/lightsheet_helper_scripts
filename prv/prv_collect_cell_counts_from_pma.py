@@ -8,6 +8,7 @@ Created on Fri Oct 18 15:44:38 2019
 
 import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, statsmodels.api as sm, itertools
 from skimage.external import tifffile
+import matplotlib.colors as colors, json
 from scipy.ndimage.measurements import center_of_mass
 
 from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister, change_transform_parameter_initial_transform
@@ -20,6 +21,7 @@ mpl.rcParams["ps.fonttype"] = 42
 
 #set paths, variables, etc.
 dst = "/jukebox/wang/zahra/tracing_projects/prv/"
+fig_dst = "/home/wanglab/Desktop"
 pma_ann_pth = os.path.join(dst, "pma_annotation_sagittal_atlas_20um_iso_60um_edge_160um_vntric_erosion.tif")
 #cut annotation file in middle
 ann = tifffile.imread(pma_ann_pth)
@@ -34,8 +36,10 @@ plt.imshow(ann_left[120])
 
 #collect 
 #brains should be in this order as they were saved in this order for inj analysis
-brains = ["20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
-       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_15", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
+brains = ["20180205_jg_bl6f_prv_01", "20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", 
+          "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
+       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_13","20180306_jg_bl6f_prv_14", 
+       "20180305_jg_bl6f_prv_15", "20180306_jg_bl6f_prv_16", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
        "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180305_jg_bl6f_prv_11", "20180313_jg_bl6f_prv_25",
        "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
        "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35"]
@@ -124,6 +128,7 @@ primary_lob_n = np.array([np.where(primary_pool == i)[0].shape[0] for i in np.un
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=pma_ann_pth)
 
+#%%
 #set variables
 lr_brains = list(lr_dist.keys())
 
@@ -131,13 +136,12 @@ atl_dst = os.path.join(dst, "pma_to_aba"); makedir(atl_dst)
 trnsfrm_dst = os.path.join(dst, "prv_transformed_cells")
 id_table = pd.read_excel(df_pth)
 
-#%%
-#cells_src = os.path.join(dst, "prv_transformed_cells")
-#post_transformed = [os.path.join(cells_src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
-#transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
-#                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
-##########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
-#collect 
+cells_src = os.path.join(dst, "prv_transformed_cells")
+post_transformed = [os.path.join(cells_src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
+transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
+                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
+#########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
+##collect 
 #for fl in post_transformed:
 #    arr = np.load(fl)
 #    #make into transformix-friendly text file
@@ -155,7 +159,7 @@ id_table = pd.read_excel(df_pth)
 #    
 #    #convert registered points into structure counts
 #    converted_points = unpack_pnts(points_file, transformed_dst) 
-#
+
 
 def transformed_cells_to_ann(fld, ann, dst, fl_nm):
     """ consolidating to one function """
@@ -211,26 +215,58 @@ for k,v in l_cells_regions.items():
     else:
         ipsi[k] = v
         
-dst = "/jukebox/wang/zahra/tracing_projects/prv/for_tp"
-
 contra_df = pd.DataFrame(contra)
-contra_df.to_csv(os.path.join(dst, "nc_contra_counts_21_brains_pma.csv")) 
+contra_df.to_csv(os.path.join(dst, "for_tp/nc_contra_counts_25_brains_pma.csv")) 
 
 ipsi_df = pd.DataFrame(contra)
-ipsi_df.to_csv(os.path.join(dst, "nc_ipsi_counts_21_brains_pma.csv")) 
+ipsi_df.to_csv(os.path.join(dst, "for_tp/nc_ipsi_counts_25_brains_pma.csv")) 
 
 ##########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
 #%%
 
-cells_regions_pth = os.path.join(dst, "nc_contra_counts_21_brains_pma.csv")
+cells_regions_pth = os.path.join(dst, "for_tp/nc_contra_counts_25_brains_pma.csv")
 
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
 cells_regions["Structure"] = cells_regions["Unnamed: 0"]
 cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
-ann_df = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 scale_factor = 0.020
-ann_df = pd.read_excel(ann_df).drop(columns = ["Unnamed: 0"])
+ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
+
+def get_progeny(dic,parent_structure,progeny_list):
+    """ 
+    ---PURPOSE---
+    Get a list of all progeny of a structure name.
+    This is a recursive function which is why progeny_list is an
+    argument and is not returned.
+    ---INPUT---
+    dic                  A dictionary representing the JSON file 191231_20180306_jg_bl6f_prv_14_488_049na_z7d5um_50msec_10povlp_16-41-17
+                         which contains the ontology of interest
+    parent_structure     The structure
+    progeny_list         The list to which this function will 
+                         append the progeny structures. 
+    """
+    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
+    
+    name = dic.get('name')
+    children = dic.get('children')
+    if name == parent_structure:
+        for child in children: # child is a dict
+            child_name = child.get('name')
+            progeny_list.append(child_name)
+            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
+        return
+    
+    for child in children:
+        child_name = child.get('name')
+        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
+    return 
+
+#get progeny of all large structures
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+
+with open(ontology_file) as json_file:
+    ontology_dict = json.load(json_file)
 
 #get counts for all of neocortex
 sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
@@ -238,142 +274,64 @@ sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Fronta
             "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
+#first calculate counts across entire nc region
+counts_per_struct = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    counts_per_struct.append(np.array(counts).sum(axis = 0))
+counts_per_struct = np.array(counts_per_struct)
 
-#make new dict - for all brains
-cells_pooled_regions = {} #for raw counts
-vol_pooled_regions = {}
+#then get only layers
+layer6 = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b":
+            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    layer6.append(np.array(counts).sum(axis = 0))
+layer6 = np.array(layer6)        
 
-for brain in brains:    
-    #make new dict - this is for EACH BRAIN
-    c_pooled_regions = {}
-    v_pooled_regions = {}
-    
-    for soi in sois:
-        counts = []; vol = []
-        soi = [s for s in structures if s.name==soi][0]
-        
-        counts.append(cells_regions.loc[cells_regions.Structure == soi.name, brain].values[0]) #store counts in this list
-        vol.append(ann_df.loc[ann_df.name == soi.name, "voxels_in_structure"].values[0]) #store vols in this list
-        #add to volume list from LUT
-        progeny = [str(xx.name) for xx in soi.progeny]
-        #now sum up progeny
-        if len(progeny) > 0:
-            for progen in progeny:
-                counts.append(cells_regions.loc[cells_regions.Structure == progen, brain].values[0])
-                vol.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
-    
-        c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-        v_pooled_regions[soi.name] = np.sum(np.asarray(vol))
-    
-    #add to big dict
-    cells_pooled_regions[brain] = c_pooled_regions
-    vol_pooled_regions[brain] = v_pooled_regions
-    
-#making the proper array per brain where regions are removed
-cell_counts_per_brain = []
+layer5 = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
+            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    layer5.append(np.array(counts).sum(axis = 0))
+layer5 = np.array(layer5)        
 
-#initialise dummy var
-i = []
-for k,v in cells_pooled_regions.items():
-    dct = cells_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    cell_counts_per_brain.append(i)
-    #re-initialise for next
-    i = []
+#then get only layers
+layer23 = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-9:] == "layer 2/3" or progen[-9:] == "Layer 2/3":
+            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    layer23.append(np.array(counts).sum(axis = 0))
+layer23 = np.array(layer23)        
 
-#making the proper array per brain where regions are removed
-vol_per_brain = []
+#calculate fraction of counts that come from layer 4,5,6, or 2/3
+fracl5 = np.sum(layer5, axis = 0)/np.sum(counts_per_struct, axis = 0)
+mean_fracl5_per_struct = np.nanmean(fracl5, axis = 0)
 
-#initialise dummy var
-i = []
-for k,v in vol_pooled_regions.items():
-    dct = vol_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    vol_per_brain.append(i)
-    #re-initialise for next
-    i = []
-    
-nc_cell_counts_per_brain = np.asarray(cell_counts_per_brain)
-nc_vol_per_brain = np.array(vol_per_brain)/2 #divide by 2 bc only half brain
-nc_density_per_brain = np.asarray([xx/(nc_vol_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(nc_cell_counts_per_brain)])
-#%%
-#make density map like the h129 dataset (nc only for now)
+fracl6 = np.sum(layer6, axis = 0)/np.sum(counts_per_struct, axis = 0)
+mean_fracl6_per_struct = np.nanmean(fracl6, axis = 0)
 
-## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (10,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2,5]})
-
-#set colorbar features 
-maxdensity = 200
-whitetext = 7
-label_coordsy, label_coordsx  = -0.30,0.5 #for placement of vertical labels
-annotation_size = "x-small" #for the number annotations inside the heatmap
-brain_lbl_size = "small"
-yaxis = sois #for density by nc areas map
-
-#sort inj fractions by primary lob
-sort_density = [nc_density_per_brain[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
-sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
-sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
-sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
-sort_brains = list(itertools.chain.from_iterable(sort_brains))
-sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
-
-#inj fractions
-ax = axes[0]
-show = np.fliplr(sort_inj).T
-
-vmin = 0
-vmax = 0.8
-cmap = plt.cm.Reds 
-cmap.set_over('darkred')
-#colormap
-bounds = np.linspace(vmin,vmax,6)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-cb.ax.set_visible(False)
-ax.set_yticks(np.arange(len(ak_pool))+.5)
-ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
-
-ax = axes[1]
-show = np.fliplr(sort_density).T
-
-vmin = 0
-vmax = maxdensity
-cmap = plt.cm.viridis
-cmap.set_over("gold")
-#colormap
-bounds = np.linspace(vmin,vmax,((vmax-vmin)/50)+1)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.3, aspect=10)
-cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-cb.ax.set_visible(True)
-
-# aesthetics
-# yticks
-ax.set_yticks(np.arange(len(yaxis))+.5)
-ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
-ax.set_ylabel("Neocortical areas", fontsize="small")
-ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
-
-ax.set_xticks(np.arange(len(sort_brains))+.5)
-lbls = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
-
-plt.savefig(os.path.join(dst, "density_nc.pdf"), bbox_inches = "tight")
+fracl23 = np.sum(layer23, axis = 0)/np.sum(counts_per_struct, axis = 0)
+mean_fracl23_per_struct = np.nanmean(fracl23, axis = 0)
 
 #%%
+
+#layer 5+6 p counts maps
+layer56 = layer5+layer6
+pcounts = np.array([xx/sum(xx) for xx in layer56.T])*100
+
 #make % counts map like the h129 dataset (nc only for now)
 
 ## display
@@ -381,19 +339,20 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,6), sharex = True, g
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxpcount = 30
+maxpcount = 20
 whitetext = 3
 label_coordsy, label_coordsx  = -0.37,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
 brain_lbl_size = "x-small"
 yaxis = sois #for density by nc areas map
 
-#make pcounts array
-total_counts_per_brain = np.sum(nc_cell_counts_per_brain, axis=1)
-pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(nc_cell_counts_per_brain)])
 #sort inj fractions by primary lob
 sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_pcounts = np.array(list(itertools.chain.from_iterable(sort_pcounts)))
+sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = list(itertools.chain.from_iterable(sort_brains))
+sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 
 #inj fractions
 ax = axes[0]
@@ -422,7 +381,7 @@ show = np.fliplr(sort_pcounts).T
 vmin = 0
 vmax = maxpcount
 cmap = plt.cm.viridis
-cmap.set_over("gold")
+cmap.set_over("orange")
 #colormap
 bounds = np.linspace(vmin,vmax,((vmax-vmin)/5)+1)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
@@ -445,37 +404,115 @@ ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
 
-plt.savefig(os.path.join(dst, "prv_pcounts_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "pcounts_nc.pdf"), bbox_inches = "tight")
+
+#%%
+
+#make density map like the h129 dataset (nc only for now)
+#get layer5/6 volumes
+layer56_vol = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b" or progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+    layer56_vol.append(np.array(counts).sum(axis = 0))
+layer56_vol = np.array(layer56_vol)        
+
+density_l56 = np.array([xx/(layer56_vol[i]*(scale_factor**3)) for i, xx in enumerate(layer56)]).T
+
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (10,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,5]})
+
+#set colorbar features 
+maxdensity = 150
+whitetext = 7
+label_coordsy, label_coordsx  = -0.30,0.5 #for placement of vertical labels
+annotation_size = "x-small" #for the number annotations inside the heatmap
+brain_lbl_size = "small"
+yaxis = sois #for density by nc areas map
+
+#sort inj fractions by primary lob
+sort_density = [density_l56[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
+sort_brains = list(itertools.chain.from_iterable(sort_brains))
+sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
+
+#inj fractions
+ax = axes[0]
+show = np.fliplr(sort_inj).T
+
+vmin = 0
+vmax = 0.8
+cmap = plt.cm.Reds 
+cmap.set_over("darkred")
+#colormap
+norm = colors.PowerNorm(gamma=0.5)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, ticks=bounds, boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+
+ax = axes[1]
+show = np.fliplr(sort_density).T
+
+vmin = 0
+vmax = maxdensity
+cmap = plt.cm.viridis
+cmap.set_over("orange")
+#colormap
+bounds = np.linspace(vmin,vmax,((vmax-vmin)/50)+1)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
+ax.set_ylabel("Neocortical areas", fontsize="small")
+ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
+
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+lbls = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+
+plt.savefig(os.path.join(fig_dst, "density_nc.pdf"), bbox_inches = "tight")
 
 #%%
 #glm?
 #VARIABLES FOR GLM           
 #POOL NC REGIONS!!
-#took out post. parietal as no counts
 
 #make pcounts array
-total_counts_per_brain = np.sum(cell_counts_per_brain, axis=1)
-pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(cell_counts_per_brain)])
+#total_counts_per_brain = np.sum(cell_counts_per_brain, axis=1)
+#pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(cell_counts_per_brain)])
 
-pcounts_pool = np.array([np.array([xx[0]+xx[1]+xx[2]+xx[4], xx[3], xx[6], xx[5]+xx[7], 
+pcounts_pool = np.array([np.array([xx[0]+xx[1]+xx[2]+xx[4], xx[6], xx[5]+xx[7], 
                                           xx[8]+xx[9], xx[10], xx[11], xx[12], 
                                           xx[13]+xx[14], xx[15]+xx[16]]) for xx in pcounts])
 
 #for display
 regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
-       "Frontal pole", "Agranular insula", "Gustatory, Visceral",
+       "Agranular insula", "Gustatory, Visceral", #removed frontal pole as it does not have any layer 5/6 neurons
        "Somatomotor, Somatosensory", "Retrosplenial", "Post. Parietal", "Visual",
        "Temporal, Auditory", "Peririhinal, Ectorhinal"])
 
-#pooled injections, vermis and hemisphere
-ak_vh = np.array(["Ant. Vermis", "Post. Vermis", "Crus I", "Crus II", "PM, CP"])
-frac_of_inj_vh = np.array([[xx[0], np.sum(xx[1:3]) ,xx[3], xx[4], xx[5]] for xx in frac_of_inj_pool])    
 
-primary_vh_pool = np.array([np.argmax(e) for e in frac_of_inj_vh])
-#get n"s after pooling
-primary_vh_n = np.array([np.where(primary_vh_pool == i)[0].shape[0] for i in np.unique(primary_vh_pool)])
-
-X = np.array([brain/brain.sum() for brain in frac_of_inj_vh])
+X = np.array([brain/brain.sum() for brain in frac_of_inj_pool])
 Y = pcounts_pool    
 #%%
 
@@ -552,7 +589,7 @@ ax = fig.add_axes([.4,.1,.5,.8])
 
 #set white text limit here
 whitetext = 8
-annotation_size = "small"#annotation/number sizes
+annotation_size = "medium"#annotation/number sizes
 
 # map 1: weights
 show = np.flipud(mat) # NOTE abs
@@ -569,8 +606,9 @@ bounds = np.linspace(vmin,vmax,((vmax-vmin)/2)+1)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", shrink=0.2, aspect=10)
-cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
+                  boundaries=bounds, format="%d", shrink=0.3, aspect=10)
+cb.set_label("Weight / SE", fontsize="small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
@@ -595,312 +633,312 @@ for y,x in np.argwhere(sig):
 ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
-ax.set_xticks(np.arange(len(ak_vh))+.5)
-lbls = np.asarray(ak_vh)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_vh_n)], rotation=30, fontsize="x-small", ha="right")
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize="x-small", ha="right")
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="small")
+ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="medium")
 
-plt.savefig(os.path.join(dst, "prv_nc_glm.pdf"), bbox_inches = "tight")
-
-#%%
-
-import matplotlib.ticker as ticker
-
-##PRV TO HSV COMPARISON
-## rank correlation plot
-
-#import data
-main_data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_contra_ipsi_counts_densities.p"
-data = pckl.load(open(main_data_pth, "rb"), encoding = "latin1")
-
-cell_counts_per_brain_left = data["cell_counts_per_brain_left"]
-cell_counts_per_brain_right = data["cell_counts_per_brain_right"]
-density_per_brain_left = data["density_per_brain_left"]
-density_per_brain_right = data["density_per_brain_right"]
-volume_per_brain_left = data["volume_per_brain_left"]
-lr_dist = data["lr_dist"]
-nc_areas = data["nc_areas"] #gives order of nc areas also
-scale_factor = 0.025
-
-#preprocessing into contra/ipsi counts per brain, per structure
-scale_factor = 0.025
-nc_left_counts = cell_counts_per_brain_left
-nc_right_counts = cell_counts_per_brain_right
-nc_density_left = density_per_brain_left
-nc_density_right = density_per_brain_right
-
-lrv = list(lr_dist.values())
-lr_brains = list(lr_dist.keys())
-
-#dct is just for my sanity, so im not mixing up brains
-_ccontra = []; _cipsi = []; _dcontra = []; _dipsi = []
-for i in range(len(lr_brains)):
-    if lrv[i] > 0: #right
-        #counts
-        _ccontra.append(nc_left_counts[i])
-        _cipsi.append(nc_right_counts[i])
-        #density
-        _dcontra.append(nc_density_left[i])
-        _dipsi.append(nc_density_right[i])
-    elif lrv[i] < 0: #left
-        #counts
-        _ccontra.append(nc_right_counts[i])
-        _cipsi.append(nc_left_counts[i])
-        #density
-        _dcontra.append(nc_density_right[i])
-        _dipsi.append(nc_density_left[i])
-
-_ccontra = np.asarray(_ccontra); _dcontra = np.asarray(_dcontra)
-_cipsi = np.asarray(_cipsi); _dipsi = np.asarray(_dipsi)
-
-##optionally mask frontal areas
-nc_areas_mask = [False, False, False, False, False, True, True, True, True, True, True, True, True, True, True,True, True]
-#h129 - ASCENDING ORDER
-hsv_counts = cell_counts_per_brain_left+cell_counts_per_brain_right
-hsv_pcounts = np.array([xx/sum(xx) for xx in hsv_counts])
-hsv_density = (hsv_counts)/((volume_per_brain_left*2) * (scale_factor ** 3))
-#switched to descending order
-hsv_nc_areas_rank = np.array(nc_areas)[nc_areas_mask][np.argsort(np.median(hsv_density, axis = 0)[nc_areas_mask])][::-1]
-
-#prv - ASCENDING ORDER
-prv_counts = cell_counts_per_brain
-prv_pcounts = np.array([xx/sum(xx) for xx in prv_counts])
-prv_density = density_per_brain
-#switched to descending order
-prv_nc_areas_rank = np.array(nc_areas)[nc_areas_mask][np.argsort(np.median(prv_density, axis = 0)[nc_areas_mask])][::-1]
-
-hsv_ranks = [i+1 for i,nuc in enumerate(hsv_nc_areas_rank)]
-prv_ranks = []
-#make proper ranks
-for soi in hsv_nc_areas_rank:
-    for i,s in enumerate(prv_nc_areas_rank):
-        if soi == s:
-            prv_ranks.append(i+1)
-
-X = hsv_ranks
-Y = prv_ranks
-
-results = sm.OLS(Y,sm.add_constant(X)).fit()
-
-mean_slope = results.params[1]
-mean_r2 = results.rsquared
-mean_intercept = results.params[0]
-
-fig = plt.figure(figsize=(10,5))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-#plot as scatter   
-ax.scatter(y = Y, x = X, s = 70)
-
-#plot fit line
-ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
-ytick_spacing = 1; xtick_spacing = 1
-ax.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
-ax.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
-
-#plot nc area labels
-for i, txt in enumerate(hsv_nc_areas_rank):
-    ax.annotate(txt, (X[i], Y[i]), fontsize = "x-small")
-        
-ax.set_xlabel("H129 Density rank order")
-ax.set_ylabel("PRV Density rank order")
-
-#make text box
-props = dict(boxstyle='round', facecolor='wheat', alpha=0.3)
-
-textstr = "\n".join((
-    "slope: {:0.2f}".format(mean_slope),
-    "$R^2$: {:0.2f}".format(mean_r2)))
-
-ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
-            verticalalignment='top', bbox=props)
-
-
-plt.savefig(os.path.join(dst, "prv_hsv_density_rank_order_median_no_frontal.pdf"), bbox_inches = "tight")
-
-plt.close()
+plt.savefig(os.path.join(fig_dst, "nc_glm.pdf"), bbox_inches = "tight")
 
 #%%
 
-#filter by vermis vs hemisphere
-
-#h129
-#injection site analysis
-inj_pth = "/jukebox/wang/zahra/modeling/h129/neocortex/data.p"
-inj_dct = pckl.load(open(inj_pth, "rb"), encoding = "latin1")
-hsv_brains = inj_dct["brainnames"]
-hsv_primary_pool = inj_dct["primary_pool"]
-hsv_ak_pool = inj_dct["cb_regions_pool"]
-
-ak_vh = np.array(["Vermis", "Hemisphere"])
-func = lambda xx: 0 if xx < 3 else 1
-hsv_primary_pool_vh = np.array([func(xx) for xx in hsv_primary_pool])
-hsv_density_vermis = hsv_density[np.where(hsv_primary_pool_vh == 0)]
-hsv_density_hem = hsv_density[np.where(hsv_primary_pool_vh == 1)]
-
-#prv
-prv_primary_pool_vh = np.array([func(xx) for xx in primary_pool])
-prv_density_vermis = density_per_brain[np.where(prv_primary_pool_vh == 0)]
-prv_density_hem = density_per_brain[np.where(prv_primary_pool_vh == 1)]
-
-#VERMIS
-hsv_nc_areas_rank_vermis = np.array(nc_areas)[nc_areas_mask][np.argsort(np.median(hsv_density_hem, axis = 0)[nc_areas_mask])][::-1]
-prv_nc_areas_rank_vermis = np.array(nc_areas)[nc_areas_mask][np.argsort(np.median(prv_density_vermis, axis = 0)[nc_areas_mask])][::-1]
-
-hsv_ranks_vermis = [i+1 for i,nuc in enumerate(hsv_nc_areas_rank_vermis)]
-prv_ranks_vermis = []
-#make proper ranks
-for soi in hsv_nc_areas_rank_vermis:
-    for i,s in enumerate(prv_nc_areas_rank_vermis):
-        if soi == s:
-            prv_ranks_vermis.append(i+1)
-
-
-X = hsv_ranks_vermis
-Y = prv_ranks_vermis
-
-results = sm.OLS(Y,sm.add_constant(X)).fit()
-
-mean_slope = results.params[1]
-mean_r2 = results.rsquared
-mean_intercept = results.params[0]
-
-fig = plt.figure(figsize=(10,5))
-ax = fig.add_axes([.4,.1,.5,.8])
-
-#plot as scatter   
-ax.scatter(y = Y, x = X, s = 70)
-
-#plot fit line
-ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
-ytick_spacing = 1; xtick_spacing = 1
-ax.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
-ax.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
-
-#plot nc area labels
-for i, txt in enumerate(hsv_nc_areas_rank_vermis):
-    ax.annotate(txt, (X[i], Y[i]), fontsize = "x-small")
-        
-ax.set_xlabel("H129 Density rank order (vermis)")
-ax.set_ylabel("PRV Density rank order (vermis)")
-
-#make text box
-props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-
-textstr = "\n".join((
-    "slope: {:0.2f}".format(mean_slope),
-    "$R^2$: {:0.2f}".format(mean_r2)))
-
-ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
-            verticalalignment='top', bbox=props)
-
-plt.savefig(os.path.join(dst, "prv_hsv_density_rank_order_vermis_median_no_frontal.pdf"), 
-            bbox_inches = "tight")
-
-plt.close()
-
-#%%
-
-import scipy, seaborn as sns, json
-
-    # Now write the function to get all progeny of an input nodename
-def get_progeny(dic,parent_structure,progeny_list):
-    """ 
-    ---PURPOSE---
-    Get a list of all progeny of a structure name.
-    This is a recursive function which is why progeny_list is an
-    argument and is not returned.
-    ---INPUT---
-    dic                  A dictionary representing the JSON file 
-                         which contains the ontology of interest
-    parent_structure     The structure
-    progeny_list         The list to which this function will 
-                         append the progeny structures. 
-    """
-    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
-    
-    name = dic.get('name')
-    children = dic.get('children')
-    if name == parent_structure:
-        for child in children: # child is a dict
-            child_name = child.get('name')
-            progeny_list.append(child_name)
-            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
-        return
-    
-    for child in children:
-        child_name = child.get('name')
-        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
-    return 
-
-#get progeny of all large structures
-ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
-
-with open(ontology_file) as json_file:
-    ontology_dict = json.load(json_file)
-
-#rank by cfos mean cells /mm3 vs mean cells /mm3. Or make cfos/mm3 delta between the two..
-cs = pd.read_pickle("/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/2018_sfn_poster/cfos/stat_dataframe.p")
-
-#adding up to hierarchy
-#add parent regions to df
-df = pd.DataFrame(columns = cs.columns)
-df["Structure"] = nc_areas
-cs = cs.append(df, ignore_index = True)
-
-for soi in nc_areas:
-    progeny = []
-    get_progeny(ontology_dict, soi, progeny)
-    counts = [cs.loc[cs.Structure == xx, "Stimulation mean"].values[0] for xx in progeny if len(cs.loc[cs.Structure == xx, "Stimulation mean"].values)]
-    vol = [cs.loc[cs.Structure == xx, "structure_vol"].values[0] for xx in progeny if len(cs.loc[cs.Structure == xx, "structure_vol"].values)]
-    counts = sum(counts); vol = sum(vol)
-    cs.loc[cs.Structure == soi, "Stimulation mean"] = counts
-    cs.loc[cs.Structure == soi, "structure_vol"] = vol
-
-cfos = cs[['Structure','Stimulation mean', "structure_vol"]].copy()
-
-cfos["Stimulation density mean"] = cfos["Stimulation mean"]/(cfos["structure_vol"]/(0.020**3))
-
-cfos = cfos[cfos.Structure.isin(nc_areas)]
-cfos = cfos.sort_values('Stimulation density mean', ascending=False)
-cfos['cfos_order'] = range(1,len(cfos)+1)
-
-prv_nc_areas_rank = np.array(nc_areas)[np.argsort(np.median(prv_density, axis = 0))][::-1]
-cfos_nc_areas_rank = cfos.Structure.values
-#%%
-
-cfos_ranks = [i+1 for i,nuc in enumerate(cfos_nc_areas_rank)]
-prv_ranks = []
-#make proper ranks
-for soi in cfos_nc_areas_rank :
-    for i,s in enumerate(prv_nc_areas_rank):
-        if soi == s:
-            prv_ranks.append(i+1)
-
-
-X = prv_ranks
-Y = cfos_ranks
-
-df = pd.DataFrame()
-df["cfos_ranks"] = cfos_ranks
-df["prv_ranks"] = prv_ranks
-
-slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(df[['prv_ranks', 'cfos_ranks']].values)
-
-g = sns.regplot(data=df, x='prv_ranks', y = 'cfos_ranks')
-g.text(19,17,'slope {:0.2f}\nr_value {:0.2f}\np_value {:0.2f}'.format(slope, r_value, p_value))
-
-ytick_spacing = 1; xtick_spacing = 1
-g.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
-g.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
-
-#plot nc area labels
-for i, txt in enumerate(cfos_nc_areas_rank):
-    g.annotate(txt, (X[i], Y[i]), fontsize = "x-small")
-
-plt.savefig(os.path.join(dst, 'cfos_v_prv.jpg'), bbox_inches = "tight", dpi=300); plt.close()
+#import matplotlib.ticker as ticker
+#
+###PRV TO HSV COMPARISON
+### rank correlation plot
+#
+##import data
+#main_data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_contra_ipsi_counts_densities.p"
+#data = pckl.load(open(main_data_pth, "rb"), encoding = "latin1")
+#
+#cell_counts_per_brain_left = data["cell_counts_per_brain_left"]
+#cell_counts_per_brain_right = data["cell_counts_per_brain_right"]
+#density_per_brain_left = data["density_per_brain_left"]
+#density_per_brain_right = data["density_per_brain_right"]
+#volume_per_brain_left = data["volume_per_brain_left"]
+#lr_dist = data["lr_dist"]
+#nc_areas = data["nc_areas"] #gives order of nc areas also
+#scale_factor = 0.025
+#
+##preprocessing into contra/ipsi counts per brain, per structure
+#scale_factor = 0.025
+#nc_left_counts = cell_counts_per_brain_left
+#nc_right_counts = cell_counts_per_brain_right
+#nc_density_left = density_per_brain_left
+#nc_density_right = density_per_brain_right
+#
+#lrv = list(lr_dist.values())
+#lr_brains = list(lr_dist.keys())
+#
+##dct is just for my sanity, so im not mixing up brains
+#_ccontra = []; _cipsi = []; _dcontra = []; _dipsi = []
+#for i in range(len(lr_brains)):
+#    if lrv[i] > 0: #right
+#        #counts
+#        _ccontra.append(nc_left_counts[i])
+#        _cipsi.append(nc_right_counts[i])
+#        #density
+#        _dcontra.append(nc_density_left[i])
+#        _dipsi.append(nc_density_right[i])
+#    elif lrv[i] < 0: #left
+#        #counts
+#        _ccontra.append(nc_right_counts[i])
+#        _cipsi.append(nc_left_counts[i])
+#        #density
+#        _dcontra.append(nc_density_right[i])
+#        _dipsi.append(nc_density_left[i])
+#
+#_ccontra = np.asarray(_ccontra); _dcontra = np.asarray(_dcontra)
+#_cipsi = np.asarray(_cipsi); _dipsi = np.asarray(_dipsi)
+#
+###optionally mask frontal areas
+#nc_areas_mask = [False, False, False, False, False, True, True, True, True, True, True, True, True, True, True,True, True]
+##h129 - ASCENDING ORDER
+#hsv_counts = cell_counts_per_brain_left+cell_counts_per_brain_right
+#hsv_pcounts = np.array([xx/sum(xx) for xx in hsv_counts])
+#hsv_density = (hsv_counts)/((volume_per_brain_left*2) * (scale_factor ** 3))
+##switched to descending order
+#hsv_nc_areas_rank = np.array(nc_areas)[nc_areas_mask][np.argsort(np.median(hsv_density, axis = 0)[nc_areas_mask])][::-1]
+#
+##prv - ASCENDING ORDER
+#prv_counts = cell_counts_per_brain
+#prv_pcounts = np.array([xx/sum(xx) for xx in prv_counts])
+#prv_density = density_per_brain
+##switched to descending order
+#prv_nc_areas_rank = np.array(nc_areas)[nc_areas_mask][np.argsort(np.median(prv_density, axis = 0)[nc_areas_mask])][::-1]
+#
+#hsv_ranks = [i+1 for i,nuc in enumerate(hsv_nc_areas_rank)]
+#prv_ranks = []
+##make proper ranks
+#for soi in hsv_nc_areas_rank:
+#    for i,s in enumerate(prv_nc_areas_rank):
+#        if soi == s:
+#            prv_ranks.append(i+1)
+#
+#X = hsv_ranks
+#Y = prv_ranks
+#
+#results = sm.OLS(Y,sm.add_constant(X)).fit()
+#
+#mean_slope = results.params[1]
+#mean_r2 = results.rsquared
+#mean_intercept = results.params[0]
+#
+#fig = plt.figure(figsize=(10,5))
+#ax = fig.add_axes([.4,.1,.5,.8])
+#
+##plot as scatter   
+#ax.scatter(y = Y, x = X, s = 70)
+#
+##plot fit line
+#ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+#ytick_spacing = 1; xtick_spacing = 1
+#ax.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
+#ax.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
+#
+##plot nc area labels
+#for i, txt in enumerate(hsv_nc_areas_rank):
+#    ax.annotate(txt, (X[i], Y[i]), fontsize = "x-small")
+#        
+#ax.set_xlabel("H129 Density rank order")
+#ax.set_ylabel("PRV Density rank order")
+#
+##make text box
+#props = dict(boxstyle='round', facecolor='wheat', alpha=0.3)
+#
+#textstr = "\n".join((
+#    "slope: {:0.2f}".format(mean_slope),
+#    "$R^2$: {:0.2f}".format(mean_r2)))
+#
+#ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+#            verticalalignment='top', bbox=props)
+#
+#
+#plt.savefig(os.path.join(dst, "prv_hsv_density_rank_order_median_no_frontal.pdf"), bbox_inches = "tight")
+#
+#plt.close()
+#
+##%%
+#
+##filter by vermis vs hemisphere
+#
+##h129
+##injection site analysis
+#inj_pth = "/jukebox/wang/zahra/modeling/h129/neocortex/data.p"
+#inj_dct = pckl.load(open(inj_pth, "rb"), encoding = "latin1")
+#hsv_brains = inj_dct["brainnames"]
+#hsv_primary_pool = inj_dct["primary_pool"]
+#hsv_ak_pool = inj_dct["cb_regions_pool"]
+#
+#ak_vh = np.array(["Vermis", "Hemisphere"])
+#func = lambda xx: 0 if xx < 3 else 1
+#hsv_primary_pool_vh = np.array([func(xx) for xx in hsv_primary_pool])
+#hsv_density_vermis = hsv_density[np.where(hsv_primary_pool_vh == 0)]
+#hsv_density_hem = hsv_density[np.where(hsv_primary_pool_vh == 1)]
+#
+##prv
+#prv_primary_pool_vh = np.array([func(xx) for xx in primary_pool])
+#prv_density_vermis = density_per_brain[np.where(prv_primary_pool_vh == 0)]
+#prv_density_hem = density_per_brain[np.where(prv_primary_pool_vh == 1)]
+#
+##VERMIS
+#hsv_nc_areas_rank_vermis = np.array(nc_areas)[nc_areas_mask][np.argsort(np.median(hsv_density_hem, axis = 0)[nc_areas_mask])][::-1]
+#prv_nc_areas_rank_vermis = np.array(nc_areas)[nc_areas_mask][np.argsort(np.median(prv_density_vermis, axis = 0)[nc_areas_mask])][::-1]
+#
+#hsv_ranks_vermis = [i+1 for i,nuc in enumerate(hsv_nc_areas_rank_vermis)]
+#prv_ranks_vermis = []
+##make proper ranks
+#for soi in hsv_nc_areas_rank_vermis:
+#    for i,s in enumerate(prv_nc_areas_rank_vermis):
+#        if soi == s:
+#            prv_ranks_vermis.append(i+1)
+#
+#
+#X = hsv_ranks_vermis
+#Y = prv_ranks_vermis
+#
+#results = sm.OLS(Y,sm.add_constant(X)).fit()
+#
+#mean_slope = results.params[1]
+#mean_r2 = results.rsquared
+#mean_intercept = results.params[0]
+#
+#fig = plt.figure(figsize=(10,5))
+#ax = fig.add_axes([.4,.1,.5,.8])
+#
+##plot as scatter   
+#ax.scatter(y = Y, x = X, s = 70)
+#
+##plot fit line
+#ax.plot(mean_slope*range(len(X))+mean_intercept, '--k')    
+#ytick_spacing = 1; xtick_spacing = 1
+#ax.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
+#ax.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
+#
+##plot nc area labels
+#for i, txt in enumerate(hsv_nc_areas_rank_vermis):
+#    ax.annotate(txt, (X[i], Y[i]), fontsize = "x-small")
+#        
+#ax.set_xlabel("H129 Density rank order (vermis)")
+#ax.set_ylabel("PRV Density rank order (vermis)")
+#
+##make text box
+#props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+#
+#textstr = "\n".join((
+#    "slope: {:0.2f}".format(mean_slope),
+#    "$R^2$: {:0.2f}".format(mean_r2)))
+#
+#ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,
+#            verticalalignment='top', bbox=props)
+#
+#plt.savefig(os.path.join(dst, "prv_hsv_density_rank_order_vermis_median_no_frontal.pdf"), 
+#            bbox_inches = "tight")
+#
+#plt.close()
+#
+##%%
+#
+#import scipy, seaborn as sns, json
+#
+#    # Now write the function to get all progeny of an input nodename
+#def get_progeny(dic,parent_structure,progeny_list):
+#    """ 
+#    ---PURPOSE---
+#    Get a list of all progeny of a structure name.
+#    This is a recursive function which is why progeny_list is an
+#    argument and is not returned.
+#    ---INPUT---
+#    dic                  A dictionary representing the JSON file 
+#                         which contains the ontology of interest
+#    parent_structure     The structure
+#    progeny_list         The list to which this function will 
+#                         append the progeny structures. 
+#    """
+#    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
+#    
+#    name = dic.get('name')
+#    children = dic.get('children')
+#    if name == parent_structure:
+#        for child in children: # child is a dict
+#            child_name = child.get('name')
+#            progeny_list.append(child_name)
+#            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
+#        return
+#    
+#    for child in children:
+#        child_name = child.get('name')
+#        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
+#    return 
+#
+##get progeny of all large structures
+#ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+#
+#with open(ontology_file) as json_file:
+#    ontology_dict = json.load(json_file)
+#
+##rank by cfos mean cells /mm3 vs mean cells /mm3. Or make cfos/mm3 delta between the two..
+#cs = pd.read_pickle("/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/2018_sfn_poster/cfos/stat_dataframe.p")
+#
+##adding up to hierarchy
+##add parent regions to df
+#df = pd.DataFrame(columns = cs.columns)
+#df["Structure"] = nc_areas
+#cs = cs.append(df, ignore_index = True)
+#
+#for soi in nc_areas:
+#    progeny = []
+#    get_progeny(ontology_dict, soi, progeny)
+#    counts = [cs.loc[cs.Structure == xx, "Stimulation mean"].values[0] for xx in progeny if len(cs.loc[cs.Structure == xx, "Stimulation mean"].values)]
+#    vol = [cs.loc[cs.Structure == xx, "structure_vol"].values[0] for xx in progeny if len(cs.loc[cs.Structure == xx, "structure_vol"].values)]
+#    counts = sum(counts); vol = sum(vol)
+#    cs.loc[cs.Structure == soi, "Stimulation mean"] = counts
+#    cs.loc[cs.Structure == soi, "structure_vol"] = vol
+#
+#cfos = cs[['Structure','Stimulation mean', "structure_vol"]].copy()
+#
+#cfos["Stimulation density mean"] = cfos["Stimulation mean"]/(cfos["structure_vol"]/(0.020**3))
+#
+#cfos = cfos[cfos.Structure.isin(nc_areas)]
+#cfos = cfos.sort_values('Stimulation density mean', ascending=False)
+#cfos['cfos_order'] = range(1,len(cfos)+1)
+#
+#prv_nc_areas_rank = np.array(nc_areas)[np.argsort(np.median(prv_density, axis = 0))][::-1]
+#cfos_nc_areas_rank = cfos.Structure.values
+##%%
+#
+#cfos_ranks = [i+1 for i,nuc in enumerate(cfos_nc_areas_rank)]
+#prv_ranks = []
+##make proper ranks
+#for soi in cfos_nc_areas_rank :
+#    for i,s in enumerate(prv_nc_areas_rank):
+#        if soi == s:
+#            prv_ranks.append(i+1)
+#
+#
+#X = prv_ranks
+#Y = cfos_ranks
+#
+#df = pd.DataFrame()
+#df["cfos_ranks"] = cfos_ranks
+#df["prv_ranks"] = prv_ranks
+#
+#slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(df[['prv_ranks', 'cfos_ranks']].values)
+#
+#g = sns.regplot(data=df, x='prv_ranks', y = 'cfos_ranks')
+#g.text(19,17,'slope {:0.2f}\nr_value {:0.2f}\np_value {:0.2f}'.format(slope, r_value, p_value))
+#
+#ytick_spacing = 1; xtick_spacing = 1
+#g.yaxis.set_major_locator(ticker.MultipleLocator(ytick_spacing))
+#g.xaxis.set_major_locator(ticker.MultipleLocator(xtick_spacing))
+#
+##plot nc area labels
+#for i, txt in enumerate(cfos_nc_areas_rank):
+#    g.annotate(txt, (X[i], Y[i]), fontsize = "x-small")
+#
+#plt.savefig(os.path.join(dst, 'cfos_v_prv.jpg'), bbox_inches = "tight", dpi=300); plt.close()
 #with open(os.path.join(dst, 'all_nc_structures_cfosbyactivationratio.txt'), 'a') as fl:
 #    fl.write('slope {}, intercept {},\n r_value {}, p_value {},'.format(slope, intercept, r_value, p_value))
 #    fl.close()

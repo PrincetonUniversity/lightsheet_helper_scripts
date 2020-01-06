@@ -220,7 +220,7 @@ if __name__ == "__main__":
     output_folder = os.path.join(dst, "prv_transformed_cells"); makedir(output_folder)
     
     #inputs
-    brains = ["20180215_jg_bl6f_prv_08", "20180215_jg_bl6f_prv_10"]
+    brains = ["20180215_jg_bl6f_prv_08"]#["20180205_jg_bl6f_prv_01", "20180215_jg_bl6f_prv_08", "20180305_jg_bl6f_prv_13","20180305_jg_bl6f_prv_14"]
     
     brains = [os.path.join(input_folder, xx) for xx in brains]
     input_list = [xx for xx in brains if os.path.exists(os.path.join(xx, folder_suffix))]
