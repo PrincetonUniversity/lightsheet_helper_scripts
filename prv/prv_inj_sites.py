@@ -29,11 +29,14 @@ if __name__ == "__main__":
 
     src = "/jukebox/wang/pisano/tracing_output/retro_4x"
     
-    brains = ["20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
-       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_15", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
+    brains = ["20180205_jg_bl6f_prv_01", "20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", 
+          "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
+       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_13","20180306_jg_bl6f_prv_14", 
+       "20180305_jg_bl6f_prv_15", "20180306_jg_bl6f_prv_16", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
        "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180305_jg_bl6f_prv_11", "20180313_jg_bl6f_prv_25",
        "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
        "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35"]
+
     
     #run
     inputlist = [os.path.join(src, xx) for xx in brains]
@@ -94,8 +97,11 @@ if __name__ == "__main__":
 #        shutil.rmtree(outpth) #delete original transformed file
         
     #inspect injection sites for the brains i currently have
-    imgs = listdirfull(dct["dst"], "tif"); imgs.sort()
+    imgs = [os.path.join(dct["dst"], xx+".tif") for xx in brains]; imgs.sort()
     sites = np.array([fix_orientation(tifffile.imread(xx)[:, 450:, :], dct["reorientation"]) for xx in imgs]) #the y-axis cutoff for visualization
+    #check
+    for i,site in enumerate(sites):
+        tifffile.imsave("/home/wanglab/Desktop/{}.tif".format(brains[i]), np.max(site, axis = 0))
     atl = fix_orientation(tifffile.imread(dct["atlas"])[:, 450:, :], dct["reorientation"])
     
     my_cmap = eval("plt.cm.{}(np.arange(plt.cm.RdBu.N))".format("viridis"))
