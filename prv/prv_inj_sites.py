@@ -7,6 +7,8 @@ Created on Wed Oct  2 16:14:37 2019
 """
 
 import os, subprocess as sp, tifffile, numpy as np, shutil, matplotlib.pyplot as plt, matplotlib as mpl
+from collections import Counter
+
 from tools.analysis.analyze_injection_inverse_transform import pool_injections_inversetransform
 from tools.utils.io import makedir, load_kwargs, listdirfull
 from tools.imageprocessing.orientation import fix_orientation
@@ -49,7 +51,7 @@ if __name__ == "__main__":
       "num_sites_to_keep": 1,
       "injectionscale": 45000, 
       "imagescale": 2,
-      "reorientation": ("2","0","1"),
+      "reorientation": ("2","1","0"),
       "crop": "[:,:,:]",
       "dst": "/jukebox/wang/zahra/tracing_projects/prv/prv_injection_sites",
       "save_individual": False, 
@@ -104,14 +106,64 @@ if __name__ == "__main__":
         tifffile.imsave("/home/wanglab/Desktop/{}.tif".format(brains[i]), np.max(site, axis = 0))
     atl = fix_orientation(tifffile.imread(dct["atlas"])[:, 450:, :], dct["reorientation"])
     
+    #make counter
+    nonzeros = [list(zip(*np.nonzero(site))) for site in sites] #<-for pooled image
+    
+    #condense nonzero pixels
+    nzs = [str(x) for xx in nonzeros for x in xx] #this list has duplicates if two brains had the same voxel w label
+    c = Counter(nzs)
+    array = np.zeros(atl.shape)
+    print("Collecting nonzero pixels for pooled image...")
+    tick = 0
+    #generating pooled array where voxel value = total number of brains with that voxel as positive
+    for k,v in c.items():
+        k = [int(xx) for xx in k.replace("(","").replace(")","").split(",")]
+        array[k[0], k[1], k[2]] = int(v)
+        tick+=1
+        if tick % 50000 == 0: print("   {}".format(tick))
+        
     my_cmap = eval("plt.cm.{}(np.arange(plt.cm.RdBu.N))".format("viridis"))
     my_cmap[:1,:4] = 0.0  
     my_cmap = mpl.colors.ListedColormap(my_cmap)
     my_cmap.set_under("w")
     plt.figure()
     plt.imshow(np.max(atl, axis=0), cmap="gray")
-    plt.imshow(np.max(np.sum(sites, axis=0), axis = 0), alpha=0.90, cmap=my_cmap); plt.colorbar(); plt.axis("off")
+    plt.imshow(np.max(array, axis=0), alpha=0.90, cmap=my_cmap); plt.colorbar(); plt.axis("off")
     
-    plt.savefig(os.path.join("/home/wanglab/Desktop/heatmap.pdf"), dpi = 300, transparent = True);
+    plt.savefig(os.path.join("/home/wanglab/Desktop/heatmap_horz.pdf"), dpi = 300, transparent = True);
     plt.close()
-#    
+#%%
+    ann_raw = tifffile.imread("/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif")    
+    #percentage covered by at least one injection plot (for supp figure)
+    #annotation IDs of the cerebellum ONLY that are actually represented in annotation file
+    ann = fix_orientation(ann_raw[:, 450:, :], dct["reorientation"])
+    
+    iids = {"Lingula (I)": 912,
+            "Lobule II": 976,
+            "Lobule III": 984,
+            "Lobule IV-V": 1091,
+            "Lobule VIa": 936,
+            "Lobule VIb": 1134,
+            "Lobule VII": 944,
+            "Lobule VIII": 951,
+            "Lobule IX": 957, #uvula IX
+            "Lobule X": 968, #nodulus X
+            "Simplex lobule": 1007, #simplex
+            "Crus 1": 1056, #crus 1
+            "Crus 2": 1064, #crus 2
+            "Paramedian lobule": 1025, #paramedian lob
+            "Copula pyramidis": 1033 #copula pyramidis
+            }
+    ak = np.asarray([k for k,v in iids.items()])
+    
+    atlas_rois = {}
+    for nm, iid in iids.items():
+        z,y,x = np.where(ann == iid) #find where structure is represented
+        ann_blank = np.zeros_like(ann)
+        ann_blank[z,y,x] = 1 #make a mask of structure in annotation space
+        atlas_rois[nm] = ann_blank.astype(bool) #add mask of structure to dictionary
+    
+    expr_all_as_frac_of_lob = np.array([(array.ravel()[lob.ravel()].astype(int)).sum() / lob.sum() for nm, lob in atlas_rois.items()])    
+    primary_as_frac_of_lob = np.array([np.argmax(e) for e in expr_all_as_frac_of_lob])
+
+
