@@ -6,9 +6,9 @@ Created on Wed Oct  2 16:14:37 2019
 @author: wanglab
 """
 
-import os, subprocess as sp, tifffile, numpy as np, shutil, matplotlib.pyplot as plt, matplotlib as mpl
+import os, subprocess as sp, tifffile, numpy as np, matplotlib.pyplot as plt, matplotlib as mpl, pandas as pd
 from collections import Counter
-
+from tools.registration.transform import count_structure_lister, transformed_pnts_to_allen_helper_func
 from tools.analysis.analyze_injection_inverse_transform import pool_injections_inversetransform
 from tools.utils.io import makedir, load_kwargs, listdirfull
 from tools.imageprocessing.orientation import fix_orientation
@@ -32,12 +32,12 @@ if __name__ == "__main__":
     src = "/jukebox/wang/pisano/tracing_output/retro_4x"
     
     brains = ["20180205_jg_bl6f_prv_01", "20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", 
-          "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
-       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_13","20180306_jg_bl6f_prv_14", 
-       "20180305_jg_bl6f_prv_15", "20180306_jg_bl6f_prv_16", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
-       "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180305_jg_bl6f_prv_11", "20180313_jg_bl6f_prv_25",
-       "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
-       "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35"]
+          "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06", "20180215_jg_bl6f_prv_08", "20180215_jg_bl6f_prv_09", 
+           "20180305_jg_bl6f_prv_11", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_13","20180306_jg_bl6f_prv_14", 
+           "20180305_jg_bl6f_prv_15", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
+           "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180313_jg_bl6f_prv_25",
+           "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
+           "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35"]
 
     
     #run
@@ -51,7 +51,7 @@ if __name__ == "__main__":
       "num_sites_to_keep": 1,
       "injectionscale": 45000, 
       "imagescale": 2,
-      "reorientation": ("2","1","0"),
+      "reorientation": ("0","1","2"),
       "crop": "[:,:,:]",
       "dst": "/jukebox/wang/zahra/tracing_projects/prv/prv_injection_sites",
       "save_individual": False, 
@@ -100,14 +100,31 @@ if __name__ == "__main__":
         
     #inspect injection sites for the brains i currently have
     imgs = [os.path.join(dct["dst"], xx+".tif") for xx in brains]; imgs.sort()
-    sites = np.array([fix_orientation(tifffile.imread(xx)[:, 450:, :], dct["reorientation"]) for xx in imgs]) #the y-axis cutoff for visualization
+    #the y-axis cutoff for visualization
+#    sites = np.array([fix_orientation(tifffile.imread(xx)[:, 450:, :], dct["reorientation"]) for xx in imgs]) 
+    sites = np.array([tifffile.imread(xx) for xx in imgs]) 
     #check
-    for i,site in enumerate(sites):
-        tifffile.imsave("/home/wanglab/Desktop/{}.tif".format(brains[i]), np.max(site, axis = 0))
-    atl = fix_orientation(tifffile.imread(dct["atlas"])[:, 450:, :], dct["reorientation"])
-    
+#    for i,site in enumerate(sites):
+#        tifffile.imsave("/home/wanglab/Desktop/{}.tif".format(brains[i]), np.max(site, axis = 0))
+#    atl = fix_orientation(tifffile.imread(dct["atlas"])[:, 450:, :], dct["reorientation"])
+    atl = tifffile.imread(dct["atlas"])
     #make counter
     nonzeros = [list(zip(*np.nonzero(site))) for site in sites] #<-for pooled image
+    
+    #cell counts to csv
+    allen_id_table=pd.read_excel(dct["id_table"]).drop(columns = ["Unnamed: 0"])
+    ann = tifffile.imread(dct["annotation"])
+    for i,site in enumerate(sites):
+        nz = np.nonzero(site)
+        pos = transformed_pnts_to_allen_helper_func(np.asarray(list(zip(*[nz[0], nz[1], nz[2]]))), ann, order = "ZYX")
+        tdf = count_structure_lister(allen_id_table, *pos)
+        if i == 0: 
+            df = tdf.copy()
+            countcol = "count" if "count" in df.columns else "cell_count"
+            df.drop([countcol], axis=1, inplace=True)
+        df[brains[i]] = tdf[countcol]
+    #export
+    df.to_csv("/jukebox/wang/zahra/tracing_projects/prv/voxel_counts.csv", index = False)
     
     #condense nonzero pixels
     nzs = [str(x) for xx in nonzeros for x in xx] #this list has duplicates if two brains had the same voxel w label
@@ -130,40 +147,5 @@ if __name__ == "__main__":
     plt.imshow(np.max(atl, axis=0), cmap="gray")
     plt.imshow(np.max(array, axis=0), alpha=0.90, cmap=my_cmap); plt.colorbar(); plt.axis("off")
     
-    plt.savefig(os.path.join("/home/wanglab/Desktop/heatmap_horz.pdf"), dpi = 300, transparent = True);
+    plt.savefig(os.path.join("/home/wanglab/Desktop/inj_heatmap_horz.pdf"), dpi = 300, transparent = True);
     plt.close()
-#%%
-    ann_raw = tifffile.imread("/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif")    
-    #percentage covered by at least one injection plot (for supp figure)
-    #annotation IDs of the cerebellum ONLY that are actually represented in annotation file
-    ann = fix_orientation(ann_raw[:, 450:, :], dct["reorientation"])
-    
-    iids = {"Lingula (I)": 912,
-            "Lobule II": 976,
-            "Lobule III": 984,
-            "Lobule IV-V": 1091,
-            "Lobule VIa": 936,
-            "Lobule VIb": 1134,
-            "Lobule VII": 944,
-            "Lobule VIII": 951,
-            "Lobule IX": 957, #uvula IX
-            "Lobule X": 968, #nodulus X
-            "Simplex lobule": 1007, #simplex
-            "Crus 1": 1056, #crus 1
-            "Crus 2": 1064, #crus 2
-            "Paramedian lobule": 1025, #paramedian lob
-            "Copula pyramidis": 1033 #copula pyramidis
-            }
-    ak = np.asarray([k for k,v in iids.items()])
-    
-    atlas_rois = {}
-    for nm, iid in iids.items():
-        z,y,x = np.where(ann == iid) #find where structure is represented
-        ann_blank = np.zeros_like(ann)
-        ann_blank[z,y,x] = 1 #make a mask of structure in annotation space
-        atlas_rois[nm] = ann_blank.astype(bool) #add mask of structure to dictionary
-    
-    expr_all_as_frac_of_lob = np.array([(array.ravel()[lob.ravel()].astype(int)).sum() / lob.sum() for nm, lob in atlas_rois.items()])    
-    primary_as_frac_of_lob = np.array([np.argmax(e) for e in expr_all_as_frac_of_lob])
-
-

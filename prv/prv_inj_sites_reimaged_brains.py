@@ -67,8 +67,7 @@ if __name__ == "__main__":
 
     src = "/jukebox/wang/zahra/tracing_projects/prv/prv_inj_vols_from_reimaged_brains"
     
-    brains = ["20180205_jg_bl6f_prv_01", "20180215_jg_bl6f_prv_08", "20180215_jg_bl6f_prv_10", "20180305_jg_bl6f_prv_13", 
-              "20180305_jg_bl6f_prv_14"]
+    brains = ["20180215_jg_bl6f_prv_08"]
     
     #run
     inputlist = [os.path.join(src, xx) for xx in brains]
@@ -77,7 +76,7 @@ if __name__ == "__main__":
       "channel": "01",
       "channel_type": "injch",
       "filter_kernel": (3,3,3), 
-      "threshold": 4, 
+      "threshold": 8, 
       "num_sites_to_keep": 1,
       "injectionscale": 45000, 
       "imagescale": 2,

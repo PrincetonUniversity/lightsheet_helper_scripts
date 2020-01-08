@@ -46,7 +46,7 @@ ax = fig.add_axes([.4,.1,.5,.8])
 show = sorted_counts.T
 
 vmin = 0
-vmax = 100
+vmax = 75
 whitetext = 20
 cmap = plt.cm.viridis
 cmap.set_over("gold")
@@ -110,7 +110,7 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", 
-                  ticks=bounds, boundaries=bounds, format="%0.1f", shrink=0.5, aspect=10)
+                  ticks=bounds, boundaries=bounds, format="%d", shrink=0.5, aspect=10)
 cb.set_label("Cells/mm3", fontsize="x-small", labelpad=2)
 cb.ax.tick_params(labelsize="x-small")
 
@@ -157,7 +157,7 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", 
-                  ticks=bounds, boundaries=bounds, format="%0.1f", shrink=0.5, aspect=10)
+                  ticks=bounds, boundaries=bounds, format="%d", shrink=0.5, aspect=10)
 cb.set_label("Cells/mm3", fontsize="x-small", labelpad=2)
 cb.ax.tick_params(labelsize="x-small")
 
@@ -192,7 +192,7 @@ mean_counts = np.asarray([np.mean(cell_counts_per_brain[np.where(primary_pool ==
 show = mean_counts.astype(int).T #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 0
-vmax = 50
+vmax = 75
 cmap = plt.cm.viridis
 cmap.set_over("gold")
 #colormap

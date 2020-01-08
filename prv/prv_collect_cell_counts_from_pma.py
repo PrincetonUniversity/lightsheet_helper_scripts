@@ -37,12 +37,12 @@ plt.imshow(ann_left[120])
 #collect 
 #brains should be in this order as they were saved in this order for inj analysis
 brains = ["20180205_jg_bl6f_prv_01", "20180205_jg_bl6f_prv_02", "20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04", 
-          "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06",
-       "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_13","20180306_jg_bl6f_prv_14", 
-       "20180305_jg_bl6f_prv_15", "20180306_jg_bl6f_prv_16", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
-       "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180305_jg_bl6f_prv_11", "20180313_jg_bl6f_prv_25",
-       "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
-       "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35"]
+          "20180215_jg_bl6f_prv_05", "20180215_jg_bl6f_prv_06", "20180215_jg_bl6f_prv_08", "20180215_jg_bl6f_prv_09", 
+           "20180305_jg_bl6f_prv_11", "20180305_jg_bl6f_prv_12", "20180305_jg_bl6f_prv_13","20180306_jg_bl6f_prv_14", 
+           "20180305_jg_bl6f_prv_15", "20180312_jg_bl6f_prv_17", "20180326_jg_bl6f_prv_37",
+           "20180313_jg_bl6f_prv_21", "20180313_jg_bl6f_prv_23", "20180313_jg_bl6f_prv_24", "20180313_jg_bl6f_prv_25",
+           "20180322_jg_bl6f_prv_27", "20180322_jg_bl6f_prv_28", "20180323_jg_bl6f_prv_30", "20180326_jg_bl6f_prv_33", 
+           "20180326_jg_bl6f_prv_34", "20180326_jg_bl6f_prv_35"]
     
 inj_src = os.path.join(dst, "prv_injection_sites")
 imgs = [os.path.join(inj_src, xx+".tif") for xx in brains]
@@ -119,9 +119,8 @@ ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X"
 frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[11], xx[12], np.sum(xx[13:16])] 
                                 for xx in expr_all_as_frac_of_inj])
 primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
-#get n"s after pooling
+#get n's after pooling
 primary_lob_n = np.array([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
-
 
 #make structures
 #FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
@@ -132,14 +131,12 @@ structures = make_structure_objects(df_pth, remove_childless_structures_not_reps
 #set variables
 lr_brains = list(lr_dist.keys())
 
-atl_dst = os.path.join(dst, "pma_to_aba"); makedir(atl_dst)
 trnsfrm_dst = os.path.join(dst, "prv_transformed_cells")
 id_table = pd.read_excel(df_pth)
 
-cells_src = os.path.join(dst, "prv_transformed_cells")
-post_transformed = [os.path.join(cells_src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
-transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
-                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
+#post_transformed = [os.path.join(trnsfrm_dst, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
+#transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
+#                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
 #########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
 ##collect 
 #for fl in post_transformed:
@@ -159,8 +156,7 @@ transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
 #    
 #    #convert registered points into structure counts
 #    converted_points = unpack_pnts(points_file, transformed_dst) 
-
-
+#
 def transformed_cells_to_ann(fld, ann, dst, fl_nm):
     """ consolidating to one function """
     
@@ -218,7 +214,7 @@ for k,v in l_cells_regions.items():
 contra_df = pd.DataFrame(contra)
 contra_df.to_csv(os.path.join(dst, "for_tp/nc_contra_counts_25_brains_pma.csv")) 
 
-ipsi_df = pd.DataFrame(contra)
+ipsi_df = pd.DataFrame(ipsi)
 ipsi_df.to_csv(os.path.join(dst, "for_tp/nc_ipsi_counts_25_brains_pma.csv")) 
 
 ##########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
@@ -285,25 +281,15 @@ for soi in sois:
 counts_per_struct = np.array(counts_per_struct)
 
 #then get only layers
-layer6 = []
+layer56 = []
 for soi in sois:
     progeny = []; counts = []
     get_progeny(ontology_dict, soi, progeny)
     for progen in progeny:
-        if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b":
+        if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b" or progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
             counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
-    layer6.append(np.array(counts).sum(axis = 0))
-layer6 = np.array(layer6)        
-
-layer5 = []
-for soi in sois:
-    progeny = []; counts = []
-    get_progeny(ontology_dict, soi, progeny)
-    for progen in progeny:
-        if progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
-            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
-    layer5.append(np.array(counts).sum(axis = 0))
-layer5 = np.array(layer5)        
+    layer56.append(np.array(counts).sum(axis = 0))
+layer56 = np.array(layer56)                
 
 #then get only layers
 layer23 = []
@@ -317,29 +303,78 @@ for soi in sois:
 layer23 = np.array(layer23)        
 
 #calculate fraction of counts that come from layer 4,5,6, or 2/3
-fracl5 = np.sum(layer5, axis = 0)/np.sum(counts_per_struct, axis = 0)
-mean_fracl5_per_struct = np.nanmean(fracl5, axis = 0)
-
-fracl6 = np.sum(layer6, axis = 0)/np.sum(counts_per_struct, axis = 0)
-mean_fracl6_per_struct = np.nanmean(fracl6, axis = 0)
+fracl56 = np.sum(layer56, axis = 0)/np.sum(counts_per_struct, axis = 0)
+mean_fracl56_per_struct = np.nanmean(fracl56, axis = 0)
 
 fracl23 = np.sum(layer23, axis = 0)/np.sum(counts_per_struct, axis = 0)
 mean_fracl23_per_struct = np.nanmean(fracl23, axis = 0)
 
 #%%
 
+cells_regions_pth = os.path.join(dst, "for_tp/nc_ipsi_counts_25_brains_pma.csv")
+
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
+
+#first calculate counts across entire nc region
+counts_per_struct = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    counts_per_struct.append(np.array(counts).sum(axis = 0))
+counts_per_struct = np.array(counts_per_struct)
+
+#then get only layers
+layer56_ipsi = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b" or progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
+            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    layer56_ipsi.append(np.array(counts).sum(axis = 0))
+layer56_ipsi = np.array(layer56_ipsi)                
+
+#%%
+#get contra/ipsi ratios
+layer56_contra = layer56
+
+_ccontra = np.asarray([[np.sum(xx[:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in layer56_contra.T])
+_cipsi = np.asarray([[np.sum(xx[:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in layer56_ipsi.T])
+ratio = _ccontra/_cipsi
+mean_ratio = np.mean(ratio, axis = 0)
+std_ratio = np.std(ratio, axis = 0)
+
+#separate by injection, vermis vs. hemisphere
+
+func = lambda xx: 0 if xx < 3 else 1
+#prv
+primary_pool_vh = np.array([func(xx) for xx in primary_pool])
+ratio_vermis = ratio[np.where(primary_pool_vh == 0)]
+ratio_hem = ratio[np.where(primary_pool_vh == 1)]
+
+mean_ratio_vermis = np.mean(ratio_vermis, axis = 0)
+mean_ratio_hem = np.mean(ratio_hem, axis = 0)
+std_ratio_vermis = np.std(ratio_vermis, axis = 0)
+std_ratio_hem = np.std(ratio_hem, axis = 0)
+#%%
+
 #layer 5+6 p counts maps
-layer56 = layer5+layer6
+layer56 = layer56
 pcounts = np.array([xx/sum(xx) for xx in layer56.T])*100
 
 #make % counts map like the h129 dataset (nc only for now)
 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (9,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxpcount = 20
+maxpcount = 30
 whitetext = 3
 label_coordsy, label_coordsx  = -0.37,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
@@ -427,7 +462,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (10,6), sharex = True, 
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxdensity = 150
+maxdensity = 200
 whitetext = 7
 label_coordsy, label_coordsx  = -0.30,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
@@ -610,7 +645,6 @@ cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks
                   boundaries=bounds, format="%d", shrink=0.3, aspect=10)
 cb.set_label("Weight / SE", fontsize="small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
-
 cb.ax.set_visible(True)
 
 #annotations
