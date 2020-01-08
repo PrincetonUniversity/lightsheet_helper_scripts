@@ -6,7 +6,7 @@ Created on Fri Oct 18 15:44:38 2019
 @author: wanglab
 """
 
-import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, statsmodels.api as sm, itertools
+import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, statsmodels.api as sm, itertools, seaborn as sns
 from skimage.external import tifffile
 import matplotlib.colors as colors, json
 from scipy.ndimage.measurements import center_of_mass
@@ -126,6 +126,33 @@ primary_lob_n = np.array([np.where(primary_pool == i)[0].shape[0] for i in np.un
 #FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=pma_ann_pth)
+
+#%%
+
+#make percentage coverage per brain
+#sum all injections
+inj_sum = inj_raw.sum(axis = 0).astype(bool)
+inj_sum_frac_lob = np.array([(inj_sum.ravel()[lob.ravel()].astype(int)).sum() / lob.sum() for nm, lob in atlas_rois.items()])    
+
+#vermis, exclude lob I/II
+#from paper
+lbls = ["I", "II", "III", "IV/V", "VIa", "VIb", "VII", "VIII", "XI", "X", "Simplex", "Crus I", "Crus II", "Paramedian", "Copula pyramidis"]
+df = pd.DataFrame()
+df["structure"], df["frac"] = lbls[2:10], inj_sum_frac_lob[2:10]*100
+
+sns.barplot(x="frac", y="structure", data=df, color="dimgrey")
+sns.despine(right=True, top=True)
+
+plt.savefig(os.path.join(fig_dst, "inj_p_covered_vermis.pdf"), dpi = 300, bbox_inches = "tight")
+
+#hem
+df = pd.DataFrame()
+df["structure"], df["frac"] = lbls[10:], inj_sum_frac_lob[10:]*100
+
+sns.barplot(x="frac", y="structure", data=df, color="dimgrey")
+sns.despine(right=True, top=True)
+
+plt.savefig(os.path.join(fig_dst, "inj_p_covered_hem.pdf"), dpi = 300, bbox_inches = "tight")
 
 #%%
 #set variables

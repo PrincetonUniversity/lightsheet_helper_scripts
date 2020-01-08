@@ -20,7 +20,7 @@ dst = "/home/wanglab/Desktop"
 src = "/jukebox/wang/zahra/tracing_projects/prv"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 
-cells_regions_pth = os.path.join(src, "for_tp/nc_contra_counts_26_brains_pma.csv")
+cells_regions_pth = os.path.join(src, "for_tp/nc_contra_counts_25_brains_pma.csv")
 
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
