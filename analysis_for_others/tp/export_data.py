@@ -10,6 +10,21 @@ import os, pickle as pckl
 
 #%%
 
+dst = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/"
+
+data = {}
+
+data["brains"] = brains
+data["frac_of_inj_pool"] = frac_of_inj_pool
+data["primary_pool"] = primary_pool
+data["ak_pool"] = ak_pool
+
+#store data (serialize)
+with open(os.path.join(dst, "prv_maps_contra_pma.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+
+#%%
+
 dst = "/jukebox/wang/zahra/modeling/h129/thalamus/"
 
 data = {}
@@ -261,12 +276,12 @@ data["mat"] = mat
 data["pmat"] = pmat
 data["mat_shuf"] = mat_shuf
 data["p_shuf"] = p_shuf
-data["ak_vh"] = ak_vh
-data["primary_vh_n"] = primary_vh_n
+data["ak_pool"] = ak_pool
+data["primary_lob_n"] = primary_lob_n
 data["regions"] = regions
-data["primary_vh_pool"] = primary_vh_pool
+data["primary_pool"] = primary_pool
 data["pcounts_pool"] = pcounts_pool
-data["frac_of_inj_vh"] = frac_of_inj_vh
+data["frac_of_inj_pool"] = frac_of_inj_pool
 #store data (serialize)
 with open(os.path.join(dst, "model_data_contra_pma.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)

@@ -10,10 +10,12 @@ Created on Wed Jul 31 21:00:17 2019
 import numpy as np, pandas as pd, os, sys, shutil, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
 from tools.registration.register import elastix_command_line_call, jacobian_command_line_call, change_interpolation_order, transformix_command_line_call, transformed_pnts_to_allen_helper_func, count_structure_lister
 from tools.utils.io import listdirfull, makedir, load_memmap_arr, load_np, listall, load_kwargs
+from tools.imageprocessing.orientation import fix_orientation
 from skimage.external import tifffile
 from tools.analysis.network_analysis import make_structure_objects
 from scipy.ndimage.measurements import center_of_mass
 from scipy.stats import median_absolute_deviation as mad
+from scipy.ndimage.measurements import center_of_mass
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
@@ -27,6 +29,77 @@ df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelc
 dst = "/home/wanglab/Desktop"
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
 
+#%%
+
+#GET A-P order for NC regions
+import json
+def get_progeny(dic,parent_structure,progeny_list):
+    """ 
+    ---PURPOSE---
+    Get a list of all progeny of a structure name.
+    This is a recursive function which is why progeny_list is an
+    argument and is not returned.
+    ---INPUT---
+    dic                  A dictionary representing the JSON file 
+                         which contains the ontology of interest
+    parent_structure     The structure
+    progeny_list         The list to which this function will 
+                         append the progeny structures. 
+    """
+    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
+    
+    name = dic.get('name')
+    children = dic.get('children')
+    if name == parent_structure:
+        for child in children: # child is a dict
+            child_name = child.get('name')
+            progeny_list.append(child_name)
+            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
+        return
+    
+    for child in children:
+        child_name = child.get('name')
+        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
+    return 
+
+#get progeny of all large structures
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+
+with open(ontology_file) as json_file:
+    ontology_dict = json.load(json_file)
+
+ann = tifffile.imread(ann_pth)
+df = pd.read_excel(df_pth)
+#get ids of all nc regions
+sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
+            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
+            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
+            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
+
+primary_iid = []
+
+for soi in sois:
+    progeny = [soi]
+    get_progeny(ontology_dict, soi, progeny)
+    iids = [df.loc[df.name == progen, "id"].values[0] for progen in progeny]
+    for iid in iids[1:]:
+        z,y,x = np.where(ann == iid)
+        ann[z,y,x] = iids[0]
+    primary_iid.append(iids[0])
+        
+
+#reslice coronal
+ann = fix_orientation(ann, ("2","0","1"))
+ap_dim = []
+for iid in primary_iid:
+    ann_mask = ann.copy()
+    ann_mask[ann_mask != iid] = 0
+    ap, dv, ml = center_of_mass(ann_mask)
+    ap_dim.append(ap)
+    
+ap_dim = np.array(ap_dim)
+ap_dim_sort = np.sort(ap_dim)
+sois = np.array(sois)[np.argsort(ap_dim)] #now use this ordering so it is truly ordered by A-P dimension
 #%%
 #THALAMUS
 brains = ["20170410_tp_bl6_lob6a_ml_repro_01",
@@ -59,12 +132,6 @@ cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
 cells_regions["Structure"] = cells_regions["Unnamed: 0"]
 cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
-
-#get counts for all of neocortex
-sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
 ann_df = "/home/wanglab/mounts/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 scale_factor = 0.025
@@ -177,13 +244,6 @@ ann_df = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 scale_factor = 0.020
 ann_df = pd.read_excel(ann_df).drop(columns = ["Unnamed: 0"])
 
-#get counts for all of neocortex
-sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
-
-
 #make new dict - for all brains
 cells_pooled_regions = {} #for raw counts
 vol_pooled_regions = {}
@@ -273,40 +333,45 @@ fig = plt.figure(figsize=(10,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 #rewrite nc labels
-lbls = ['ILA',
- 'PL',
- 'ACA',
- 'FRP',
- 'ORB',
- 'GU',
- 'AI',
- 'VISC',
- 'SS',
- 'MO',
- 'RSP',
- 'PTLp',
- 'VIS',
- 'TEa',
- 'AUD',
- 'ECT',
- 'PERI']
+lbls = [df.loc[df.name == soi, "acronym"].values[0] for soi in sois]
 
 #linear regression
-Y = np.mean(thal_density_per_brain, axis = 0)
+Y = np.median(thal_density_per_brain, axis = 0)
 X = range(len(lbls))
-std = np.std(thal_density_per_brain, axis = 0)
+std = mad(thal_density_per_brain, axis = 0)
 
-#plot as scatter
-color_map = ["dimgray", "rosybrown", "darkred", "tomato", "chocolate", "orange", "gold", "olive", "darkseagreen", "springgreen", "teal",
-             "darkturquoise", "steelblue", "navy", "indigo", "crimson", "deeppink"]
+results = sm.OLS(Y,sm.add_constant(X)).fit()
 
-ax.errorbar(X, Y, std, color='black', marker='o', linestyle='dashed', linewidth=2, markersize=8)
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]
+
+ax.errorbar(X, Y, std, color='black', marker='o', linestyle='dashed', linewidth=2, markersize=8, label = "Slope=%0.2f\n$R$=%0.2f" % (mean_slope, np.sqrt(mean_r2)))
 
 ax.set_ylabel("Neocortical density \nat thalamic timepoint \n(cells/$mm^3$)")
 ax.set_xticks(np.arange(len(lbls))+.5)
 ax.set_xticklabels(lbls, rotation=30, fontsize="small", ha="right")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 
 ax.set_xlabel("$\Longleftrightarrow$ \n Anterior-Posterior")
-#plt.legend(prop={'size': 10}, bbox_to_anchor=(1,1), loc='upper left', ncol=1)
+plt.legend(prop={'size': 10}, bbox_to_anchor=(0.8,1), loc='upper left', ncol=1)
 
-plt.savefig("/home/wanglab/Desktop/disynaptic.pdf", bbox_inches = "tight")
+plt.savefig("/home/wanglab/Desktop/disynaptic_error_plot.pdf", bbox_inches = "tight")
+
+#%%
+
+fig = plt.figure(figsize=(10,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+#rewrite nc labels
+lbls = [df.loc[df.name == soi, "acronym"].values[0] for soi in sois]
+
+#linear regression
+Y = np.mean(thal_density_per_brain, axis = 0)
+X = range(len(lbls))
+std = np.std(thal_density_per_brain, axis = 0)
+
+results = sm.OLS(Y,sm.add_constant(X)).fit()
+
+mean_slope = results.params[1]
+mean_r2 = results.rsquared
+mean_intercept = results.params[0]

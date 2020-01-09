@@ -10,6 +10,8 @@ import matplotlib as mpl, os
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
 #imports
 #path to pickle file
 data_pth = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/model_data_contra_pma.p"
@@ -25,20 +27,17 @@ mat = data["mat"]
 pmat = np.asarray(data["pmat"])
 p_shuf = np.asarray(data["p_shuf"])
 mat_shuf = np.asarray(data["mat_shuf"])
-ak_vh = data["ak_vh"]
+ak_pool = data["ak_pool"]
 regions = data["regions"]
-primary_vh_n = data["primary_vh_n"]
+primary_lob_n = data["primary_lob_n"]
 
-#show actual numbers for % counts for the mean counts figure
-show_ann = False
-
-#glm figure
-fig = plt.figure(figsize=(5,5))
+## display
+fig = plt.figure(figsize=(6,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 #set white text limit here
 whitetext = 8
-annotation_size = "small"#annotation/number sizes
+annotation_size = "medium"#annotation/number sizes
 
 # map 1: weights
 show = np.flipud(mat) # NOTE abs
@@ -55,9 +54,9 @@ bounds = np.linspace(vmin,vmax,((vmax-vmin)/2)+1)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.2, aspect=10)
-cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
+                  boundaries=bounds, format="%d", shrink=0.3, aspect=10)
+cb.set_label("Weight / SE", fontsize="small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
@@ -82,11 +81,11 @@ for y,x in np.argwhere(sig):
 ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
-ax.set_xticks(np.arange(len(ak_vh))+.5)
-lbls = np.asarray(ak_vh)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_vh_n)], rotation=30, fontsize="small", ha="right")
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize="x-small", ha="right")
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="small")
+ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="medium")
 
-plt.savefig(os.path.join(dst, "prv_nc_glm_contra_counts_pma.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_nc_glm_contra_layer56_pma.pdf"), bbox_inches = "tight")
