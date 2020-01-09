@@ -151,6 +151,33 @@ transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
 ##collect counts from left side
 #left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_no_prog_at_each_level_allen_atl.p")
 
+#import dict of cells by region
+r_cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
+
+contra = {}; ipsi = {} #collect contra and ipsi frame
+for k,v in r_cells_regions.items():
+    if lr_dist[k] < 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
+
+#LEFT SIDE
+l_cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
+
+for k,v in l_cells_regions.items():
+    if lr_dist[k] > 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
+        
+contra_df = pd.DataFrame(contra)
+contra_df.to_csv(os.path.join(dst, "data/thal_contra_counts_23_brains.csv")) 
+
+ipsi_df = pd.DataFrame(ipsi)
+ipsi_df.to_csv(os.path.join(dst, "data/thal_ipsi_counts_23_brains.csv"))         
+
 #%%
 
 def get_cell_n_density_counts(brains, structure, structures, cells_regions, scale_factor = 0.025):

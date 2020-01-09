@@ -12,7 +12,7 @@ import os, pandas as pd, numpy as np, json, pickle
 src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 
-data_pth = "/jukebox/wang/zahra/modeling/h129/neocortex/model_data_contra_pma.p"
+data_pth = "/jukebox/wang/zahra/modeling/h129/thalamus/thal_model_data_contra_allen.p"
 data = pickle.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
@@ -22,7 +22,7 @@ dst = "/home/wanglab/Desktop"
 primary_pool = data["primary_pool"]
 ak_pool = data["ak_pool"]
 
-cells_regions_pth = os.path.join(src, "nc_contra_counts_33_brains_pma.csv")
+cells_regions_pth = os.path.join(src, "thal_contra_counts_23_brains.csv")
 cells_regions = pd.read_csv(cells_regions_pth)
 brains = list(cells_regions.columns)[1:]
 
@@ -68,10 +68,7 @@ with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
 #get counts for all of neocortex
-sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
+sois = ["Thalamus, sensory-motor cortex related", "Thalamus, polymodal association cortex related"]
 
 #first calculate counts across entire nc region
 contra_counts_per_struct = []
@@ -86,7 +83,7 @@ contra_counts_per_struct = np.array(contra_counts_per_struct)
 
 #%%
 
-cells_regions_pth = os.path.join(src, "nc_ipsi_counts_33_brains_pma.csv")
+cells_regions_pth = os.path.join(src, "thal_ipsi_counts_23_brains.csv")
 
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
@@ -106,9 +103,7 @@ ipsi_counts_per_struct = np.array(ipsi_counts_per_struct)
 #%%
 #get contra/ipsi ratios
 
-_ccontra = np.asarray([[np.sum(xx[:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in contra_counts_per_struct.T])
-_cipsi = np.asarray([[np.sum(xx[:7]), np.sum(xx[8:10]), np.sum(xx[10:])] for xx in ipsi_counts_per_struct.T])
-ratio = _ccontra/_cipsi
+ratio = contra_counts_per_struct.T/ipsi_counts_per_struct.T
 mean_ratio = np.mean(ratio, axis = 0)
 std_ratio = np.std(ratio, axis = 0)
 
