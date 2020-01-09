@@ -6,36 +6,36 @@ Created on Thu Oct 31 13:54:48 2019
 @author: wanglab
 """
 
-import nibabel as nib, matplotlib.pyplot as plt, tifffile, numpy as np, pandas as pd
+
+import SimpleITK as sitk, numpy as np, tifffile, matplotlib.pyplot as plt
+import pandas as pd
 
 if __name__ == "__main__":
-    
-    dst = '/jukebox/LightSheetData/brodyatlas/atlas/modified'
-    ann_pth = '/jukebox/LightSheetData/brodyatlas/atlas/original/WHS_SD_rat_atlas_v3.nii'
-    atl_pth = '/jukebox/LightSheetData/brodyatlas/atlas/original/WHS_SD_rat_T2star_v1.01.nii'
-    
-    ann = nib.load(ann_pth)
-    
-    ann = ann.get_fdata()
-    
-    plt.imshow(np.swapaxes(np.flip(np.rot90(ann, 2), 2), 0,2)[250]) #horizontal
-    
-    #makes anterior up orientation of horizontal brain
-    tifffile.imsave(dst+'/WHS_SD_rat_atlas_v3.tif', np.swapaxes(np.flip(np.rot90(ann, 2), 2), 0,2).astype("uint16"))
-    
-    #range to clip x,y
+ 
+    #range to clip y
+    yrng = (76, 822)
     xrng = (20, 475)
-    yrng = (76, 850) #ranges based on 2018 atlas optimization, see lightsheet_helper_scripts/registration/rat_registration_to_waxholm_mri.py
     zrng = (62, 364)
     
-    ann = np.swapaxes(np.flip(np.rot90(ann, 2), 2), 0,2)
-    ann = ann[zrng[0]:zrng[1],yrng[0]:yrng[1],xrng[0]:xrng[1]]
-    tifffile.imsave(dst+'/WHS_SD_rat_atlas_v3_cropped.tif', ann.astype("uint16"))
+    #load in wh colored atlas and reorient
+    ann = np.fliplr(sitk.GetArrayFromImage(sitk.ReadImage("/jukebox/LightSheetData/brodyatlas/atlas/original/WHS_SD_rat_atlas_v3.nii")))
+    nann='/jukebox/LightSheetData/brodyatlas/atlas/modified/WHS_SD_rat_atlas_v3_anterior_up_DV.tif'
+    #here we are reorienting to A-P, D-V orientation (how our images are taken) and THEN CROP
+    ann = ann[::-1][zrng[0]:zrng[1],yrng[0]:yrng[1],xrng[0]:xrng[1]]
+    tifffile.imsave(nann, ann)
     
-    #convert to sagittal
-    plt.imshow(np.swapaxes(ann, 0,2)[250]) #sagittal
-    tifffile.imsave(dst+'/WHS_SD_rat_atlas_v3_cropped_sagittal.tif', np.swapaxes(ann, 0,2).astype("uint16"))
-        
+    auto = np.fliplr(sitk.GetArrayFromImage(sitk.ReadImage('/jukebox/LightSheetData/brodyatlas/atlas/original/WHS_SD_rat_T2star_v1.01.nii')))
+    nauto = '/jukebox/LightSheetData/brodyatlas/atlas/modified/WHS_SD_rat_T2star_v1.01_anterior_up_DV.tif'
+    auto = auto[::-1][zrng[0]:zrng[1],yrng[0]:yrng[1],xrng[0]:xrng[1]]
+    tifffile.imsave(nauto, auto)
+    
+    #remove skull in atlas using mask
+    from skimage.external import tifffile
+    mask = tifffile.imread('/jukebox/LightSheetData/brodyatlas/atlas/modified/WHS_SD_rat_atlas_v3_anterior_up_DV.tif')
+    atlas = tifffile.imread('/jukebox/LightSheetData/brodyatlas/atlas/modified/WHS_SD_rat_T2star_v1.01_anterior_up_DV.tif')
+    atlas[mask==0] = 0
+    tifffile.imsave('/jukebox/LightSheetData/brodyatlas/atlas/modified/WHS_SD_rat_T2star_v1.01_anterior_up_skullremoved_DV.tif', atlas)
+    
     #make df for labels
     ndf = pd.DataFrame(columns=["name", "id"])
     
