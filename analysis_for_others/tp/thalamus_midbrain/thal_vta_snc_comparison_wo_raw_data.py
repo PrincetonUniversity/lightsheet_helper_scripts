@@ -13,12 +13,12 @@ mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 
 #import data
-pth = "/jukebox/wang/zahra/modeling/h129/vta_snc/mean_count_and_density_data_contra.p"
+pth = r"V:\zahra\modeling\h129\vta_snc\mean_count_and_density_data_contra.p"
 data = pckl.load(open(pth, "rb"), encoding = "latin1")
 
 #set dst 
-dst = "/home/wanglab/Desktop"
-#dst = "/Users/tjp7rr1/Downloads"
+#dst = "/home/wanglab/Desktop"
+dst = r"C:\Users\Zahra\Desktop"
 
 cell_counts_per_brain = data["cell_counts_per_brain"]
 brains = data["brainnames"]
@@ -57,8 +57,7 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", 
-                  ticks=bounds, boundaries=bounds, format="%d", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8)
 cb.set_label("Cell counts", fontsize="x-small", labelpad=2)
 cb.ax.tick_params(labelsize="x-small")
 

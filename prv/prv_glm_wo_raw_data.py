@@ -47,6 +47,27 @@ vmax = 10
 cmap = plt.cm.Reds
 cmap.set_under("w")
 cmap.set_over("maroon")
+
+
+#tp local
+tp = True
+if tp:
+    dst = "/Users/tjp7rr1/Downloads"
+    vmin = 0
+    vmax = 8
+    cmap = plt.cm.Blues#plt.cm.Reds
+    cmap.set_over(plt.cm.Blues(1.0)) #cmap.set_over('maroon')
+    whitetext = 6
+    cmap.set_under('w')
+    #reorder xaxis
+    pmat = np.concatenate([pmat[:,:3], pmat[:,3:][:,::-1]], 1)
+    ak_pool = np.concatenate([ak_pool[:3], ak_pool[3:][::-1]], 0)
+    
+    #TP NOTE - FOR SOME REASON THIS MESSES UP SIGNIFICANT ASTERISKS, numbers are ok
+    #LOOK AT ZAHRAS FOR THAT
+
+
+
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,((vmax-vmin)/2)+1)
@@ -89,3 +110,4 @@ ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="medium")
 
 plt.savefig(os.path.join(dst, "prv_nc_glm_contra_layer56_pma.pdf"), bbox_inches = "tight")
+#%%

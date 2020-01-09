@@ -99,57 +99,57 @@ post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/postt
 transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
                   "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
 
-#collect 
-for fl in post_transformed:
-    arr = np.load(fl)
-    #make into transformix-friendly text file
-    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
-    print(brain)
-    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
-    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
-        
-    #copy over elastix files
-    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
-    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
-   
-    #run transformix on points
-    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
-    
-    #convert registered points into structure counts
-    converted_points = unpack_pnts(points_file, transformed_dst) 
-    
-#%%
-#------------------------------------------------------------------------------------------------------------------------------    
-def transformed_cells_to_allen(fld, ann, dst, fl_nm):
-    """ consolidating to one function bc then no need to copy/paste """
-    dct = {}
-    
-    for fl in fld:
-        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
-        print(converted_points)
-        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
-        df = count_structure_lister(id_table, *point_lst).fillna(0)
-        #for some reason duplicating columns, so use this
-        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
-        fl_name = os.path.basename(fl)
-        dct[fl_name]= nm_cnt
-        
-    #unpack
-    index = dct[list(dct.keys())[0]].keys()
-    columns = dct.keys()
-    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
-    df = pd.DataFrame(data.T, columns=columns, index=index)
-    
-    #save before adding projeny counts at each level
-    df.to_pickle(os.path.join(dst, fl_nm))
-    
-    return os.path.join(dst, fl_nm)
-
-pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
-#collect counts from right side
-right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_no_prog_at_each_level_allen_atl.p")
-#collect counts from left side
-left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_no_prog_at_each_level_allen_atl.p")
+##collect 
+#for fl in post_transformed:
+#    arr = np.load(fl)
+#    #make into transformix-friendly text file
+#    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
+#    print(brain)
+#    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
+#    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
+#        
+#    #copy over elastix files
+#    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
+#    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
+#   
+#    #run transformix on points
+#    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
+#    
+#    #convert registered points into structure counts
+#    converted_points = unpack_pnts(points_file, transformed_dst) 
+#    
+##%%
+##------------------------------------------------------------------------------------------------------------------------------    
+#def transformed_cells_to_allen(fld, ann, dst, fl_nm):
+#    """ consolidating to one function bc then no need to copy/paste """
+#    dct = {}
+#    
+#    for fl in fld:
+#        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
+#        print(converted_points)
+#        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
+#        df = count_structure_lister(id_table, *point_lst).fillna(0)
+#        #for some reason duplicating columns, so use this
+#        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
+#        fl_name = os.path.basename(fl)
+#        dct[fl_name]= nm_cnt
+#        
+#    #unpack
+#    index = dct[list(dct.keys())[0]].keys()
+#    columns = dct.keys()
+#    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
+#    df = pd.DataFrame(data.T, columns=columns, index=index)
+#    
+#    #save before adding projeny counts at each level
+#    df.to_pickle(os.path.join(dst, fl_nm))
+#    
+#    return os.path.join(dst, fl_nm)
+#
+#pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
+##collect counts from right side
+#right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_no_prog_at_each_level_allen_atl.p")
+##collect counts from left side
+#left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_no_prog_at_each_level_allen_atl.p")
 
 #%%
 

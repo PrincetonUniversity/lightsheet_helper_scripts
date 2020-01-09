@@ -22,6 +22,21 @@ data["ak_pool"] = ak_pool
 #store data (serialize)
 with open(os.path.join(dst, "prv_maps_contra_pma.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+    
+#%%
+
+dst = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/"
+
+data = {}
+
+data["brains"] = brains
+data["frac_of_inj_pool"] = frac_of_inj_pool
+data["primary_pool"] = primary_pool
+data["ak_pool"] = ak_pool
+
+#store data (serialize)
+with open(os.path.join(dst, "prv_maps_contra_pma.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
 
 #%%
 

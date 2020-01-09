@@ -171,37 +171,36 @@ src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pool
 
 post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points")) for xx in lr_brains]
 
-def transformed_cells_to_ann(fld, ann, dst, fl_nm):
-    """ consolidating to one function bc then no need to copy/paste """
-    dct = {}
-    
-    for fl in fld:
-        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
-        print(converted_points)
-        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
-        df = count_structure_lister(id_table, *point_lst).fillna(0)
-        #for some reason duplicating columns, so use this
-        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
-        fl_name = os.path.basename(os.path.dirname(fl))
-        dct[fl_name]= nm_cnt
-        
-    #unpack
-    index = dct[list(dct.keys())[0]].keys()
-    columns = dct.keys()
-    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
-    df = pd.DataFrame(data.T, columns=columns, index=index)
-    
-    #save before adding projeny counts at each level
-    df.to_pickle(os.path.join(dst, fl_nm))
-    
-    return os.path.join(dst, fl_nm)
+#def transformed_cells_to_ann(fld, ann, dst, fl_nm):
+#    """ consolidating to one function bc then no need to copy/paste """
+#    dct = {}
+#    
+#    for fl in fld:
+#        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
+#        print(converted_points)
+#        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
+#        df = count_structure_lister(id_table, *point_lst).fillna(0)
+#        #for some reason duplicating columns, so use this
+#        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
+#        fl_name = os.path.basename(os.path.dirname(fl))
+#        dct[fl_name]= nm_cnt
+#        
+#    #unpack
+#    index = dct[list(dct.keys())[0]].keys()
+#    columns = dct.keys()
+#    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
+#    df = pd.DataFrame(data.T, columns=columns, index=index)
+#    
+#    #save before adding projeny counts at each level
+#    df.to_pickle(os.path.join(dst, fl_nm))
+#    
+#    return os.path.join(dst, fl_nm)
+#
+##collect counts from right side
+#right = transformed_cells_to_ann(post_transformed, ann_right, dst, "nc_right_side_no_prog_at_each_level_pma.p")
+##collect counts from left side
+#left = transformed_cells_to_ann(post_transformed, ann_left, dst, "nc_left_side_no_prog_at_each_level_pma.p")
 
-#collect counts from right side
-right = transformed_cells_to_ann(post_transformed, ann_right, dst, "nc_right_side_no_prog_at_each_level_pma.p")
-#collect counts from left side
-left = transformed_cells_to_ann(post_transformed, ann_left, dst, "nc_left_side_no_prog_at_each_level_pma.p")
-
-#%%
 
 #import dict of cells by region
 r_cells_regions = pckl.load(open(os.path.join(dst, "nc_right_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
@@ -227,7 +226,7 @@ for k,v in l_cells_regions.items():
 contra_df = pd.DataFrame(contra)
 contra_df.to_csv(os.path.join(dst, "nc_contra_counts_33_brains_pma.csv")) 
 
-ipsi_df = pd.DataFrame(contra)
+ipsi_df = pd.DataFrame(ipsi)
 ipsi_df.to_csv(os.path.join(dst, "nc_ipsi_counts_33_brains_pma.csv"))         
 #%%
 #RIGHT SIDE

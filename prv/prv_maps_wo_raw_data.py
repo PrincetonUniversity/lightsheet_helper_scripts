@@ -10,11 +10,16 @@ import matplotlib as mpl, os, pandas as pd, itertools, json
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
+#TP
+plt.rcParams["axes.grid"] = False
+
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
+TP = True
 
 #figure dest 
 dst = "/home/wanglab/Desktop"
+if TP:dst = "/Users/tjp7rr1/Downloads"
 
 #bucket path for data
 src = "/jukebox/wang/zahra/tracing_projects/prv"
@@ -27,7 +32,10 @@ cells_regions = pd.read_csv(cells_regions_pth)
 cells_regions["Structure"] = cells_regions["Unnamed: 0"]
 cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
 scale_factor = 0.020
-ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
+try:
+    ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
+except:
+    ann_df = pd.read_excel(df_pth)
 
 #imports
 #path to pickle file
@@ -142,13 +150,12 @@ pcounts = np.array([xx/sum(xx) for xx in layer56.T])*100
 #make % counts map like the h129 dataset (nc only for now)
 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5]})
 
 #set colorbar features 
 maxpcount = 20
 whitetext = 3
-label_coordsy, label_coordsx  = -0.37,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
 brain_lbl_size = "x-small"
 yaxis = sois #for density by nc areas map
@@ -169,18 +176,31 @@ vmin = 0
 vmax = 0.8
 cmap = plt.cm.Reds 
 cmap.set_over('darkred')
+if TP:
+    vmin = 0.05
+    vmax = 0.8
+    cmap.set_under('white')
+
 #colormap
 bounds = np.linspace(vmin,vmax,4)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+#                  format="%0.1f", shrink=0.6, aspect=5)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
+cb.set_label("% coverage of lobule", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
-cb.ax.set_visible(False)
+cb.ax.set_visible(True) #TP
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+
+#despline to make it look similar to paper figure
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+if TP: ax.grid(False)
 
 ax = axes[1]
 show = np.fliplr(sort_pcounts).T
@@ -194,8 +214,9 @@ bounds = np.linspace(vmin,vmax,((vmax-vmin)/5)+1)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.3, aspect=10)
+#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+#                  format="%0.1f", shrink=0.3, aspect=10) #format="%0.1f"
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8)
 cb.set_label("% of total neocortical counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
@@ -204,12 +225,17 @@ cb.ax.set_visible(True)
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
-ax.set_ylabel("Neocortical areas", fontsize="small")
-ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
 ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+
+#despline to make it look similar to paper figure
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+if TP: ax.grid(False)
 
 plt.savefig(os.path.join(dst, "pcounts_nc.pdf"), bbox_inches = "tight")
 
@@ -230,13 +256,12 @@ layer56_vol = np.array(layer56_vol)
 density_l56 = np.array([xx/(layer56_vol[i]*(scale_factor**3)) for i, xx in enumerate(layer56)]).T
 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (10,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5]})
 
 #set colorbar features 
 maxdensity = 150
 whitetext = 7
-label_coordsy, label_coordsx  = -0.30,0.5 #for placement of vertical labels
 annotation_size = "x-small" #for the number annotations inside the heatmap
 brain_lbl_size = "small"
 yaxis = sois #for density by nc areas map
@@ -257,19 +282,32 @@ vmin = 0
 vmax = 0.8
 cmap = plt.cm.Reds 
 cmap.set_over("darkred")
+if TP:
+    vmin = 0.05
+    vmax = 0.8
+    cmap.set_under('white')
+
 #colormap
 #colormap
 bounds = np.linspace(vmin,vmax,5)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.3, aspect=10)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+#                  format="%0.1f", shrink=0.6, aspect=5)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#, ticks=bounds, boundaries=bounds)
+cb.set_label("% coverage of lobule", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
-cb.ax.set_visible(False)
+cb.ax.set_visible(True) #TP
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+
+#despline to make it look similar to paper figure
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+if TP: ax.grid(False)
 
 ax = axes[1]
 show = np.fliplr(sort_density).T
@@ -283,8 +321,9 @@ bounds = np.linspace(vmin,vmax,((vmax-vmin)/50)+1)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.3, aspect=10)
+#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+#                  format="%0.1f", shrink=0.3, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8)
 cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
@@ -292,11 +331,16 @@ cb.ax.set_visible(True)
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
-ax.set_ylabel("Neocortical areas", fontsize="small")
-ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 
 ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+
+#despline to make it look similar to paper figure
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+if TP: ax.grid(False)
 
 plt.savefig(os.path.join(dst, "density_nc.pdf"), bbox_inches = "tight")
