@@ -20,6 +20,7 @@ mpl.rcParams["ps.fonttype"] = 42
 #set paths
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 fig_dst = "/home/wanglab/Desktop"
+fig_dst = '/Users/tjp7rr1/Downloads'
 
 ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
 

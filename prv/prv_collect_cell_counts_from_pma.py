@@ -115,8 +115,8 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 
 #pooled injections
 ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X", #no simpplex injections
-                 "Crus I", "Crus II", "PM, CP"])
-frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[11], xx[12], np.sum(xx[13:16])] 
+                 "Simplex", "Crura", "PM, CP"])
+frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11]+xx[12], np.sum(xx[13:16])] 
                                 for xx in expr_all_as_frac_of_inj])
 primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
 #get n's after pooling
@@ -184,38 +184,38 @@ id_table = pd.read_excel(df_pth)
 #    #convert registered points into structure counts
 #    converted_points = unpack_pnts(points_file, transformed_dst) 
 #
-def transformed_cells_to_ann(fld, ann, dst, fl_nm):
-    """ consolidating to one function """
-    
-    dct = {}
-    
-    for fl in fld:
-        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
-        if not os.path.exists(converted_points): 
-            converted_points = os.path.join(fl, "transformed_points/posttransformed_zyx_voxels.npy")
-        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
-        df = count_structure_lister(id_table, *point_lst).fillna(0)
-        #for some reason duplicating columns, so use this
-        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
-        fl_name = os.path.basename(fl)
-        dct[fl_name]= nm_cnt
-        
-    #unpack
-    index = dct[list(dct.keys())[0]].keys()
-    columns = dct.keys()
-    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
-    df = pd.DataFrame(data.T, columns=columns, index=index)
-    
-    #save before adding projeny counts at each level
-    df.to_pickle(os.path.join(dst, fl_nm))
-    
-    return os.path.join(dst, fl_nm)
-
-#pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
-trnsfrmd = [os.path.join(trnsfrm_dst, xx) for xx in lr_brains]
-
-right = transformed_cells_to_ann(trnsfrmd, ann_right, dst, "right_side_no_prog_at_each_level_pma.p")
-left = transformed_cells_to_ann(trnsfrmd, ann_left, dst, "left_side_no_prog_at_each_level_pma.p")
+#def transformed_cells_to_ann(fld, ann, dst, fl_nm):
+#    """ consolidating to one function """
+#    
+#    dct = {}
+#    
+#    for fl in fld:
+#        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
+#        if not os.path.exists(converted_points): 
+#            converted_points = os.path.join(fl, "transformed_points/posttransformed_zyx_voxels.npy")
+#        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
+#        df = count_structure_lister(id_table, *point_lst).fillna(0)
+#        #for some reason duplicating columns, so use this
+#        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
+#        fl_name = os.path.basename(fl)
+#        dct[fl_name]= nm_cnt
+#        
+#    #unpack
+#    index = dct[list(dct.keys())[0]].keys()
+#    columns = dct.keys()
+#    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
+#    df = pd.DataFrame(data.T, columns=columns, index=index)
+#    
+#    #save before adding projeny counts at each level
+#    df.to_pickle(os.path.join(dst, fl_nm))
+#    
+#    return os.path.join(dst, fl_nm)
+#
+##pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
+#trnsfrmd = [os.path.join(trnsfrm_dst, xx) for xx in lr_brains]
+#
+#right = transformed_cells_to_ann(trnsfrmd, ann_right, dst, "right_side_no_prog_at_each_level_pma.p")
+#left = transformed_cells_to_ann(trnsfrmd, ann_left, dst, "left_side_no_prog_at_each_level_pma.p")
 
 #import dict of cells by region
 r_cells_regions = pckl.load(open(os.path.join(dst, "right_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
