@@ -8,7 +8,63 @@ Created on Wed Jun  5 15:18:29 2019
 
 import os, pickle as pckl
 
+#%%  
 
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/"
+
+data = {}
+
+data["c_mat"] = c_mat
+data["mat"] = mat
+data["pmat"] = pmat
+data["mat_shuf"] = mat_shuf
+data["p_shuf"] = p_shuf
+data["ak_pool"] = ak_pool
+data["primary_lob_n"] = primary_lob_n
+data["regions"] = regions
+data["primary_pool"] = primary_pool
+data["pcounts_pool"] = pcounts_pool
+data["frac_of_inj_pool"] = frac_of_inj_pool
+#store data (serialize)
+with open(os.path.join(dst, "model_data_contra_pma.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+    
+#%%
+
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/"
+
+data = {}
+
+data["brains"] = brains
+data["frac_of_inj_pool"] = frac_of_inj_pool
+data["primary_pool"] = primary_pool
+data["ak_pool"] = ak_pool
+
+#store data (serialize)
+with open(os.path.join(dst, "hsv_maps_contra_pma.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+    
+#%%  
+
+dst = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/"
+
+data = {}
+
+data["c_mat"] = c_mat
+data["mat"] = mat
+data["pmat"] = pmat
+data["mat_shuf"] = mat_shuf
+data["p_shuf"] = p_shuf
+data["ak_pool"] = ak_pool
+data["primary_lob_n"] = primary_lob_n
+data["regions"] = regions
+data["primary_pool"] = primary_pool
+data["pcounts_pool"] = pcounts_pool
+data["frac_of_inj_pool"] = frac_of_inj_pool
+#store data (serialize)
+with open(os.path.join(dst, "model_data_contra_pma.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+    
 #%%
 
 dst = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/"
@@ -265,27 +321,7 @@ data["regions"] = regions
 #store data (serialize)
 with open(os.path.join(dst, "shuffle_figure_data.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
-    
-#%%  
 
-dst = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/"
-
-data = {}
-
-data["c_mat"] = c_mat
-data["mat"] = mat
-data["pmat"] = pmat
-data["mat_shuf"] = mat_shuf
-data["p_shuf"] = p_shuf
-data["ak_pool"] = ak_pool
-data["primary_lob_n"] = primary_lob_n
-data["regions"] = regions
-data["primary_pool"] = primary_pool
-data["pcounts_pool"] = pcounts_pool
-data["frac_of_inj_pool"] = frac_of_inj_pool
-#store data (serialize)
-with open(os.path.join(dst, "model_data_contra_pma.p"), "wb") as handle:
-    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
     
 #%%
 #init dict

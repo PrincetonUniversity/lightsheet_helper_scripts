@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan  6 19:04:53 2020
+Created on Wed Jan 15 17:10:43 2020
 
 @author: wanglab
 """
+
 
 import matplotlib as mpl, os, pandas as pd, itertools, json
 import matplotlib.pyplot as plt
@@ -19,13 +20,13 @@ TP = True
 
 #figure dest 
 dst = "/home/wanglab/Desktop"
-if TP:dst = "/Users/tjp7rr1/Downloads"
+#if TP:dst = "/Users/tjp7rr1/Downloads"
 
 #bucket path for data
-src = "/jukebox/wang/zahra/tracing_projects/prv"
+src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 
-cells_regions_pth = os.path.join(src, "for_tp/nc_contra_counts_25_brains_pma.csv")
+cells_regions_pth = os.path.join(src, "nc_contra_counts_33_brains_pma.csv")
 
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
@@ -39,7 +40,7 @@ except:
 
 #imports
 #path to pickle file
-data_pth = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/prv_maps_contra_pma.p"
+data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/hsv_maps_contra_pma.p"
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set the appropritate variables
@@ -100,35 +101,9 @@ for soi in sois:
     counts_per_struct.append(np.array(counts).sum(axis = 0))
 counts_per_struct = np.array(counts_per_struct)
 
-#then get only layers
-layer56 = []
-for soi in sois:
-    progeny = []; counts = []
-    get_progeny(ontology_dict, soi, progeny)
-    for progen in progeny:
-        if progen[-7:] == "layer 5" or progen[-7:] == "Layer 5" or progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b":
-            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
-    layer56.append(np.array(counts).sum(axis = 0))
-layer56 = np.array(layer56)        
-
-#then get only layers
-layer23 = []
-for soi in sois:
-    progeny = []; counts = []
-    get_progeny(ontology_dict, soi, progeny)
-    for progen in progeny:
-        if progen[-9:] == "layer 2/3" or progen[-9:] == "Layer 2/3":
-            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
-    layer23.append(np.array(counts).sum(axis = 0))
-layer23 = np.array(layer23)        
-
-#calculate fraction of counts that come from layer 4,5,6, or 2/3
-frac56 = np.sum(layer56, axis = 0)/np.sum(counts_per_struct, axis = 0)
-mean_fracl56_per_struct = np.nanmean(frac56, axis = 0)
-
 #%%
 #layer 5+6 p counts maps
-pcounts = np.array([xx/sum(xx) for xx in layer56.T])*100
+pcounts = np.array([xx/sum(xx) for xx in counts_per_struct.T])*100
 
 #make % counts map like the h129 dataset (nc only for now)
 
@@ -137,7 +112,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, g
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxpcount = 20
+maxpcount = 40
 whitetext = 3
 annotation_size = "x-small" #for the number annotations inside the heatmap
 brain_lbl_size = "x-small"
@@ -220,31 +195,29 @@ ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 if TP: ax.grid(False)
 
-plt.savefig(os.path.join(dst, "pcounts_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_pcounts_nc.pdf"), bbox_inches = "tight")
 
 #%%
 
 #make density map like the h129 dataset (nc only for now)
 #get layer5/6 volumes
-layer56_vol = []
+vol = []
 for soi in sois:
     progeny = []; counts = []
     get_progeny(ontology_dict, soi, progeny)
     for progen in progeny:
-        if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b" or progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
             counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
-    layer56_vol.append(np.array(counts).sum(axis = 0))
-layer56_vol = np.array(layer56_vol)        
+    vol.append(np.array(counts).sum(axis = 0))
+vol = np.array(vol)        
 
-density_l56 = np.array([xx/(layer56_vol[i]*(scale_factor**3)) for i, xx in enumerate(layer56)]).T
+density_l56 = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T
 
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxdensity = 150
-whitetext = 7
+maxdensity = 300
 annotation_size = "x-small" #for the number annotations inside the heatmap
 brain_lbl_size = "small"
 yaxis = sois #for density by nc areas map
@@ -326,4 +299,4 @@ ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 if TP: ax.grid(False)
 
-plt.savefig(os.path.join(dst, "prv_density_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_density_nc.pdf"), bbox_inches = "tight")

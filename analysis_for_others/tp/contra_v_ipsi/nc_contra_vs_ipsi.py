@@ -7,7 +7,7 @@ Created on Mon Jul 29 09:17:20 2019
 """
 
 %matplotlib inline
-import numpy as np, pandas as pd, os, sys, shutil, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
+import numpy as np, pandas as pd, os, sys, shutil, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, json, statsmodels.api as sm
 from tools.registration.register import elastix_command_line_call, jacobian_command_line_call, change_interpolation_order, transformix_command_line_call, transformed_pnts_to_allen_helper_func, count_structure_lister
 from tools.utils.io import listdirfull, makedir, load_memmap_arr, load_np, listall, load_kwargs
 from skimage.external import tifffile
@@ -23,6 +23,8 @@ fig_dst = "/home/wanglab/Desktop"
 
 #USING 60um edge erosion and 80 um ventricular erosion for NC, as edge seems to be the break bpoint. No real effect for ventricular so will keep the same
 ann_pth = "/jukebox/wang/pisano/Python/atlas/stepwise_erosion/annotation_sagittal_atlas_20um_iso_60um_edge_erosion_80um_ventricular_erosion.tif"#"/jukebox/wang/pisano/Python/atlas/annotation_sagittal_atlas_20um_iso.tif"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
+
 #cut annotation file in middle
 ann = tifffile.imread(ann_pth)
 plt.imshow(ann[300])
@@ -33,32 +35,6 @@ ann_left[:int(z/2), :, :] = ann[:int(z/2), :, :] #cut in the middle in x
 ann_right = np.zeros_like(ann)
 ann_right[int(z/2):, :, :] = ann[int(z/2):, :, :]
 plt.imshow(ann_left[120])
-
-
-def add_progeny_counts_at_each_level(df, df_pth, ann_pth):
-    """
-    """
-    #make structures
-    from tools.analysis.network_analysis import make_structure_objects
-    structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
-    
-    #make copy of df so not to count things multiple times often
-    ddf = df.copy()
-    ddf[:] = 0
-    
-    #now do prog
-    for s in structures:
-        if len(s.progeny)!=0:
-            #break
-            prog = [xx.name for xx in s.progeny]
-            s_vals = df[df.index==s.name].values
-            prog_df_vals = df[df.index.isin(prog)].sum(0).values
-            sums = s_vals + prog_df_vals
-            ddf[ddf.index==s.name] = sums
-        else:
-            ddf[ddf.index==s.name] = df[df.index==s.name].values
-            
-    return ddf        
 
 #now get injection site and automatically designate L/R
 def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
@@ -99,69 +75,98 @@ def find_site(im, thresh=3, filter_kernel=(3,3,3), num_sites_to_keep=1):
         sizes = [np.sum(labelled==i) for i in range(1,nlab+1)]
         vals = [i+1 for i in np.argsort(sizes)[-num_sites_to_keep:][::-1]]
         return np.in1d(labelled, vals).reshape(labelled.shape)
-    
-#make structures
-df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx"
-
-structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
    
 #collect 
 id_table = pd.read_excel(df_pth)
 #brains should be in this order as they were saved in this order for inj analysis
-brains = ['20180409_jg46_bl6_lob6a_04','20180608_jg75','20170204_tp_bl6_cri_1750r_03','20180608_jg72',
- '20180416_jg56_bl6_lob8_04','20170116_tp_bl6_lob45_ml_11','20180417_jg60_bl6_cri_04','20180410_jg52_bl6_lob7_05',
- '20170116_tp_bl6_lob7_1000r_10','20180409_jg44_bl6_lob6a_02','20180410_jg49_bl6_lob45_02','20180410_jg48_bl6_lob6a_01',
- '20180612_jg80','20180608_jg71','20170212_tp_bl6_crii_1000r_02','20170115_tp_bl6_lob6a_rpv_03','20170212_tp_bl6_crii_2000r_03',
- '20180417_jg58_bl6_sim_02','20170130_tp_bl6_sim_1750r_03','20170115_tp_bl6_lob6b_ml_04','20180410_jg50_bl6_lob6b_03',
- '20170115_tp_bl6_lob6a_1000r_02','20170116_tp_bl6_lob45_500r_12','20180612_jg77','20180612_jg76',
- '20180416_jg55_bl6_lob8_03','20170115_tp_bl6_lob6a_500r_01','20170130_tp_bl6_sim_rpv_01','20170204_tp_bl6_cri_1000r_02',
- '20170212_tp_bl6_crii_250r_01','20180417_jg61_bl6_crii_05','20170116_tp_bl6_lob7_ml_08','20180409_jg47_bl6_lob6a_05']
+brains = ["20180409_jg46_bl6_lob6a_04","20180608_jg75","20170204_tp_bl6_cri_1750r_03","20180608_jg72",
+ "20180416_jg56_bl6_lob8_04","20170116_tp_bl6_lob45_ml_11","20180417_jg60_bl6_cri_04","20180410_jg52_bl6_lob7_05",
+ "20170116_tp_bl6_lob7_1000r_10","20180409_jg44_bl6_lob6a_02","20180410_jg49_bl6_lob45_02","20180410_jg48_bl6_lob6a_01",
+ "20180612_jg80","20180608_jg71","20170212_tp_bl6_crii_1000r_02","20170115_tp_bl6_lob6a_rpv_03","20170212_tp_bl6_crii_2000r_03",
+ "20180417_jg58_bl6_sim_02","20170130_tp_bl6_sim_1750r_03","20170115_tp_bl6_lob6b_ml_04","20180410_jg50_bl6_lob6b_03",
+ "20170115_tp_bl6_lob6a_1000r_02","20170116_tp_bl6_lob45_500r_12","20180612_jg77","20180612_jg76",
+ "20180416_jg55_bl6_lob8_03","20170115_tp_bl6_lob6a_500r_01","20170130_tp_bl6_sim_rpv_01","20170204_tp_bl6_cri_1000r_02",
+ "20170212_tp_bl6_crii_250r_01","20180417_jg61_bl6_crii_05","20170116_tp_bl6_lob7_ml_08","20180409_jg47_bl6_lob6a_05"]
     
-src = "/jukebox/wang/pisano/tracing_output/antero_4x"
-
-flds = [os.path.join(src, xx) for xx in brains]
+src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
+imgs = [os.path.join(src, xx+".tif.tif") for xx in brains]
 
 #pool brain names and L/R designation into dict
-lr_designation = {}
 lr_dist = {}
+inj_vox = {}
 
 #get inj vol roundabout way
-for fld in flds:
-    brain = os.path.basename(fld)
+for img in imgs:
+    brain = os.path.basename(img)
     print(brain)
-    fl = os.listdir(os.path.join(fld, "elastix"))
-    fl.sort()
-    inj_pth = os.path.join(os.path.join(fld, "elastix"), fl[0]+"/result.tif")
-    inj_vol = tifffile.imread(inj_pth)
-    inj_vol_h = np.transpose(inj_vol, [2, 1, 0])
-    z,y,x = inj_vol_h.shape
-
-    #cutting off at 423, same as tom's analysis
-    arr = find_site(inj_vol_h[:, 423:, :])
-    arr_left = arr[:, :, :int(x/2)]
-    arr_right = arr[:, :, int(x/2):]
-    #find center of mass
-    z_c,y_c,x_c = center_of_mass(arr)
-    #take distance from center to arbitrary "midline" (aka half of x axis)
-    dist = (x/2)-x_c
-    #save to dict 
-    lr_dist[os.path.basename(fld)] = dist
-    #i just need the left vs right weight, not the actual segment, so will not save that
-    left = np.sum(arr_left.astype(int)>0)
-    right = np.sum(arr_right.astype(int)>0)
+    inj_vol = tifffile.imread(img)
+    z,y,x = inj_vol.shape
     
-    #now im going to assign an arbitrary factor, saying that if the one side of non-zero voxels are 5 times greater than the other, collect
-    #this brain and its L/R designation; if there is not a 5 fold difference, drop it from analysis for now
-    factor = 1
-    if left > right*factor:
+    z_c,y_c,x_c = center_of_mass(inj_vol)
+    #take distance from center to arbitrary "midline" (aka half of z axis)
+    dist = z_c-(z/2)
+    #save to dict 
+    lr_dist[brain[:-4]] = dist
+    inj_vox[brain[:-4]] = inj_vol
+    
+    if dist < 0:
         print("brain {} has a left-sided injection\n".format(brain))
-        lr_designation[os.path.basename(fld)] = "left"
-    elif right > left*factor:
+    elif dist > 0:
         print("brain {} has a right-sided injection\n".format(brain))
-        lr_designation[os.path.basename(fld)] = "right"
     else:
         print("brain has an injection close to midline so not considering it rn\n")
 
+
+#get injection fractions
+inj_raw = np.array([inj.astype(bool) for inj in inj_vox.values()])
+    
+atl_raw = tifffile.imread("/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif")[:, 423:, :] #cropping coz tom segmented this
+ann_raw = tifffile.imread("/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif")[:, 423:, :]
+anns = np.unique(ann_raw).astype(int)
+print(ann_raw.shape)
+     
+#annotation IDs of the cerebellum ONLY that are actually represented in annotation file
+iids = {"Lingula (I)": 912,
+        "Lobule II": 976,
+        "Lobule III": 984,
+        "Lobule IV-V": 1091,
+        "Lobule VIa": 936,
+        "Lobule VIb": 1134,
+        "Lobule VII": 944,
+        "Lobule VIII": 951,
+        "Lobule IX": 957, #uvula IX
+        "Lobule X": 968, #nodulus X
+        "Simplex lobule": 1007, #simplex
+        "Crus 1": 1056, #crus 1
+        "Crus 2": 1064, #crus 2
+        "Paramedian lobule": 1025, #paramedian lob
+        "Copula pyramidis": 1033 #copula pyramidis
+        }
+ak = np.asarray([k for k,v in iids.items()])
+
+atlas_rois = {}
+for nm, iid in iids.items():
+    z,y,x = np.where(ann_raw == iid) #find where structure is represented
+    ann_blank = np.zeros_like(ann_raw)
+    ann_blank[z,y,x] = 1 #make a mask of structure in annotation space
+    atlas_rois[nm] = ann_blank.astype(bool) #add mask of structure to dictionary
+
+expr_all_as_frac_of_lob = np.array([[(mouse.ravel()[lob.ravel()].astype(int)).sum() / lob.sum() for nm, lob in atlas_rois.items()] for mouse in inj_raw])    
+expr_all_as_frac_of_inj = np.array([[(mouse.ravel()[lob.ravel()].astype(int)).sum() / mouse.sum() for nm, lob in atlas_rois.items()] for mouse in inj_raw])    
+primary = np.array([np.argmax(e) for e in expr_all_as_frac_of_inj])
+primary_as_frac_of_lob = np.array([np.argmax(e) for e in expr_all_as_frac_of_lob])
+secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
+
+#pooled injections
+ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X", #no simpplex injections
+                 "Simplex", "Crus I", "Crus II", "PM, CP"])
+frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
+                                for xx in expr_all_as_frac_of_inj])
+primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
+#get n's after pooling
+primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max(primary_pool)+1)])
+#normalization  of inj site
+frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in frac_of_inj_pool])
 
 #%%
 
@@ -224,409 +229,285 @@ for k,v in l_cells_regions.items():
         ipsi[k] = v
         
 contra_df = pd.DataFrame(contra)
-contra_df.to_csv(os.path.join(dst, "nc_contra_counts_33_brains_pma.csv")) 
+contra_df.to_csv(os.path.join(dst, "data/nc_contra_counts_33_brains_pma.csv")) 
 
 ipsi_df = pd.DataFrame(ipsi)
-ipsi_df.to_csv(os.path.join(dst, "nc_ipsi_counts_33_brains_pma.csv"))         
+ipsi_df.to_csv(os.path.join(dst, "data/nc_ipsi_counts_33_brains_pma.csv"))         
 #%%
-#RIGHT SIDE
-#setup
-#making dictionary of cells by region
-cells_regions = pckl.load(open(os.path.join(dst, "nc_right_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
-cells_regions = cells_regions.to_dict(orient = "dict")      
+cells_regions_pth = os.path.join(dst, "data/nc_contra_counts_33_brains_pma.csv")
 
-structure = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
+scale_factor = 0.020
+ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
+
+def get_progeny(dic,parent_structure,progeny_list):
+    """ 
+    ---PURPOSE---
+    Get a list of all progeny of a structure name.
+    This is a recursive function which is why progeny_list is an
+    argument and is not returned.
+    ---INPUT---
+    dic                  A dictionary representing the JSON file 
+                         which contains the ontology of interest
+    parent_structure     The structure
+    progeny_list         The list to which this function will 
+                         append the progeny structures. 
+    """
+    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
+    
+    name = dic.get('name')
+    children = dic.get('children')
+    if name == parent_structure:
+        for child in children: # child is a dict
+            child_name = child.get('name')
+            progeny_list.append(child_name)
+            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
+        return
+    
+    for child in children:
+        child_name = child.get('name')
+        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
+    return 
+
+#get progeny of all large structures
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+
+with open(ontology_file) as json_file:
+    ontology_dict = json.load(json_file)
+
+#get counts for all of neocortex
+sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
             "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
             "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
-#get cell counts
-#make new dict - for all brains
-cells_pooled_regions = {} #for raw counts
 
-for brain in lr_brains:    
-    #make new dict - this is for EACH BRAIN
-    c_pooled_regions = {}
-    
-    for soi in structure:
-        try:
-            soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
-            progeny = [str(xx.name) for xx in soi.progeny]
-            #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-            c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-        except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)                    
-            #add to volume list from LUT
-            c_pooled_regions[soi] = np.sum(np.asarray(counts))
-                    
-    #add to big dict
-    cells_pooled_regions[brain] = c_pooled_regions
-
-#making the proper array per brain where regions are removed
-cell_counts_per_brain = []
-
-#initialise dummy var
-i = []
-for k,v in cells_pooled_regions.items():
-    dct = cells_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    cell_counts_per_brain.append(i)
-    #re-initialise for next
-    i = []  
-    
-cell_counts_per_brain_right = np.asarray(cell_counts_per_brain)
-
-#LEFT SIDE
-cells_regions = pckl.load(open(os.path.join(dst, "nc_left_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
-cells_regions = cells_regions.to_dict(orient = "dict")      
-
-structure = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
-#get cell counts
-#make new dict - for all brains
-cells_pooled_regions = {} #for raw counts
-
-for brain in lr_brains:    
-    #make new dict - this is for EACH BRAIN
-    c_pooled_regions = {}
-    
-    for soi in structure:
-        try:
-            soi = [s for s in structures if s.name==soi][0]
-            counts = [] #store counts in this list
-            for k, v in cells_regions[brain].items():
-                if k == soi.name:
-                    counts.append(v)
-            progeny = [str(xx.name) for xx in soi.progeny]
-            #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    for k, v in cells_regions[brain].items():
-                        if k == progen:
-                            counts.append(v)
-            c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-        except:
-            for k, v in cells_regions[brain].items():
-                if k == soi:
-                    counts.append(v)                    
-            #add to volume list from LUT
-            c_pooled_regions[soi] = np.sum(np.asarray(counts))
-                    
-    #add to big dict
-    cells_pooled_regions[brain] = c_pooled_regions
-
-#making the proper array per brain where regions are removed
-cell_counts_per_brain = []
-
-#initialise dummy var
-i = []
-for k,v in cells_pooled_regions.items():
-    dct = cells_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    cell_counts_per_brain.append(i)
-    #re-initialise for next
-    i = []  
-    
-cell_counts_per_brain_left = np.asarray(cell_counts_per_brain)
+#first calculate counts across entire nc region
+counts_per_struct = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    counts_per_struct.append(np.array(counts).sum(axis = 0))
+counts_per_struct = np.array(counts_per_struct)
 
 #%%
-#preprocessing into contra/ipsi counts per brain, per structure
-#different nc counts
-#contra = left inj/right counts, etc.
-#sum across nc
-#nc_left_counts = np.asarray([np.sum(xx) for xx in cell_counts_per_brain_left]).T
-#nc_right_counts = np.asarray([np.sum(xx) for xx in cell_counts_per_brain_right]).T
+pcounts = np.array([xx/sum(xx) for xx in counts_per_struct.T])*100
 
-#PICK AN AREA HERE
-#area = 8 #infralimbic, prelimbic, etc.
-#nc_area = structure[area]
-nc_left_counts = cell_counts_per_brain_left
-nc_right_counts = cell_counts_per_brain_right
+#make % counts map like the h129 dataset (nc only for now)
 
-lrv = list(lr_designation.values())
-lr_brains = list(lr_designation.keys())
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2,5]})
 
-#dct is just for my sanity, so im not mixing up brains
-contra = {}; ipsi = {}; _contra = []; _ipsi = []
-for i in range(len(lr_brains)):
-    if lrv[i] == "right":
-        contra[brains[i]] = nc_left_counts[i]; _contra.append(nc_left_counts[i])
-        ipsi[brains[i]] = nc_right_counts[i]; _ipsi.append(nc_right_counts[i])
-    elif lrv[i] == "left":
-        contra[brains[i]] = nc_right_counts[i]; _contra.append(nc_right_counts[i])
-        ipsi[brains[i]] = nc_left_counts[i]; _ipsi.append(nc_left_counts[i])
-        
-_contra = np.asarray(_contra).T
-_ipsi = np.asarray(_ipsi).T
-_ratio = np.asarray([_contra[i]/_ipsi[i] for i in range(len(_contra))])
-#make into one
-_dist = np.asarray(list(lr_dist.values()))
+#set colorbar features 
+maxpcount = 40
+whitetext = 3
+annotation_size = "x-small" #for the number annotations inside the heatmap
+brain_lbl_size = "x-small"
+yaxis = sois #for density by nc areas map
 
-#injection site analysis
-pth = "/jukebox/wang/zahra/modeling/h129/neocortex/data.p"
-data = pckl.load(open(pth, "rb"), encoding = "latin1")
-
-brains = data["brainnames"]
-primary_pool = data["primary_pool"]
-ak_pool = data["cb_regions_pool"]
-inj = data["expr_all_as_frac_of_inj_pool"]
- 
-_inj = np.asarray([inj[i] for i in range(len(inj)) if brains[i] in lr_brains])
-_primary_pool = np.asarray([primary_pool[i] for i in range(len(primary_pool)) if brains[i] in lr_brains])
-
-#sort by distance
-sort_dist = np.sort(_dist)
-sort_contra = _contra.T[np.argsort(_dist, axis = 0)]
-sort_ipsi = _ipsi.T[np.argsort(_dist, axis = 0)]
-sort_ratio = _ratio.T[np.argsort(_dist, axis = 0)]
-sort_inj = _inj[np.argsort(_dist)]   
-
-print(sort_dist.shape)
-print(sort_ratio.shape)
-
-#%%
-
-#plotting ONLY SOMATOSENSORY/SOMATOMOTOR 
-#formatting
-fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (20,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [3,2,1]})
+#sort inj fractions by primary lob
+sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_pcounts = np.array(list(itertools.chain.from_iterable(sort_pcounts)))
+sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = list(itertools.chain.from_iterable(sort_brains))
+sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 
 #inj fractions
 ax = axes[0]
-
 show = np.fliplr(sort_inj).T
-br = np.asarray(lr_brains)[np.argsort(_dist)]
 
 vmin = 0
 vmax = 0.8
 cmap = plt.cm.Reds 
 cmap.set_over('darkred')
 #colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(False)
-ax.set_yticks(np.arange(len(ak_pool))+.5)
-ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
-
-#show raw counts    
-ax = axes[1]
-
-show = np.flipud(np.asarray(sort_ratio.T[7:9]))
-br = lr_brains 
-
-vmin = 0.5
-vmax = 1.1
-cmap = plt.cm.viridis 
-cmap.set_over('gold')
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,3)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.2, aspect=5)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
-
-cb.ax.set_visible(False)
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col < 1:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
-        
-ax.set_yticks(np.arange(2)+.5)
-ax.set_yticklabels(["Somatosensory", "Somatomotor"], fontsize="x-small")
-ax.set_ylabel("Contra/Ipsi ratios")
-
-ax = axes[2]
-show = np.asarray([sort_dist])
-br = lr_brains 
-
-vmin = -100
-vmax = 80
-cmap = plt.cm.RdBu_r
-cmap.set_over('maroon')
-cmap.set_under('midnightblue')
-#colormap
-# discrete colorbar details
 bounds = np.linspace(vmin,vmax,4)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=1.5, aspect=5)
-cb.set_label("Left to right", fontsize="x-small", labelpad=3)
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.7, aspect=8)
+cb.set_label("% of injection", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 
-cb.ax.set_visible(False)
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col < -75 or col > 70:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")        
-
-#remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(br))+.5)
-lbls = np.asarray(br)
-ax.set_xticklabels(br, rotation=30, fontsize=5, ha="right")
-
-ax.set_yticks(np.arange(1)+.5)
-ax.set_yticklabels(["M-L distance"], fontsize="x-small")
-
-dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst,"contra_ipsi_ss_sm_v2.pdf"), bbox_inches = "tight")
-
-#%%
-#plotting ALL 
-#formatting
-fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (20,10), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2,5,0.3]})
-
-#inj fractions
-ax = axes[0]
-
-show = np.fliplr(sort_inj).T
-br = np.asarray(lr_brains)[np.argsort(_dist)]
+ax = axes[1]
+show = np.fliplr(sort_pcounts).T
 
 vmin = 0
-vmax = 0.8
-cmap = plt.cm.Reds 
-cmap.set_over('darkred')
+vmax = maxpcount
+cmap = plt.cm.viridis
+cmap.set_over("orange")
 #colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,6)
-#bounds = np.linspace(-2,5,8)
+bounds = np.linspace(vmin,vmax,((vmax-vmin)/5)+1)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("% of total neocortical counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
 
-cb.ax.set_visible(False)
-ax.set_yticks(np.arange(len(ak_pool))+.5)
-ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
 
-#show raw counts    
-ax = axes[1]
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+lbls = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
 
-mat = np.nan_to_num(np.flipud(np.asarray(sort_ratio.T)))
-mat[mat == np.inf] = 1000
-mat[mat > 1000] = 1000
+plt.savefig(os.path.join(fig_dst, "h129_pcounts_nc.pdf"), bbox_inches = "tight")
 
-show = mat
-br = lr_brains 
+#%%
+pcounts_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], brain[3], brain[6], brain[5]+brain[7], 
+                                          brain[8]+brain[9], brain[10], brain[12], brain[11], 
+                                          brain[13]+brain[14], brain[15]+brain[16]] for brain in pcounts])
 
-vmin = 0.5
-vmax = 1.1
-cmap = plt.cm.viridis 
-cmap.set_over('gold')
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,3)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.2, aspect=5)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
+regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
+       "Frontal pole", "Agranular insula", "Gustatory, Visceral",
+       "Somatomotor, Somatosensory", "Retrosplenial", "Visual",
+       "Post. parietal", "Temporal, Auditory", "Peririhinal, Ectorhinal"])
+    
+    
+X = frac_of_inj_pool_norm
+Y = pcounts_pool    
 
-cb.ax.set_visible(False)
-# exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col <= 0.6:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")
+#%%
+
+##  glm
+c_mat = []
+mat = []
+pmat = []
+mat_shuf = []
+p_shuf = []
+fit = []
+fit_shuf = []
+
+for itera in range(1000):
+    if itera%100 == 0: print(itera)
+    if itera == 0:
+        shuffle = False
+        inj = X.copy()
+    else:
+        shuffle = True
+        mat_shuf.append([])
+        p_shuf.append([])
+        fit_shuf.append([])
+        inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
+    for count, region in zip(Y.T, regions):
+        inj_ = inj[~np.isnan(count)]
+        count = count[~np.isnan(count)]
+
+        # intercept:
+        inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
         
-ax.set_yticks(np.arange(len(structure))+.5)
-ax.set_yticklabels(structure, fontsize="x-small")
-ax.set_ylabel("Contra/Ipsi ratios")
+#        glm = sm.OLS(count, inj_)
+        glm = sm.GLM(count, inj_, family=sm.families.Poisson())
+        res = glm.fit()
+        
+        coef = res.params[:-1]
+        se = res.bse[:-1]
+        pvals = res.pvalues[:-1] 
 
-ax = axes[2]
-show = np.asarray([sort_dist])
-br = lr_brains 
+        val = coef/se
 
-vmin = -100
-vmax = 80
-cmap = plt.cm.RdBu_r
-cmap.set_over('maroon')
-cmap.set_under('midnightblue')
+        if not shuffle:
+            c_mat.append(coef)
+            mat.append(val)
+            pmat.append(pvals)
+            fit.append(res.fittedvalues)
+            
+        elif shuffle:
+            mat_shuf[-1].append(val)
+            p_shuf[-1].append(pvals)
+            fit_shuf[-1].append(res.fittedvalues)
+        # inspect residuals
+        """
+        if not shuffle:
+            plt.clf()
+            plt.scatter(res.fittedvalues, res.resid)
+            plt.hlines(0, res.fittedvalues.min(), res.fittedvalues.max())
+            plt.title(region)
+            plt.xlabel("Fit-vals")
+            plt.ylabel("Residuals")
+            plt.savefig(os.path.join(dst, "resid_inspection-{}.png").format(region))
+        """
+        
+c_mat = np.array(c_mat)
+mat = np.array(mat) # region x inj
+mat_shuf = np.array(mat_shuf) # region x inj
+pmat = np.array(pmat) # region x inj
+p_shuf = np.array(p_shuf)
+fit = np.array(fit)
+fit_shuf = np.array(fit_shuf)
+
+#%%
+
+## display
+fig = plt.figure(figsize=(8,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+# map 1: weights
+show = np.flipud(mat) # NOTE abs
+
+vmin = 1
+vmax = 6
+whitetext = 4
+fontsize = "medium"
+cmap = plt.cm.Reds
+cmap.set_under("w")
+cmap.set_over("maroon")
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,4)
-#bounds = np.linspace(-2,5,8)
+bounds = np.linspace(vmin,vmax,(vmax-vmin) + 1)
+#bounds = np.linspace(0,5,11)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=1.5, aspect=5)
-cb.set_label("Left to right", fontsize="x-small", labelpad=3)
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+                  shrink=0.3, aspect=10)
+cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
-cb.ax.set_visible(False)
+cb.ax.set_visible(True)
+
 # exact value annotations
 for ri,row in enumerate(show):
     for ci,col in enumerate(row):
-        if col < -75 or col > 70:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="x-small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="x-small")        
+        if col < whitetext:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize=fontsize)
+        else: 
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize=fontsize)
 
-#remaking labeles so it doesn't look squished
-ax.set_xticks(np.arange(len(br))+.5)
-lbls = np.asarray(br)
-ax.set_xticklabels(br, rotation=30, fontsize=5, ha="right")
+# signif
+sig = np.flipud(pmat) < .05#/np.size(pmat)
+p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
+null = (p_shuf_pos < .05).sum(axis=(1,2))
+nullmean = null.mean()
+nullstd = null.std()
+for y,x in np.argwhere(sig):
+    pass
+    ax.text(x, y+0.3, "*", fontsize=10, ha="left", va="bottom", color = "black", transform=ax.transData)
+#ax.text(.5, 1.06, "X: p<0.05".format(nullmean, nullstd), ha="center", va="center", fontsize="small", transform=ax.transAxes)
+ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
-ax.set_yticks(np.arange(1)+.5)
-ax.set_yticklabels(["M-L distance"], fontsize="x-small")
+# aesthetics
+# xticksjt -t monokai -m 200
+ax.set_xticks(np.arange(len(ak_pool))+.5)
 
-dst = "/home/wanglab/Desktop"
-plt.savefig(os.path.join(dst,"contra_ipsi_v2.pdf"), bbox_inches = "tight")
+#remaking labeles so it doesn"t look squished
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize="x-small", ha="right")
+# yticks
+ax.set_yticks(np.arange(len(regions))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize=fontsize)
+plt.savefig(os.path.join(dst, "h129_nc_glm.pdf"), bbox_inches = "tight")

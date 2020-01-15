@@ -115,12 +115,12 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 
 #pooled injections
 ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X", #no simpplex injections
-                 "Simplex", "Crura", "PM, CP"])
-frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11]+xx[12], np.sum(xx[13:16])] 
+                 "Simplex", "Crus I", "Crus II", "PM, CP"])
+frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
                                 for xx in expr_all_as_frac_of_inj])
 primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
 #get n's after pooling
-primary_lob_n = np.array([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
+primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max(primary_pool)+1)])
 
 #make structures
 #FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
@@ -646,25 +646,24 @@ fit_shuf = np.array(fit_shuf)
 
 #%%
 ## display
-fig = plt.figure(figsize=(6,5))
+fig = plt.figure(figsize=(7.5,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 #set white text limit here
-whitetext = 8
+whitetext = 4
 annotation_size = "medium"#annotation/number sizes
 
 # map 1: weights
 show = np.flipud(mat) # NOTE abs
 
 vmin = 0
-vmax = 10
+vmax = 6
 cmap = plt.cm.Reds
 cmap.set_under("w")
 cmap.set_over("maroon")
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,((vmax-vmin)/2)+1)
-#bounds = np.linspace(0,5,11)
+bounds = np.linspace(vmin,vmax,((vmax-vmin))+1)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm)

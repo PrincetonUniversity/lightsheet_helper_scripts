@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Dec 18 16:02:15 2019
+Created on Wed Jan 15 17:03:52 2020
 
 @author: wanglab
 """
+
 
 import matplotlib as mpl, os
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 #imports
 #path to pickle file
-data_pth = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/model_data_contra_pma.p"
+data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/model_data_contra_pma.p"
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
@@ -54,7 +55,7 @@ tp = True
 if tp:
 #    dst = "/Users/tjp7rr1/Downloads"
     vmin = 0
-    vmax = 6
+    vmax = 5
     cmap = plt.cm.Blues#plt.cm.Reds
     cmap.set_over(plt.cm.Blues(1.0)) #cmap.set_over('maroon')
     whitetext = 4
@@ -110,5 +111,4 @@ ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lo
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="medium")
 
-plt.savefig(os.path.join(dst, "prv_nc_glm_contra_layer56_pma.pdf"), bbox_inches = "tight")
-#%%
+plt.savefig(os.path.join(dst, "h129_nc_glm_contra_layer56_pma.pdf"), bbox_inches = "tight")
