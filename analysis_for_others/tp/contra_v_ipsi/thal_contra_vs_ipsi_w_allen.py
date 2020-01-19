@@ -24,8 +24,8 @@ mpl.rcParams["ps.fonttype"] = 42
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 fig_dst = "/home/wanglab/Desktop"
 
-ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
-df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
+ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_160um_ventricular_erosion.tif")
+df_pth = "/jukebox/LightSheetTransfer/atlas/allen_id_table_w_voxel_counts.xlsx"
 
 #cut annotation file in middle
 ann = tifffile.imread(ann_pth)
@@ -121,7 +121,7 @@ primary_as_frac_of_lob = np.array([np.argmax(e) for e in expr_all_as_frac_of_lob
 secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 
 #pooled injections
-ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X", #no simpplex injections
+ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
                  "Simplex", "Crus I", "Crus II", "PM, CP"])
 frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
                                 for xx in expr_all_as_frac_of_inj])
@@ -138,7 +138,6 @@ id_table = pd.read_excel(df_pth)
 #------------------------------------------------------------------------------------------------------------------------------
 #NOTE THAT ONLY HAVE TO DO THIS ONCE!!!! DO NOT NEED TO DO AGAIN UNLESS DOUBLE CHECKIHG
 #transform points to allen atlas space
-nc_lst = brains
 
 #get brains that we actually need to get cell counts from
 src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/transformed_points"
@@ -147,56 +146,56 @@ transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
                   "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
 
 ##collect 
-#for fl in post_transformed:
-#    arr = np.load(fl)
-#    #make into transformix-friendly text file
-#    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
-#    print(brain)
-#    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
-#    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
-#        
-#    #copy over elastix files
-#    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
-#    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
-#   
-#    #run transformix on points
-#    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
-#    
-#    #convert registered points into structure counts
-#    converted_points = unpack_pnts(points_file, transformed_dst) 
-#    
-##%%
-##------------------------------------------------------------------------------------------------------------------------------    
-#def transformed_cells_to_allen(fld, ann, dst, fl_nm):
-#    """ consolidating to one function bc then no need to copy/paste """
-#    dct = {}
-#    
-#    for fl in fld:
-#        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
-#        print(converted_points)
-#        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
-#        df = count_structure_lister(id_table, *point_lst).fillna(0)
-#        #for some reason duplicating columns, so use this
-#        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
-#        fl_name = os.path.basename(fl)
-#        dct[fl_name]= nm_cnt
-#        
-#    #unpack
-#    index = dct[list(dct.keys())[0]].keys()
-#    columns = dct.keys()
-#    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
-#    df = pd.DataFrame(data.T, columns=columns, index=index)
-#    
-#    #save before adding projeny counts at each level
-#    df.to_pickle(os.path.join(dst, fl_nm))
-#    
-#    return os.path.join(dst, fl_nm)
-#
-#pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
-##collect counts from right side
-#right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_no_prog_at_each_level_allen_atl.p")
-##collect counts from left side
-#left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_no_prog_at_each_level_allen_atl.p")
+for fl in post_transformed:
+    arr = np.load(fl)
+    #make into transformix-friendly text file
+    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
+    print(brain)
+    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
+    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
+        
+    #copy over elastix files
+    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
+    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
+   
+    #run transformix on points
+    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
+    
+    #convert registered points into structure counts
+    converted_points = unpack_pnts(points_file, transformed_dst) 
+    
+#%%
+#------------------------------------------------------------------------------------------------------------------------------    
+def transformed_cells_to_allen(fld, ann, dst, fl_nm):
+    """ consolidating to one function bc then no need to copy/paste """
+    dct = {}
+    
+    for fl in fld:
+        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
+        print(converted_points)
+        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
+        df = count_structure_lister(id_table, *point_lst).fillna(0)
+        #for some reason duplicating columns, so use this
+        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
+        fl_name = os.path.basename(fl)
+        dct[fl_name]= nm_cnt
+        
+    #unpack
+    index = dct[list(dct.keys())[0]].keys()
+    columns = dct.keys()
+    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
+    df = pd.DataFrame(data.T, columns=columns, index=index)
+    
+    #save before adding projeny counts at each level
+    df.to_pickle(os.path.join(dst, fl_nm))
+    
+    return os.path.join(dst, fl_nm)
+
+pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
+#collect counts from right side
+right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_no_prog_at_each_level_allen_atl.p")
+#collect counts from left side
+left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_no_prog_at_each_level_allen_atl.p")
 
 #import dict of cells by region
 r_cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
@@ -270,24 +269,271 @@ ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
-#get counts for all of neocortex
-sois = ["Thalamus", "Ventral posteromedial nucleus of the thalamus", "Ventral posterolateral nucleus of the thalamus",
-          "Ventral anterior-lateral complex of the thalamus", "Ventral medial nucleus of the thalamus", "Anteroventral nucleus of thalamus", 
-          "Reticular nucleus of the thalamus", "Ventral part of the lateral geniculate complex", "Mediodorsal nucleus of thalamus",
-          "Submedial nucleus of the thalamus", "Nucleus of reuniens", "Paraventricular nucleus of the thalamus", 
-          "Central lateral nucleus of the thalamus", "Parafascicular nucleus", "Posterior complex of the thalamus",
-          "Lateral dorsal nucleus of thalamus", "Lateral posterior nucleus of the thalamus", "Lateral habenula"]
+sois = ["Thalamus", 
+       'Ventral anterior-lateral complex of the thalamus',
+       'Ventral medial nucleus of the thalamus',
+       'Ventral posterior complex of the thalamus',
+       'Ventral posterolateral nucleus of the thalamus',
+       'Ventral posteromedial nucleus of the thalamus',
+       'Posterior triangular thalamic nucleus',
+       'Subparafascicular nucleus',
+       'Subparafascicular area', 'Peripeduncular nucleus',
+       'Geniculate group, dorsal thalamus', 'Medial geniculate complex',
+       'Dorsal part of the lateral geniculate complex',
+       'Lateral posterior nucleus of the thalamus',
+       'Posterior complex of the thalamus',
+       'Posterior limiting nucleus of the thalamus',
+       'Suprageniculate nucleus', 'Ethmoid nucleus of the thalamus',
+       'Retroethmoid nucleus', 
+       'Anteroventral nucleus of thalamus', 'Anteromedial nucleus', 'Anterodorsal nucleus',
+       'Interanteromedial nucleus of the thalamus',
+       'Interanterodorsal nucleus of the thalamus',
+       'Lateral dorsal nucleus of thalamus',
+       'Intermediodorsal nucleus of the thalamus',
+       'Mediodorsal nucleus of thalamus',
+       'Submedial nucleus of the thalamus', 'Perireunensis nucleus',
+       'Paraventricular nucleus of the thalamus', 'Parataenial nucleus',
+       'Nucleus of reuniens', 'Xiphoid thalamic nucleus',
+       'Intralaminar nuclei of the dorsal thalamus', 'Rhomboid nucleus',
+       'Central medial nucleus of the thalamus', 'Paracentral nucleus',
+       'Central lateral nucleus of the thalamus',
+       'Parafascicular nucleus',
+       'Posterior intralaminar thalamic nucleus',
+       'Reticular nucleus of the thalamus',
+       'Geniculate group, ventral thalamus',
+       'Medial habenula',
+       'Lateral habenula', 'Pineal body']
 
 #first calculate counts across entire nc region
 counts_per_struct = []
 for soi in sois:
     progeny = []; counts = []
     get_progeny(ontology_dict, soi, progeny)
+    #add counts from main structure
+    counts.append([cells_regions.loc[cells_regions.Structure == soi, brain].values[0] for brain in brains])
     for progen in progeny:
         counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
     counts_per_struct.append(np.array(counts).sum(axis = 0))
 counts_per_struct = np.array(counts_per_struct)
 
-
+pcounts = np.nan_to_num(np.asarray([((brain[1:]/brain[0])*100) for brain in counts_per_struct.T]))    
 
 #%%
+
+import seaborn as sns
+
+#first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
+order = np.argsort(np.mean(pcounts, axis = 0))[::-1]
+sois_sort = np.array(sois[1:])[order]
+
+#boxplots of percent counts
+plt.figure(figsize = (5,10))
+df = pd.DataFrame(pcounts)
+df.columns = sois[1:] 
+g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
+sns.boxplot(data = df, orient = "h", showfliers=False,showcaps=False, boxprops={'facecolor':'None'}, order = sois_sort)
+plt.xlabel("% of total thalamic cells")
+plt.ylabel("Thalamic nuclei")
+plt.savefig(os.path.join(fig_dst, "pcounts_boxplots.pdf"), bbox_inches = "tight")
+
+#%%
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+
+fig = plt.figure(figsize=(5,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
+
+vmin = 0
+vmax = 8
+cmap = plt.cm.viridis
+cmap.set_over("gold")
+#colormap
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(True)
+## exact value annotations
+#for ri,row in enumerate(show):
+#    for ci,col in enumerate(row):
+#        pass
+#        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
+        
+#remaking labeles so it doesn"t look squished
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(sois[1:]))+.5)
+#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
+# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
+# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
+#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
+ax.set_yticklabels(["{}".format(bi) for bi in sois[1:]], fontsize="small")
+
+#plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
+
+#%%
+#glm
+X = frac_of_inj_pool_norm
+Y = pcounts
+
+c_mat = []
+mat = []
+pmat = []
+mat_shuf = []
+p_shuf = []
+ars = []
+rs = []
+fit = []
+fit_shuf = []
+
+for itera in range(1000):
+    if itera%100 == 0: print(itera)
+    if itera == 0:
+        shuffle = False
+        inj = X.copy()
+    else:
+        shuffle = True
+        mat_shuf.append([])
+        p_shuf.append([])
+        fit_shuf.append([])
+        inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
+    for count, region in zip(Y.T, nuclei):
+        try:
+            inj_ = inj[~np.isnan(count)]
+            count = count[~np.isnan(count)]
+    
+            # intercept:
+            inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
+            
+#            glm = sm.OLS(count, inj_)
+            glm = sm.GLM(count, inj_, family=sm.families.Poisson())
+            res = glm.fit()
+            
+            coef = res.params[:-1]
+            se = res.bse[:-1]
+            pvals = res.pvalues[:-1] 
+    
+            val = coef/se
+    
+            if not shuffle:
+                c_mat.append(coef)
+                mat.append(val)
+                pmat.append(pvals)
+                fit.append(res.fittedvalues)
+            elif shuffle:
+                mat_shuf[-1].append(val)
+                p_shuf[-1].append(pvals)
+                fit_shuf[-1].append(res.fittedvalues)
+        except:
+            inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:] #sometimes the shuffle messes stuff up
+            inj_ = inj[~np.isnan(count)]
+            count = count[~np.isnan(count)]
+    
+            # intercept:
+            inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
+            
+#            glm = sm.OLS(count, inj_)
+            glm = sm.GLM(count, inj_, family=sm.families.Poisson())
+            res = glm.fit()
+            
+            coef = res.params[:-1]
+            se = res.bse[:-1]
+            pvals = res.pvalues[:-1] 
+    
+            val = coef/se
+    
+            if not shuffle:
+                mat.append(val)
+                pmat.append(pvals)
+#                ars.append(res.rsquared_adj)
+#                rs.append(res.rsquared)
+            elif shuffle:
+                mat_shuf[-1].append(val)
+                p_shuf[-1].append(pvals)
+        # inspect residuals
+        """
+        if not shuffle:
+            plt.clf()
+            plt.scatter(res.fittedvalues, res.resid)
+            plt.hlines(0, res.fittedvalues.min(), res.fittedvalues.max())
+            plt.title(region)
+            plt.xlabel("Fit-vals")
+            plt.ylabel("Residuals")
+            plt.savefig(os.path.join(dst, "resid_inspection-{}.png").format(region))
+        """
+    
+
+mat = np.array(mat) # region x inj
+mat_shuf = np.array(mat_shuf) # region x inj
+pmat = np.array(pmat) # region x inj
+p_shuf = np.array(p_shuf)
+fit = np.array(fit)
+fit_shuf = np.array(fit_shuf)
+
+#%%
+## display
+fig = plt.figure(figsize=(5,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+# map 1: weights
+show = mat
+
+vmin = 0
+vmax = 5
+whitetext = 4
+cmap = plt.cm.Reds
+cmap.set_under("w")
+cmap.set_over("maroon")
+#colormap
+# discrete colorbar details
+bounds = np.linspace(vmin,vmax,6)
+#bounds = np.linspace(-2,5,8)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
+#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.2, aspect=10)
+cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+
+cb.ax.set_visible(True)
+
+# exact value annotations
+for ri,row in enumerate(show):
+    for ci,col in enumerate(row):
+        if col > whitetext:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
+        else:
+            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
+
+# signif
+sig = pmat < .05#/np.size(pmat)
+p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
+null = (p_shuf_pos < .05).sum(axis=(1,2))
+nullmean = null.mean()
+nullstd = null.std()
+for y,x in np.argwhere(sig):
+    pass
+    ax.text(x, y+0.3, "*", fontsize=10, ha="left", va="bottom", color = "black", transform=ax.transData)
+#ax.text(.5, 1.06, "X: p<0.05", ha="center", va="center", fontsize="small", transform=ax.transAxes)
+ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
+
+# aesthetics
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+
+#remaking labeles so it doesn"t look squished
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=6, ha="right")
+# yticks
+ax.set_yticks(np.arange(len(regions))+.5)
+ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+
+plt.savefig(os.path.join(dst,"thal_glm_contra_allen.pdf"), bbox_inches = "tight")

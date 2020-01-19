@@ -26,7 +26,7 @@ data["primary_pool"] = primary_pool
 data["pcounts_pool"] = pcounts_pool
 data["frac_of_inj_pool"] = frac_of_inj_pool
 #store data (serialize)
-with open(os.path.join(dst, "model_data_contra_pma.p"), "wb") as handle:
+with open(os.path.join(dst, "nc_model_data_contra_pma.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
     
 #%%
@@ -39,9 +39,11 @@ data["brains"] = brains
 data["frac_of_inj_pool"] = frac_of_inj_pool
 data["primary_pool"] = primary_pool
 data["ak_pool"] = ak_pool
+data["primary_lob_n"] = primary_lob_n
+
 
 #store data (serialize)
-with open(os.path.join(dst, "hsv_maps_contra_pma.p"), "wb") as handle:
+with open(os.path.join(dst, "thal_hsv_maps_contra_allen.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
     
 #%%  
