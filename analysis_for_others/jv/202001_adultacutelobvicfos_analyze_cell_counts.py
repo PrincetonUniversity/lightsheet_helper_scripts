@@ -11,8 +11,8 @@ import os, numpy as np, pandas as pd, scipy, itertools, sys
 sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 from tools.analysis.network_analysis import make_structure_objects
 
-src = "/jukebox/wang/Jess/lightsheet_output/201810_adultacuteLobVI_cfos/pooled_analysis"
-flds = "/jukebox/wang/Jess/lightsheet_output/201810_adultacuteLobVI_cfos/processed"
+src = "/home/wanglab/Desktop"
+flds = "/jukebox/wang/Jess/lightsheet_output/201810_adultacutePC_ymaze_cfos/processed"
 
 #get files
 lst = [os.path.join(flds, fld) for fld in os.listdir(flds) if os.path.exists(os.path.join(os.path.join(flds, fld), 
@@ -24,8 +24,12 @@ nms = ["dadult_pc_crus1_1", "dadult_pc_crus1_2", "dadult_pc_crus1_3", "dadult_pc
        "dadult_pc_lob6_15", "dadult_pc_lob6_16", "dadult_pc_lob6_17", "dadult_pc_lob6_18", 
        "dadult_pc_lob6_19", "dadult_pc_lob6_20", "dadult_pc_lob6_21"]
 
-cond = ["vector control, crus I", "DREADDs, crus I", "vector control, crus I", "vector control, crus I", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs", 
-        "DREADDs", "vector control", "DREADDs", "vector control", "DREADDs", "vector control", "DREADDs", "DREADDs", "DREADDs", "DREADDs", "DREADDs"]
+cond = ["adultacutePC_crusI_VecCtrl", "adultacutePC_crusI_DREADDs", "adultacutePC_crusI_VecCtrl", 
+        "adultacutePC_crusI_VecCtrl", "adultacutePC_crusI_DREADDs", "adultacutePC_crusI_DREADDs", "adultacutePC_crusI_DREADDs", 
+        "adultacutePC_crusI_DREADDs", "adultacutePC_crusI_DREADDs", "adultacutePC_crusI_DREADDs", 
+        "adultacutePC_lobVI_DREADDs", "adultacutePC_lobVI_VecCtrl", "adultacutePC_lobVI_DREADDs", 
+        "adultacutePC_lobVI_VecCtrl", "adultacutePC_lobVI_DREADDs", "adultacutePC_lobVI_DREADDs", "adultacutePC_lobVI_DREADDs", 
+        "adultacutePC_lobVI_DREADDs", "adultacutePC_lobVI_DREADDs"]
 
 conditions = {n:c for n,c in zip(nms, cond)}
 
