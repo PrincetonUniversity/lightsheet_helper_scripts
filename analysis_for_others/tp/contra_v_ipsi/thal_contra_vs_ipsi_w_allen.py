@@ -24,8 +24,9 @@ mpl.rcParams["ps.fonttype"] = 42
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 fig_dst = "/home/wanglab/Desktop"
 
-ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_160um_ventricular_erosion.tif")
-df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
+
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 
 #cut annotation file in middle
 ann = tifffile.imread(ann_pth)
@@ -145,13 +146,13 @@ post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/postt
 transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
                   "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
 #
-###collect 
+##collect 
 #for fl in post_transformed:
 #    arr = np.load(fl)
 #    #make into transformix-friendly text file
 #    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
 #    print(brain)
-#    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
+#    transformed_dst = os.path.join(atl_dst, brain); makedir(transformed_dst)
 #    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
 #        
 #    #copy over elastix files
@@ -163,7 +164,7 @@ transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
 #    
 #    #convert registered points into structure counts
 #    converted_points = unpack_pnts(points_file, transformed_dst) 
-    
+#    
 
 #------------------------------------------------------------------------------------------------------------------------------    
 def transformed_cells_to_allen(fld, ann, dst, fl_nm):
@@ -193,12 +194,12 @@ def transformed_cells_to_allen(fld, ann, dst, fl_nm):
 
 pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
 #collect counts from right side
-right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_no_prog_at_each_level_allen_atl.p")
+right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_allen_atl.p")
 #collect counts from left side
-left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_no_prog_at_each_level_allen_atl.p")
+left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_allen_atl.p")
 
 #import dict of cells by region
-r_cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+r_cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_allen_atl.p"), "rb"), encoding = "latin1")
 r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
 
 contra = {}; ipsi = {} #collect contra and ipsi frame
@@ -209,7 +210,7 @@ for k,v in r_cells_regions.items():
         ipsi[k] = v
 
 #LEFT SIDE
-l_cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_no_prog_at_each_level_allen_atl.p"), "rb"), encoding = "latin1")
+l_cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_allen_atl.p"), "rb"), encoding = "latin1")
 l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
 
 for k,v in l_cells_regions.items():
@@ -219,13 +220,13 @@ for k,v in l_cells_regions.items():
         ipsi[k] = v
         
 contra_df = pd.DataFrame(contra)
-contra_df.to_csv(os.path.join(dst, "data/thal_contra_counts_23_brains.csv")) 
+contra_df.to_csv(os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")) 
 
 ipsi_df = pd.DataFrame(ipsi)
-ipsi_df.to_csv(os.path.join(dst, "data/thal_ipsi_counts_23_brains.csv"))         
+ipsi_df.to_csv(os.path.join(dst, "data/thal_ipsi_counts_23_brains_80um_ventric_erosion.csv"))         
 
 #%%
-cells_regions_pth = os.path.join(dst, "data/thal_contra_counts_23_brains.csv")
+cells_regions_pth = os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
 
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
@@ -270,40 +271,19 @@ with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
 sois = ["Thalamus", 
-       "Ventral anterior-lateral complex of the thalamus",
-       "Ventral medial nucleus of the thalamus",
-       "Ventral posterolateral nucleus of the thalamus",
        "Ventral posteromedial nucleus of the thalamus",
-       "Posterior triangular thalamic nucleus",
-       "Subparafascicular nucleus",
-       "Subparafascicular area", "Peripeduncular nucleus",
-       "Medial geniculate complex, dorsal part",
-       "Medial geniculate complex, medial part",
-       "Medial geniculate complex, ventral part",
-       "Dorsal part of the lateral geniculate complex",
-       "Lateral posterior nucleus of the thalamus",
-       "Posterior complex of the thalamus",
-       "Posterior limiting nucleus of the thalamus",
-       "Suprageniculate nucleus", "Ethmoid nucleus of the thalamus",
-       "Retroethmoid nucleus", 
-       "Anteroventral nucleus of thalamus", "Anteromedial nucleus", "Anterodorsal nucleus",
-       "Interanteromedial nucleus of the thalamus",
-       "Interanterodorsal nucleus of the thalamus",
+       "Ventral posterolateral nucleus of the thalamus",
+       "Ventral anterior-lateral complex of the thalamus",
+       "Anteroventral nucleus of thalamus", 
        "Lateral dorsal nucleus of thalamus",
-       "Intermediodorsal nucleus of the thalamus",
-       "Mediodorsal nucleus of thalamus",
-       "Submedial nucleus of the thalamus", "Perireunensis nucleus",
-       "Paraventricular nucleus of the thalamus", "Parataenial nucleus",
-       "Nucleus of reuniens", "Xiphoid thalamic nucleus",
-       "Intralaminar nuclei of the dorsal thalamus", "Rhomboid nucleus",
-       "Central medial nucleus of the thalamus", "Paracentral nucleus",
-       "Central lateral nucleus of the thalamus",
-       "Parafascicular nucleus",
-       "Posterior intralaminar thalamic nucleus",
-       "Reticular nucleus of the thalamus",
-       "Geniculate group, ventral thalamus",
+       "Paraventricular nucleus of the thalamus", 
        "Medial habenula",
-       "Lateral habenula", "Pineal body"]
+       "Lateral posterior nucleus of the thalamus",
+       "Posterior triangular thalamic nucleus",
+       "Mediodorsal nucleus of thalamus",
+       "Posterior complex of the thalamus",
+       "Ventral medial nucleus of the thalamus",
+       "Reticular nucleus of the thalamus"]
 
 #first calculate counts across entire nc region
 counts_per_struct = []
@@ -324,7 +304,7 @@ pcounts = np.nan_to_num(np.asarray([((brain[1:]/brain[0])*100) for brain in coun
 import seaborn as sns
 
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
-order = np.argsort(np.mean(pcounts, axis = 0))[::-1]
+order = np.argsort(np.median(pcounts, axis = 0))[::-1]
 sois_sort = np.array(sois[1:])[order][:20]
 
 #boxplots of percent counts
@@ -342,7 +322,7 @@ plt.savefig(os.path.join(fig_dst, "thal_pcounts_boxplots.pdf"), bbox_inches = "t
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
 mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
-fig = plt.figure(figsize=(5,10))
+fig = plt.figure(figsize=(5,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
@@ -359,11 +339,6 @@ cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
-## exact value annotations
-#for ri,row in enumerate(show):
-#    for ci,col in enumerate(row):
-#        pass
-#        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
         
 #remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(ak_pool))+.5)
@@ -371,13 +346,14 @@ lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(sois[1:]))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
-ax.set_yticklabels(["{}".format(bi) for bi in sois[1:]], fontsize="small")
 
-#plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
+ax.set_yticklabels(["{}".format(bi) for bi in sois[1:]], fontsize="small")
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['left'].set_visible(False)
+
+plt.savefig(os.path.join(fig_dst,"thal_mean_count.pdf"), bbox_inches = "tight")
 
 #%%
 #glm
