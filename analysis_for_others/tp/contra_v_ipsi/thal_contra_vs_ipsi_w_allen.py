@@ -25,7 +25,7 @@ dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 fig_dst = "/home/wanglab/Desktop"
 
 ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_160um_ventricular_erosion.tif")
-df_pth = "/jukebox/LightSheetTransfer/atlas/allen_id_table_w_voxel_counts.xlsx"
+df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 
 #cut annotation file in middle
 ann = tifffile.imread(ann_pth)
@@ -144,27 +144,27 @@ src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pool
 post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
 transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
                   "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
+#
+###collect 
+#for fl in post_transformed:
+#    arr = np.load(fl)
+#    #make into transformix-friendly text file
+#    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
+#    print(brain)
+#    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
+#    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
+#        
+#    #copy over elastix files
+#    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
+#    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
+#   
+#    #run transformix on points
+#    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
+#    
+#    #convert registered points into structure counts
+#    converted_points = unpack_pnts(points_file, transformed_dst) 
+    
 
-##collect 
-for fl in post_transformed:
-    arr = np.load(fl)
-    #make into transformix-friendly text file
-    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
-    print(brain)
-    transformed_dst = os.path.join(atl_dst, brain); makedir(atl_dst)
-    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
-        
-    #copy over elastix files
-    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
-    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
-   
-    #run transformix on points
-    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
-    
-    #convert registered points into structure counts
-    converted_points = unpack_pnts(points_file, transformed_dst) 
-    
-#%%
 #------------------------------------------------------------------------------------------------------------------------------    
 def transformed_cells_to_allen(fld, ann, dst, fl_nm):
     """ consolidating to one function bc then no need to copy/paste """
@@ -270,39 +270,40 @@ with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
 sois = ["Thalamus", 
-       'Ventral anterior-lateral complex of the thalamus',
-       'Ventral medial nucleus of the thalamus',
-       'Ventral posterior complex of the thalamus',
-       'Ventral posterolateral nucleus of the thalamus',
-       'Ventral posteromedial nucleus of the thalamus',
-       'Posterior triangular thalamic nucleus',
-       'Subparafascicular nucleus',
-       'Subparafascicular area', 'Peripeduncular nucleus',
-       'Geniculate group, dorsal thalamus', 'Medial geniculate complex',
-       'Dorsal part of the lateral geniculate complex',
-       'Lateral posterior nucleus of the thalamus',
-       'Posterior complex of the thalamus',
-       'Posterior limiting nucleus of the thalamus',
-       'Suprageniculate nucleus', 'Ethmoid nucleus of the thalamus',
-       'Retroethmoid nucleus', 
-       'Anteroventral nucleus of thalamus', 'Anteromedial nucleus', 'Anterodorsal nucleus',
-       'Interanteromedial nucleus of the thalamus',
-       'Interanterodorsal nucleus of the thalamus',
-       'Lateral dorsal nucleus of thalamus',
-       'Intermediodorsal nucleus of the thalamus',
-       'Mediodorsal nucleus of thalamus',
-       'Submedial nucleus of the thalamus', 'Perireunensis nucleus',
-       'Paraventricular nucleus of the thalamus', 'Parataenial nucleus',
-       'Nucleus of reuniens', 'Xiphoid thalamic nucleus',
-       'Intralaminar nuclei of the dorsal thalamus', 'Rhomboid nucleus',
-       'Central medial nucleus of the thalamus', 'Paracentral nucleus',
-       'Central lateral nucleus of the thalamus',
-       'Parafascicular nucleus',
-       'Posterior intralaminar thalamic nucleus',
-       'Reticular nucleus of the thalamus',
-       'Geniculate group, ventral thalamus',
-       'Medial habenula',
-       'Lateral habenula', 'Pineal body']
+       "Ventral anterior-lateral complex of the thalamus",
+       "Ventral medial nucleus of the thalamus",
+       "Ventral posterolateral nucleus of the thalamus",
+       "Ventral posteromedial nucleus of the thalamus",
+       "Posterior triangular thalamic nucleus",
+       "Subparafascicular nucleus",
+       "Subparafascicular area", "Peripeduncular nucleus",
+       "Medial geniculate complex, dorsal part",
+       "Medial geniculate complex, medial part",
+       "Medial geniculate complex, ventral part",
+       "Dorsal part of the lateral geniculate complex",
+       "Lateral posterior nucleus of the thalamus",
+       "Posterior complex of the thalamus",
+       "Posterior limiting nucleus of the thalamus",
+       "Suprageniculate nucleus", "Ethmoid nucleus of the thalamus",
+       "Retroethmoid nucleus", 
+       "Anteroventral nucleus of thalamus", "Anteromedial nucleus", "Anterodorsal nucleus",
+       "Interanteromedial nucleus of the thalamus",
+       "Interanterodorsal nucleus of the thalamus",
+       "Lateral dorsal nucleus of thalamus",
+       "Intermediodorsal nucleus of the thalamus",
+       "Mediodorsal nucleus of thalamus",
+       "Submedial nucleus of the thalamus", "Perireunensis nucleus",
+       "Paraventricular nucleus of the thalamus", "Parataenial nucleus",
+       "Nucleus of reuniens", "Xiphoid thalamic nucleus",
+       "Intralaminar nuclei of the dorsal thalamus", "Rhomboid nucleus",
+       "Central medial nucleus of the thalamus", "Paracentral nucleus",
+       "Central lateral nucleus of the thalamus",
+       "Parafascicular nucleus",
+       "Posterior intralaminar thalamic nucleus",
+       "Reticular nucleus of the thalamus",
+       "Geniculate group, ventral thalamus",
+       "Medial habenula",
+       "Lateral habenula", "Pineal body"]
 
 #first calculate counts across entire nc region
 counts_per_struct = []
@@ -324,23 +325,24 @@ import seaborn as sns
 
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
 order = np.argsort(np.mean(pcounts, axis = 0))[::-1]
-sois_sort = np.array(sois[1:])[order]
+sois_sort = np.array(sois[1:])[order][:20]
 
 #boxplots of percent counts
-plt.figure(figsize = (5,10))
+plt.figure(figsize = (5,7))
 df = pd.DataFrame(pcounts)
 df.columns = sois[1:] 
 g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
-sns.boxplot(data = df, orient = "h", showfliers=False,showcaps=False, boxprops={'facecolor':'None'}, order = sois_sort)
+sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+            boxprops={'facecolor':'None'}, order = sois_sort)
 plt.xlabel("% of total thalamic cells")
 plt.ylabel("Thalamic nuclei")
-plt.savefig(os.path.join(fig_dst, "pcounts_boxplots.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "thal_pcounts_boxplots.pdf"), bbox_inches = "tight")
 
 #%%
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
 mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
-fig = plt.figure(figsize=(5,5))
+fig = plt.figure(figsize=(5,10))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs

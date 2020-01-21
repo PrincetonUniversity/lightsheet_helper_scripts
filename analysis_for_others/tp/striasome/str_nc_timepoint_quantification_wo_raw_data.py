@@ -108,7 +108,7 @@ g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort
 sns.boxplot(data = df, orient = "h", showfliers=False,showcaps=False, boxprops={'facecolor':'None'}, order = sois_sort_density)
 plt.xlabel("Density (cells/$mm^3$)")
 plt.ylabel("Striatum structures")
-plt.savefig(os.path.join(dst, "str_density_boxplots.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "str_density_boxplots.pdf"), bbox_inche   s = "tight")
 
 #boxplots of percent counts
 plt.figure()
