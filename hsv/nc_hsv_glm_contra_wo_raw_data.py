@@ -55,9 +55,9 @@ cmap.set_over("maroon")
 
 
 #tp local
-tp = False
+tp = True
 if tp:
-#    dst = "/Users/tjp7rr1/Downloads"
+    dst = "/Users/tjp7rr1/Downloads"
     vmin = 0
     vmax = 5
     cmap = plt.cm.Blues#plt.cm.Reds
@@ -65,9 +65,10 @@ if tp:
     whitetext = 4
     cmap.set_under('w')
     #reorder xaxis
-    pmat = np.concatenate([pmat[:,:3], pmat[:,3:][:,::-1]], 1)
-    ak_pool = np.concatenate([ak_pool[:3], ak_pool[3:][::-1]], 0)
-    primary_lob_n = np.concatenate([primary_lob_n[:3], primary_lob_n[3:][::-1]], 0)
+    if False: #no longer changing the order - this will break too since new categories
+        pmat = np.concatenate([pmat[:,:3], pmat[:,3:][:,::-1]], 1)
+        ak_pool = np.concatenate([ak_pool[:3], ak_pool[3:][::-1]], 0)
+        primary_lob_n = np.concatenate([primary_lob_n[:3], primary_lob_n[3:][::-1]], 0)
     
     #TP NOTE - FOR SOME REASON THIS MESSES UP SIGNIFICANT ASTERISKS, numbers are ok
     #LOOK AT ZAHRAS FOR THAT
@@ -118,3 +119,4 @@ ax.spines['bottom'].set_visible(False)
 ax.grid(False)
 
 plt.savefig(os.path.join(dst, "h129_nc_glm_contra_pma.pdf"), bbox_inches = "tight")
+#%%

@@ -12,7 +12,6 @@ import numpy as np, pickle as pckl
 
 #TP
 plt.rcParams["axes.grid"] = False
-
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 TP = True

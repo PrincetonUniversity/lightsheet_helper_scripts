@@ -20,7 +20,7 @@ TP = True
 
 #figure dest 
 dst = "/home/wanglab/Desktop"
-#if TP:dst = "/Users/tjp7rr1/Downloads"
+if TP:dst = "/Users/tjp7rr1/Downloads"
 
 ###############################################################RUN AS IS#######################################################
 #bucket path for data

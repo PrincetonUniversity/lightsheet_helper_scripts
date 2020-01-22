@@ -23,7 +23,7 @@ data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
 dst = "/home/wanglab/Desktop"
-#dst = "/Users/tjp7rr1/Downloads"
+dst = "/Users/tjp7rr1/Downloads"
 
 #set the appropritate variables
 c_mat = data["c_mat"]
@@ -60,10 +60,11 @@ if tp:
     whitetext = 4
     cmap.set_under('w')
     #reorder xaxis
-    mat = np.concatenate([mat[:,:3], mat[:,3:][:,::-1]], 1)
-    pmat = np.concatenate([pmat[:,:3], pmat[:,3:][:,::-1]], 1)
-    ak_pool = np.concatenate([ak_pool[:3], ak_pool[3:][::-1]], 0)
-    primary_lob_n = np.concatenate([primary_lob_n[:3], primary_lob_n[3:][::-1]], 0)
+    if False: #No longer reordering
+        mat = np.concatenate([mat[:,:3], mat[:,3:][:,::-1]], 1)
+        pmat = np.concatenate([pmat[:,:3], pmat[:,3:][:,::-1]], 1)
+        ak_pool = np.concatenate([ak_pool[:3], ak_pool[3:][::-1]], 0)
+        primary_lob_n = np.concatenate([primary_lob_n[:3], primary_lob_n[3:][::-1]], 0)
     
     #TP NOTE - FOR SOME REASON THIS MESSES UP SIGNIFICANT ASTERISKS, numbers are ok
     #LOOK AT ZAHRAS FOR THAT
@@ -116,3 +117,4 @@ ax.spines['bottom'].set_visible(False)
 ax.grid(False)
 
 plt.savefig(os.path.join(dst, "prv_nc_glm_contra_layer56_pma.pdf"), bbox_inches = "tight")
+#%%

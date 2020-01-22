@@ -23,7 +23,7 @@ data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
 dst = "/home/wanglab/Desktop"
-#dst = "/Users/tjp7rr1/Downloads"
+dst = "/Users/tjp7rr1/Downloads"
 
 #set the appropritate variables
 c_mat = data["c_mat"]

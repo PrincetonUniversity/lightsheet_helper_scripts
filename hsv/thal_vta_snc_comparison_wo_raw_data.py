@@ -19,6 +19,7 @@ data = pckl.load(open(pth, "rb"), encoding = "latin1")
 
 #set dst 
 dst = "/home/wanglab/Desktop"
+dst = "/Users/tjp7rr1/Downloads"
 
 counts_per_struct = data["counts_per_struct"]
 frac_of_inj_pool = data["frac_of_inj_pool"]
