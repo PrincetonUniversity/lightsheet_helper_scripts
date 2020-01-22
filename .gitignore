@@ -1,4 +1,4 @@
-#ignore pycache
+#ignore pycache and random auto generated files
 *__pycache__*
 credentials.json
 token.pickle
@@ -6,3 +6,4 @@ token.pickle
 *.err
 logs/
 *.ipynb_checkpoints/
+*.DS_Store
