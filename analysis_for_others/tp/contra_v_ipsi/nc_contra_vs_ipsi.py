@@ -7,7 +7,8 @@ Created on Mon Jul 29 09:17:20 2019
 """
 
 %matplotlib inline
-import numpy as np, pandas as pd, os, sys, shutil, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, json, statsmodels.api as sm
+import numpy as np, pandas as pd, os, sys, shutil, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, 
+import json, statsmodels.api as sm, itertools
 from tools.registration.register import elastix_command_line_call, jacobian_command_line_call, change_interpolation_order, transformix_command_line_call, transformed_pnts_to_allen_helper_func, count_structure_lister
 from tools.utils.io import listdirfull, makedir, load_memmap_arr, load_np, listall, load_kwargs
 from skimage.external import tifffile

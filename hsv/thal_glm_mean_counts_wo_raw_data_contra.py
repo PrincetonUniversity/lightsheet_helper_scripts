@@ -9,17 +9,21 @@ Created on Wed Dec 18 17:50:18 2019
 import matplotlib as mpl, os
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
+
+#TP
+plt.rcParams["axes.grid"] = False
+
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 
 #imports
 #path to pickle file
-data_pth = "/jukebox/wang/zahra/modeling/h129/thalamus/thal_model_data_contra_allen.p"
+data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_model_data_contra_allen.p"
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
 dst = "/home/wanglab/Desktop"
-dst = "/Users/tjp7rr1/Downloads"
+#dst = "/Users/tjp7rr1/Downloads"
 
 #set the appropritate variables
 c_mat = data["c_mat"]
@@ -62,10 +66,7 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.2, aspect=10)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.2, aspect=10)
 cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
@@ -101,13 +102,20 @@ ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lo
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="small")
 
+#despline to make it look similar to paper figure
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.grid(False)
+
 plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 
-
+#%%
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
 mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
-fig = plt.figure(figsize=(6,5))
+fig = plt.figure(figsize=(5,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
@@ -122,20 +130,12 @@ bounds = np.linspace(vmin,vmax,(vmax-vmin)/2 +1)
 #bounds = np.linspace(-2,5,8)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
-                  shrink=0.3, aspect=10)
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
 cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
 cb.ax.set_visible(True)
-## exact value annotations
-#for ri,row in enumerate(show):
-#    for ci,col in enumerate(row):
-#        pass
-#        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
         
 #remaking labeles so it doesn"t look squished
 ax.set_xticks(np.arange(len(ak_pool))+.5)
@@ -143,10 +143,13 @@ lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize="x-small", ha="right")
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
 ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="small")
+
+#despline to make it look similar to paper figure
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.grid(False)
+
 plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
-#%%

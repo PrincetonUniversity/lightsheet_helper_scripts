@@ -7,18 +7,18 @@ Created on Tue Dec 17 19:22:25 2019
 """
 
 
-from tools.analysis.network_analysis import make_structure_objects
 import statsmodels.api as sm
-import matplotlib as mpl
+import matplotlib as mpl, json
 import matplotlib.pyplot as plt
-import numpy as np, os, pickle as pckl, pandas as pd
+import numpy as np, os, pandas as pd
 from skimage.external import tifffile
 
 #custom
 inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/injection_sites"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_contra_counts_23_brains.csv"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_contra_counts_23_brains_80um_ventric_erosion.csv"
 dst = "/home/wanglab/Desktop"
 
 #making dictionary of injection sites
@@ -101,88 +101,89 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 print(expr_all_as_frac_of_lob[15])
 
 #%%
-#making dictionary of cells by region
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
 cells_regions["Structure"] = cells_regions["Unnamed: 0"]
 cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
-#pooling regions
-structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx", 
-                                    remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
+scale_factor = 0.025
+ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
 
-#%%
-
-#GET ONLY THALAMIC POOLS
-nuclei = ["Thalamus",
-     "Ventral posteromedial nucleus of the thalamus",
-     "Ventral posterolateral nucleus of the thalamus",
-     "Ventral anterior-lateral complex of the thalamus",
-     "Anteroventral nucleus of thalamus",
-     "Lateral dorsal nucleus of thalamus",
-     "Paraventricular nucleus of the thalamus",
-     "Medial habenula",
-     "Lateral posterior nucleus of the thalamus",
-     "Posterior triangular thalamic nucleus",
-     "Mediodorsal nucleus of thalamus",
-     "Posterior complex of the thalamus",
-     "Ventral medial nucleus of the thalamus",
-     "Reticular nucleus of the thalamus"
-]
-
-#make new dict - for all brains
-cells_pooled_regions = {} #for raw counts
-
-for brain in brains:    
-    #make new dict - this is for EACH BRAIN
-    c_pooled_regions = {}
+def get_progeny(dic,parent_structure,progeny_list):
+    """ 
+    ---PURPOSE---
+    Get a list of all progeny of a structure name.
+    This is a recursive function which is why progeny_list is an
+    argument and is not returned.
+    ---INPUT---
+    dic                  A dictionary representing the JSON file 
+                         which contains the ontology of interest
+    parent_structure     The structure
+    progeny_list         The list to which this function will 
+                         append the progeny structures. 
+    """
+    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
     
-    for soi in nuclei:
-        counts = []
-        try:
-            soi = [s for s in structures if s.name==soi][0]
-            counts.append(cells_regions.loc[cells_regions.Structure == soi.name, brain].values[0]) #store counts in this list
-            #add to volume list from LUT
-            progeny = [str(xx.name) for xx in soi.progeny]
-            #now sum up progeny
-            if len(progeny) > 0:
-                for progen in progeny:
-                    counts.append(cells_regions.loc[cells_regions.Structure == progen, brain].values[0])
-                            #add to volume list from LUT
-            c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-        except:
-            counts.append(cells_regions.loc[cells_regions.Structure == soi, brain].values[0])                    
-            c_pooled_regions[soi] = np.sum(np.asarray(counts))
-    #add to big dict
-    cells_pooled_regions[brain] = c_pooled_regions
-
-#making the proper array per brain where regions are removed
-cell_counts_per_brain = []
-
-#initialise dummy var
-i = []
-for k,v in cells_pooled_regions.items():
-    dct = cells_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    cell_counts_per_brain.append(i)
-    #re-initialise for next
-    i = []  
+    name = dic.get('name')
+    children = dic.get('children')
+    if name == parent_structure:
+        for child in children: # child is a dict
+            child_name = child.get('name')
+            progeny_list.append(child_name)
+            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
+        return
     
-cell_counts_per_brain = np.asarray(cell_counts_per_brain)
-#make into % counts the proper way
-pcounts = np.asarray([((brain[1:]/brain[0])*100) for brain in cell_counts_per_brain])    
+    for child in children:
+        child_name = child.get('name')
+        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
+    return 
+
+#get progeny of all large structures
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+
+with open(ontology_file) as json_file:
+    ontology_dict = json.load(json_file)
+
+sois = ["Thalamus", 
+       "Ventral posteromedial nucleus of the thalamus",
+       "Ventral posterolateral nucleus of the thalamus",
+       "Ventral anterior-lateral complex of the thalamus",
+       "Anteroventral nucleus of thalamus", 
+       "Lateral dorsal nucleus of thalamus",
+       "Paraventricular nucleus of the thalamus", 
+       "Medial habenula",
+       "Lateral posterior nucleus of the thalamus",
+       "Posterior triangular thalamic nucleus",
+       "Mediodorsal nucleus of thalamus",
+       "Posterior complex of the thalamus",
+       "Ventral medial nucleus of the thalamus",
+       "Reticular nucleus of the thalamus"]
+
+#first calculate counts across entire nc region
+counts_per_struct = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    #add counts from main structure
+    counts.append([cells_regions.loc[cells_regions.Structure == soi, brain].values[0] for brain in brains])
+    for progen in progeny:
+        counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    counts_per_struct.append(np.array(counts).sum(axis = 0))
+counts_per_struct = np.array(counts_per_struct)
+
+pcounts = np.nan_to_num(np.asarray([((brain[1:]/brain[0])*100) for brain in counts_per_struct.T]))    
+
     
 #%%
 
 #pooled injections
-ak_pool = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII-X", 
+ak_pool = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII-X", 
                  "Simplex", "Crus I", "Crus II", "PM, CP"])
 
 #pooling injection regions
-expr_all_as_frac_of_lob_pool = np.asarray([[brain[0]+brain[1], brain[2]+brain[3]+brain[4]+brain[5]+brain[6]+brain[7], 
+expr_all_as_frac_of_lob_pool = np.asarray([[brain[0]+brain[1], brain[2]+brain[3]+brain[4], brain[5]+brain[6]+brain[7], 
                                             brain[8], brain[9], brain[10], brain[11]+brain[12]] for brain in expr_all_as_frac_of_lob])
 
-expr_all_as_frac_of_inj_pool = np.asarray([[brain[0]+brain[1], brain[2]+brain[3]+brain[4]+brain[5]+brain[6]+brain[7], 
+expr_all_as_frac_of_inj_pool = np.asarray([[brain[0]+brain[1], brain[2]+brain[3]+brain[4], brain[5]+brain[6]+brain[7], 
                                             brain[8], brain[9], brain[10], brain[11]+brain[12]] for brain in expr_all_as_frac_of_inj])
     
 primary_pool = np.asarray([np.argmax(e) for e in expr_all_as_frac_of_inj_pool])
@@ -194,7 +195,7 @@ print(expr_all_as_frac_of_lob_pool.shape)
 expr_all_as_frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in expr_all_as_frac_of_inj_pool])
 
 #change vars (consistent with NC)
-regions = np.asarray(nuclei)[1:]
+regions = np.asarray(sois)[1:]
 #%%
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
 mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
@@ -234,12 +235,9 @@ ax.set_xticks(np.arange(len(ak_pool))+.5)
 lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
-ax.set_yticks(np.arange(len(nuclei[1:]))+.5)
-#The adjusted R-squared is a modified version of R-squared that has been adjusted for the number of predictors in the model. The adjusted R-squared increases
-# only if the new term improves the model more than would be expected by chance. It decreases when a predictor improves the model 
-# by less than expected by chance. The adjusted R-squared can be negative, but it’s usually not.  It is always lower than the R-squared.
-#ax.set_yticklabels(["{}\nr2adj={:0.2f}".format(bi,ar) for ar,bi in zip(ars,regions)], fontsize="xx-small")
-ax.set_yticklabels(["{}".format(bi) for bi in nuclei[1:]], fontsize="small")
+ax.set_yticks(np.arange(len(sois[1:]))+.5)
+
+ax.set_yticklabels(["{}".format(bi) for bi in sois[1:]], fontsize="small")
 dst = "/home/wanglab/Desktop"
 #plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
 
@@ -269,7 +267,7 @@ for itera in range(1000):
         p_shuf.append([])
         fit_shuf.append([])
         inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
-    for count, region in zip(Y.T, nuclei):
+    for count, region in zip(Y.T, sois[1:]):
         try:
             inj_ = inj[~np.isnan(count)]
             count = count[~np.isnan(count)]
@@ -363,10 +361,8 @@ bounds = np.linspace(vmin,vmax,6)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.2, aspect=10)
+
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.2, aspect=10)
 cb.set_label("Weight / SE", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 

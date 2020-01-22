@@ -6,11 +6,7 @@ Created on Sun Jun 16 14:25:05 2019
 @author: wanglab
 """
 
-import sys
-sys.path.append("/jukebox/wang/zahra/python/lightsheet_helper_scripts")
-from lightsheet.network_analysis import make_structure_objects
-from scipy.stats import spearmanr
-import statsmodels.api as sm
+import statsmodels.api as sm, json
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np, os, pickle as pckl, pandas as pd
@@ -21,14 +17,14 @@ import seaborn as sns
 inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/injection_sites"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_contra_counts_23_brains.csv"
+cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_contra_counts_23_brains_80um_ventric_erosion.csv"
 dst = "/home/wanglab/Desktop"
 #making dictionary of injection sites
 injections = {}
 
 #MAKE SURE THEY ARE IN THIS ORDER
 brains = ['20170410_tp_bl6_lob6a_ml_repro_01',
-#         '20160823_tp_bl6_cri_500r_02',
+         '20160823_tp_bl6_cri_500r_02',
          '20180417_jg59_bl6_cri_03',
          '20170207_db_bl6_crii_1300r_02',
          '20160622_db_bl6_unk_01',
@@ -66,7 +62,9 @@ anns = np.unique(ann_raw).astype(int)
 print(ann_raw.shape)
 
 #annotation IDs of the cerebellum ONLY that are actually represented in annotation file
-iids = {"Lobule III": 984,
+iids = {"Lingula (I)": 912,
+        "Lobule II": 976,
+        "Lobule III": 984,
         "Lobule IV-V": 1091,
         "Lobule VIa": 936,
         "Lobule VIb": 1134,
@@ -101,29 +99,12 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 print(expr_all_as_frac_of_lob[15])
 
 #%%
-#making dictionary of cells by region
-cells_regions = pd.read_csv(cells_regions_pth)
-#rename structure column
-cells_regions["Structure"] = cells_regions["Unnamed: 0"]
-cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
-#pooling regions
-structures = make_structure_objects("/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx", 
-                                    remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
-
-
-#%%
 #atlas res
-scale_factor = 0.020 #mm/voxel
+scale_factor = 0.025 #mm/voxel
 
 #GET ONLY VPM + bonus thal nuclei?, VTA, AND SNC COUNTS TO COMPARE
-
-cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
-cells_regions["Structure"] = cells_regions["Unnamed: 0"]
-cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
-ann_df = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
-scale_factor = 0.025
-ann_df = pd.read_excel(ann_df).drop(columns = ["Unnamed: 0"])
+df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 
 #get counts for all of neocortex
 sois = ["Ventral tegmental area", #vta
@@ -134,68 +115,75 @@ sois = ["Ventral tegmental area", #vta
         "Ventral posteromedial nucleus of the thalamus"
         ]
 
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
+scale_factor = 0.025
+ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
 
-#make new dict - for all brains
-cells_pooled_regions = {} #for raw counts
-vol_pooled_regions = {}
-
-for brain in brains:    
-    #make new dict - this is for EACH BRAIN
-    c_pooled_regions = {}
-    v_pooled_regions = {}
+def get_progeny(dic,parent_structure,progeny_list):
+    """ 
+    ---PURPOSE---
+    Get a list of all progeny of a structure name.
+    This is a recursive function which is why progeny_list is an
+    argument and is not returned.
+    ---INPUT---
+    dic                  A dictionary representing the JSON file 
+                         which contains the ontology of interest
+    parent_structure     The structure
+    progeny_list         The list to which this function will 
+                         append the progeny structures. 
+    """
+    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
     
-    for soi in sois:
-        counts = []; vol = []
-        soi = [s for s in structures if s.name==soi][0]
-        
-        counts.append(cells_regions.loc[cells_regions.Structure == soi.name, brain].values[0]) #store counts in this list
-        vol.append(ann_df.loc[ann_df.name == soi.name, "voxels_in_structure"].values[0]) #store vols in this list
-        #add to volume list from LUT
-        progeny = [str(xx.name) for xx in soi.progeny]
-        #now sum up progeny
-        if len(progeny) > 0:
-            for progen in progeny:
-                counts.append(cells_regions.loc[cells_regions.Structure == progen, brain].values[0])
-                vol.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+    name = dic.get('name')
+    children = dic.get('children')
+    if name == parent_structure:
+        for child in children: # child is a dict
+            child_name = child.get('name')
+            progeny_list.append(child_name)
+            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
+        return
     
-        c_pooled_regions[soi.name] = np.sum(np.asarray(counts))
-        v_pooled_regions[soi.name] = np.sum(np.asarray(vol))
-    
-    #add to big dict
-    cells_pooled_regions[brain] = c_pooled_regions
-    vol_pooled_regions[brain] = v_pooled_regions
-    
-#making the proper array per brain where regions are removed
-cell_counts_per_brain = []
+    for child in children:
+        child_name = child.get('name')
+        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
+    return 
 
-#initialise dummy var
-i = []
-for k,v in cells_pooled_regions.items():
-    dct = cells_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    cell_counts_per_brain.append(i)
-    #re-initialise for next
-    i = []
+#get progeny of all large structures
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
-#making the proper array per brain where regions are removed
-vol_per_brain = []
+with open(ontology_file) as json_file:
+    ontology_dict = json.load(json_file)
 
-#initialise dummy var
-i = []
-for k,v in vol_pooled_regions.items():
-    dct = vol_pooled_regions[k]
-    for j,l in dct.items():
-        i.append(l)  
-    vol_per_brain.append(i)
-    #re-initialise for next
-    i = []
-    
-cell_counts_per_brain = np.asarray(cell_counts_per_brain)
-vol_per_brain = np.array(vol_per_brain)/2
-density_per_brain = np.asarray([xx/(vol_per_brain[i]*(scale_factor**3)) for i, xx in enumerate(cell_counts_per_brain)])
+#first calculate counts across entire nc region
+counts_per_struct = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    #add counts from main structure
+    counts.append([cells_regions.loc[cells_regions.Structure == soi, brain].values[0] for brain in brains])
+    for progen in progeny:
+        counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    counts_per_struct.append(np.array(counts).sum(axis = 0))
+counts_per_struct = np.array(counts_per_struct)
 
-#rename
+vol_per_struct = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    #add counts from main structure
+    counts.append(ann_df.loc[ann_df.name == soi, "voxels_in_structure"].values[0])
+    for progen in progeny:
+        counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+    vol_per_struct.append(np.array(counts).sum(axis = 0))
+vol_per_struct = np.array(vol_per_struct)        
+
+density_per_struct = np.array([xx/(vol_per_struct[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T
+
+
+#then get volume
 short_nuclei = ["VTA", #vta
         "SNc", #snc
         "SNr", #snc
@@ -206,24 +194,13 @@ short_nuclei = ["VTA", #vta
 
 #%%
 #pooled injections
-ak_pool = np.asarray(["Lob. III, IV-V", "Lob. VIa, VIb, VII-X", 
+ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
                  "Simplex", "Crus I", "Crus II", "PM, CP"])
-
-#pooling injection regions
-expr_all_as_frac_of_lob_pool = np.asarray([[brain[0]+brain[1], brain[2]+brain[3]+brain[4]+brain[5]+brain[6]+brain[7], 
-                                            brain[8], brain[9], brain[10], brain[11]+brain[12]] for brain in expr_all_as_frac_of_lob])
-
-expr_all_as_frac_of_inj_pool = np.asarray([[brain[0]+brain[1], brain[2]+brain[3]+brain[4]+brain[5]+brain[6]+brain[7], 
-                                            brain[8], brain[9], brain[10], brain[11]+brain[12]] for brain in expr_all_as_frac_of_inj])
-    
-primary_pool = np.asarray([np.argmax(e) for e in expr_all_as_frac_of_inj_pool])
-primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
-
-print(expr_all_as_frac_of_lob_pool.shape)
-
-#normalise inj
-total_lob_sum = np.asarray([np.sum(expr_all_as_frac_of_lob_pool[i]) for i in range(len(expr_all_as_frac_of_lob))])    
-expr_all_as_frac_of_lob_pool_norm = np.asarray([expr_all_as_frac_of_lob_pool[i]/total_lob_sum[i] for i in range(len(expr_all_as_frac_of_lob))])
+frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
+                                for xx in expr_all_as_frac_of_inj])
+primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
+#get n's after pooling
+primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max(primary_pool)+1)])
 
 #%%
 ## CELL COUNTS
@@ -231,7 +208,7 @@ expr_all_as_frac_of_lob_pool_norm = np.asarray([expr_all_as_frac_of_lob_pool[i]/
 fig = plt.figure(figsize=(15,2))
 ax = fig.add_axes([.4,.1,.5,.8])
 
-show = cell_counts_per_brain.T #np.flip(mean_counts, axis = 1) # NOTE abs
+show = counts_per_struct #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 0
 vmax = 100
@@ -272,7 +249,7 @@ plt.savefig(os.path.join(dst,"thalvtacomp_cell_count.pdf"), bbox_inches = "tight
 
 #%%    
 #sort density
-sorted_counts = [cell_counts_per_brain[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sorted_counts = [counts_per_struct[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sorted_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 
 #reformat - wtf
@@ -330,7 +307,7 @@ plt.savefig(os.path.join(dst,"thalvtacomp_cell_counts_sorted.pdf"), bbox_inches 
 fig = plt.figure(figsize=(15,2))
 ax = fig.add_axes([.4,.1,.5,.8])
 
-show = density_per_brain.T #np.flip(mean_counts, axis = 1) # NOTE abs
+show = density_per_struct #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 0
 vmax = 75

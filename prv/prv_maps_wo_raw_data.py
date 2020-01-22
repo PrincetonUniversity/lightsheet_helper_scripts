@@ -127,6 +127,53 @@ frac56 = np.sum(layer56, axis = 0)/np.sum(counts_per_struct, axis = 0)
 mean_fracl56_per_struct = np.nanmean(frac56, axis = 0)
 
 #%%
+
+#make injection site heatmap only
+
+fig, ax = plt.subplots(figsize = (5,2))
+
+sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = list(itertools.chain.from_iterable(sort_brains))
+sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
+
+#inj fractions
+show = np.fliplr(sort_inj).T
+
+vmin = 0
+vmax = 0.8
+cmap = plt.cm.Reds 
+cmap.set_over('darkred')
+if TP:
+    vmin = 0.05
+    vmax = 0.8
+    cmap.set_under('white')
+
+#colormap
+bounds = np.linspace(vmin,vmax,4)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
+cb.set_label("% coverage of lobule", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True) #TP
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+lbls = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize="xx-small", ha="right")
+
+#despline to make it look similar to paper figure
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+if TP: ax.grid(False)
+
+plt.savefig(os.path.join(dst, "prv_inj_nc.pdf"), bbox_inches = "tight")
+
+#%%
 #layer 5+6 p counts maps
 pcounts = np.array([xx/sum(xx) for xx in layer56.T])*100
 

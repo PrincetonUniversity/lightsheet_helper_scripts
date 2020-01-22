@@ -22,8 +22,8 @@ mpl.rcParams["ps.fonttype"] = 42
 #set paths, variables, etc.
 dst = "/jukebox/wang/zahra/tracing_projects/prv/"
 fig_dst = "/home/wanglab/Desktop"
-pma_ann_pth = os.path.join(dst, "pma_annotation_sagittal_atlas_20um_iso_60um_edge_160um_vntric_erosion.tif")
-#cut annotation file in middle
+pma_ann_pth = "/jukebox/wang/pisano/Python/atlas/stepwise_erosion/annotation_sagittal_atlas_20um_iso_60um_edge_erosion_80um_ventricular_erosion.tif"
+
 ann = tifffile.imread(pma_ann_pth)
 plt.imshow(ann[300])
 z,y,x = ann.shape
@@ -263,7 +263,7 @@ def get_progeny(dic,parent_structure,progeny_list):
     This is a recursive function which is why progeny_list is an
     argument and is not returned.
     ---INPUT---
-    dic                  A dictionary representing the JSON file 191231_20180306_jg_bl6f_prv_14_488_049na_z7d5um_50msec_10povlp_16-41-17
+    dic                  A dictionary representing the JSON file
                          which contains the ontology of interest
     parent_structure     The structure
     progeny_list         The list to which this function will 
@@ -465,6 +465,7 @@ ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+
 
 plt.savefig(os.path.join(fig_dst, "pcounts_nc.pdf"), bbox_inches = "tight")
 

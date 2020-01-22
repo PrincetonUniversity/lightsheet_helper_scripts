@@ -10,6 +10,10 @@ import matplotlib as mpl, os
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
+
+#TP
+plt.rcParams["axes.grid"] = False
+
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 #imports
@@ -32,15 +36,12 @@ regions = data["regions"]
 primary_lob_n = data["primary_lob_n"]
 
 ## display
-fig = plt.figure(figsize=(8,5))
+fig = plt.figure(figsize=(7,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 #set white text limit here
 whitetext = 8
 annotation_size = "medium"#annotation/number sizes
-
-# map 1: weights
-show = np.flipud(mat) # NOTE abs
 
 vmin = 0
 vmax = 10
@@ -48,18 +49,18 @@ cmap = plt.cm.Reds
 cmap.set_under("w")
 cmap.set_over("maroon")
 
-
 #tp local
 tp = True
 if tp:
 #    dst = "/Users/tjp7rr1/Downloads"
     vmin = 0
-    vmax = 6
+    vmax = 5
     cmap = plt.cm.Blues#plt.cm.Reds
     cmap.set_over(plt.cm.Blues(1.0)) #cmap.set_over('maroon')
     whitetext = 4
     cmap.set_under('w')
     #reorder xaxis
+    mat = np.concatenate([mat[:,:3], mat[:,3:][:,::-1]], 1)
     pmat = np.concatenate([pmat[:,:3], pmat[:,3:][:,::-1]], 1)
     ak_pool = np.concatenate([ak_pool[:3], ak_pool[3:][::-1]], 0)
     primary_lob_n = np.concatenate([primary_lob_n[:3], primary_lob_n[3:][::-1]], 0)
@@ -67,17 +68,14 @@ if tp:
     #TP NOTE - FOR SOME REASON THIS MESSES UP SIGNIFICANT ASTERISKS, numbers are ok
     #LOOK AT ZAHRAS FOR THAT
 
-
+# map 1: weights
+show = np.flipud(mat) # NOTE abs
 
 #colormap
 # discrete colorbar details
 bounds = np.linspace(vmin,vmax,((vmax-vmin))+1)
-#bounds = np.linspace(0,5,11)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
-                  boundaries=bounds, format="%d", shrink=0.3, aspect=10)
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.3, aspect=10)
 cb.set_label("Weight / SE", fontsize="small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 
@@ -110,5 +108,11 @@ ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lo
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="medium")
 
+#despline to make it look similar to paper figure
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.grid(False)
+
 plt.savefig(os.path.join(dst, "prv_nc_glm_contra_layer56_pma.pdf"), bbox_inches = "tight")
-#%%
