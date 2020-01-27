@@ -6,17 +6,18 @@ Created on Sun Jan 26 23:02:31 2020
 """
 
 #NOTE THIS ESSENTIALLY SCALES PIXEL SPACE*****
-import numpy as np, os
+%matplotlib inline
+import numpy as np, os, matplotlib.pyplot as plt
 from skimage.external import tifffile
 
 #parallelized
 jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
 
-ann_path = '/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans_16bit.tif'
-new_erode_path = '/jukebox/wang/zahra/kelly_cell_detection_analysis/eroded_atlases'
-#
-#ann_path = r'Y:\atlas\allen_atlas\annotation_2017_25um_sagittal_forDVscans_16bit.tif'
-#new_erode_path = r'V:\kelly_cell_detection_analysis\eroded_atlases'
+#ann_path = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans_16bit.tif"
+#new_erode_path = "/jukebox/wang/zahra/kelly_cell_detection_analysis/eroded_atlases"
+
+ann_path = r'Y:\atlas\allen_atlas\annotation_2017_25um_sagittal_forDVscans_16bit.tif'
+new_erode_path = r'Z:\zahra\kelly_cell_detection_analysis\eroded_atlases'
 
 ann = tifffile.imread(ann_path)
 
@@ -29,9 +30,15 @@ print(iid)
 sann = np.copy(ann)
 sann[sann!=iid] = 0
 
+#check
+plt.imshow(sann[300])
+
 from scipy.ndimage.morphology import distance_transform_edt
 distance_space_inside = distance_transform_edt(sann.astype('bool'), sampling=zyx_scale)*-1 #INSIDE
-distance_space_inside = np.abs(distance_space_inside)
+
+#check
+plt.imshow(distance_space_inside[300])
+
 mask = np.copy(distance_space_inside)
 mask[distance_space_inside<=struct_microns_to_erode] = 0
 

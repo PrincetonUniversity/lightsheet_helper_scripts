@@ -6,7 +6,7 @@ Created on Wed Dec 18 17:50:18 2019
 @author: wanglab
 """
 
-import matplotlib as mpl, os
+import matplotlib as mpl, os, pandas as pd, seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
@@ -18,12 +18,15 @@ mpl.rcParams["ps.fonttype"] = 42
 
 #imports
 #path to pickle file
-data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_model_data_contra_allen.p"
+#data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_model_data_contra_allen.p"
+data_pth = r"Z:\zahra\h129_contra_vs_ipsi\data\thal_model_data_contra_allen.p"
+
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
 dst = "/home/wanglab/Desktop"
 dst = "/Users/tjp7rr1/Downloads"
+dst = r"C:\Users\Zahra\Desktop"
 
 #set the appropritate variables
 c_mat = data["c_mat"]
