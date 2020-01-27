@@ -266,7 +266,7 @@ ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 if TP: ax.grid(False)
 
-plt.savefig(os.path.join(dst, "pcounts_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_pcounts_nc.pdf"), bbox_inches = "tight")
 
 #%%
 

@@ -255,7 +255,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, g
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxdensity = 300
+maxdensity = 200#300
 annotation_size = "x-small" #for the number annotations inside the heatmap
 brain_lbl_size = "small"
 

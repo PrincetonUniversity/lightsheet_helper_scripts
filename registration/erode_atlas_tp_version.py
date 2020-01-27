@@ -11,7 +11,7 @@ Created on Fri Apr 26 14:44:30 2019
 ann_path = '/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans.tif'
 new_erode_path = '/home/wanglab/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans_75um_erosion.tif'
 zyx_scale = (25,25,25)
-microns_to_erode = 75
+microns_to_erode = 79
 
 
 #NOTE THIS ESSENTIALLY SCALES PIXEL SPACE*****
