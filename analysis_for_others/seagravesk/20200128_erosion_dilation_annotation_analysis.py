@@ -31,7 +31,7 @@ er_iids = np.unique(er_ann)[1:]
 missing = [iid for iid in org_iids if iid not in er_iids]
 
 missing_struct_names = [nm for nm in df.name.values if df.loc[df.name == nm, "id"].values[0] in missing][1:] #excluding root
-missing_struct_voxels = [df.loc[df.name == nm, "voxels_in_structure"].values[0] for nm in missing_struct_names][1:]
+missing_struct_voxels = [df.loc[df.name == nm, "voxels_in_structure"].values[0] for nm in missing_struct_names]
 
 #make structures to traverse hierarchy
 structures = make_structure_objects(df_pth)
@@ -65,6 +65,7 @@ all_struct_nms = [df.loc[df["id"] == iid, "name"].values[0] for iid in org_iids]
 
 #%%
 plt.scatter(x = np.array(all_struct_voxels) , y = np.array(er_struct_voxels))
+plt.plot(np.array(all_struct_voxels), np.array(all_struct_voxels), color = "gray", linestyle = "dashdot", linewidth = 1) # identity line
 plt.ylabel("Voxels in 80um eroded volume")
 plt.xlabel("Voxels in original volume")
 plt.savefig(os.path.join(fig_dst, "voxels_scatter_org_vs_eroded.pdf"), bbox_inches = "tight")
@@ -72,6 +73,7 @@ plt.savefig(os.path.join(fig_dst, "voxels_scatter_org_vs_eroded.pdf"), bbox_inch
 #%%
 #zoom
 plt.scatter(x = np.array(all_struct_voxels) , y = np.array(er_struct_voxels))
+plt.plot(np.array(all_struct_voxels), np.array(all_struct_voxels), color = "gray", linestyle = "dashdot", linewidth = 1) # identity line
 plt.ylabel("Voxels in 80um eroded volume")
 plt.xlabel("Voxels in original volume")
 plt.xlim([0,250000]);plt.ylim([0, 150000])
@@ -93,3 +95,26 @@ plt.xlim([0, 200000])
 plt.xlabel("Total number of voxels in structure")
 plt.ylabel("Structures 'zero'ed' out vs. all original structures")
 plt.savefig(os.path.join(fig_dst, "boxplot_total_voxels_org_vs_eroded.pdf"), bbox_inches = "tight")
+
+#%%
+#export missing structures name, id, and total voxel count
+
+dataf = pd.DataFrame()
+dataf["name"] = missing_struct_names
+dataf["id"] = missing[1:]
+dataf["parent_name"] = missing_struct_parents
+dataf["voxels_in_structure"] = missing_struct_voxels
+
+dataf.to_csv(r"Z:\zahra\kelly_cell_detection_analysis\structures_zeroed_after_80um_erosion_allen_annotation_2017.csv")
+
+#%%
+
+#make a volume where only the "zeroed" out structures are displayed, zero out the rest
+fk_anns = []
+for iid in missing:
+    zr_ann = ann.copy()
+    zr_ann[zr_ann != iid] = 0
+    fk_anns.append(zr_ann)
+
+fk_ann = np.array(fk_anns).sum(axis = 0) 
+tifffile.imsave(r"Z:\zahra\kelly_cell_detection_analysis\zeroed_out_structures_in_org_atlas_for_vis.tif", fk_ann)    
