@@ -30,5 +30,4 @@ for soi in sois:
         
 #format    
 anndf = anndf.drop(columns = ["Unnamed: 0", "cell_count"])
-
 anndf.to_csv(os.path.join(dst, "LUT_child_structures_wo_NC_ventr_fiber_tracts.csv"))
