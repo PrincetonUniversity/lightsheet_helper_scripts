@@ -3,8 +3,8 @@
 #SBATCH -p all                # partition (queue)
 #SBATCH -n 1                      # number of cores
 #SBATCH -t 60                 # time (minutes)
-#SBATCH -o /scratch/zmd/logs/erode_sum_v2.out        # STDOUT
-#SBATCH -e /scratch/zmd/logs/erode_sum_v2.err        # STDERR
+#SBATCH -o /scratch/zmd/logs/sum_%a.out        # STDOUT
+#SBATCH -e /scratch/zmd/logs/sum_%a.err        # STDERR
 #SBATCH --contiguous #used to try and get cpu mem to be contigous
 #SBATCH --mem 50000
 
@@ -17,7 +17,9 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-python sum_eroded_annotation_files.py
+echo "Array Index: $SLURM_ARRAY_TASK_ID"
+
+python sum_eroded_annotation_files.py ${SLURM_ARRAY_TASK_ID} 
 
 # Usage notes:
 # after = go once the specified job starts

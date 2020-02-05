@@ -13,17 +13,17 @@ from skimage.external import tifffile
 #parallelized
 jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
 
-ann_path = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans_16bit.tif"
-new_erode_path = "/jukebox/wang/zahra/kelly_cell_detection_analysis/dilated_atlases"
-#
-#ann_path = r'Y:\atlas\allen_atlas\annotation_2017_25um_sagittal_forDVscans_16bit.tif'
-#new_erode_path = r'Z:\zahra\kelly_cell_detection_analysis\dilated_atlases'
+ann_path = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
+new_erode_path = "/jukebox/wang/zahra/registration_error_pma/dilated_atlases"
+
+#make fld
+if not os.path.exists(new_erode_path): os.mkdir(new_erode_path)
 
 ann = tifffile.imread(ann_path)
 
 struct_vals = np.unique(ann)[1:]
 struct_microns_to_dilate = 80
-zyx_scale = (25,25,25)
+zyx_scale = (20,20,20)
 
 #parallelized
 iid = struct_vals[jobid]
@@ -44,6 +44,6 @@ eann[mask == 0] = 0
 
 sum_ann = sann.astype("bool")+eann.astype("bool")
 
-tifffile.imsave(os.path.join(new_erode_path, "annotation_allen_2017_25um_sagittal_erode_80um_id%d.tif" % iid), sum_ann.astype("uint16")*iid)
+tifffile.imsave(os.path.join(new_erode_path, "annotation_pma_2018_20um_sagittal_erode_80um_id%d.tif" % iid), sum_ann.astype("float32")*iid)
 
 print("\nannotation file saved for structure id : {}!".format(iid))

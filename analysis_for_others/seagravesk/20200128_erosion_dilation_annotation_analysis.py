@@ -110,11 +110,8 @@ dataf.to_csv(r"Z:\zahra\kelly_cell_detection_analysis\structures_zeroed_after_80
 #%%
 
 #make a volume where only the "zeroed" out structures are displayed, zero out the rest
-fk_anns = []
+zr_ann = ann.copy()
 for iid in missing:
-    zr_ann = ann.copy()
-    zr_ann[zr_ann != iid] = 0
-    fk_anns.append(zr_ann)
+    zr_ann[zr_ann == iid] = 0
 
-fk_ann = np.array(fk_anns).sum(axis = 0) 
-tifffile.imsave(r"Z:\zahra\kelly_cell_detection_analysis\zeroed_out_structures_in_org_atlas_for_vis.tif", fk_ann)    
+tifffile.imsave(r"Z:\zahra\kelly_cell_detection_analysis\non_zeroed_out_structures_in_org_atlas_for_vis.tif", zr_ann)    
