@@ -7,8 +7,8 @@ Created on Mon Jan 27 12:50:55 2020
 
 import os, pandas as pd, numpy as np, matplotlib.pyplot as plt, seaborn as sns, json
 
-dst = r"Z:\zahra\h129_contra_vs_ipsi"
-df_pth = r"Y:\atlas\ls_id_table_w_voxelcounts.xlsx"
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 cells_regions_pth = os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
 
 cells_regions = pd.read_csv(cells_regions_pth)
@@ -50,7 +50,7 @@ def get_progeny(dic,parent_structure,progeny_list):
     return 
 
 #get progeny of all large structures
-ontology_file = r"Y:\atlas\allen_atlas\allen.json"
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
