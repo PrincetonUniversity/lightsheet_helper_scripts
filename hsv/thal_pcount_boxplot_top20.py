@@ -5,7 +5,13 @@ Created on Mon Jan 27 12:50:55 2020
 @author: Zahra
 """
 
-import os, pandas as pd, numpy as np, matplotlib.pyplot as plt, seaborn as sns, json
+import os, pandas as pd, numpy as np, matplotlib.pyplot as plt, seaborn as sns, json, matplotlib as mpl
+
+#TP
+plt.rcParams["axes.grid"] = False
+
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
 
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
@@ -21,18 +27,7 @@ ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
 brains = cells_regions.columns[:-1]
 
 def get_progeny(dic,parent_structure,progeny_list):
-    """ 
-    ---PURPOSE---
-    Get a list of all progeny of a structure name.
-    This is a recursive function which is why progeny_list is an
-    argument and is not returned.
-    ---INPUT---
-    dic                  A dictionary representing the JSON file 
-                         which contains the ontology of interest
-    parent_structure     The structure
-    progeny_list         The list to which this function will 
-                         append the progeny structures. 
-    """
+   
     if 'msg' in list(dic.keys()): dic = dic['msg'][0]
     
     name = dic.get('name')
@@ -55,51 +50,49 @@ ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
-sois = ["Thalamus", 
-         "Ventral anterior-lateral complex of the thalamus",
-         "Ventral medial nucleus of the thalamus",
-         "Ventral posterolateral nucleus of the thalamus",
-         "Ventral posteromedial nucleus of the thalamus",
-         "Posterior triangular thalamic nucleus",
-         "Subparafascicular nucleus",
-         "Subparafascicular area",
-         "Peripeduncular nucleus",
-         "Medial geniculate complex",
-         "Dorsal part of the lateral geniculate complex",
-         "Lateral posterior nucleus of the thalamus",
-         "Posterior complex of the thalamus",
-         "Posterior limiting nucleus of the thalamus",
-         "Suprageniculate nucleus",
-         "Ethmoid nucleus of the thalamus",
-         "Retroethmoid nucleus",
-         "Anteroventral nucleus of thalamus",
-         "Anteromedial nucleus",
-         "Anterodorsal nucleus",
-         "Interanteromedial nucleus of the thalamus",
-         "Interanterodorsal nucleus of the thalamus",
-         "Lateral dorsal nucleus of thalamus",
-         "Intermediodorsal nucleus of the thalamus",
-         "Mediodorsal nucleus of thalamus",
-         "Submedial nucleus of the thalamus",
-         "Perireunensis nucleus",
-         "Paraventricular nucleus of the thalamus",
-         "Parataenial nucleus",
-         "Nucleus of reuniens",
-         "Xiphoid thalamic nucleus",
-         "Rhomboid nucleus",
-         "Central medial nucleus of the thalamus",
-         "Paracentral nucleus",
-         "Central lateral nucleus of the thalamus",
-         "Parafascicular nucleus",
-         "Posterior intralaminar thalamic nucleus",
-         "Reticular nucleus of the thalamus",
-         "Intergeniculate leaflet of the lateral geniculate complex",
-         "Intermediate geniculate nucleus",
-         "Ventral part of the lateral geniculate complex",
-         "Subgeniculate nucleus",
-         "Medial habenula",
-         "Lateral habenula",
-         "Pineal body"]
+sois_dict = {"Thalamus": "Sensory-motor",
+         "Ventral anterior-lateral complex of the thalamus": "Sensory-motor", 
+         "Ventral medial nucleus of the thalamus": "Sensory-motor", 
+         "Ventral posterolateral nucleus of the thalamus": "Sensory-motor", 
+         "Ventral posteromedial nucleus of the thalamus": "Sensory-motor", 
+         "Posterior triangular thalamic nucleus": "Sensory-motor", 
+         "Peripeduncular nucleus": "Sensory-motor", 
+         "Medial geniculate complex": "Sensory-motor",
+         "Dorsal part of the lateral geniculate complex": "Sensory-motor", 
+         "Lateral posterior nucleus of the thalamus": "Polymodal association", 
+         "Posterior complex of the thalamus": "Polymodal association", 
+         "Suprageniculate nucleus": "Polymodal association", 
+         "Ethmoid nucleus of the thalamus": "Polymodal association", 
+         "Retroethmoid nucleus": "Polymodal association", 
+         "Anteroventral nucleus of thalamus": "Polymodal association", 
+         "Anteromedial nucleus": "Polymodal association", 
+         "Anterodorsal nucleus": "Polymodal association", 
+         "Interanteromedial nucleus of the thalamus": "Polymodal association", 
+         "Interanterodorsal nucleus of the thalamus": "Polymodal association", 
+         "Lateral dorsal nucleus of thalamus": "Polymodal association", 
+         "Intermediodorsal nucleus of the thalamus": "Polymodal association", 
+         "Mediodorsal nucleus of thalamus": "Polymodal association", 
+         "Submedial nucleus of the thalamus": "Polymodal association", 
+         "Perireunensis nucleus": "Polymodal association", 
+         "Paraventricular nucleus of the thalamus": "Polymodal association", 
+         "Parataenial nucleus": "Polymodal association", 
+         "Nucleus of reuniens": "Polymodal association", 
+         "Xiphoid thalamic nucleus": "Polymodal association", 
+         "Rhomboid nucleus": "Polymodal association", 
+         "Central medial nucleus of the thalamus": "Polymodal association", 
+         "Paracentral nucleus": "Polymodal association", 
+         "Central lateral nucleus of the thalamus": "Polymodal association", 
+         "Parafascicular nucleus": "Polymodal association", 
+         "Posterior intralaminar thalamic nucleus": "Polymodal association", 
+         "Reticular nucleus of the thalamus": "Polymodal association", 
+         "Intermediate geniculate nucleus": "Polymodal association", 
+         "Ventral part of the lateral geniculate complex": "Polymodal association", 
+         "Subgeniculate nucleus": "Polymodal association", 
+         "Medial habenula": "Polymodal association", 
+         "Lateral habenula": "Polymodal association", 
+         "Pineal body": "Polymodal association"}
+
+sois = list(sois_dict.keys())
 
 #first calculate counts across entire region
 counts_per_struct = []
@@ -136,33 +129,76 @@ density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enu
 pcounts = np.nan_to_num(np.asarray([((brain[1:]/brain[0])*100) for brain in counts_per_struct.T]))    
 
 #%%
+
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
 order = np.argsort(np.median(pcounts, axis = 0))[::-1]
-sois_sort = np.array(sois[1:])[order][:20]
+#renaming for figure
+short_nuclei = ["VA-L", "VM", "VPL", "VPM", "Post. Triangle", "PP", "Med. Geniculate", "dLGN", "LP", "Post. Complex", 
+       "SGN", "Eth", "REth", "AV", "AM", "AD", "IAM", "IAD", "LD", "IMD",
+       "MD", "Submedial", "PR", "Paraventricular", "PT", "Reuniens", "Xi", "RH", "CM", "PCN",
+       "CL", "Parafascicular", "PIL", "RTN", "IntG", "vLGN", "SubG", "Med. Habenula", "Lat. Habenula", "PIN"]
+
+sois_sort = np.array(short_nuclei)[order][:20]
+
+#color palette based on nuclei type
+cat = np.array(list(sois_dict.values())[1:])[order][:20] #removes thalamus soi
+pal = [sns.color_palette("bright")[::-1][1] if n == "Sensory-motor" else sns.color_palette("bright")[::-1][0] for n in cat]
 
 #boxplots of percent counts
 plt.figure(figsize = (5,7))
 df = pd.DataFrame(pcounts)
-df.columns = sois[1:]
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
+df.columns = short_nuclei
+g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort, palette = pal)
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
-            boxprops={'facecolor':'None'}, order = sois_sort)
+            boxprops={"facecolor":"None"}, order = sois_sort, palette = pal)
 plt.xlabel("% of total thalamic cells")
 plt.ylabel("Thalamic nuclei")
+
+#make key
+gold_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][1], label="Sensory-motor")
+blue_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][0], label="Polymodal association")
+
+plt.legend(title = "Thalamus nucleus type", 
+           handles=[gold_patch, blue_patch], bbox_to_anchor=(.8, .9), loc=2, borderaxespad=0., frameon=False)
+#hide the right and top spines
+sns.despine(top=True, right=True, left=False, bottom=False)
+
 plt.savefig(os.path.join(dst, "thal_pcounts_boxplots.pdf"), bbox_inches = "tight")
 
-order = np.argsort(np.median(density, axis = 0))[::-1]
-sois_sort = np.array(sois[1:])[order][:20]
 
-#boxplots of percent counts
+#%%
+#boxplots of density counts
+order = np.argsort(np.median(density, axis = 0))[::-1]
+#renaming for figure
+short_nuclei = ["VA-L", "VM", "VPL", "VPM", "Post. Triangle", "PP", "Med. Geniculate", "dLGN", "LP", "Post. Complex", 
+       "SGN", "Eth", "REth", "AV", "AM", "AD", "IAM", "IAD", "LD", "IMD",
+       "MD", "Submedial", "PR", "Paraventricular", "PT", "Reuniens", "Xi", "RH", "CM", "PCN",
+       "CL", "Parafascicular", "PIL", "RTN", "IntG", "vLGN", "SubG", "Med. Habenula", "Lat. Habenula", "PIN"]
+
+sois_sort = np.array(short_nuclei)[order][:20]
+
+#color palette based on nuclei type
+cat = np.array(list(sois_dict.values())[1:])[order][:20] #removes thalamus soi
+pal = [sns.color_palette("bright")[::-1][1] if n == "Sensory-motor" else sns.color_palette("bright")[::-1][0] for n in cat]
+
 plt.figure(figsize = (5,7))
 df = pd.DataFrame(density)
-df.columns = sois[1:]
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
+df.columns = short_nuclei
+g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort, palette = pal)
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
-            boxprops={'facecolor':'None'}, order = sois_sort)
+            boxprops={"facecolor":"None"}, order = sois_sort, palette = pal)
 plt.xlabel("Cells/$mm^3$")
 plt.ylabel("Thalamic nuclei")
+
+#make key
+gold_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][1], label="Sensory-motor")
+blue_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][0], label="Polymodal association")
+
+plt.legend(title = "Thalamus nucleus type", 
+           handles=[gold_patch, blue_patch], bbox_to_anchor=(.65, .7), loc=2, borderaxespad=0., frameon=False)
+#hide the right and top spines
+sns.despine(top=True, right=True, left=False, bottom=False)
+
 plt.savefig(os.path.join(dst, "thal_density_boxplots.pdf"), bbox_inches = "tight")
 
 #%%
