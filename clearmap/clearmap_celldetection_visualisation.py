@@ -203,7 +203,7 @@ if __name__ == "__main__":
     
     # for fld in flds:
     pth = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/processed/"
-    fld = "an5_cno"
+    fld = "an10_vecctrl_ymaze"
     src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
     cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
     if os.path.exists(cells):
