@@ -19,7 +19,7 @@ mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 #imports
 #path to pickle file
-data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_model_data_contra_pma.p"
+data_pth = "/home/wanglab/Desktop/zahra/nc_model_data_contra_pma.p"#/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_model_data_contra_pma.p"
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
@@ -57,7 +57,7 @@ cmap.set_over("maroon")
 #tp local
 tp = True
 if tp:
-    dst = "/Users/tjp7rr1/Downloads"
+    # dst = "/Users/tjp7rr1/Downloads"
     vmin = 0
     vmax = 5
     cmap = plt.cm.Blues#plt.cm.Reds

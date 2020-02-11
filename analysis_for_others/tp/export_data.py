@@ -50,7 +50,7 @@ with open(os.path.join(dst, "thal_model_data_contra_allen.p"), "wb") as handle:
     
 #%%  
 
-dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/"
+dst = "/home/wanglab/Desktop/zahra"#/jukebox/wang/zahra/h129_contra_vs_ipsi/data/"
 
 data = {}
 

@@ -16,10 +16,10 @@ plt.rcParams["axes.grid"] = False
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
-TP = True
+TP = False
 
 #figure dest 
-dst = "/home/wanglab/Desktop"
+dst = "/home/wanglab/Desktop/zahra"
 if TP:dst = "/Users/tjp7rr1/Downloads"
 
 ###############################################################RUN AS IS#######################################################
@@ -41,7 +41,7 @@ except:
 
 #imports
 #path to pickle file
-data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_hsv_maps_contra_pma.p"
+data_pth = os.path.join(src, "nc_hsv_maps_contra_pma.p")
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set the appropritate variables
@@ -207,12 +207,8 @@ vmax = maxpcount
 cmap = plt.cm.viridis
 cmap.set_over("orange")
 #colormap
-bounds = np.linspace(vmin,vmax,((vmax-vmin)/5)+1)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-#                  format="%0.1f", shrink=0.3, aspect=10) #format="%0.1f"
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8)
 cb.set_label("% of total neocortical counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
@@ -282,12 +278,8 @@ if TP:
 
 #colormap
 #colormap
-bounds = np.linspace(vmin,vmax,5)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-#                  format="%0.1f", shrink=0.6, aspect=5)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#, ticks=bounds, boundaries=bounds)
 cb.set_label("% coverage of lobule", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
@@ -310,12 +302,9 @@ vmax = maxdensity
 cmap = plt.cm.viridis
 cmap.set_over("orange")
 #colormap
-bounds = np.linspace(vmin,vmax,((vmax-vmin)/50)+1)
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-#                  format="%0.1f", shrink=0.3, aspect=10)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8)
 cb.set_label("Cells/$mm^3$", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")

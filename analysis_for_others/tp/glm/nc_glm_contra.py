@@ -19,7 +19,7 @@ inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modelin
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
 cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_contra_counts_33_brains_pma.csv"
-dst = "/home/wanglab/Desktop"
+dst = "/home/wanglab/Desktop/zahra"
 
 #making dictionary of injection sites
 injections = {}
@@ -109,15 +109,15 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 
 #pooled injections
 ak_pool = np.asarray(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
-                 "Simplex", "Crura", "PM, CP"])
+                 "Simplex", "Crus I", "Crus II", "PM, CP"])
 
 #pooling injection regions
 expr_all_as_frac_of_lob_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[3], brain[4]+brain[5]+brain[6], 
-                                 brain[7]+brain[8]+brain[9],brain[10], brain[11]+brain[12], 
+                                 brain[7]+brain[8]+brain[9],brain[10], brain[11], brain[12], 
                                  brain[13]+brain[14]] for brain in expr_all_as_frac_of_lob])
 
 expr_all_as_frac_of_inj_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[3], brain[4]+brain[5]+brain[6], 
-                                 brain[7]+brain[8]+brain[9],brain[10], brain[11]+brain[12], 
+                                 brain[7]+brain[8]+brain[9],brain[10], brain[11], brain[12], 
                                  brain[13]+brain[14]] for brain in expr_all_as_frac_of_inj])
     
 primary_pool = np.array([np.argmax(e) for e in expr_all_as_frac_of_inj_pool])
