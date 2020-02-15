@@ -1,7 +1,7 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan  7 11:16:03 2019
+Created on Wed Feb 12 10:19:18 2020
 
 @author: wanglab
 """
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit_60um_edge_80um_vntric_erosion.tif"
     ann_lut = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 
-    pth = "/jukebox/wang/Jess/lightsheet_output/201908_tpham_ymaze_cfos/processed"
+    pth = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/processed"
     
     for src in os.listdir(pth):
         make_table_of_transformed_cells(os.path.join(pth, src), ann, ann_lut)

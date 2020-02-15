@@ -12,14 +12,12 @@ import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
 #TP
-plt.rcParams["axes.grid"] = False
-
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 TP = False
 
 #figure dest 
-dst = "/home/wanglab/Desktop/zahra"
+dst = "/jukebox/wang/zahra"
 if TP:dst = "/Users/tjp7rr1/Downloads"
 
 ###############################################################RUN AS IS#######################################################
@@ -125,9 +123,10 @@ cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True) #TP
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
-ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize="xx-small", ha="right")
+#ax.set_xticklabels(sort_brains, rotation=30, fontsize="xx-small", ha="right")
+ax.set_xticks([])
+ax.set_xticklabels([])
 
 #despline to make it look similar to paper figure
 ax.spines['right'].set_visible(False)
@@ -135,6 +134,7 @@ ax.spines['top'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 if TP: ax.grid(False)
+ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "hsv_inj_nc.pdf"), bbox_inches = "tight")
 
@@ -198,6 +198,7 @@ ax.spines['top'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 if TP: ax.grid(False)
+ax.tick_params(length=6)
 
 ax = axes[1]
 show = np.fliplr(sort_pcounts).T
@@ -209,7 +210,7 @@ cmap.set_over("orange")
 #colormap
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.4)
 cb.set_label("% of total neocortical counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
@@ -218,10 +219,8 @@ cb.ax.set_visible(True)
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
-
-ax.set_xticks(np.arange(len(sort_brains))+.5)
-lbls = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
+ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 
 #despline to make it look similar to paper figure
 ax.spines['right'].set_visible(False)
@@ -229,6 +228,7 @@ ax.spines['top'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 if TP: ax.grid(False)
+ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "hsv_pcounts_nc.pdf"), bbox_inches = "tight")
 
@@ -277,7 +277,6 @@ if TP:
     cmap.set_under('white')
 
 #colormap
-#colormap
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#, ticks=bounds, boundaries=bounds)
@@ -293,6 +292,7 @@ ax.spines['top'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 if TP: ax.grid(False)
+ax.tick_params(length=6)
 
 ax = axes[1]
 show = np.fliplr(sort_density).T
@@ -305,7 +305,7 @@ cmap.set_over("orange")
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.4)
 cb.set_label("Cells/$mm^3$", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
@@ -313,10 +313,8 @@ cb.ax.set_visible(True)
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
-
-ax.set_xticks(np.arange(len(sort_brains))+.5)
-lbls = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
+ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 
 #despline to make it look similar to paper figure
 ax.spines['right'].set_visible(False)
@@ -324,5 +322,6 @@ ax.spines['top'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 if TP: ax.grid(False)
+ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "hsv_density_nc.pdf"), bbox_inches = "tight")
