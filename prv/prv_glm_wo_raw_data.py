@@ -11,19 +11,17 @@ import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
 
-#TP
-plt.rcParams["axes.grid"] = False
-
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
+
 #imports
 #path to pickle file
 data_pth = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/model_data_contra_pma.p"
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
-dst = "/home/wanglab/Desktop"
-dst = "/Users/tjp7rr1/Downloads"
+dst = "/jukebox/wang/zahra"
+#dst = "/Users/tjp7rr1/Downloads"
 
 #set the appropritate variables
 c_mat = data["c_mat"]
@@ -35,8 +33,12 @@ ak_pool = data["ak_pool"]
 regions = data["regions"]
 primary_lob_n = data["primary_lob_n"]
 
+#shortened lables for figures
+regions = np.array(["IL, PL, \nAC, ORB", "AI", "GU, VISC", "MO, SS", "RSP", "VIS", "PTLp",
+                    "TEa, AUD", "PERI, ECT"])
+
 ## display
-fig = plt.figure(figsize=(7,5))
+fig = plt.figure(figsize=(6,5))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 #set white text limit here
@@ -56,25 +58,15 @@ if tp:
     vmin = 0
     vmax = 5
     cmap = plt.cm.Blues#plt.cm.Reds
-    cmap.set_over(plt.cm.Blues(1.0)) #cmap.set_over('maroon')
+    cmap.set_over(plt.cm.Blues(1.0)) #cmap.set_over("maroon")
     whitetext = 4
-    cmap.set_under('w')
-    #reorder xaxis
-    if False: #No longer reordering
-        mat = np.concatenate([mat[:,:3], mat[:,3:][:,::-1]], 1)
-        pmat = np.concatenate([pmat[:,:3], pmat[:,3:][:,::-1]], 1)
-        ak_pool = np.concatenate([ak_pool[:3], ak_pool[3:][::-1]], 0)
-        primary_lob_n = np.concatenate([primary_lob_n[:3], primary_lob_n[3:][::-1]], 0)
-    
-    #TP NOTE - FOR SOME REASON THIS MESSES UP SIGNIFICANT ASTERISKS, numbers are ok
-    #LOOK AT ZAHRAS FOR THAT
+    cmap.set_under("w")
 
 # map 1: weights
 show = np.flipud(mat) # NOTE abs
 
 #colormap
 # discrete colorbar details
-bounds = np.linspace(vmin,vmax,((vmax-vmin))+1)
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.3, aspect=10)
 cb.set_label("Weight / SE", fontsize="small", labelpad=3)
@@ -98,23 +90,23 @@ nullmean = null.mean()
 nullstd = null.std()
 for y,x in np.argwhere(sig):
     pass
-    ax.text(x, y+0.3, "*", fontsize=10, ha="left", va="bottom", color = "black", transform=ax.transData)
-ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
+    ax.text(x, y+0.3, "*", fontsize=10, ha="left", va="bottom", color = "white", transform=ax.transData)
 
 # aesthetics
 ax.set_xticks(np.arange(len(ak_pool))+.5)
 lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize="x-small", ha="right")
+ax.set_xticklabels(lbls, rotation=30, fontsize="x-small", ha="right")
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="medium")
 
 #despline to make it look similar to paper figure
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["top"].set_visible(False)
+ax.spines["left"].set_visible(False)
+ax.spines["bottom"].set_visible(False)
 ax.grid(False)
+ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "prv_nc_glm_contra_layer56_pma.pdf"), bbox_inches = "tight")
 #%%

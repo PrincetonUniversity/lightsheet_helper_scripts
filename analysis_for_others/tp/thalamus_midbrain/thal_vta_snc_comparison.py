@@ -107,7 +107,8 @@ scale_factor = 0.025 #mm/voxel
 df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 
 #get counts for all of neocortex
-sois = ["Ventral tegmental area", #vta
+sois = ["Thalamus",
+        "Ventral tegmental area", #vta
         "Substantia nigra, reticular part", 
         "Substantia nigra, compact part",#snc
         "Reticular nucleus of the thalamus", #thal
@@ -169,21 +170,20 @@ for soi in sois:
     counts_per_struct.append(np.array(counts).sum(axis = 0))
 counts_per_struct = np.array(counts_per_struct)
 
+#then get volume
 vol_per_struct = []
 for soi in sois:
     progeny = []; counts = []
     get_progeny(ontology_dict, soi, progeny)
     #add counts from main structure
-    counts.append(ann_df.loc[ann_df.name == soi, "voxels_in_structure"].values[0])
+    counts.append(ann_df.loc[ann_df.name == soi, "voxels_in_structure"].values[0]/2)
     for progen in progeny:
-        counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+        counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
     vol_per_struct.append(np.array(counts).sum(axis = 0))
 vol_per_struct = np.array(vol_per_struct)        
 
 density_per_struct = np.array([xx/(vol_per_struct[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T
 
-
-#then get volume
 short_nuclei = ["VTA", #vta
         "SNc", #snc
         "SNr", #snc

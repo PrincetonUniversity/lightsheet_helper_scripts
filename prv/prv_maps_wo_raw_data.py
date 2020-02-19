@@ -14,7 +14,7 @@ import numpy as np, pickle as pckl
 plt.rcParams["axes.grid"] = False
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
-TP = True
+TP = False
 
 #figure dest 
 dst = "/home/wanglab/Desktop"
@@ -38,7 +38,7 @@ except:
 
 #imports
 #path to pickle file
-data_pth = "/jukebox/wang/zahra/tracing_projects/prv/for_tp/prv_maps_contra_pma.p"
+data_pth = os.path.join(src, "for_tp/prv_maps_contra_pma.p")
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set the appropritate variables
@@ -61,19 +61,19 @@ def get_progeny(dic,parent_structure,progeny_list):
     progeny_list         The list to which this function will 
                          append the progeny structures. 
     """
-    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
+    if "msg" in list(dic.keys()): dic = dic["msg"][0]
     
-    name = dic.get('name')
-    children = dic.get('children')
+    name = dic.get("name")
+    children = dic.get("children")
     if name == parent_structure:
         for child in children: # child is a dict
-            child_name = child.get('name')
+            child_name = child.get("name")
             progeny_list.append(child_name)
             get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
         return
     
     for child in children:
-        child_name = child.get('name')
+        child_name = child.get("name")
         get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
     return 
 
@@ -139,19 +139,14 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 #inj fractions
 show = np.fliplr(sort_inj).T
 
-vmin = 0
-vmax = 0.8
+# SET COLORMAP DETAILS HERE
 cmap = plt.cm.Reds 
-cmap.set_over('darkred')
-if TP:
-    vmin = 0.05
-    vmax = 0.8
-    cmap.set_under('white')
+cmap.set_over("darkred")
+cmap.set_under("white")
+vmin = 0.05
+vmax = 0.8
 
 #colormap
-bounds = np.linspace(vmin,vmax,4)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
 cb.set_label("% coverage of lobule", fontsize="x-small", labelpad=3)
@@ -159,16 +154,9 @@ cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True) #TP
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
-ax.set_xticks(np.arange(len(sort_brains))+.5)
+ax.set_xticks([])
 lbls = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize="xx-small", ha="right")
 
-#despline to make it look similar to paper figure
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
-if TP: ax.grid(False)
 
 plt.savefig(os.path.join(dst, "prv_inj_nc.pdf"), bbox_inches = "tight")
 
@@ -179,15 +167,16 @@ pcounts = np.array([xx/sum(xx) for xx in layer56.T])*100
 #make % counts map like the h129 dataset (nc only for now)
 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (3.8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxpcount = 20
+maxpcount = 30
 whitetext = 3
 annotation_size = "x-small" #for the number annotations inside the heatmap
 brain_lbl_size = "x-small"
-yaxis = sois #for density by nc areas map
+yaxis = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
+                    "Temp", "Aud", "EcR", "Pr"]) 
 
 #sort inj fractions by primary lob
 sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
@@ -201,70 +190,49 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 ax = axes[0]
 show = np.fliplr(sort_inj).T
 
-vmin = 0
-vmax = 0.8
+# SET COLORMAP DETAILS HERE
 cmap = plt.cm.Reds 
-cmap.set_over('darkred')
-if TP:
-    vmin = 0.05
-    vmax = 0.8
-    cmap.set_under('white')
+cmap.set_over("darkred")
+cmap.set_under("white")
+vmin = 0.05
+vmax = 0.8
 
 #colormap
-bounds = np.linspace(vmin,vmax,4)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-#                  format="%0.1f", shrink=0.6, aspect=5)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
-cb.set_label("% coverage of lobule", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
+cb.set_label("Injection % coverage \nof region", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
 cb.ax.set_visible(True) #TP
+
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 
-#despline to make it look similar to paper figure
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
-if TP: ax.grid(False)
+ax.tick_params(length=6)
 
 ax = axes[1]
 show = np.fliplr(sort_pcounts).T
 
+# SET COLORMAP
 vmin = 0
 vmax = maxpcount
-cmap = plt.cm.viridis
-cmap.set_over("orange")
-#colormap
-bounds = np.linspace(vmin,vmax,((vmax-vmin)/5)+1)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
 
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-#                  format="%0.1f", shrink=0.3, aspect=10) #format="%0.1f"
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8)
-cb.set_label("% of total neocortical counts", fontsize="x-small", labelpad=3)
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.4)
+cb.set_label("% of neocortical neurons", fontsize="small", labelpad=5)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
 
 # aesthetics
-# yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
-ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
+ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
 
-ax.set_xticks(np.arange(len(sort_brains))+.5)
-lbls = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
+ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 
-#despline to make it look similar to paper figure
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
-if TP: ax.grid(False)
+ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "prv_pcounts_nc.pdf"), bbox_inches = "tight")
 
@@ -278,22 +246,20 @@ for soi in sois:
     get_progeny(ontology_dict, soi, progeny)
     for progen in progeny:
         if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b" or progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
-            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
     layer56_vol.append(np.array(counts).sum(axis = 0))
 layer56_vol = np.array(layer56_vol)        
 
 density_l56 = np.array([xx/(layer56_vol[i]*(scale_factor**3)) for i, xx in enumerate(layer56)]).T
 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (3.8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxdensity = 150
+maxdensity = 400
 whitetext = 7
-annotation_size = "x-small" #for the number annotations inside the heatmap
-brain_lbl_size = "small"
-yaxis = sois #for density by nc areas map
+annotation_size = "small" #for the number annotations inside the heatmap
 
 #sort inj fractions by primary lob
 sort_density = [density_l56[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
@@ -307,69 +273,46 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 ax = axes[0]
 show = np.fliplr(sort_inj).T
 
-vmin = 0
-vmax = 0.8
 cmap = plt.cm.Reds 
 cmap.set_over("darkred")
-if TP:
-    vmin = 0.05
-    vmax = 0.8
-    cmap.set_under('white')
+vmin = 0.05
+vmax = 0.8
+cmap.set_under("white")
 
 #colormap
-#colormap
-bounds = np.linspace(vmin,vmax,5)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-#                  format="%0.1f", shrink=0.6, aspect=5)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#, ticks=bounds, boundaries=bounds)
-cb.set_label("% coverage of lobule", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
+cb.set_label("Injection % coverage \nof region", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+
 cb.ax.set_visible(True) #TP
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
-
-#despline to make it look similar to paper figure
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
-if TP: ax.grid(False)
+ax.tick_params(length=6)
 
 ax = axes[1]
 show = np.fliplr(sort_density).T
 
+# SET COLORMAP
 vmin = 0
 vmax = maxdensity
-cmap = plt.cm.viridis
-cmap.set_over("orange")
-#colormap
-bounds = np.linspace(vmin,vmax,((vmax-vmin)/50)+1)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
 
+#colormap
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-#                  format="%0.1f", shrink=0.3, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8)
-cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.4)
+cb.set_label("Cells / mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
 cb.ax.set_visible(True)
 # aesthetics
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
-ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
+ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
 
-ax.set_xticks(np.arange(len(sort_brains))+.5)
-lbls = np.asarray(sort_brains)
-ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
+ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 
-#despline to make it look similar to paper figure
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
-if TP: ax.grid(False)
+ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "prv_density_nc.pdf"), bbox_inches = "tight")
