@@ -166,64 +166,65 @@ transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
 #    converted_points = unpack_pnts(points_file, transformed_dst) 
 #    
 
-#------------------------------------------------------------------------------------------------------------------------------    
-def transformed_cells_to_allen(fld, ann, dst, fl_nm):
-    """ consolidating to one function bc then no need to copy/paste """
-    dct = {}
+# def transformed_cells_to_allen(fld, ann, dst, fl_nm):
+#     """ consolidating to one function bc then no need to copy/paste """
+#     dct = {}
     
-    for fl in fld:
-        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
-        print(converted_points)
-        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
-        df = count_structure_lister(id_table, *point_lst).fillna(0)
-        #for some reason duplicating columns, so use this
-        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
-        fl_name = os.path.basename(fl)
-        dct[fl_name]= nm_cnt
+#     for fl in fld:
+#         converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
+#         print(converted_points)
+#         point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
+#         df = count_structure_lister(id_table, *point_lst).fillna(0)
+#         #for some reason duplicating columns, so use this
+#         nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
+#         fl_name = os.path.basename(fl)
+#         dct[fl_name]= nm_cnt
         
-    #unpack
-    index = dct[list(dct.keys())[0]].keys()
-    columns = dct.keys()
-    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
-    df = pd.DataFrame(data.T, columns=columns, index=index)
+#     #unpack
+#     index = dct[list(dct.keys())[0]].keys()
+#     columns = dct.keys()
+#     data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
+#     df = pd.DataFrame(data.T, columns=columns, index=index)
     
-    #save before adding projeny counts at each level
-    df.to_pickle(os.path.join(dst, fl_nm))
+#     #save before adding projeny counts at each level
+#     df.to_pickle(os.path.join(dst, fl_nm))
     
-    return os.path.join(dst, fl_nm)
+#     return os.path.join(dst, fl_nm)
 
-pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
-#collect counts from right side
-right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_allen_atl.p")
-#collect counts from left side
-left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_allen_atl.p")
+# pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
+# #collect counts from right side
+# right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_allen_atl.p")
+# #collect counts from left side
+# left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_allen_atl.p")
+
+#------------------------------------------------------------------------------------------------------------------------------    
 
 #import dict of cells by region
-r_cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_allen_atl.p"), "rb"), encoding = "latin1")
-r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
+# r_cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_allen_atl.p"), "rb"), encoding = "latin1")
+# r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
 
-contra = {}; ipsi = {} #collect contra and ipsi frame
-for k,v in r_cells_regions.items():
-    if lr_dist[k] < 0:
-        contra[k] = v
-    else:
-        ipsi[k] = v
+# contra = {}; ipsi = {} #collect contra and ipsi frame
+# for k,v in r_cells_regions.items():
+#     if lr_dist[k] < 0:
+#         contra[k] = v
+#     else:
+#         ipsi[k] = v
 
-#LEFT SIDE
-l_cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_allen_atl.p"), "rb"), encoding = "latin1")
-l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
+# #LEFT SIDE
+# l_cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_allen_atl.p"), "rb"), encoding = "latin1")
+# l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
 
-for k,v in l_cells_regions.items():
-    if lr_dist[k] > 0:
-        contra[k] = v
-    else:
-        ipsi[k] = v
+# for k,v in l_cells_regions.items():
+#     if lr_dist[k] > 0:
+#         contra[k] = v
+#     else:
+#         ipsi[k] = v
         
-contra_df = pd.DataFrame(contra)
-contra_df.to_csv(os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")) 
+# contra_df = pd.DataFrame(contra)
+# contra_df.to_csv(os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")) 
 
-ipsi_df = pd.DataFrame(ipsi)
-ipsi_df.to_csv(os.path.join(dst, "data/thal_ipsi_counts_23_brains_80um_ventric_erosion.csv"))         
+# ipsi_df = pd.DataFrame(ipsi)
+# ipsi_df.to_csv(os.path.join(dst, "data/thal_ipsi_counts_23_brains_80um_ventric_erosion.csv"))         
 
 #%%
 cells_regions_pth = os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
@@ -270,7 +271,7 @@ ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
-sois = ["Thalamus", 
+nuclei = ["Thalamus", 
        "Ventral posteromedial nucleus of the thalamus",
        "Ventral posterolateral nucleus of the thalamus",
        "Ventral anterior-lateral complex of the thalamus",
@@ -287,7 +288,7 @@ sois = ["Thalamus",
 
 #first calculate counts across entire nc region
 counts_per_struct = []
-for soi in sois:
+for soi in nuclei:
     progeny = []; counts = []
     get_progeny(ontology_dict, soi, progeny)
     #add counts from main structure
