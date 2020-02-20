@@ -11,19 +11,15 @@ import matplotlib as mpl, os
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
-
-#TP
-plt.rcParams["axes.grid"] = False
-
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 #imports
 #path to pickle file
-data_pth = r"V:\zahra\h129_contra_vs_ipsi/data/nc_model_data_contra_pma.p"#"/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_model_data_contra_pma.p"
+data_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_model_data_contra_pma.p"
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set dest
-dst = r"C:\Users\Zahra\Desktop"
+dst = "/home/wanglab/Desktop"
 #dst = "/Users/tjp7rr1/Downloads"
 
 #set the appropritate variables
@@ -37,9 +33,9 @@ regions = data["regions"]
 primary_lob_n = data["primary_lob_n"]
 
 #shortened lables for figures
-
 regions = np.array(["IL, PL, \nAC, ORB", "FRP", "AI", "GU, VISC", "MO, SS", "RSP", "VIS", "PTLp",
                     "TEa, AUD", "PERI, ECT"])
+
 ## display
 fig = plt.figure(figsize=(6,5))
 ax = fig.add_axes([.4,.1,.5,.8])

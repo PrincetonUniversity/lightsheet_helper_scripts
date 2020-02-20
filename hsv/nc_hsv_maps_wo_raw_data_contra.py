@@ -88,7 +88,29 @@ for soi in sois:
     counts_per_struct.append(np.array(counts).sum(axis = 0))
 counts_per_struct = np.array(counts_per_struct)
 
+#get volumes
+vol = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+    vol.append(np.array(counts).sum(axis = 0))
+vol = np.array(vol)        
 
+density_l56 = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T
+
+#layer 5+6 p counts maps
+pcounts = np.array([xx/sum(xx) for xx in counts_per_struct.T])*100
+
+#rename short sois
+sois = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
+                    "Temp", "Aud", "EcR", "Pr"]) 
+
+#sort pcounts and density by nuclei size
+sois = np.array(sois)[np.argsort(vol)]
+pcounts = pcounts.T[np.argsort(vol)].T
+density_l56 = density_l56.T[np.argsort(vol)].T
 #%%
 
 #make injection site heatmap only
@@ -123,12 +145,6 @@ lbls = np.asarray(sort_brains)
 ax.set_xticks([])
 ax.set_xticklabels([])
 
-#despline to make it look similar to paper figure
-ax.spines["right"].set_visible(False)
-ax.spines["top"].set_visible(False)
-ax.spines["left"].set_visible(False)
-ax.spines["bottom"].set_visible(False)
-if TP: ax.grid(False)
 ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "hsv_inj_nc.pdf"), bbox_inches = "tight")
@@ -138,11 +154,8 @@ plt.savefig(os.path.join(dst, "hsv_inj_nc.pdf"), bbox_inches = "tight")
 maxpcount = 30
 whitetext = 3
 brain_lbl_size = "x-small"
-yaxis = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
-                    "Temp", "Aud", "EcR", "Pr"]) 
+yaxis = np.flipud(sois)
 
-#layer 5+6 p counts maps
-pcounts = np.array([xx/sum(xx) for xx in counts_per_struct.T])*100
 
 #make % counts map like the h129 dataset (nc only for now)
 ## display
@@ -181,7 +194,7 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 ax.tick_params(length=6)
 
 ax = axes[1]
-show = np.fliplr(sort_pcounts).T
+show = np.flipud(np.fliplr(sort_pcounts).T)
 
 # SET COLORMAP
 vmin = 0
@@ -208,28 +221,16 @@ ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "hsv_pcounts_nc.pdf"), bbox_inches = "tight")
 
+
 #%%
-#make density map like the h129 dataset (nc only for now)
-#get layer5/6 volumes
-vol = []
-for soi in sois:
-    progeny = []; counts = []
-    get_progeny(ontology_dict, soi, progeny)
-    for progen in progeny:
-            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
-    vol.append(np.array(counts).sum(axis = 0))
-vol = np.array(vol)        
 
-density_l56 = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T
-
+#make density map like the h129 dataset 
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5]})
 
 #set colorbar features 
 maxdensity = 400#300
-annotation_size = "small" #for the number annotations inside the heatmap
-brain_lbl_size = "small"
 
 #sort inj fractions by primary lob
 sort_density = [density_l56[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
@@ -261,7 +262,7 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 ax.tick_params(length=6)
 
 ax = axes[1]
-show = np.fliplr(sort_density).T
+show = np.flipud(np.fliplr(sort_density).T)
 
 # SET COLORMAP
 vmin = 0

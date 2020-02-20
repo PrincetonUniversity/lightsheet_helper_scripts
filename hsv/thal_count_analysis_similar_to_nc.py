@@ -322,6 +322,10 @@ vol = np.array(vol)
 
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct[1:])]).T) #remove thalamus
 
+#sort pcounts and density by nuclei size
+nuclei = np.array(nuclei[1:])[np.argsort(vol[1:])]
+pcounts = pcounts.T[np.argsort(vol[1:])].T
+density = density.T[np.argsort(vol[1:])].T
 #%%
 
 import seaborn as sns
@@ -345,7 +349,7 @@ plt.savefig(os.path.join(fig_dst, "thal_pcounts_boxplots.pdf"), bbox_inches = "t
 
 #set colorbar features 
 maxpcount = 8
-yaxis = nuclei[1:]
+yaxis = np.flipud(nuclei)
 
 #make % counts map like the h129 dataset
 ## display
@@ -382,7 +386,7 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 ax.tick_params(length=6)
 
 ax = axes[1]
-show = np.fliplr(sort_pcounts).T
+show = np.flipud(np.fliplr(sort_pcounts).T)
 
 # SET COLORMAP
 vmin = 0
@@ -412,7 +416,7 @@ plt.savefig(os.path.join(fig_dst, "hsv_pcounts_thal.pdf"), bbox_inches = "tight"
 
 #set colorbar features 
 maxdensity = 30
-yaxis = nuclei[1:]
+yaxis = np.flipud(nuclei)
 
 #make density map like the h129 dataset
 ## display
@@ -449,7 +453,7 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 ax.tick_params(length=6)
 
 ax = axes[1]
-show = np.fliplr(sort_density).T
+show = np.flipud(np.fliplr(sort_density).T)
 
 # SET COLORMAP
 vmin = 0
@@ -477,7 +481,7 @@ plt.savefig(os.path.join(fig_dst, "hsv_density_thal.pdf"), bbox_inches = "tight"
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
 mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
-fig,ax = plt.subplots(figsize=(3.5,9))
+fig,ax = plt.subplots(figsize=(3,9))
 
 show = mean_counts.T 
 
@@ -503,8 +507,8 @@ lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
                    rotation="vertical", fontsize=8)
 # yticks
-ax.set_yticks(np.arange(len(nuclei[1:]))+.5)
-ax.set_yticklabels(nuclei[1:], fontsize="small")
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(nuclei, fontsize="small")
 ax.tick_params(length=6)
 
 plt.savefig(os.path.join(fig_dst,"thal_mean_count.pdf"), bbox_inches = "tight")
@@ -570,7 +574,6 @@ for itera in range(1000):
             # intercept:
             inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
             
-#            glm = sm.OLS(count, inj_)
             glm = sm.GLM(count, inj_, family=sm.families.Poisson())
             res = glm.fit()
             
@@ -583,8 +586,6 @@ for itera in range(1000):
             if not shuffle:
                 mat.append(val)
                 pmat.append(pvals)
-#                ars.append(res.rsquared_adj)
-#                rs.append(res.rsquared)
             elif shuffle:
                 mat_shuf[-1].append(val)
                 p_shuf[-1].append(pvals)
@@ -610,7 +611,7 @@ fit_shuf = np.array(fit_shuf)
 
 #%%
 ## display
-fig,ax = plt.subplots(figsize=(3.5,9))
+fig,ax = plt.subplots(figsize=(3,9))
 
 # map 1: weights
 show = mat
