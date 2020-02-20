@@ -6,7 +6,7 @@ Created on Mon Jan  6 19:04:53 2020
 @author: wanglab
 """
 
-import matplotlib as mpl, os, pandas as pd, itertools, json
+import matplotlib as mpl, os, pandas as pd, itertools, json, seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
@@ -47,6 +47,9 @@ frac_of_inj_pool = data["frac_of_inj_pool"]
 primary_pool = data["primary_pool"]
 ak_pool = data["ak_pool"]
 
+#change the lettering slightly 
+ak_pool = np.array(['Lob. I-V', 'Lob. VI, VII', 'Lob. VIII-X',
+       'Simplex', 'Crus I', 'Crus II', 'PM, CP'])
 #################################################SEPARATES INTO LAYER 5/6 CELLS, ONLY NEED TO RUN ONCE###########################################
 def get_progeny(dic,parent_structure,progeny_list):
     """ 
@@ -125,10 +128,39 @@ layer23 = np.array(layer23)
 frac56 = np.sum(layer56, axis = 0)/np.sum(counts_per_struct, axis = 0)
 mean_fracl56_per_struct = np.nanmean(frac56, axis = 0)
 
+#layer p counts maps
+pcounts = np.array([xx/sum(xx) for xx in counts_per_struct.T])*100
+
+#get layer5/6 volumes
+layer56_vol = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b" or progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+    layer56_vol.append(np.array(counts).sum(axis = 0))
+layer56_vol = np.array(layer56_vol)        
+
+density_l56 = np.array([xx/(layer56_vol[i]*(scale_factor**3)) for i, xx in enumerate(layer56)]).T
+
+
+#rename short sois
+sois = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
+                    "Temp", "Aud", "EcR", "Pr"]) 
+
+#sort pcounts and density by nuclei size
+sois = np.array(sois)[np.argsort(layer56_vol)]
+pcounts = pcounts.T[np.argsort(layer56_vol)].T
+density_l56 = density_l56.T[np.argsort(layer56_vol)].T
+
 #%%
 
 #make injection site heatmap only
 
+plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
+
+#make injection site heatmap only
 fig, ax = plt.subplots(figsize = (5,2))
 
 sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
@@ -139,31 +171,30 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 #inj fractions
 show = np.fliplr(sort_inj).T
 
-# SET COLORMAP DETAILS HERE
-cmap = plt.cm.Reds 
-cmap.set_over("darkred")
+cmap = plt.cm.Oranges 
+cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
 vmax = 0.8
 
 #colormap
+bounds = np.linspace(vmin,vmax,4)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
-cb.set_label("% coverage of lobule", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
+cb.set_label("Injection % coverage of region", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
 cb.ax.set_visible(True) #TP
-ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticks(np.arange(len(ak_pool))+.5)#np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
-ax.set_xticks([])
 lbls = np.asarray(sort_brains)
+ax.set_xticklabels(np.array([ 1,  5, 10, 15, 20, 25, 30]))
+ax.tick_params(length=6)
 
-
-plt.savefig(os.path.join(dst, "prv_inj_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_inj_orange_nc.pdf"), bbox_inches = "tight")
 
 #%%
-#layer 5+6 p counts maps
-pcounts = np.array([xx/sum(xx) for xx in layer56.T])*100
-
 #make % counts map like the h129 dataset (nc only for now)
 
 ## display
@@ -173,10 +204,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (3.8,6), sharex = True,
 #set colorbar features 
 maxpcount = 30
 whitetext = 3
-annotation_size = "x-small" #for the number annotations inside the heatmap
-brain_lbl_size = "x-small"
-yaxis = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
-                    "Temp", "Aud", "EcR", "Pr"]) 
+yaxis = sois
 
 #sort inj fractions by primary lob
 sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
@@ -210,7 +238,7 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 ax.tick_params(length=6)
 
 ax = axes[1]
-show = np.fliplr(sort_pcounts).T
+show = np.flipud(np.fliplr(sort_pcounts).T)
 
 # SET COLORMAP
 vmin = 0
@@ -227,7 +255,7 @@ cb.ax.set_visible(True)
 
 # aesthetics
 ax.set_yticks(np.arange(len(yaxis))+.5)
-ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
+ax.set_yticklabels(sois, fontsize="small")
 
 ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
 ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
@@ -239,18 +267,6 @@ plt.savefig(os.path.join(dst, "prv_pcounts_nc.pdf"), bbox_inches = "tight")
 #%%
 
 #make density map like the h129 dataset (nc only for now)
-#get layer5/6 volumes
-layer56_vol = []
-for soi in sois:
-    progeny = []; counts = []
-    get_progeny(ontology_dict, soi, progeny)
-    for progen in progeny:
-        if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b" or progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
-            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
-    layer56_vol.append(np.array(counts).sum(axis = 0))
-layer56_vol = np.array(layer56_vol)        
-
-density_l56 = np.array([xx/(layer56_vol[i]*(scale_factor**3)) for i, xx in enumerate(layer56)]).T
 
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (3.8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
@@ -291,7 +307,7 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 ax.tick_params(length=6)
 
 ax = axes[1]
-show = np.fliplr(sort_density).T
+show = np.flipud(np.fliplr(sort_density).T)
 
 # SET COLORMAP
 vmin = 0
@@ -308,7 +324,7 @@ cb.ax.set_visible(True)
 # aesthetics
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
-ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
+ax.set_yticklabels(yaxis, fontsize="small")
 
 ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
 ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
@@ -316,3 +332,50 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "prv_density_nc.pdf"), bbox_inches = "tight")
+
+#%%
+
+#boxplots
+#first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
+order = np.argsort(np.median(pcounts, axis = 0))[::-1]
+#renaming for figure
+sois_sort = np.array(sois)[order][:10]
+
+#boxplots of percent counts
+plt.figure(figsize = (5,4))
+df = pd.DataFrame(pcounts)
+df.columns = sois
+g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
+sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+            boxprops={"facecolor":"None"}, order = sois_sort)
+plt.xlabel("% of neocortical neurons")
+plt.ylabel("Region")
+
+#hide the right and top spines
+sns.despine(top=True, right=True, left=False, bottom=False)
+
+plt.tick_params(length=6)
+
+plt.savefig(os.path.join(dst, "prv_nc_pcounts_boxplots.pdf"), bbox_inches = "tight")
+
+#%%
+
+#boxplots of density counts
+order = np.argsort(np.median(density_l56, axis = 0))[::-1]
+
+sois_sort = np.array(sois)[order][:10]
+
+plt.figure(figsize = (5,4))
+df = pd.DataFrame(density_l56)
+df.columns = sois
+g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
+sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+            boxprops={"facecolor":"None"}, order = sois_sort)
+plt.xlabel("Cells / mm$^3$")
+plt.ylabel("Region")
+
+#hide the right and top spines
+sns.despine(top=True, right=True, left=False, bottom=False)
+plt.tick_params(length=6)
+
+plt.savefig(os.path.join(dst, "prv_nc_density_boxplots.pdf"), bbox_inches = "tight")

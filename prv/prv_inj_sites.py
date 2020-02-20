@@ -51,7 +51,7 @@ if __name__ == "__main__":
       "num_sites_to_keep": 1,
       "injectionscale": 45000, 
       "imagescale": 2,
-      "reorientation": ("0","1","2"),
+      "reorientation": ("2","0","1"),
       "crop": "[:,:,:]",
       "dst": "/jukebox/wang/zahra/tracing_projects/prv/prv_injection_sites",
       "save_individual": False, 
@@ -101,30 +101,30 @@ if __name__ == "__main__":
     #inspect injection sites for the brains i currently have
     imgs = [os.path.join(dct["dst"], xx+".tif") for xx in brains]; imgs.sort()
     #the y-axis cutoff for visualization
-#    sites = np.array([fix_orientation(tifffile.imread(xx)[:, 450:, :], dct["reorientation"]) for xx in imgs]) 
-    sites = np.array([tifffile.imread(xx) for xx in imgs]) 
+    sites = np.array([fix_orientation(tifffile.imread(xx)[:, 450:, :], dct["reorientation"]) for xx in imgs]) 
     #check
 #    for i,site in enumerate(sites):
 #        tifffile.imsave("/home/wanglab/Desktop/{}.tif".format(brains[i]), np.max(site, axis = 0))
-#    atl = fix_orientation(tifffile.imread(dct["atlas"])[:, 450:, :], dct["reorientation"])
-    atl = tifffile.imread(dct["atlas"])
+    atl = fix_orientation(tifffile.imread(dct["atlas"])[:, 450:, :], dct["reorientation"])
     #make counter
     nonzeros = [list(zip(*np.nonzero(site))) for site in sites] #<-for pooled image
     
-    #cell counts to csv
-    allen_id_table=pd.read_excel(dct["id_table"]).drop(columns = ["Unnamed: 0"])
-    ann = tifffile.imread(dct["annotation"])
-    for i,site in enumerate(sites):
-        nz = np.nonzero(site)
-        pos = transformed_pnts_to_allen_helper_func(np.asarray(list(zip(*[nz[0], nz[1], nz[2]]))), ann, order = "ZYX")
-        tdf = count_structure_lister(allen_id_table, *pos)
-        if i == 0: 
-            df = tdf.copy()
-            countcol = "count" if "count" in df.columns else "cell_count"
-            df.drop([countcol], axis=1, inplace=True)
-        df[brains[i]] = tdf[countcol]
+    # #cell counts to csv
+    # allen_id_table=pd.read_excel(dct["id_table"]).drop(columns = ["Unnamed: 0"])
+    # ann = fix_orientation(tifffile.imread(dct["annotation"])[:, 450:, :], dct["reorientation"])
+    # for i,site in enumerate(sites):
+    #     nz = np.nonzero(site)
+    #     pos = transformed_pnts_to_allen_helper_func(np.asarray(list(zip(*[nz[0], nz[1], nz[2]]))), 
+    #                                                 ann, order = "ZYX")
+    #     tdf = count_structure_lister(allen_id_table, *pos)
+    #     if i == 0: 
+    #         df = tdf.copy()
+    #         countcol = "count" if "count" in df.columns else "cell_count"
+    #         df.drop([countcol], axis=1, inplace=True)
+    #     df[brains[i]] = tdf[countcol]
+   
     #export
-    df.to_csv("/jukebox/wang/zahra/tracing_projects/prv/voxel_counts.csv", index = False)
+    # df.to_csv("/jukebox/wang/zahra/tracing_projects/prv/voxel_counts.csv", index = False)
     
     #condense nonzero pixels
     nzs = [str(x) for xx in nonzeros for x in xx] #this list has duplicates if two brains had the same voxel w label
@@ -139,13 +139,13 @@ if __name__ == "__main__":
         tick+=1
         if tick % 50000 == 0: print("   {}".format(tick))
         
-    my_cmap = eval("plt.cm.{}(np.arange(plt.cm.RdBu.N))".format("viridis"))
+    my_cmap = eval("plt.cm.{}(np.arange(plt.cm.Oranges.N))".format("YlOrBr"))
     my_cmap[:1,:4] = 0.0  
     my_cmap = mpl.colors.ListedColormap(my_cmap)
     my_cmap.set_under("w")
     plt.figure()
-    plt.imshow(np.max(atl, axis=0), cmap="gray")
+    plt.imshow(np.max(atl, axis=0), cmap="gray_r")
     plt.imshow(np.max(array, axis=0), alpha=0.90, cmap=my_cmap); plt.colorbar(); plt.axis("off")
     
-    plt.savefig(os.path.join("/home/wanglab/Desktop/inj_heatmap_horz.pdf"), dpi = 300, transparent = True);
+    plt.savefig(os.path.join("/home/wanglab/Desktop/prv_inj_heatmap_cb_inverted_ylorbr.pdf"), dpi = 300, transparent = True);
     plt.close()

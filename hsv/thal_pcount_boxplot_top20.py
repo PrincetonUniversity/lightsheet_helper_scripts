@@ -13,9 +13,10 @@ plt.rcParams["axes.grid"] = False
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 
-dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
+src = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-cells_regions_pth = os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
+cells_regions_pth = os.path.join(src, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
+dst = "/home/wanglab/Desktop"
 
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
@@ -55,42 +56,28 @@ sois_dict = {"Thalamus": "Sensory-motor",
          "Ventral medial nucleus of the thalamus": "Sensory-motor", 
          "Ventral posterolateral nucleus of the thalamus": "Sensory-motor", 
          "Ventral posteromedial nucleus of the thalamus": "Sensory-motor", 
-         "Posterior triangular thalamic nucleus": "Sensory-motor", 
-         "Peripeduncular nucleus": "Sensory-motor", 
+         "Subparafascicular nucleus": "Sensory-motor", 
          "Medial geniculate complex": "Sensory-motor",
          "Dorsal part of the lateral geniculate complex": "Sensory-motor", 
          "Lateral posterior nucleus of the thalamus": "Polymodal association", 
          "Posterior complex of the thalamus": "Polymodal association", 
-         "Suprageniculate nucleus": "Polymodal association", 
-         "Ethmoid nucleus of the thalamus": "Polymodal association", 
-         "Retroethmoid nucleus": "Polymodal association", 
          "Anteroventral nucleus of thalamus": "Polymodal association", 
          "Anteromedial nucleus": "Polymodal association", 
-         "Anterodorsal nucleus": "Polymodal association", 
-         "Interanteromedial nucleus of the thalamus": "Polymodal association", 
-         "Interanterodorsal nucleus of the thalamus": "Polymodal association", 
+         "Anterodorsal nucleus": "Polymodal association",  
          "Lateral dorsal nucleus of thalamus": "Polymodal association", 
-         "Intermediodorsal nucleus of the thalamus": "Polymodal association", 
          "Mediodorsal nucleus of thalamus": "Polymodal association", 
          "Submedial nucleus of the thalamus": "Polymodal association", 
-         "Perireunensis nucleus": "Polymodal association", 
          "Paraventricular nucleus of the thalamus": "Polymodal association", 
          "Parataenial nucleus": "Polymodal association", 
          "Nucleus of reuniens": "Polymodal association", 
-         "Xiphoid thalamic nucleus": "Polymodal association", 
-         "Rhomboid nucleus": "Polymodal association", 
          "Central medial nucleus of the thalamus": "Polymodal association", 
          "Paracentral nucleus": "Polymodal association", 
          "Central lateral nucleus of the thalamus": "Polymodal association", 
          "Parafascicular nucleus": "Polymodal association", 
-         "Posterior intralaminar thalamic nucleus": "Polymodal association", 
          "Reticular nucleus of the thalamus": "Polymodal association", 
-         "Intermediate geniculate nucleus": "Polymodal association", 
          "Ventral part of the lateral geniculate complex": "Polymodal association", 
-         "Subgeniculate nucleus": "Polymodal association", 
          "Medial habenula": "Polymodal association", 
-         "Lateral habenula": "Polymodal association", 
-         "Pineal body": "Polymodal association"}
+         "Lateral habenula": "Polymodal association"}
 
 sois = list(sois_dict.keys())
 
@@ -130,72 +117,66 @@ pcounts = np.nan_to_num(np.asarray([((brain[1:]/brain[0])*100) for brain in coun
 
 #%%
 
+sois = list(sois_dict.keys())
+sois = sois[1:] #remove thalamus as whole
+
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
 order = np.argsort(np.median(pcounts, axis = 0))[::-1]
 #renaming for figure
-short_nuclei = ["VA-L", "VM", "VPL", "VPM", "Post. Triangle", "PP", "Med. Geniculate", "dLGN", "LP", "Post. Complex", 
-       "SGN", "Eth", "REth", "AV", "AM", "AD", "IAM", "IAD", "LD", "IMD",
-       "MD", "Submedial", "PR", "Paraventricular", "PT", "Reuniens", "Xi", "RH", "CM", "PCN",
-       "CL", "Parafascicular", "PIL", "RTN", "IntG", "vLGN", "SubG", "Med. Habenula", "Lat. Habenula", "PIN"]
 
-sois_sort = np.array(short_nuclei)[order][:20]
+sois_sort = np.array(sois)[order][:10]
 
 #color palette based on nuclei type
 cat = np.array(list(sois_dict.values())[1:])[order][:20] #removes thalamus soi
 pal = [sns.color_palette("bright")[::-1][1] if n == "Sensory-motor" else sns.color_palette("bright")[::-1][0] for n in cat]
 
 #boxplots of percent counts
-plt.figure(figsize = (5,7))
+plt.figure(figsize = (5,4))
 df = pd.DataFrame(pcounts)
-df.columns = short_nuclei
+df.columns = sois
 g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort, palette = pal)
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={"facecolor":"None"}, order = sois_sort, palette = pal)
-plt.xlabel("% of total thalamic cells")
-plt.ylabel("Thalamic nuclei")
+plt.xlabel("% of thalamic neurons")
+plt.ylabel("Subnucleus")
 
 #make key
-gold_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][1], label="Sensory-motor")
-blue_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][0], label="Polymodal association")
+gold_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][1], label="Sens / Mot")
+blue_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][0], label="PolyM")
 
-plt.legend(title = "Thalamus nucleus type", 
-           handles=[gold_patch, blue_patch], bbox_to_anchor=(.8, .9), loc=2, borderaxespad=0., frameon=False)
+plt.legend(title = "Nucleus type", 
+           handles=[gold_patch, blue_patch], bbox_to_anchor=(.3, 1.3), loc=2, borderaxespad=0., frameon=False)
 #hide the right and top spines
 sns.despine(top=True, right=True, left=False, bottom=False)
 
 plt.savefig(os.path.join(dst, "thal_pcounts_boxplots.pdf"), bbox_inches = "tight")
 
-
 #%%
+
 #boxplots of density counts
 order = np.argsort(np.median(density, axis = 0))[::-1]
-#renaming for figure
-short_nuclei = ["VA-L", "VM", "VPL", "VPM", "Post. Triangle", "PP", "Med. Geniculate", "dLGN", "LP", "Post. Complex", 
-       "SGN", "Eth", "REth", "AV", "AM", "AD", "IAM", "IAD", "LD", "IMD",
-       "MD", "Submedial", "PR", "Paraventricular", "PT", "Reuniens", "Xi", "RH", "CM", "PCN",
-       "CL", "Parafascicular", "PIL", "RTN", "IntG", "vLGN", "SubG", "Med. Habenula", "Lat. Habenula", "PIN"]
 
-sois_sort = np.array(short_nuclei)[order][:20]
+sois_sort = np.array(sois)[order][:10]
 
 #color palette based on nuclei type
 cat = np.array(list(sois_dict.values())[1:])[order][:20] #removes thalamus soi
 pal = [sns.color_palette("bright")[::-1][1] if n == "Sensory-motor" else sns.color_palette("bright")[::-1][0] for n in cat]
 
-plt.figure(figsize = (5,7))
+plt.figure(figsize = (5,3))
 df = pd.DataFrame(density)
-df.columns = short_nuclei
+df.columns = sois
 g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort, palette = pal)
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={"facecolor":"None"}, order = sois_sort, palette = pal)
-plt.xlabel("Cells/$mm^3$")
-plt.ylabel("Thalamic nuclei")
+plt.xlabel("Cells / mm$^3$")
+plt.ylabel("Subnucleus")
 
 #make key
-gold_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][1], label="Sensory-motor")
-blue_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][0], label="Polymodal association")
+gold_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][1], label="Sens / Mot")
+blue_patch = mpl.patches.Patch(color=sns.color_palette("bright")[::-1][0], label="PolyM")
 
-plt.legend(title = "Thalamus nucleus type", 
-           handles=[gold_patch, blue_patch], bbox_to_anchor=(.65, .7), loc=2, borderaxespad=0., frameon=False)
+plt.legend(title = "Nucleus type", 
+           handles=[gold_patch, blue_patch], bbox_to_anchor=(.3, 1.3), loc=2, borderaxespad=0., frameon=False)
 #hide the right and top spines
 sns.despine(top=True, right=True, left=False, bottom=False)
 

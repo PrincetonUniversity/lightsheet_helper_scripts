@@ -7,7 +7,7 @@ Created on Tue Dec 17 18:57:00 2019
 """
 
 
-import matplotlib as mpl, os, pandas as pd, json, statsmodels as sm
+import matplotlib as mpl, os, pandas as pd, json, statsmodels.api as sm
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
@@ -119,7 +119,11 @@ for soi in sois:
 vol = np.array(vol)      
 
 pcounts = np.nan_to_num(np.asarray([((brain/sum(brain))*100) for brain in counts_per_struct.T]))    
+
+density = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T
 #%%
+
+pcounts = np.nan_to_num(np.asarray([((brain/sum(brain))*100) for brain in counts_per_struct.T]))    
 
 pcounts_pool = np.asarray([[xx[0]+xx[1]+xx[2]+xx[4], xx[3], xx[6], xx[5]+xx[7], 
                                           xx[8]+xx[9], xx[10], xx[12], xx[11], 
@@ -152,6 +156,13 @@ frac_of_inj_pool_norm = np.array([xx/sum(xx) for xx in frac_of_inj_pool])
 X = frac_of_inj_pool_norm
 Y = pcounts_pool    
 
+#try without pooled NC regions
+# pcounts = pcounts.T[np.argsort(vol)].T
+# regions = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
+#                     "Temp", "Aud", "EcR", "Pr"]) 
+# regions = regions[np.argsort(vol)]
+
+# Y = pcounts
 #%%
 
 ##  glm
@@ -260,7 +271,7 @@ nullstd = null.std()
 for y,x in np.argwhere(sig):
     pass
     ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment='center', verticalalignment='center',
-            color = "white", transform=ax.transData)
+            color = "k", transform=ax.transData)
 ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
@@ -272,4 +283,4 @@ ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(regions, fontsize=10)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "nc_glm_contra_pma.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_nc_glm_contra_pma.pdf"), bbox_inches = "tight")

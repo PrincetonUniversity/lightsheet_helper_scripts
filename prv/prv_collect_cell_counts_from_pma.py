@@ -218,31 +218,31 @@ id_table = pd.read_excel(df_pth)
 #left = transformed_cells_to_ann(trnsfrmd, ann_left, dst, "left_side_no_prog_at_each_level_pma.p")
 
 #import dict of cells by region
-r_cells_regions = pckl.load(open(os.path.join(dst, "right_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
-r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
+# r_cells_regions = pckl.load(open(os.path.join(dst, "right_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
+# r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
 
-contra = {}; ipsi = {} #collect contra and ipsi frame
-for k,v in r_cells_regions.items():
-    if lr_dist[k] < 0:
-        contra[k] = v
-    else:
-        ipsi[k] = v
+# contra = {}; ipsi = {} #collect contra and ipsi frame
+# for k,v in r_cells_regions.items():
+#     if lr_dist[k] < 0:
+#         contra[k] = v
+#     else:
+#         ipsi[k] = v
 
-#LEFT SIDE
-l_cells_regions = pckl.load(open(os.path.join(dst, "left_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
-l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
+# #LEFT SIDE
+# l_cells_regions = pckl.load(open(os.path.join(dst, "left_side_no_prog_at_each_level_pma.p"), "rb"), encoding = "latin1")
+# l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
 
-for k,v in l_cells_regions.items():
-    if lr_dist[k] > 0:
-        contra[k] = v
-    else:
-        ipsi[k] = v
+# for k,v in l_cells_regions.items():
+#     if lr_dist[k] > 0:
+#         contra[k] = v
+#     else:
+#         ipsi[k] = v
         
-contra_df = pd.DataFrame(contra)
-contra_df.to_csv(os.path.join(dst, "for_tp/nc_contra_counts_25_brains_pma.csv")) 
+# contra_df = pd.DataFrame(contra)
+# contra_df.to_csv(os.path.join(dst, "for_tp/nc_contra_counts_25_brains_pma.csv")) 
 
-ipsi_df = pd.DataFrame(ipsi)
-ipsi_df.to_csv(os.path.join(dst, "for_tp/nc_ipsi_counts_25_brains_pma.csv")) 
+# ipsi_df = pd.DataFrame(ipsi)
+# ipsi_df.to_csv(os.path.join(dst, "for_tp/nc_ipsi_counts_25_brains_pma.csv")) 
 
 ##########################################NO NEED TO RUN AGAIN IF ALREADY RUN ONCE################################################################
 #%%
@@ -479,7 +479,7 @@ for soi in sois:
     get_progeny(ontology_dict, soi, progeny)
     for progen in progeny:
         if progen[-8:] == "layer 6a" or progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6a" or progen[-8:] == "Layer 6b" or progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
-            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
     layer56_vol.append(np.array(counts).sum(axis = 0))
 layer56_vol = np.array(layer56_vol)        
 
@@ -560,23 +560,46 @@ plt.savefig(os.path.join(fig_dst, "density_nc.pdf"), bbox_inches = "tight")
 #VARIABLES FOR GLM           
 #POOL NC REGIONS!!
 
-#make pcounts array
-#total_counts_per_brain = np.sum(cell_counts_per_brain, axis=1)
-#pcounts = np.asarray([(xx/total_counts_per_brain[i])*100 for i, xx in enumerate(cell_counts_per_brain)])
+pcounts = np.array([xx/sum(xx) for xx in layer56.T])*100
 
-pcounts_pool = np.array([np.array([xx[0]+xx[1]+xx[2]+xx[4], xx[6], xx[5]+xx[7], 
-                                          xx[8]+xx[9], xx[10], xx[11], xx[12], 
-                                          xx[13]+xx[14], xx[15]+xx[16]]) for xx in pcounts])
+pcounts_pool = np.asarray([[xx[0]+xx[1]+xx[2]+xx[4], xx[3], xx[6], xx[5]+xx[7], 
+                                          xx[8]+xx[9], xx[10], xx[12], xx[11], 
+                                          xx[13]+xx[14], xx[15]+xx[16]] for xx in pcounts])
 
-#for display
-regions = np.asarray(["Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital",
-       "Agranular insula", "Gustatory, Visceral", #removed frontal pole as it does not have any layer 5/6 neurons
-       "Somatomotor, Somatosensory", "Retrosplenial", "Post. Parietal", "Visual",
-       "Temporal, Auditory", "Peririhinal, Ectorhinal"])
+layer56_vol_pool = np.asarray([layer56_vol[0]+layer56_vol[1]+layer56_vol[2]+layer56_vol[4], layer56_vol[3], layer56_vol[6], layer56_vol[5]+layer56_vol[7], 
+                                          layer56_vol[8]+layer56_vol[9], layer56_vol[10], layer56_vol[12], layer56_vol[11], 
+                                          layer56_vol[13]+layer56_vol[14], layer56_vol[15]+layer56_vol[16]])
 
+#can fix this later
+sois_pool = np.asarray([sois[0]+sois[1]+sois[2]+sois[4], sois[3], sois[6], sois[5]+sois[7], 
+                                          sois[8]+sois[9], sois[10], sois[12], sois[11], 
+                                          sois[13]+sois[14], sois[15]+sois[16]])
+#sort pcount groups by region size
+sois_pool = sois_pool[np.argsort(layer56_vol_pool)]
+pcounts_pool = pcounts_pool.T[np.argsort(layer56_vol_pool)].T
 
-X = np.array([brain/brain.sum() for brain in frac_of_inj_pool])
-Y = pcounts_pool    
+regions = np.array(['F Pole',
+                   'P Par',
+                   'Pr, EcR', 'Gust, Visc',
+                   'Insula',
+                   'Temp, Aud', 'RS',
+                   'VIS',
+                   'IL, PrL,\nAC, Orb',
+                   'SM, SS'])[1:] #remove f pole since 0 counts onyl
+    
+
+frac_of_inj_pool_norm = np.array([xx/sum(xx) for xx in frac_of_inj_pool])    
+
+X = frac_of_inj_pool_norm
+Y = pcounts_pool[:,1:]    
+#try without pooled NC regions
+# mask = [ True,  True,  True,  False,  True,  True,  True,  True,  True,
+#         True,  True,  True,  True,  True,  True,  True,  True] #remove f pole since 0 counts only
+# pcounts = pcounts.T[mask][np.argsort(layer56_vol[mask])].T
+# regions = np.array(["IL", "PrL", "AC", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
+#                     "Temp", "Aud", "EcR", "Pr"]) 
+# regions = regions[np.argsort(layer56_vol[mask])]
+# Y = pcounts
 #%%
 
 ##  glm
@@ -646,62 +669,58 @@ fit = np.array(fit)
 fit_shuf = np.array(fit_shuf)
 
 #%%
-## display
-fig = plt.figure(figsize=(7.5,5))
-ax = fig.add_axes([.4,.1,.5,.8])
 
-#set white text limit here
-whitetext = 4
-annotation_size = "medium"#annotation/number sizes
+## display
+fig,ax = plt.subplots(figsize=(3,6))
 
 # map 1: weights
-show = np.flipud(mat) # NOTE abs
+show = mat
 
+# SET COLORMAP
 vmin = 0
-vmax = 6
-cmap = plt.cm.Reds
-cmap.set_under("w")
-cmap.set_over("maroon")
-#colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,((vmax-vmin))+1)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+vmax = 4
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotation = False
 
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, 
-                  boundaries=bounds, format="%d", shrink=0.3, aspect=10)
-cb.set_label("Weight / SE", fontsize="small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("Model weight / SE", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
 cb.ax.set_visible(True)
 
-#annotations
-for ri,row in enumerate(show): 
-    for ci,col in enumerate(row):
-        if col > whitetext:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize=annotation_size)
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize=annotation_size)   
-            
+# exact value annotations
+if annotation:
+    for ri,row in enumerate(show):
+        for ci,col in enumerate(row):
+            if col > 5:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
+            else:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
+
 # signif
-sig = np.flipud(pmat) < .05#/np.size(pmat)
+sig = pmat < .05#/np.size(pmat)
 p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
 null = (p_shuf_pos < .05).sum(axis=(1,2))
 nullmean = null.mean()
 nullstd = null.std()
 for y,x in np.argwhere(sig):
     pass
-    ax.text(x, y+0.3, "*", fontsize=10, ha="left", va="bottom", color = "black", transform=ax.transData)
+    ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment='center', verticalalignment='center',
+            color = "k", transform=ax.transData)
 ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
 ax.set_xticks(np.arange(len(ak_pool))+.5)
-lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize="x-small", ha="right")
+ax.set_xticklabels(ak_pool, rotation="vertical", fontsize=10)
+
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in np.flipud(regions)], fontsize="medium")
+ax.set_yticklabels(regions, fontsize=10)
+ax.tick_params(length=6)
 
-plt.savefig(os.path.join(fig_dst, "nc_glm.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_nc_glm_contra_pma.pdf"), bbox_inches = "tight")
 
 #%%
 

@@ -646,7 +646,7 @@ nullstd = null.std()
 for y,x in np.argwhere(sig):
     pass
     ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment='center', verticalalignment='center',
-            color = "white", transform=ax.transData)
+            color = "k", transform=ax.transData)
 ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics

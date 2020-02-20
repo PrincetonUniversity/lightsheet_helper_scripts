@@ -7,7 +7,7 @@ Created on Wed Jan 15 17:10:43 2020
 """
 
 
-import matplotlib as mpl, os, pandas as pd, itertools, json
+import matplotlib as mpl, os, pandas as pd, itertools, json, seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
@@ -47,6 +47,10 @@ brains = data["brains"]
 frac_of_inj_pool = data["frac_of_inj_pool"]
 primary_pool = data["primary_pool"]
 ak_pool = data["ak_pool"]
+
+#change the lettering slightly 
+ak_pool = np.array(['Lob. I-V', 'Lob. VI, VII', 'Lob. VIII-X',
+       'Simplex', 'Crus I', 'Crus II', 'PM, CP'])
 
 def get_progeny(dic,parent_structure,progeny_list):
     
@@ -100,7 +104,7 @@ vol = np.array(vol)
 
 density_l56 = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T
 
-#layer 5+6 p counts maps
+#layer p counts maps
 pcounts = np.array([xx/sum(xx) for xx in counts_per_struct.T])*100
 
 #rename short sois
@@ -113,6 +117,8 @@ pcounts = pcounts.T[np.argsort(vol)].T
 density_l56 = density_l56.T[np.argsort(vol)].T
 #%%
 
+plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
+
 #make injection site heatmap only
 fig, ax = plt.subplots(figsize = (5,2))
 
@@ -124,7 +130,7 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 #inj fractions
 show = np.fliplr(sort_inj).T
 
-cmap = plt.cm.Reds 
+cmap = plt.cm.Oranges 
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
@@ -136,18 +142,17 @@ norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
-cb.set_label("% coverage of lobule", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
+cb.set_label("Injection % coverage of region", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
 cb.ax.set_visible(True) #TP
-ax.set_yticks([])#np.arange(len(ak_pool))+.5)
+ax.set_yticks(np.arange(len(ak_pool))+.5)#np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 lbls = np.asarray(sort_brains)
-ax.set_xticks([])
-ax.set_xticklabels([])
+ax.set_xticklabels(np.array([ 1,  5, 10, 15, 20, 25, 30]))
 
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "hsv_inj_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_inj_orange_nc.pdf"), bbox_inches = "tight")
 
 #%%
 #set colorbar features 
@@ -175,7 +180,8 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 ax = axes[0]
 show = np.fliplr(sort_inj).T
 
-cmap = plt.cm.Reds 
+#SET COLORMAP HERE
+cmap = plt.cm.YlOrBr 
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
@@ -219,7 +225,7 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 #despline to make it look similar to paper figure
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "hsv_pcounts_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_pcounts_nc_ylorbr_inj.pdf"), bbox_inches = "tight")
 
 
 #%%
@@ -244,8 +250,8 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 ax = axes[0]
 show = np.fliplr(sort_inj).T
 
-cmap = plt.cm.Reds 
-cmap.set_over("darkred")
+cmap = plt.cm.YlOrBr
+cmap.set_over(cmap(1.0))
 vmin = 0.05
 vmax = 0.8
 cmap.set_under("white")
@@ -285,4 +291,52 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "hsv_density_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_density_nc_ylorbr_inj.pdf"), bbox_inches = "tight")
+
+#%%
+
+#boxplots
+#first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
+order = np.argsort(np.median(pcounts, axis = 0))[::-1]
+#renaming for figure
+sois_sort = np.array(sois)[order][:10]
+
+#boxplots of percent counts
+plt.figure(figsize = (5,4))
+df = pd.DataFrame(pcounts)
+df.columns = sois
+g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
+sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+            boxprops={"facecolor":"None"}, order = sois_sort)
+plt.xlabel("% of neocortical neurons")
+plt.ylabel("Region")
+
+#hide the right and top spines
+sns.despine(top=True, right=True, left=False, bottom=False)
+
+plt.tick_params(length=6)
+
+plt.savefig(os.path.join(dst, "hsv_nc_pcounts_boxplots.pdf"), bbox_inches = "tight")
+
+#%%
+
+#boxplots of density counts
+order = np.argsort(np.median(density_l56, axis = 0))[::-1]
+
+sois_sort = np.array(sois)[order][:10]
+
+plt.figure(figsize = (5,4))
+df = pd.DataFrame(density_l56)
+df.columns = sois
+g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
+sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+            boxprops={"facecolor":"None"}, order = sois_sort)
+plt.xlabel("Cells / mm$^3$")
+plt.ylabel("Region")
+
+#hide the right and top spines
+sns.despine(top=True, right=True, left=False, bottom=False)
+
+plt.tick_params(length=6)
+
+plt.savefig(os.path.join(dst, "hsv_nc_density_boxplots.pdf"), bbox_inches = "tight")
