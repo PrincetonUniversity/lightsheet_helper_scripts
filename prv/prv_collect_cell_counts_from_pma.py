@@ -114,8 +114,9 @@ primary_as_frac_of_lob = np.array([np.argmax(e) for e in expr_all_as_frac_of_lob
 secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 
 #pooled injections
-ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X", #no simpplex injections
+ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X", 
                  "Simplex", "Crus I", "Crus II", "PM, CP"])
+
 frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
                                 for xx in expr_all_as_frac_of_inj])
 primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])

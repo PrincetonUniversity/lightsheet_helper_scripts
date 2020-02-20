@@ -122,8 +122,10 @@ primary_as_frac_of_lob = np.array([np.argmax(e) for e in expr_all_as_frac_of_lob
 secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 
 #pooled injections
-ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X",
-                 "Simplex", "Crus I", "Crus II", "PM, CP"])
+#change the lettering slightly 
+ak_pool = np.array(['Lob. I-V', 'Lob. VI, VII', 'Lob. VIII-X',
+       'Simplex', 'Crus I', 'Crus II', 'PM, CP'])
+
 frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
                                 for xx in expr_all_as_frac_of_inj])
 primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
@@ -141,10 +143,10 @@ id_table = pd.read_excel(df_pth)
 #transform points to allen atlas space
 
 #get brains that we actually need to get cell counts from
-src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/transformed_points"
-post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
-transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
-                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
+# src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_thalamus/transformed_points"
+# post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
+# transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
+#                   "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
 #
 ##collect 
 #for fl in post_transformed:
@@ -249,19 +251,20 @@ def get_progeny(dic,parent_structure,progeny_list):
     progeny_list         The list to which this function will 
                          append the progeny structures. 
     """
-    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
     
-    name = dic.get('name')
-    children = dic.get('children')
+    if "msg" in list(dic.keys()): dic = dic["msg"][0]
+    
+    name = dic.get("name")
+    children = dic.get("children")
     if name == parent_structure:
         for child in children: # child is a dict
-            child_name = child.get('name')
+            child_name = child.get("name")
             progeny_list.append(child_name)
             get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
         return
     
     for child in children:
-        child_name = child.get('name')
+        child_name = child.get("name")
         get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
     return 
 
@@ -347,6 +350,41 @@ plt.savefig(os.path.join(fig_dst, "thal_pcounts_boxplots.pdf"), bbox_inches = "t
 
 #%%
 
+plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
+
+#make injection site heatmap only
+fig, ax = plt.subplots(figsize = (5,2))
+
+sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = list(itertools.chain.from_iterable(sort_brains))
+sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
+
+#inj fractions
+show = np.fliplr(sort_inj).T
+
+#colormap settings
+cmap = plt.cm.Reds 
+cmap.set_over(cmap(1.0))
+cmap.set_under("white")
+vmin = 0.05
+vmax = 0.8
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
+cb.set_label("Injection % coverage of region", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True) #TP
+ax.set_yticks(np.arange(len(ak_pool))+.5)#np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+lbls = np.asarray(sort_brains)
+ax.set_xticklabels(np.array([ 1,  5, 10, 15, 20]))
+ax.tick_params(length=6)
+
+plt.savefig(os.path.join(fig_dst, "hsv_inj_thal_red.pdf"), bbox_inches = "tight")
+
+#%%
 #set colorbar features 
 maxpcount = 8
 yaxis = np.flipud(nuclei)

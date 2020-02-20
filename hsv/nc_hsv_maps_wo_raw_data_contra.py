@@ -117,7 +117,7 @@ pcounts = pcounts.T[np.argsort(vol)].T
 density_l56 = density_l56.T[np.argsort(vol)].T
 #%%
 
-plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
+ArithmeticError(#%%)plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
 
 #make injection site heatmap only
 fig, ax = plt.subplots(figsize = (5,2))
