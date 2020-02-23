@@ -161,5 +161,6 @@ if __name__ == "__main__":
 
     pth = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/processed"
     
-    for src in os.listdir(pth):
+    brains = ["an8_vecctrl_ymaze", "an22_crus1_lat", "an29_crus1_lat"]
+    for src in brains:
         make_table_of_transformed_cells(os.path.join(pth, src), ann, ann_lut)

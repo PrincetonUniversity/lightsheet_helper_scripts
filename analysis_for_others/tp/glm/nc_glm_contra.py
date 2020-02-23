@@ -27,9 +27,9 @@ data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set the appropritate variables
 brains = data["brains"]
-frac_of_inj_pool = data["frac_of_inj_pool"]
-primary_pool = data["primary_pool"]
+expr_all_as_frac_of_inj = data["expr_all_as_frac_of_inj"]
 ak_pool = data["ak_pool"]
+frac_of_lob = data["expr_all_as_frac_of_lob"]
 
 brains = ['20180409_jg46_bl6_lob6a_04', '20180608_jg75',
        '20170204_tp_bl6_cri_1750r_03', '20180608_jg72',
@@ -150,19 +150,98 @@ regions = np.array(['F Pole',
                    'IL, PrL,\nAC, Orb',
                    'SM, SS'])
     
-
+#pooled injections
+ak_pool = np.array(["Lob. I-III, IV-V", "Lob. VIa, VIb, VII", "Lob. VIII, IX, X", #no simpplex injections
+                 "Simplex", "Crus I", "Crus II", "PM, CP"])
+frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
+                                for xx in expr_all_as_frac_of_inj])
+primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
 frac_of_inj_pool_norm = np.array([xx/sum(xx) for xx in frac_of_inj_pool])    
 
 X = frac_of_inj_pool_norm
 Y = pcounts_pool    
 
-#try without pooled NC regions
-# pcounts = pcounts.T[np.argsort(vol)].T
-# regions = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
-#                     "Temp", "Aud", "EcR", "Pr"]) 
-# regions = regions[np.argsort(vol)]
+##try without pooled NC regions
+pcounts = pcounts.T[np.argsort(vol)].T
+regions = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
+                    "Temp", "Aud", "EcR", "Pr"]) 
+regions = regions[np.argsort(vol)]
 
-# Y = pcounts
+Y = pcounts
+
+##try with density?
+frac_of_lob_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
+                                for xx in frac_of_lob])
+
+#sort density
+density = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T
+density = (density.T[np.argsort(vol)]).T
+Y = density
+
+#normalize by density of cells in all of isocortex?
+#get counts for all of neocortex
+reg = ["Isocortex"]
+
+#first calculate counts across entire nc region
+iscortex = []
+for soi in reg:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    #add counts from main structure
+    counts.append([cells_regions.loc[cells_regions.Structure == soi, brain].values[0] for brain in brains])
+    for progen in progeny:
+        counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    iscortex.append(np.array(counts).sum(axis = 0))
+iscortex = np.array(iscortex)
+iscortex_vol = []
+for soi in reg:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+    iscortex_vol.append(np.array(counts).sum(axis = 0))
+iscortex_vol = np.array(vol)  
+
+isocortex_density = np.array([xx/(iscortex_vol[i]*(scale_factor**3)) for i, xx in enumerate(iscortex)]).T
+
+density_norm = (density/isocortex_density)
+
+X = frac_of_lob_pool
+
+Y = density
+
+#%%
+#check out mean density per injection site?
+
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(density[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+
+fig = plt.figure(figsize=(5,5))
+ax = fig.add_axes([.4,.1,.5,.8])
+
+show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
+
+vmin = 0
+vmax = 200
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+#colormap
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb.ax.tick_params(labelsize="small")
+
+cb.ax.set_visible(True)
+        
+#remaking labeles so it doesn"t look squished
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(lbls, rotation="vertical")
+# yticks
+ax.set_yticks(np.arange(len(regions))+.5)
+
+ax.set_yticklabels(regions, fontsize="small")
+
 #%%
 
 ##  glm
@@ -174,7 +253,7 @@ p_shuf = []
 fit = []
 fit_shuf = []
 
-for itera in range(1000):
+for itera in range(100):
     if itera%100 == 0: print(itera)
     if itera == 0:
         shuffle = False
@@ -241,7 +320,7 @@ show = mat
 
 # SET COLORMAP
 vmin = 0
-vmax = 4
+vmax = 15
 cmap = plt.cm.Blues
 cmap.set_over(cmap(1.0))
 annotation = False
@@ -263,8 +342,10 @@ if annotation:
                 ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
 
 # signif
-sig = pmat < .05#/np.size(pmat)
-p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
+#only get positive significance??             
+pmat_pos = np.where(mat > 0, pmat, pmat*np.inf)
+sig = pmat_pos < .05#/np.size(pmat)
+p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*np.inf)
 null = (p_shuf_pos < .05).sum(axis=(1,2))
 nullmean = null.mean()
 nullstd = null.std()
@@ -283,4 +364,6 @@ ax.set_yticks(np.arange(len(regions))+.5)
 ax.set_yticklabels(regions, fontsize=10)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "hsv_nc_glm_contra_pma.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_nc_density_glm_contra_pma.pdf"), bbox_inches = "tight")
+
+plt.close()

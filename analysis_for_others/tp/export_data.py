@@ -10,6 +10,24 @@ import os, pickle as pckl
 
 #%%
 
+
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/"
+
+data = {}
+
+data["brains"] = brains
+data["ak_pool"] = ak_pool
+data["primary_lob_n"] = primary_lob_n
+data["expr_all_as_frac_of_lob"] = expr_all_as_frac_of_lob
+data["primary_as_frac_of_lob"] = primary_as_frac_of_lob
+data["expr_all_as_frac_of_inj"] = expr_all_as_frac_of_inj
+
+#store data (serialize)
+with open(os.path.join(dst, "nc_hsv_maps_contra_pma.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+
+#%%
+
 #save
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/"
 data = {}
@@ -165,46 +183,6 @@ with open(os.path.join(dst, "thal_inj_vol.p"), "wb") as handle:
 
 #%%
 
-dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
-data = {}
-
-data["cell_counts_per_brain_left"] = cell_counts_per_brain_left
-data["cell_counts_per_brain_right"] = cell_counts_per_brain_right
-data["density_per_brain_left"] = density_per_brain_left
-data["density_per_brain_right"] = density_per_brain_right
-data["volume_per_brain_left"] = volume_per_brain_left
-
-
-data["lr_dist"] = lr_dist
-data["nc_areas"] = nc_areas
-
-#store data (serialize)
-with open(os.path.join(dst, "nc_contra_ipsi_counts_densities.p"), "wb") as handle:
-    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
-
-#%%
-
-dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
-data = {}
-
-data["cell_counts_per_brain_left"] = cell_counts_per_brain_left
-data["cell_counts_per_brain_right"] = cell_counts_per_brain_right
-data["density_per_brain_left"] = density_per_brain_left
-data["density_per_brain_right"] = density_per_brain_right
-data["volume_per_brain_left"] = volume_per_brain_left
-
-
-data["lr_dist"] = lr_dist
-data["thal_nuclei"] = nuclei
-
-#store data (serialize)
-with open(os.path.join(dst, "thal_contra_ipsi_counts_densities.p"), "wb") as handle:
-    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
-
-
-
-#%%
-
 dst = "/jukebox/wang/zahra/h129_qc/data"
 data = {}
 
@@ -320,57 +298,3 @@ with open(os.path.join(dst, "shuffle_figure_data.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
 
     
-#%%
-#init dict
-dst = "/jukebox/wang/zahra/modeling/h129/thalamus/"
-
-data = {}
-
-data["brainnames"] = brains
-data["expr_all_as_frac_of_lob"] = expr_all_as_frac_of_lob
-data["expr_all_as_frac_of_inj"] = expr_all_as_frac_of_inj
-data["primary_as_frac_of_lob"] = primary_as_frac_of_lob
-data["secondary"] = secondary
-data["cell_counts_per_brain"] = cell_counts_per_brain_p
-data["nc_regions"] = np.asarray(regions)
-data["expr_all_as_frac_of_lob_pool"] = expr_all_as_frac_of_lob_pool
-data["expr_all_as_frac_of_inj_pool_norm"] = expr_all_as_frac_of_inj_pool_norm
-data["expr_all_as_frac_of_inj_pool"] = expr_all_as_frac_of_inj_pool
-data["primary_pool"] = primary_pool
-data["cb_regions_pool"] = ak_pool
-
-#store data (serialize)
-with open(os.path.join(dst,"data_v2.p"), "wb") as handle:
-    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
-    
-#for json we have to de-pythonify a few things
-#init dict
-data = {}
-
-data["brainnames"] = brains
-data["expr_all_as_frac_of_lob"] = expr_all_as_frac_of_lob.tolist()
-data["expr_all_as_frac_of_inj"] = expr_all_as_frac_of_inj.tolist()
-data["secondary"] = secondary.tolist()
-data["cell_counts_per_brain"] = cell_counts_per_brain_p.tolist()
-data["nc_regions"] = regions.tolist()
-data["expr_all_as_frac_of_lob_pool"] = expr_all_as_frac_of_lob_pool.tolist()
-data["expr_all_as_frac_of_inj_pool_norm"] = expr_all_as_frac_of_inj_pool_norm.tolist()
-data["expr_all_as_frac_of_inj_pool"] = expr_all_as_frac_of_inj_pool.tolist()
-data["primary_pool"] = primary_pool.tolist()
-data["cb_regions_pool"] = ak_pool.tolist()
-
-import json
-
-#make it work for Python 2+3 and with Unicode
-import io
-try:
-    to_unicode = unicode
-except NameError:
-    to_unicode = str
-
-#write JSON file
-with io.open(os.path.join(dst,"data_v2.json"), 'w', encoding='utf8') as outfile:
-    str_ = json.dumps(data,
-                      indent=4, sort_keys=True,
-                      separators=(',', ': '), ensure_ascii=False)
-    outfile.write(to_unicode(str_))
