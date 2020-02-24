@@ -159,7 +159,7 @@ order = np.argsort(np.median(density, axis = 0))[::-1]
 sois_sort = np.array(sois)[order][:10]
 
 #color palette based on nuclei type
-cat = np.array(list(sois_dict.values())[1:])[order][:20] #removes thalamus soi
+cat = np.array(list(sois_dict.values())[1:])[order][:10] #removes thalamus soi
 pal = [sns.color_palette("bright")[::-1][1] if n == "Sensory-motor" else sns.color_palette("bright")[::-1][0] for n in cat]
 
 plt.figure(figsize = (5,3))

@@ -274,25 +274,26 @@ ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
-nuclei = ["Thalamus", "Ventral anterior-lateral complex of the thalamus",
+nuclei = ["Thalamus", "Ventral posteromedial nucleus of the thalamus",
+       "Reticular nucleus of the thalamus",
+       "Mediodorsal nucleus of thalamus",
+       "Posterior complex of the thalamus",
+       "Lateral posterior nucleus of the thalamus",
+       "Lateral dorsal nucleus of thalamus",
        "Ventral medial nucleus of the thalamus",
        "Ventral posterolateral nucleus of the thalamus",
-       "Ventral posteromedial nucleus of the thalamus",
-       "Subparafascicular nucleus",
+       "Ventral anterior-lateral complex of the thalamus",
        "Medial geniculate complex",
        "Dorsal part of the lateral geniculate complex",
-       "Lateral posterior nucleus of the thalamus",
-       "Posterior complex of the thalamus",
+       "Nucleus of reuniens", "Paraventricular nucleus of the thalamus",
        "Anteroventral nucleus of thalamus", "Anteromedial nucleus",
-       "Anterodorsal nucleus", "Lateral dorsal nucleus of thalamus",
-       "Mediodorsal nucleus of thalamus",
-       "Submedial nucleus of the thalamus",
-       "Paraventricular nucleus of the thalamus", "Parataenial nucleus",
-       "Nucleus of reuniens", "Central medial nucleus of the thalamus",
-       "Paracentral nucleus", "Central lateral nucleus of the thalamus",
-       "Parafascicular nucleus", "Reticular nucleus of the thalamus",
+       "Parafascicular nucleus",
        "Ventral part of the lateral geniculate complex",
-       "Medial habenula", "Lateral habenula"]
+       "Medial habenula", "Central lateral nucleus of the thalamus",
+       "Lateral habenula", "Submedial nucleus of the thalamus",
+       "Parataenial nucleus", "Subparafascicular nucleus",
+       "Central medial nucleus of the thalamus", "Anterodorsal nucleus",
+       "Paracentral nucleus"]
 
 #first calculate counts across entire nc region
 counts_per_struct = []
@@ -323,24 +324,23 @@ for soi in nuclei:
     vol.append(np.array(counts).sum(axis = 0))
 vol = np.array(vol)        
 
-density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct[1:])]).T) #remove thalamus
+density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T) #remove thalamus
 
-#sort pcounts and density by nuclei size
-nuclei = np.array(nuclei[1:])[np.argsort(vol[1:])]
-pcounts = pcounts.T[np.argsort(vol[1:])].T
-density = density.T[np.argsort(vol[1:])].T
+#remove thalamus from density
+nuclei = nuclei[1:]
+density = density[:, 1:]
 #%%
 
 import seaborn as sns
 
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
 order = np.argsort(np.median(pcounts, axis = 0))[::-1]
-sois_sort = np.array(nuclei[1:])[order]
+sois_sort = np.array(nuclei)[order]
 
 #boxplots of percent counts
 plt.figure(figsize = (5,7))
 df = pd.DataFrame(pcounts)
-df.columns = nuclei[1:] 
+df.columns = nuclei
 g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={'facecolor':'None'}, order = sois_sort)
@@ -348,6 +348,26 @@ plt.xlabel("% of total thalamic neurons")
 plt.ylabel("Thalamic nuclei")
 plt.savefig(os.path.join(fig_dst, "thal_pcounts_boxplots.pdf"), bbox_inches = "tight")
 
+#%%
+import seaborn as sns
+
+#first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
+order = np.argsort(np.median(density, axis = 0))[::-1]
+sois_sort = np.array(nuclei)[order]
+
+#boxplots of percent counts
+plt.figure(figsize = (5,7))
+df = pd.DataFrame(density)
+df.columns = nuclei
+g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
+sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+            boxprops={'facecolor':'None'}, order = sois_sort)
+plt.xlabel("Cells / mm$^3$")
+plt.ylabel("Thalamic nuclei")
+plt.xlim([-10, 100])
+plt.tick_params(length=6)
+
+plt.savefig(os.path.join(fig_dst, "thal_density_boxplots.pdf"), bbox_inches = "tight")
 #%%
 
 plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
@@ -424,7 +444,7 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 ax.tick_params(length=6)
 
 ax = axes[1]
-show = np.flipud(np.fliplr(sort_pcounts).T)
+show = np.fliplr(sort_pcounts).T
 
 # SET COLORMAP
 vmin = 0
@@ -442,7 +462,7 @@ cb.ax.set_visible(True)
 # aesthetics
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
-ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
+ax.set_yticklabels(yaxis, fontsize="x-small")
 ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
 ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 
@@ -453,7 +473,7 @@ plt.savefig(os.path.join(fig_dst, "hsv_pcounts_thal.pdf"), bbox_inches = "tight"
 #%%
 
 #set colorbar features 
-maxdensity = 30
+maxdensity = 40
 yaxis = np.flipud(nuclei)
 
 #make density map like the h129 dataset
@@ -491,7 +511,7 @@ ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 ax.tick_params(length=6)
 
 ax = axes[1]
-show = np.flipud(np.fliplr(sort_density).T)
+show = np.fliplr(sort_density).T
 
 # SET COLORMAP
 vmin = 0
@@ -509,7 +529,8 @@ cb.ax.set_visible(True)
 # aesthetics
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
-ax.set_yticklabels(np.flipud(yaxis), fontsize="x-small")
+ax.set_yticklabels(yaxis, fontsize="small")
+
 ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
 ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
