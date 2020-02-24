@@ -44,8 +44,8 @@ data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set the appropritate variables
 brains = data["brains"]
-frac_of_inj_pool = data["frac_of_inj_pool"]
-primary_pool = data["primary_pool"]
+expr_all_as_frac_of_inj = data["expr_all_as_frac_of_inj"]
+# primary_pool = data["primary_pool"]
 ak_pool = data["ak_pool"]
 
 #change the lettering slightly 
@@ -108,8 +108,8 @@ density_l56 = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(cou
 pcounts = np.array([xx/sum(xx) for xx in counts_per_struct.T])*100
 
 #rename short sois
-sois = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
-                    "Temp", "Aud", "EcR", "Pr"]) 
+# sois = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
+#                     "Temp", "Aud", "EcR", "Pr"]) 
 
 #sort pcounts and density by nuclei size
 sois = np.array(sois)[np.argsort(vol)]
@@ -117,7 +117,7 @@ pcounts = pcounts.T[np.argsort(vol)].T
 density_l56 = density_l56.T[np.argsort(vol)].T
 #%%
 
-ArithmeticError(#%%)plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
+plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
 
 #make injection site heatmap only
 fig, ax = plt.subplots(figsize = (5,2))

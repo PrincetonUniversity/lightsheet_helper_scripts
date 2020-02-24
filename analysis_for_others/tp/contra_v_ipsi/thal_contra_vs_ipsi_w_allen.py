@@ -306,12 +306,12 @@ import seaborn as sns
 
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
 order = np.argsort(np.median(pcounts, axis = 0))[::-1]
-sois_sort = np.array(sois[1:])[order][:20]
+sois_sort = np.array(nuclei[1:])[order][:20]
 
 #boxplots of percent counts
 plt.figure(figsize = (5,7))
 df = pd.DataFrame(pcounts)
-df.columns = sois[1:] 
+df.columns = nuclei[1:] 
 g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={'facecolor':'None'}, order = sois_sort)
@@ -346,9 +346,9 @@ ax.set_xticks(np.arange(len(ak_pool))+.5)
 lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
-ax.set_yticks(np.arange(len(sois[1:]))+.5)
+ax.set_yticks(np.arange(len(nuclei[1:]))+.5)
 
-ax.set_yticklabels(["{}".format(bi) for bi in sois[1:]], fontsize="small")
+ax.set_yticklabels(["{}".format(bi) for bi in nuclei[1:]], fontsize="small")
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 ax.spines['bottom'].set_visible(False)

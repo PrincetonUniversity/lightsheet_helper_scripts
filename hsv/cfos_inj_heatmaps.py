@@ -13,6 +13,8 @@ from collections import Counter
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
 
 def find_site(im, thresh=10, filter_kernel=(5,5,5), num_sites_to_keep=1):
     """Find a connected area of high intensity, using a basic filter + threshold + connected components approach
@@ -117,14 +119,15 @@ if __name__ == "__main__":
         tick+=1
         if tick % 50000 == 0: print("   {}".format(tick))
         
-    my_cmap = eval("plt.cm.{}(np.arange(plt.cm.Greens.N))".format("Greens"))
+    limeg = mpl.colors.LinearSegmentedColormap.from_list("", ["white", "limegreen"]) #lime color
+    my_cmap = eval("{}(np.arange(plt.cm.Greens.N))".format("limeg"))
     my_cmap[:1,:4] = 0.0  
     my_cmap = mpl.colors.ListedColormap(my_cmap)
     my_cmap.set_under("w")
     plt.figure()
-    plt.imshow(np.max(atl, axis=0), cmap="gray_r")
+    plt.imshow(np.max(atl, axis=0), cmap="gray")
     plt.imshow(np.max(array, axis=0), alpha=0.90, cmap=my_cmap); plt.colorbar(); plt.axis("off")
     plt.tick_params(length=6)
 
-    plt.savefig("/home/wanglab/Desktop/cfos_inj_heatmap_cb_inverted_green.pdf", dpi = 300, transparent = True);
+    plt.savefig("/home/wanglab/Desktop/cfos_inj_heatmap_cb_green.pdf", dpi = 300, transparent = True);
     plt.close()

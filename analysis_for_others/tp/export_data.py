@@ -8,6 +8,29 @@ Created on Wed Jun  5 15:18:29 2019
 
 import os, pickle as pckl
 
+    
+#%%
+
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/"
+
+data = {}
+
+data["brains"] = brains
+data["frac_of_inj_pool"] = frac_of_inj_pool
+data["primary_pool"] = primary_pool
+data["ak_pool"] = ak_pool
+data["primary_lob_n"] = primary_lob_n
+data["frac_of_inj_pool_norm"] = frac_of_inj_pool_norm
+data["expr_all_as_frac_of_lob"] = expr_all_as_frac_of_lob
+data["expr_all_as_frac_of_inj"] = expr_all_as_frac_of_inj
+data["primary"] = primary
+data["lr_dist"] = lr_dist
+data["primary"] = primary
+
+#store data (serialize)
+with open(os.path.join(dst, "thal_hsv_maps_contra_allen.p"), "wb") as handle:
+    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
+    
 #%%
 
 
@@ -86,23 +109,7 @@ data["frac_of_inj_pool"] = frac_of_inj_pool
 #store data (serialize)
 with open(os.path.join(dst, "nc_model_data_contra_pma.p"), "wb") as handle:
     pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
-    
-#%%
 
-dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/"
-
-data = {}
-
-data["brains"] = brains
-data["frac_of_inj_pool"] = frac_of_inj_pool
-data["primary_pool"] = primary_pool
-data["ak_pool"] = ak_pool
-data["primary_lob_n"] = primary_lob_n
-
-
-#store data (serialize)
-with open(os.path.join(dst, "thal_hsv_maps_contra_allen.p"), "wb") as handle:
-    pckl.dump(data, handle, protocol=pckl.HIGHEST_PROTOCOL)
     
 #%%  
 

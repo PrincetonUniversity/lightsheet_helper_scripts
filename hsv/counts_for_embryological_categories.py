@@ -6,7 +6,7 @@ Created on Mon Feb 24 10:20:07 2020
 @author: wanglab
 """
 
-import os, pandas as pd, numpy as np, matplotlib.pyplot as plt, seaborn as sns, json, matplotlib as mpl
+import os, pandas as pd, numpy as np, matplotlib.pyplot as plt, seaborn as sns, json, matplotlib as mpl, pickle as pckl
 
 #get counts from gross embryological categories
 
@@ -39,6 +39,14 @@ def get_progeny(dic,parent_structure,progeny_list):
 #start with thalamus
 
 src = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
+
+data_pth = os.path.join(src, "data/thal_hsv_maps_contra_allen.p")
+data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
+
+primary_pool = data["primary_pool"]
+frac_of_inj_pool = data["frac_of_inj_pool"]
+ak_pool = data["ak_pool"]
+
 df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 cells_regions_pth_contra = os.path.join(src, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
 cells_regions_pth_ipsi = os.path.join(src, "data/thal_ipsi_counts_23_brains_80um_ventric_erosion.csv")
@@ -145,9 +153,10 @@ plt.close()
 plt.figure(figsize = (5,4))
 df = pd.DataFrame(density)
 df.columns = sois
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
-sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+g = sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={'facecolor':'None'})
+g.set_xscale("log")
 
 plt.xlabel("Neurons / mm$^3$")
 plt.ylabel("Region")
@@ -159,7 +168,8 @@ plt.close()
 
 #detailed structures
 sois = ["Cerebral cortex", #telencephalon
-        "Cerebral nuclei",
+        "Striatum",
+        "Pallidum",
         "Thalamus",
         "Hypothalamus",
         "Ventral tegmental area", #diencephalon
@@ -221,10 +231,11 @@ plt.close()
 plt.figure(figsize = (5,5))
 df = pd.DataFrame(density)
 df.columns = sois
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
-sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+g = sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={'facecolor':'None'})
 
+g.set_xlim([-10, 200])
 plt.xlabel("Neurons / mm$^3$")
 plt.ylabel("Region")
 plt.title("Thalamic timepoint")
