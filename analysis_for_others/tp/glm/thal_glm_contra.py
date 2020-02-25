@@ -14,7 +14,7 @@ import numpy as np, os, pandas as pd
 from skimage.external import tifffile
 
 #custom
-inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/injection_sites"
+src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
@@ -100,6 +100,16 @@ secondary = np.array([np.argsort(e)[-2] for e in expr_all_as_frac_of_inj])
 
 print(expr_all_as_frac_of_lob[15])
 
+#imports
+#path to pickle file
+# data_pth = os.path.join(src, "data/thal_model_data_contra_allen.p")
+# data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
+
+# #set the appropritate variables
+# brains = data["brains"]
+# expr_all_as_frac_of_inj = data["expr_all_as_frac_of_inj"]
+# ak_pool = data["ak_pool"]
+
 #%%
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
@@ -143,20 +153,26 @@ ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
-sois = ["Thalamus", 
-       "Ventral posteromedial nucleus of the thalamus",
-       "Ventral posterolateral nucleus of the thalamus",
-       "Ventral anterior-lateral complex of the thalamus",
-       "Anteroventral nucleus of thalamus", 
-       "Lateral dorsal nucleus of thalamus",
-       "Paraventricular nucleus of the thalamus", 
-       "Medial habenula",
-       "Lateral posterior nucleus of the thalamus",
-       "Posterior triangular thalamic nucleus",
+sois = ["Thalamus", "Ventral posteromedial nucleus of the thalamus",
+       "Reticular nucleus of the thalamus",
        "Mediodorsal nucleus of thalamus",
        "Posterior complex of the thalamus",
+       "Lateral posterior nucleus of the thalamus",
+       "Lateral dorsal nucleus of thalamus",
        "Ventral medial nucleus of the thalamus",
-       "Reticular nucleus of the thalamus"]
+       "Ventral posterolateral nucleus of the thalamus",
+       "Ventral anterior-lateral complex of the thalamus",
+       "Medial geniculate complex",
+       "Dorsal part of the lateral geniculate complex",
+       "Nucleus of reuniens", "Paraventricular nucleus of the thalamus",
+       "Anteroventral nucleus of thalamus", "Anteromedial nucleus",
+       "Parafascicular nucleus",
+       "Ventral part of the lateral geniculate complex",
+       "Medial habenula", "Central lateral nucleus of the thalamus",
+       "Lateral habenula", "Submedial nucleus of the thalamus",
+       "Parataenial nucleus", "Subparafascicular nucleus",
+       "Central medial nucleus of the thalamus", "Anterodorsal nucleus",
+       "Paracentral nucleus"]
 
 #first calculate counts across entire nc region
 counts_per_struct = []
@@ -171,8 +187,6 @@ for soi in sois:
 counts_per_struct = np.array(counts_per_struct)
 
 pcounts = np.nan_to_num(np.asarray([((brain[1:]/brain[0])*100) for brain in counts_per_struct.T]))    
-
-    
 #%%
 
 #pooled injections
@@ -192,7 +206,7 @@ primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.
 print(expr_all_as_frac_of_lob_pool.shape)
 
 #normalise inj
-expr_all_as_frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in expr_all_as_frac_of_inj_pool])
+frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in expr_all_as_frac_of_inj_pool])
 
 #change vars (consistent with NC)
 regions = np.asarray(sois)[1:]
@@ -200,46 +214,33 @@ regions = np.asarray(sois)[1:]
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
 mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
-fig = plt.figure(figsize=(5,5))
-ax = fig.add_axes([.4,.1,.5,.8])
+fig,ax = plt.subplots(figsize=(3,6))
 
 show = mean_counts.T #np.flip(mean_counts, axis = 1) # NOTE abs
 
 vmin = 0
 vmax = 8
-cmap = plt.cm.viridis
-cmap.set_over("gold")
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+
 #colormap
-# discrete colorbar details
-bounds = np.linspace(vmin,vmax,(vmax-vmin)/2 +1)
-#bounds = np.linspace(-2,5,8)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-#cb = pl.colorbar(pc, ax=ax, label="Weight / SE", shrink=0.5, aspect=10)
-#cb = pl.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%1i", shrink=0.5, aspect=10)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%0.1f", 
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, spacing="proportional", format="%0.1f", 
                   shrink=0.3, aspect=10)
-cb.set_label("Mean % of thalamic counts", fontsize="x-small", labelpad=3)
-cb.ax.tick_params(labelsize="x-small")
+cb.set_label("Mean % of thalamic neurons", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="small")
 
 cb.ax.set_visible(True)
-## exact value annotations
-#for ri,row in enumerate(show):
-#    for ci,col in enumerate(row):
-#        pass
-#        ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
-        
-#remaking labeles so it doesn"t look squished
+
 ax.set_xticks(np.arange(len(ak_pool))+.5)
 lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=5, ha="right")
 # yticks
 ax.set_yticks(np.arange(len(sois[1:]))+.5)
 
-ax.set_yticklabels(["{}".format(bi) for bi in sois[1:]], fontsize="small")
-dst = "/home/wanglab/Desktop"
-#plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
+ax.set_yticklabels(sois[1:], fontsize="small")
+plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
 
 #%%
 #glm

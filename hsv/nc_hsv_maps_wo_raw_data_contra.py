@@ -45,12 +45,14 @@ data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 #set the appropritate variables
 brains = data["brains"]
 expr_all_as_frac_of_inj = data["expr_all_as_frac_of_inj"]
-# primary_pool = data["primary_pool"]
 ak_pool = data["ak_pool"]
 
 #change the lettering slightly 
 ak_pool = np.array(['Lob. I-V', 'Lob. VI, VII', 'Lob. VIII-X',
        'Simplex', 'Crus I', 'Crus II', 'PM, CP'])
+frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
+                                for xx in expr_all_as_frac_of_inj])
+primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
 
 def get_progeny(dic,parent_structure,progeny_list):
     
@@ -232,7 +234,7 @@ plt.savefig(os.path.join(dst, "hsv_pcounts_nc_ylorbr_inj.pdf"), bbox_inches = "t
 
 #make density map like the h129 dataset 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5]})
 
 #set colorbar features 
@@ -286,8 +288,8 @@ cb.ax.set_visible(True)
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
-ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
-ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
+ax.set_xticks(np.arange(0, len(sort_brains))+.5)
+ax.set_xticklabels(sort_brains, rotation = "vertical")#np.arange(0, len(sort_brains), 5)+1)
 
 ax.tick_params(length=6)
 

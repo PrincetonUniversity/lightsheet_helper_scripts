@@ -7,14 +7,16 @@ Created on Fri Aug 16 17:24:45 2019
 """
 
 import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, json, itertools, statsmodels.api as sm
-from tools.utils.io import makedir
 from skimage.external import tifffile
+from patsy import dmatrices
 from scipy.ndimage.measurements import center_of_mass
-import matplotlib.colors
+import matplotlib.colors, statsmodels.formula.api as smf
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "red"]) #lime color makes cells pop
  
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
 
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 fig_dst = "/home/wanglab/Desktop"
@@ -23,22 +25,16 @@ ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 
 #collect 
-#brains should be in this order as they were saved in this order for inj analysis
-brains = ["20170410_tp_bl6_lob6a_ml_repro_01", "20160823_tp_bl6_cri_500r_02", "20180417_jg59_bl6_cri_03",
-"20170207_db_bl6_crii_1300r_02", "20160622_db_bl6_unk_01", "20161205_tp_bl6_sim_750r_03",
-"20180410_jg51_bl6_lob6b_04", "20170419_db_bl6_cri_rpv_53hr", "20170116_tp_bl6_lob6b_lpv_07",
-"20170411_db_bl6_crii_mid_53hr", "20160822_tp_bl6_crii_1500r_06", "20160920_tp_bl6_lob7_500r_03",
-"20170207_db_bl6_crii_rpv_01", "20161205_tp_bl6_sim_250r_02", "20161207_db_bl6_lob6a_500r_53hr",
-"20170130_tp_bl6_sim_rlat_05", "20170115_tp_bl6_lob6b_500r_05", "20170419_db_bl6_cri_mid_53hr",
-"20161207_db_bl6_lob6a_850r_53hr", "20160622_db_bl6_crii_52hr_01", "20161207_db_bl6_lob6a_50rml_53d5hr",
-"20161205_tp_bl6_lob45_1000r_01", "20160801_db_l7_cri_01_mid_64hr"]    
-
 data_pth = os.path.join(dst, "data/thal_hsv_maps_contra_allen.p")
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 primary_pool = data["primary_pool"]
 frac_of_inj_pool = data["frac_of_inj_pool"]
 ak_pool = data["ak_pool"]
+brains = np.array(data["brains"])
+
+primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
+frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in frac_of_inj_pool])
 
 #%%
 cells_regions_pth = os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
@@ -182,8 +178,6 @@ plt.tick_params(length=6)
 plt.savefig(os.path.join(fig_dst, "thal_density_boxplots.pdf"), bbox_inches = "tight")
 #%%
 
-plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
-
 #make injection site heatmap only
 fig, ax = plt.subplots(figsize = (5,2))
 
@@ -290,7 +284,7 @@ yaxis = np.flipud(nuclei)
 
 #make density map like the h129 dataset
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,7), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,7), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [1.5,5]})
 
 
@@ -343,8 +337,8 @@ cb.ax.set_visible(True)
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="small")
 
-ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
-ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
+ax.set_xticks(np.arange(0, len(sort_brains))+.5)
+ax.set_xticklabels(sort_brains, rotation = "vertical")#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
 plt.savefig(os.path.join(fig_dst, "hsv_density_thal.pdf"), bbox_inches = "tight")
@@ -410,7 +404,7 @@ for itera in range(1000):
         p_shuf.append([])
         fit_shuf.append([])
         inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
-    for count, region in zip(Y.T, nuclei[1:]):
+    for count, region in zip(Y.T, nuclei):
         try:
             inj_ = inj[~np.isnan(count)]
             count = count[~np.isnan(count)]
@@ -485,7 +479,7 @@ fit_shuf = np.array(fit_shuf)
 fig,ax = plt.subplots(figsize=(3,9))
 
 # map 1: weights
-show = mat
+show = np.flipud(mat)
 
 vmin = 0
 vmax = 4
@@ -509,7 +503,7 @@ if annotation:
                 ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
 
 # signif
-sig = pmat < .05#/np.size(pmat)
+sig = np.flipud(pmat) < .05#/np.size(pmat)
 p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
 null = (p_shuf_pos < .05).sum(axis=(1,2))
 nullmean = null.mean()
@@ -518,6 +512,207 @@ for y,x in np.argwhere(sig):
     pass
     ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment='center', verticalalignment='center',
             color = "k", transform=ax.transData)
+# ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
+
+# aesthetics
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+ax.set_xticklabels(ak_pool, rotation="vertical", fontsize=10)
+
+# yticks
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(np.flipud(nuclei), fontsize="small")
+ax.tick_params(length=6)
+
+plt.savefig(os.path.join(fig_dst, "thal_pcount_glm_contra_allen.pdf"), bbox_inches = "tight")
+
+#%%
+
+
+#hide high count brain for model?
+mask = [True]*23
+mask[6] = False
+# mask[21] = False
+
+X = frac_of_inj_pool_norm[mask]
+Y = density[mask]
+#fit poisson model to find mu
+#https://towardsdatascience.com/negative-binomial-regression-f99031bb25b4
+
+alpha = []
+for i,j in enumerate(Y.T):
+    
+    print(nuclei[i])
+    df = pd.DataFrame(X)
+    df.columns = ["l1_3", "l6_7", "l8_10", "sim", "cr1", "cr2", "pm_cp"]
+    df["Density"] = j
+    
+    msk = np.random.rand(len(df)) < 1
+    df_train = df[msk]
+    df_test = df[~msk]
+    print('\nTraining data set length='+str(len(df_train)))
+    print('\nTesting data set length='+str(len(df_test)))
+    
+    expr = """Density ~ l1_3 + l6_7 + l8_10 + sim + cr1 + cr2 + pm_cp"""
+    
+    y_train, X_train = dmatrices(expr, df_train, return_type='dataframe')
+    y_test, X_test = dmatrices(expr, df_test, return_type='dataframe')
+    
+    #fit
+    poisson_training_results = sm.GLM(y_train, X_train, family=sm.families.Poisson()).fit()
+    
+    #fit OLS to find alpha
+    df_train["LAMBDA"] = poisson_training_results.mu
+    
+    df_train['AUX_OLS_DEP'] = df_train.apply(lambda x: ((x['Density'] - x['LAMBDA'])**2 - x['Density']) / x['LAMBDA'], 
+                                              axis=1)
+    
+    ols_expr = """AUX_OLS_DEP ~ LAMBDA - 1"""
+    
+    #fit ols
+    aux_olsr_results = smf.ols(ols_expr, df_train).fit()
+    print(aux_olsr_results.params.LAMBDA, aux_olsr_results.pvalues.LAMBDA)
+    
+    alpha.append(aux_olsr_results.params.LAMBDA)
+    
+
+##  glm
+c_mat = []
+mat = []
+pmat = []
+mat_shuf = []
+p_shuf = []
+fit = []
+fit_shuf = []
+
+for itera in range(100):
+    if itera%100 == 0: print(itera)
+    if itera == 0:
+        shuffle = False
+        inj = X.copy()
+    else:
+        shuffle = True
+        mat_shuf.append([])
+        p_shuf.append([])
+        fit_shuf.append([])
+        inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
+        
+    i = 0
+    for count, region in zip(Y.T, nuclei):
+        try:
+            inj_ = inj[~np.isnan(count)]
+            count = count[~np.isnan(count)]
+    
+            # intercept:
+            inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
+            
+            # glm = sm.OLS(count, inj_)
+            glm = sm.GLM(count, inj_, family=sm.families.NegativeBinomial(alpha = alpha[i])) 
+            res = glm.fit()
+            
+            coef = res.params[:-1]
+            se = res.bse[:-1]
+            pvals = res.pvalues[:-1] 
+    
+            val = coef/se
+    
+            if not shuffle:
+                c_mat.append(coef)
+                mat.append(val)
+                pmat.append(pvals)
+                fit.append(res.fittedvalues)
+                
+            elif shuffle:
+                mat_shuf[-1].append(val)
+                p_shuf[-1].append(pvals)
+                fit_shuf[-1].append(res.fittedvalues)
+        except:
+            inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:] #sometimes the shuffle messes stuff up
+            inj_ = inj[~np.isnan(count)]
+            count = count[~np.isnan(count)]
+    
+            # intercept:
+            inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
+            
+            glm = sm.GLM(count, inj_, family=sm.families.NegativeBinomial(alpha = alpha[i])) 
+            res = glm.fit()
+            
+            coef = res.params[:-1]
+            se = res.bse[:-1]
+            pvals = res.pvalues[:-1] 
+    
+            val = coef/se
+    
+            if not shuffle:
+                mat.append(val)
+                pmat.append(pvals)
+            elif shuffle:
+                mat_shuf[-1].append(val)
+                p_shuf[-1].append(pvals)
+        # inspect residuals
+        """
+        if not shuffle:
+            plt.clf()
+            plt.scatter(res.fittedvalues, res.resid)
+            plt.hlines(0, res.fittedvalues.min(), res.fittedvalues.max())
+            plt.title(region)
+            plt.xlabel("Fit-vals")
+            plt.ylabel("Residuals")
+            plt.savefig(os.path.join(dst, "resid_inspection-{}.png").format(region))
+        """
+        i += 1
+        
+c_mat = np.array(c_mat)
+mat = np.array(mat) # region x inj
+mat_shuf = np.array(mat_shuf) # region x inj
+pmat = np.array(pmat) # region x inj
+p_shuf = np.array(p_shuf)
+fit = np.array(fit)
+fit_shuf = np.array(fit_shuf)
+
+#%%
+
+## display
+fig,ax = plt.subplots(figsize=(3,9))
+
+# map 1: weights
+show = np.flipud(mat) #can we use abs???
+
+# SET COLORMAP
+vmin = 0
+vmax = 3
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotation = False
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("Model weight / SE", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+
+# exact value annotations
+if annotation:
+    for ri,row in enumerate(show):
+        for ci,col in enumerate(row):
+            if col > 5:
+                
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
+            else:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
+
+# signif
+#only get positive significance??             
+pmat_pos = np.where(mat > 0, pmat, pmat*np.inf)
+sig = np.flipud(pmat) < .05#/np.size(pmat)
+p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*np.inf)
+null = (p_shuf_pos < .05).sum(axis=(1,2))
+nullmean = null.mean()
+nullstd = null.std()
+for y,x in np.argwhere(sig):
+    pass
+    ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment='center', verticalalignment='center',
+            color = "white", transform=ax.transData)
 ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
@@ -525,8 +720,8 @@ ax.set_xticks(np.arange(len(ak_pool))+.5)
 ax.set_xticklabels(ak_pool, rotation="vertical", fontsize=10)
 
 # yticks
-ax.set_yticks(np.arange(len(nuclei[1:]))+.5)
-ax.set_yticklabels(nuclei[1:], fontsize=10)
-ax.tick_params(length=6)
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(np.flipud(nuclei), fontsize=10)
 
-plt.savefig(os.path.join(fig_dst, "thal_glm_contra_allen.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "thal_density_glm_contra_allen.pdf"), bbox_inches = "tight")
+plt.close()
