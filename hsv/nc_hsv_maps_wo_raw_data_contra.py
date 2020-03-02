@@ -11,19 +11,19 @@ import matplotlib as mpl, os, pandas as pd, itertools, json, seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
-#TP
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
-TP = False
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
 
 #figure dest 
-dst = "/home/wanglab/Desktop"
-if TP:dst = "/Users/tjp7rr1/Downloads"
+dst = "/Users/zahra/Desktop"
 
 ###############################################################RUN AS IS#######################################################
 #bucket path for data
-src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
-df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+src = "/Volumes/wang/zahra/h129_contra_vs_ipsi/data"
+df_pth = "/Volumes/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = "/Volumes/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 cells_regions_pth = os.path.join(src, "nc_contra_counts_33_brains_pma.csv")
 
@@ -53,6 +53,7 @@ ak_pool = np.array(['Lob. I-V', 'Lob. VI, VII', 'Lob. VIII-X',
 frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
                                 for xx in expr_all_as_frac_of_inj])
 primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
+primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max(primary_pool)+1)])
 
 def get_progeny(dic,parent_structure,progeny_list):
     
@@ -73,8 +74,6 @@ def get_progeny(dic,parent_structure,progeny_list):
     return 
 
 #get progeny of all large structures
-ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
-
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
@@ -118,8 +117,6 @@ sois = np.array(sois)[np.argsort(vol)]
 pcounts = pcounts.T[np.argsort(vol)].T
 density_l56 = density_l56.T[np.argsort(vol)].T
 #%%
-
-plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
 
 #make injection site heatmap only
 fig, ax = plt.subplots(figsize = (5,2))
@@ -342,3 +339,38 @@ sns.despine(top=True, right=True, left=False, bottom=False)
 plt.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "hsv_nc_density_boxplots.pdf"), bbox_inches = "tight")
+
+#%%
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+
+#set min and max of colorbar
+vmin = 0
+vmax = 400
+
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(density_l56[np.where(primary_pool == idx)[0]], axis=0) 
+    for idx in np.unique(primary_pool)])
+
+fig, ax = plt.subplots(figsize=(3,6))
+
+show = mean_counts.T 
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.3, aspect=10)
+cb.set_label("Mean neurons / mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{} ({})".format(a, n) for a, n in zip(ak_pool, primary_lob_n)], 
+                    rotation = "vertical")
+
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois)
+
+plt.savefig(os.path.join(dst,"hsv_nc_mean_density.pdf"), bbox_inches = "tight")

@@ -6,15 +6,15 @@ Created on Wed Oct  2 16:14:37 2019
 @author: wanglab
 """
 
-import os, subprocess as sp, tifffile, numpy as np, matplotlib.pyplot as plt, matplotlib as mpl, pandas as pd
+import os, subprocess as sp, tifffile, numpy as np, sys, matplotlib.pyplot as plt, matplotlib as mpl, pandas as pd
 from collections import Counter
-from tools.registration.transform import count_structure_lister, transformed_pnts_to_allen_helper_func
-from tools.analysis.analyze_injection_inverse_transform import pool_injections_inversetransform
-from tools.utils.io import makedir, load_kwargs, listdirfull
+sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
 from tools.imageprocessing.orientation import fix_orientation
+
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
-
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
 
 def run_transformix(invol, outpth, transformfile):
     
@@ -139,13 +139,13 @@ if __name__ == "__main__":
         tick+=1
         if tick % 50000 == 0: print("   {}".format(tick))
         
-    my_cmap = eval("plt.cm.{}(np.arange(plt.cm.Oranges.N))".format("YlOrBr"))
+    my_cmap = eval("plt.cm.{}(np.arange(plt.cm.Oranges.N))".format("RdPu"))
     my_cmap[:1,:4] = 0.0  
     my_cmap = mpl.colors.ListedColormap(my_cmap)
     my_cmap.set_under("w")
     plt.figure()
-    plt.imshow(np.max(atl, axis=0), cmap="gray_r")
+    plt.imshow(np.max(atl, axis=0), cmap="gray")
     plt.imshow(np.max(array, axis=0), alpha=0.90, cmap=my_cmap); plt.colorbar(); plt.axis("off")
     
-    plt.savefig(os.path.join("/home/wanglab/Desktop/prv_inj_heatmap_cb_inverted_ylorbr.pdf"), dpi = 300, transparent = True);
+    plt.savefig(os.path.join("/jukebox/wang/zahra/prv_inj_heatmap_cb_rdpu.pdf"), dpi = 300, transparent = True);
     plt.close()

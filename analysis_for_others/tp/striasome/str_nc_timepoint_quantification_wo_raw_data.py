@@ -15,7 +15,7 @@ mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['ps.fonttype'] = 42
 
 #import data
-pth = "/jukebox/wang/zahra/modeling/h129/striatum/count_and_density_data.p"
+pth = "/Volumes/wang/zahra/modeling/h129/striatum/count_and_density_data.p"
 data = pckl.load(open(pth, "rb"), encoding = "latin1")
 
 #set dst 
@@ -108,7 +108,7 @@ g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort
 sns.boxplot(data = df, orient = "h", showfliers=False,showcaps=False, boxprops={'facecolor':'None'}, order = sois_sort_density)
 plt.xlabel("Density (cells/$mm^3$)")
 plt.ylabel("Striatum structures")
-plt.savefig(os.path.join(dst, "str_density_boxplots.pdf"), bbox_inche   s = "tight")
+plt.savefig(os.path.join(dst, "str_density_boxplots.pdf"), bbox_inches = "tight")
 
 #boxplots of percent counts
 plt.figure()

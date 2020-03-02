@@ -7,9 +7,7 @@ Created on Fri Aug 16 17:24:45 2019
 """
 
 import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, json, itertools, statsmodels.api as sm
-from skimage.external import tifffile
 from patsy import dmatrices
-from scipy.ndimage.measurements import center_of_mass
 import matplotlib.colors, statsmodels.formula.api as smf
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "red"]) #lime color makes cells pop
  
@@ -18,11 +16,12 @@ mpl.rcParams["ps.fonttype"] = 42
 mpl.rcParams["xtick.major.size"] = 6
 mpl.rcParams["ytick.major.size"] = 6
 
-dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
-fig_dst = "/home/wanglab/Desktop"
+dst = "/Volumes/wang/zahra/h129_contra_vs_ipsi/"
+fig_dst = "/Users/zahra/Desktop"
 
 ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
-df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+df_pth = "/Volumes/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = "/Volumes/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 #collect 
 data_pth = os.path.join(dst, "data/thal_hsv_maps_contra_allen.p")
@@ -77,8 +76,6 @@ def get_progeny(dic,parent_structure,progeny_list):
     return 
 
 #get progeny of all large structures
-ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
-
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
@@ -379,9 +376,46 @@ ax.tick_params(length=6)
 plt.savefig(os.path.join(fig_dst,"thal_mean_count.pdf"), bbox_inches = "tight")
 
 #%%
+
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(density[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+
+fig,ax = plt.subplots(figsize=(3,9))
+
+show = mean_counts.T[::-1]
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
+
+#set min and max of colorbar
+vmin = 0
+vmax = 40
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.3, aspect=10)
+cb.set_label("Mean neurons / mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+
+cb.ax.set_visible(True)
+        
+#remaking labeles so it doesn"t look squished
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(nuclei[::-1], fontsize="small")
+
+plt.savefig(os.path.join(fig_dst,"thal_mean_density.pdf"), bbox_inches = "tight")
+
+#%%
 #glm
 X = frac_of_inj_pool_norm
 Y = pcounts
+# Y = np.nan_to_num(np.array([(d/sum(d))*100 for d in density]))
 
 c_mat = []
 mat = []
@@ -485,6 +519,11 @@ vmin = 0
 vmax = 4
 whitetext = 4
 annotation = False
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
 
 #colormap
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)

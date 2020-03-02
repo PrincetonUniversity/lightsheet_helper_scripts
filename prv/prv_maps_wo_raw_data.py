@@ -10,19 +10,18 @@ import matplotlib as mpl, os, pandas as pd, itertools, json, seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
-#TP
-plt.rcParams["axes.grid"] = False
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
-TP = False
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
 
 #figure dest 
 dst = "/home/wanglab/Desktop"
-if TP:dst = "/Users/tjp7rr1/Downloads"
 
 #bucket path for data
 src = "/jukebox/wang/zahra/tracing_projects/prv"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 cells_regions_pth = os.path.join(src, "for_tp/nc_contra_counts_25_brains_pma.csv")
 
@@ -46,10 +45,11 @@ brains = data["brains"]
 frac_of_inj_pool = data["frac_of_inj_pool"]
 primary_pool = data["primary_pool"]
 ak_pool = data["ak_pool"]
+primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max(primary_pool)+1)])
 
 #change the lettering slightly 
-ak_pool = np.array(['Lob. I-V', 'Lob. VI, VII', 'Lob. VIII-X',
-       'Simplex', 'Crus I', 'Crus II', 'PM, CP'])
+ak_pool = np.array(["Lob. I-V", "Lob. VI, VII", "Lob. VIII-X",
+       "Simplex", "Crus I", "Crus II", "PM, CP"])
 #################################################SEPARATES INTO LAYER 5/6 CELLS, ONLY NEED TO RUN ONCE###########################################
 def get_progeny(dic,parent_structure,progeny_list):
     """ 
@@ -81,16 +81,27 @@ def get_progeny(dic,parent_structure,progeny_list):
     return 
 
 #get progeny of all large structures
-ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
-
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
 #get counts for all of neocortex
-sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
+sois = ["Frontal pole, cerebral cortex",
+ "Infralimbic area",
+ "Perirhinal area",
+ "Gustatory areas",
+ "Ectorhinal area",
+ "Visceral area",
+ "Prelimbic area",
+ "Posterior parietal association areas",
+ "Temporal association areas",
+ "Orbital area",
+ "Anterior cingulate area",
+ "Auditory areas",
+ "Agranular insular area",
+ "Retrosplenial area",
+ "Visual areas",
+ "Somatomotor areas",
+ "Somatosensory areas"]
 
 #first calculate counts across entire nc region
 counts_per_struct = []
@@ -144,21 +155,7 @@ layer56_vol = np.array(layer56_vol)
 
 density_l56 = np.array([xx/(layer56_vol[i]*(scale_factor**3)) for i, xx in enumerate(layer56)]).T
 
-
-#rename short sois
-sois = np.array(["IL", "PrL", "AC", "F Pole", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
-                    "Temp", "Aud", "EcR", "Pr"]) 
-
-#sort pcounts and density by nuclei size
-sois = np.array(sois)[np.argsort(layer56_vol)]
-pcounts = pcounts.T[np.argsort(layer56_vol)].T
-density_l56 = density_l56.T[np.argsort(layer56_vol)].T
-
 #%%
-
-#make injection site heatmap only
-
-plt.rcParams['xtick.top'] = plt.rcParams['xtick.labeltop'] = True
 
 #make injection site heatmap only
 fig, ax = plt.subplots(figsize = (5,2))
@@ -171,7 +168,7 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 #inj fractions
 show = np.fliplr(sort_inj).T
 
-cmap = plt.cm.Oranges 
+cmap = plt.cm.RdPu 
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
@@ -189,10 +186,10 @@ cb.ax.set_visible(True) #TP
 ax.set_yticks(np.arange(len(ak_pool))+.5)#np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 lbls = np.asarray(sort_brains)
-ax.set_xticklabels(np.array([ 1,  5, 10, 15, 20, 25, 30]))
+ax.set_xticklabels(np.array([ 1,  5, 10, 15, 20, 25]))
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "prv_inj_orange_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_inj_nc.pdf"), bbox_inches = "tight")
 
 #%%
 #make % counts map like the h129 dataset (nc only for now)
@@ -219,9 +216,9 @@ ax = axes[0]
 show = np.fliplr(sort_inj).T
 
 # SET COLORMAP DETAILS HERE
-cmap = plt.cm.Reds 
-cmap.set_over("darkred")
+cmap = plt.cm.RdPu 
 cmap.set_under("white")
+cmap.set_over(cmap(1.0))
 vmin = 0.05
 vmax = 0.8
 
@@ -273,7 +270,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (3.8,6), sharex = True,
                          "height_ratios": [2,5]})
 
 #set colorbar features 
-maxdensity = 400
+maxdensity = 300
 whitetext = 7
 annotation_size = "small" #for the number annotations inside the heatmap
 
@@ -289,11 +286,11 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 ax = axes[0]
 show = np.fliplr(sort_inj).T
 
-cmap = plt.cm.Reds 
-cmap.set_over("darkred")
+cmap = plt.cm.RdPu 
+cmap.set_under("white")
+cmap.set_over(cmap(1.0))
 vmin = 0.05
 vmax = 0.8
-cmap.set_under("white")
 
 #colormap
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
@@ -371,7 +368,7 @@ df.columns = sois
 g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={"facecolor":"None"}, order = sois_sort)
-plt.xlabel("Cells / mm$^3$")
+plt.xlabel("Neurons / mm$^3$")
 plt.ylabel("Region")
 
 #hide the right and top spines
@@ -379,3 +376,41 @@ sns.despine(top=True, right=True, left=False, bottom=False)
 plt.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "prv_nc_density_boxplots.pdf"), bbox_inches = "tight")
+
+#%%
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+
+#set min and max of colorbar
+vmin = 0
+vmax = 150
+
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(density_l56[np.where(primary_pool == idx)[0]], axis=0) 
+    for idx in np.unique(primary_pool)])
+
+fig, ax = plt.subplots(figsize=(2.8,6))
+
+show = mean_counts.T 
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.3, aspect=10)
+cb.set_label("Mean neurons / mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+
+#since we don't have a crus I primary injection site :(
+ak_pool = np.array(["Lob. I-V", "Lob. VI, VII", "Lob. VIII-X", "Simplex",
+       "Crus II", "PM, CP"])
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{} ({})".format(a, n) for a, n in zip(ak_pool, primary_lob_n[primary_lob_n > 0])], 
+                    rotation = "vertical")
+
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois)
+
+plt.savefig(os.path.join(dst,"prv_nc_mean_density.pdf"), bbox_inches = "tight")

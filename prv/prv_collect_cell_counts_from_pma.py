@@ -156,11 +156,11 @@ sns.despine(right=True, top=True)
 plt.savefig(os.path.join(fig_dst, "inj_p_covered_hem.pdf"), dpi = 300, bbox_inches = "tight")
 
 #%%
-#set variables
-lr_brains = list(lr_dist.keys())
+# #set variables
+# lr_brains = list(lr_dist.keys())
 
-trnsfrm_dst = os.path.join(dst, "prv_transformed_cells")
-id_table = pd.read_excel(df_pth)
+# trnsfrm_dst = os.path.join(dst, "prv_transformed_cells")
+# id_table = pd.read_excel(df_pth)
 
 #post_transformed = [os.path.join(trnsfrm_dst, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
 #transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
@@ -293,10 +293,23 @@ with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
 #get counts for all of neocortex
-sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Frontal pole, cerebral cortex", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
+sois = ["Somatosensory areas",
+ "Somatomotor areas",
+ "Visual areas",
+ "Retrosplenial area",
+ "Agranular insular area",
+ "Auditory areas",
+ "Anterior cingulate area",
+ "Orbital area",
+ "Temporal association areas",
+ "Posterior parietal association areas",
+ "Prelimbic area",
+ "Visceral area",
+ "Ectorhinal area",
+ "Gustatory areas",
+ "Perirhinal area",
+ "Infralimbic area",
+ "Frontal pole, cerebral cortex"]
 
 #first calculate counts across entire nc region
 counts_per_struct = []
@@ -468,7 +481,7 @@ lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
 
 
-plt.savefig(os.path.join(fig_dst, "pcounts_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_pcounts_nc.pdf"), bbox_inches = "tight")
 
 #%%
 
@@ -554,7 +567,7 @@ ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
 
-plt.savefig(os.path.join(fig_dst, "density_nc.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_density_nc.pdf"), bbox_inches = "tight")
 
 #%%
 #glm?

@@ -12,6 +12,8 @@ import numpy as np, pickle as pckl
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
 
 #imports
 #path to pickle file
