@@ -136,24 +136,24 @@ vol = np.array(vol)
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T)
 
 #boxplots of counts
-plt.figure(figsize = (5,4))
-df = pd.DataFrame(counts_per_struct.T)
-df.columns = sois
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
-sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
-            boxprops={'facecolor':'None'})
+# plt.figure(figsize = (5,4))
+# df = pd.DataFrame(counts_per_struct.T)
+# df.columns = sois
+# g = sns.stripplot(data = df,  color = "#99C7E0", orient = "h")
+# sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+#             boxprops={'facecolor':'None'})
 
-plt.xlabel("Neurons")
-plt.ylabel("Region")
-plt.title("Thalamic timepoint")
-plt.savefig(os.path.join(dst, "gross_region_counts_boxplots_thal_tp.pdf"), bbox_inches = "tight")
-plt.close()
+# plt.xlabel("Neurons")
+# plt.ylabel("Region")
+# plt.title("Thalamic timepoint")
+# plt.savefig(os.path.join(dst, "gross_region_counts_boxplots_thal_tp.pdf"), bbox_inches = "tight")
+# plt.close()
 
 #boxplots of density
 plt.figure(figsize = (5,4))
 df = pd.DataFrame(density)
 df.columns = sois
-sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+sns.stripplot(data = df,  color = "#99C7E0", orient = "h")
 g = sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={'facecolor':'None'})
 g.set_xscale("log")
@@ -213,33 +213,48 @@ vol = np.array(vol)
 
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T)
 
-#boxplots of counts
-plt.figure(figsize = (5,5))
-df = pd.DataFrame(counts_per_struct.T)
-df.columns = sois
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
-sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
-            boxprops={'facecolor':'None'})
+# #boxplots of counts
+# plt.figure(figsize = (5,5))
+# df = pd.DataFrame(counts_per_struct.T)
+# df.columns = sois
+# g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+# sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+#             boxprops={'facecolor':'None'})
 
-plt.xlabel("Neurons")
-plt.ylabel("Region")
-plt.title("Thalamic timepoint")
-plt.savefig(os.path.join(dst, "detailed_region_counts_boxplots_thal_tp.pdf"), bbox_inches = "tight")
-plt.close()
+# # g.set(xscale = "log")
+# plt.xlabel("Neurons")
+# plt.ylabel("Region")
+# plt.title("Thalamic timepoint")
+# plt.savefig(os.path.join(dst, "detailed_region_counts_boxplots_thal_tp.pdf"), bbox_inches = "tight")
+# plt.close()
+
+# #boxplots of counts
+# plt.figure(figsize = (5,5))
+# g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+# sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+#             boxprops={'facecolor':'None'})
+
+# g.set_xlim([-100, 2500])
+# # g.set(xscale = "log")
+# plt.xlabel("Neurons")
+# plt.ylabel("Region")
+# plt.title("Thalamic timepoint")
+# plt.savefig(os.path.join(dst, "detailed_region_counts_boxplots_thal_tp_zoom.pdf"), bbox_inches = "tight")
+# plt.close()
 
 #boxplots of density
 plt.figure(figsize = (5,5))
 df = pd.DataFrame(density)
 df.columns = sois
-sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+sns.stripplot(data = df,  color = "#99C7E0", orient = "h")
 g = sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={'facecolor':'None'})
 
-g.set_xlim([-10, 200])
+g.set_xlim([-10, 220])
 plt.xlabel("Neurons / mm$^3$")
 plt.ylabel("Region")
 plt.title("Thalamic timepoint")
-plt.savefig(os.path.join(dst, "detailed_region_density_boxplots_thal_tp.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "detailed_region_density_boxplots_thal_tp_zoom.pdf"), bbox_inches = "tight")
 plt.close()
 #%%
 
@@ -310,29 +325,29 @@ vol = np.array(vol)
 
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T) #remove thalamus
 
-#boxplots of counts
-plt.figure(figsize = (5,4))
-df = pd.DataFrame(counts_per_struct.T)
-df.columns = sois
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
-sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
-            boxprops={'facecolor':'None'})
+# #boxplots of counts
+# plt.figure(figsize = (5,4))
+# df = pd.DataFrame(counts_per_struct.T)
+# df.columns = sois
+# g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+# sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+#             boxprops={'facecolor':'None'})
 
-plt.xlabel("Neurons")
-plt.ylabel("Region")
-plt.title("Neocortical timepoint")
-plt.savefig(os.path.join(dst, "gross_region_counts_boxplots_nc_tp.pdf"), bbox_inches = "tight")
-plt.close()
+# plt.xlabel("Neurons")
+# plt.ylabel("Region")
+# plt.title("Neocortical timepoint")
+# plt.savefig(os.path.join(dst, "gross_region_counts_boxplots_nc_tp.pdf"), bbox_inches = "tight")
+# plt.close()
 
 #boxplots of density
 plt.figure(figsize = (5,4))
 df = pd.DataFrame(density)
 df.columns = sois
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+g = sns.stripplot(data = df,  color = "#99C7E0", orient = "h")
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={'facecolor':'None'})
 
-plt.xlabel("Neurons / mm$^3$")
+plt.xlabel("Neurons/ mm$^3$")
 plt.ylabel("Region")
 plt.title("Neocortical timepoint")
 plt.savefig(os.path.join(dst, "gross_region_density_boxplots_nc_tp.pdf"), bbox_inches = "tight")
@@ -385,29 +400,29 @@ vol = np.array(vol)
 
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T)
 
-#boxplots of counts
-plt.figure(figsize = (5,5))
-df = pd.DataFrame(counts_per_struct.T)
-df.columns = sois
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
-sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
-            boxprops={'facecolor':'None'})
+# #boxplots of counts
+# plt.figure(figsize = (5,5))
+# df = pd.DataFrame(counts_per_struct.T)
+# df.columns = sois
+# g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+# sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+#             boxprops={'facecolor':'None'})
 
-plt.xlabel("Neurons")
-plt.ylabel("Region")
-plt.title("Neocortical timepoint")
-plt.savefig(os.path.join(dst, "detailed_region_counts_boxplots_nc_tp.pdf"), bbox_inches = "tight")
-plt.close()
+# plt.xlabel("Neurons")
+# plt.ylabel("Region")
+# plt.title("Neocortical timepoint")
+# plt.savefig(os.path.join(dst, "detailed_region_counts_boxplots_nc_tp.pdf"), bbox_inches = "tight")
+# plt.close()
 
 #boxplots of density
 plt.figure(figsize = (5,5))
 df = pd.DataFrame(density)
 df.columns = sois
-g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+g = sns.stripplot(data = df,  color = "#99C7E0", orient = "h")
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={'facecolor':'None'})
 
-plt.xlabel("Neurons / mm$^3$")
+plt.xlabel("Neurons/ mm$^3$")
 plt.ylabel("Region")
 plt.title("Neocortical timepoint")
 plt.savefig(os.path.join(dst, "detailed_region_density_boxplots_nc_tp.pdf"), bbox_inches = "tight")
