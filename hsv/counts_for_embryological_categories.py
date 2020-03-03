@@ -8,11 +8,13 @@ Created on Mon Feb 24 10:20:07 2020
 
 import os, pandas as pd, numpy as np, matplotlib.pyplot as plt, seaborn as sns, json 
 import matplotlib as mpl, pickle as pckl, itertools
+import matplotlib.colors as colors
 
-src = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
-df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
-dst = "/home/wanglab/Desktop"
-ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+
+src = "/Volumes/wang/zahra/h129_contra_vs_ipsi"
+df_pth = "/Volumes/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+dst = "/Users/zahra/Desktop"
+ontology_file = "/Volumes/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 #get counts from gross embryological categories
 mpl.rcParams["pdf.fonttype"] = 42
@@ -37,7 +39,7 @@ def get_progeny(dic,parent_structure,progeny_list):
     for child in children:
         child_name = child.get('name')
         get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
-    
+
     return 
 
 #%%
@@ -181,7 +183,6 @@ plt.ylabel("Region")
 plt.title("Thalamic timepoint")
 plt.savefig(os.path.join(dst, "gross_region_density_boxplots_thal_tp.pdf"), bbox_inches = "tight")
 plt.close()
-
 #%%
 
 #heatmaps with injection site
@@ -251,7 +252,6 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 3)+1)
 plt.savefig(os.path.join(dst, "gross_region_count_heatmap_thal_tp.pdf"), bbox_inches = "tight")
 plt.close()
 
-#%%
 #set colorbar features 
 maxpcount = 50
 yaxis = np.flipud(sois)
@@ -317,16 +317,92 @@ plt.savefig(os.path.join(dst, "gross_region_density_heatmap_thal_tp.pdf"), bbox_
 plt.close()
 
 #%%
+primary_lob_n = np.asarray([np.where(primary == i)[0].shape[0] 
+                            for i in np.unique(primary)])
+
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(counts_per_struct.T[np.where(primary == idx)[0]], axis=0) 
+                            for idx in np.unique(primary)])
+
+fig,ax = plt.subplots(figsize=(3,2))
+
+show = mean_counts.T[::-1]
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
+
+#set min and max of colorbar
+vmin = 0
+vmax = 2000
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, 
+               norm=colors.PowerNorm(gamma=1))
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8, aspect=10)
+cb.set_label("Mean neurons", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+#only those that have injections
+lbls = ak_pool[np.unique(primary)]
+ax.set_xticks(np.arange(len(lbls))+.5)
+ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois[::-1], fontsize="small")
+
+plt.savefig(os.path.join(dst,"gross_region_mean_counts_heatmap_thal_tp.pdf"), 
+            bbox_inches = "tight")
+  
+#%%  
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(density[np.where(primary == idx)[0]], axis=0) 
+                            for idx in np.unique(primary)])
+
+fig,ax = plt.subplots(figsize=(3,2))
+
+show = mean_counts.T[::-1]
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
+
+#set min and max of colorbar
+vmin = 0
+vmax = 60
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, 
+               norm=colors.PowerNorm(gamma=0.5))
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=1, aspect=10)
+cb.set_label("Mean neurons/ mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+#only those that have injections
+lbls = ak_pool[np.unique(primary)]
+ax.set_xticks(np.arange(len(lbls))+.5)
+ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois[::-1], fontsize="small")
+
+plt.savefig(os.path.join(dst,"gross_region_mean_density_heatmap_thal_tp.pdf"), 
+            bbox_inches = "tight")
+
+#%%
 
 #detailed structures
 sois = ["Cerebral cortex", #telencephalon
-        "Striatum",
-        "Pallidum",
+        "Cerebral nuclei",
+        "Nucleus accumbens",
         "Thalamus",
         "Hypothalamus",
         "Ventral tegmental area", #diencephalon
-        "Substantia nigra, compact part",
-        "Substantia nigra, reticular part",
+        "Substantia nigra",
         "Red nucleus", #mesencephalon
         "Pontine gray", #metencephalon
         "Pontine reticular nucleus",
@@ -338,14 +414,17 @@ for soi in sois:
     progeny = []; counts = []
     get_progeny(ontology_dict, soi, progeny)
     #add counts from main structure
+    #making fake progeny for SN
+    if soi == "Substantia nigra":
+        progeny = ["Substantia nigra, compact part",
+                        "Substantia nigra, reticular part"]
     try:
         counts.append([cells_regions.loc[cells_regions.Structure == soi, brain].values[0] for brain in brains])
     except:
         print(soi)
     for progen in progeny:
         counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
-    counts_per_struct.append(np.array(counts).sum(axis = 0))
-    
+    counts_per_struct.append(np.array(counts).sum(axis = 0))  
 counts_per_struct = np.array(counts_per_struct)
 
 #voxels
@@ -353,6 +432,10 @@ vol = []
 for soi in sois:
     progeny = []; counts = []; iids = []
     get_progeny(ontology_dict, soi, progeny)
+    #making fake progeny for SN
+    if soi == "Substantia nigra":
+        progeny = ["Substantia nigra, compact part",
+                        "Substantia nigra, reticular part"]
     #add counts from main structure
     try:
         counts.append(ann_df.loc[ann_df.name == soi, "voxels_in_structure"].values[0])
@@ -362,7 +445,6 @@ for soi in sois:
         counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
     vol.append(np.array(counts).sum(axis = 0))
 vol = np.array(vol)        
-
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T)
 
 #boxplots of counts
@@ -398,9 +480,8 @@ plt.title("Thalamic timepoint")
 plt.savefig(os.path.join(dst, "detailed_region_density_boxplots_thal_tp.pdf"), bbox_inches = "tight")
 plt.close()
 
-#%%
+
 #heatmaps with injection site
-import matplotlib.colors as colors
 #set colorbar features 
 maxpcount = 1000
 yaxis = np.flipud(sois)
@@ -466,7 +547,7 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 3)+1)
 plt.savefig(os.path.join(dst, "detailed_region_count_heatmap_thal_tp.pdf"), bbox_inches = "tight")
 plt.close()
 
-#%%
+
 #set colorbar features 
 maxpcount = 50
 yaxis = np.flipud(sois)
@@ -530,10 +611,85 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 3)+1)
 
 plt.savefig(os.path.join(dst, "detailed_region_density_heatmap_thal_tp.pdf"), bbox_inches = "tight")
 plt.close()
+
+#%%
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(counts_per_struct.T[np.where(primary == idx)[0]], axis=0) 
+                            for idx in np.unique(primary)])
+
+fig,ax = plt.subplots(figsize=(3,5))
+
+show = mean_counts.T[::-1]
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
+
+#set min and max of colorbar
+vmin = 0
+vmax = 500
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, 
+               norm=colors.PowerNorm(gamma=0.5))
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.3, aspect=10)
+cb.set_label("Mean neurons", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+#only those that have injections
+lbls = ak_pool[np.unique(primary)]
+ax.set_xticks(np.arange(len(lbls))+.5)
+ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois[::-1], fontsize="small")
+
+plt.savefig(os.path.join(dst,"detailed_region_mean_counts_heatmap_thal_tp.pdf"), 
+            bbox_inches = "tight")
+plt.close()
+#%%  
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(density[np.where(primary == idx)[0]], axis=0) 
+                            for idx in np.unique(primary)])
+
+fig,ax = plt.subplots(figsize=(3,5))
+
+show = mean_counts.T[::-1]
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
+
+#set min and max of colorbar
+vmin = 0
+vmax = 80
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, 
+               norm=colors.PowerNorm(gamma=0.5))
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.5, aspect=10)
+cb.set_label("Mean neurons/ mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+#only those that have injections
+lbls = ak_pool[np.unique(primary)]
+ax.set_xticks(np.arange(len(lbls))+.5)
+ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois[::-1], fontsize="small")
+
+plt.savefig(os.path.join(dst,"detailed_region_mean_density_heatmap_thal_tp.pdf"), 
+            bbox_inches = "tight")
+plt.close()
 #%%
 
 #neocortex
-df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx" #this is pma
+df_pth = "/Volumes/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx" #this is pma
 cells_regions_pth_contra = os.path.join(src, "data/nc_contra_counts_33_brains_pma.csv")
 cells_regions_pth_ipsi = os.path.join(src, "data/nc_ipsi_counts_33_brains_pma.csv")
 
@@ -636,8 +792,6 @@ plt.title("Neocortical timepoint")
 plt.savefig(os.path.join(dst, "gross_region_density_boxplots_nc_tp.pdf"), bbox_inches = "tight")
 plt.close()
 
-#%%
-
 #heatmaps with injection site
 
 #set colorbar features 
@@ -704,7 +858,6 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 plt.savefig(os.path.join(dst, "gross_region_count_heatmap_nc_tp.pdf"), bbox_inches = "tight")
 plt.close()
 
-#%%
 #set colorbar features 
 maxpcount = 700
 yaxis = np.flipud(sois)
@@ -768,15 +921,92 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 3)+1)
 
 plt.savefig(os.path.join(dst, "gross_region_density_heatmap_nc_tp.pdf"), bbox_inches = "tight")
 plt.close()
+
+#%%
+
+primary_lob_n = np.asarray([np.where(primary == i)[0].shape[0] 
+                            for i in np.unique(primary)])
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(counts_per_struct.T[np.where(primary == idx)[0]], axis=0) 
+                            for idx in np.unique(primary)])
+
+fig,ax = plt.subplots(figsize=(3,2))
+
+show = mean_counts.T[::-1]
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
+
+#set min and max of colorbar
+vmin = 0
+vmax = 30000
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.8, aspect=10)
+cb.set_label("Mean neurons", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+#only those that have injections
+lbls = ak_pool[np.unique(primary)]
+ax.set_xticks(np.arange(len(lbls))+.5)
+ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois[::-1], fontsize="small")
+
+plt.savefig(os.path.join(dst,"gross_region_mean_counts_heatmap_nc_tp.pdf"), 
+            bbox_inches = "tight")
+
+#%%  
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(density[np.where(primary == idx)[0]], axis=0) 
+                            for idx in np.unique(primary)])
+
+fig,ax = plt.subplots(figsize=(3,2))
+
+show = mean_counts.T[::-1]
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
+
+#set min and max of colorbar
+vmin = 0
+vmax = 600
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, 
+               norm=colors.PowerNorm(gamma=1))
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.5, aspect=10)
+cb.set_label("Mean neurons/ mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+#only those that have injections
+lbls = ak_pool[np.unique(primary)]
+ax.set_xticks(np.arange(len(lbls))+.5)
+ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois[::-1], fontsize="small")
+
+plt.savefig(os.path.join(dst,"gross_region_mean_density_heatmap_nc_tp.pdf"), 
+            bbox_inches = "tight")
+
 #%%
 #detailed structures
 sois = ["Cerebral cortex", #telencephalon
         "Cerebral nuclei",
+        "Nucleus accumbens",
         "Thalamus",
         "Hypothalamus",
         "Ventral tegmental area", #diencephalon
-        "Substantia nigra, compact part",
-        "Substantia nigra, reticular part",
+        "Substantia nigra",
         "Red nucleus", #mesencephalon
         "Pontine gray", #metencephalon
         "Pontine reticular nucleus",
@@ -787,6 +1017,10 @@ counts_per_struct = []
 for soi in sois:
     progeny = []; counts = []
     get_progeny(ontology_dict, soi, progeny)
+    #making fake progeny for SN
+    if soi == "Substantia nigra":
+        progeny = ["Substantia nigra, compact part",
+                        "Substantia nigra, reticular part"]
     #add counts from main structure
     try:
         counts.append([cells_regions.loc[cells_regions.Structure == soi, brain].values[0] for brain in brains])
@@ -803,6 +1037,10 @@ vol = []
 for soi in sois:
     progeny = []; counts = []; iids = []
     get_progeny(ontology_dict, soi, progeny)
+    #making fake progeny for SN
+    if soi == "Substantia nigra":
+        progeny = ["Substantia nigra, compact part",
+                        "Substantia nigra, reticular part"]
     #add counts from main structure
     try:
         counts.append(ann_df.loc[ann_df.name == soi, "voxels_in_structure"].values[0])
@@ -847,9 +1085,8 @@ plt.title("Neocortical timepoint")
 plt.savefig(os.path.join(dst, "detailed_region_density_boxplots_nc_tp.pdf"), bbox_inches = "tight")
 plt.close()
 
-#%%
 #heatmaps with injection site
-import matplotlib.colors as colors
+
 #set colorbar features 
 maxpcount = 10000
 yaxis = np.flipud(sois)
@@ -914,7 +1151,7 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 3)+1)
 plt.savefig(os.path.join(dst, "detailed_region_count_heatmap_nc_tp.pdf"), bbox_inches = "tight")
 plt.close()
 
-#%%
+
 #set colorbar features 
 maxpcount = 700
 yaxis = np.flipud(sois)
@@ -979,3 +1216,77 @@ ax.set_xticklabels(np.arange(0, len(sort_brains), 3)+1)
 
 plt.savefig(os.path.join(dst, "detailed_region_density_heatmap_nc_tp.pdf"), bbox_inches = "tight")
 plt.close()
+
+#%%
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(counts_per_struct.T[np.where(primary == idx)[0]], axis=0) 
+                            for idx in np.unique(primary)])
+
+fig,ax = plt.subplots(figsize=(3,5))
+
+show = mean_counts.T[::-1]
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
+
+#set min and max of colorbar
+vmin = 0
+vmax = 30000
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, 
+               norm=colors.PowerNorm(gamma=0.4))
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.5, aspect=10)
+cb.set_label("Mean neurons", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+#only those that have injections
+lbls = ak_pool[np.unique(primary)]
+ax.set_xticks(np.arange(len(lbls))+.5)
+ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois[::-1], fontsize="small")
+
+plt.savefig(os.path.join(dst,"detailed_region_mean_counts_nc_thal_tp.pdf"), 
+            bbox_inches = "tight")
+
+#%%  
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(density[np.where(primary == idx)[0]], axis=0) 
+                            for idx in np.unique(primary)])
+
+fig,ax = plt.subplots(figsize=(3,5))
+
+show = mean_counts.T[::-1]
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+annotations = False
+
+#set min and max of colorbar
+vmin = 0
+vmax = 600
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax, 
+               norm=colors.PowerNorm(gamma=1))
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.5, aspect=10)
+cb.set_label("Mean neurons/ mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+#only those that have injections
+lbls = ak_pool[np.unique(primary)]
+ax.set_xticks(np.arange(len(lbls))+.5)
+ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois[::-1], fontsize="small")
+
+plt.savefig(os.path.join(dst,"detailed_region_mean_density_heatmap_nc_tp.pdf"), 
+            bbox_inches = "tight")
