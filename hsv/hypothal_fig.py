@@ -35,13 +35,13 @@ brains = ["20170204_tp_bl6_cri_1000r_02", "20170115_tp_bl6_lob6a_rpv_03",
        "20161201_db_bl6_lob6b_500r_53d5hr"]
 
 #figure dest 
-dst = "/Users/zahra/Desktop"
+dst = "/home/wanglab/Desktop"
 
 ###############################################################RUN AS IS#######################################################
 #bucket path for data
-src = "/Volumes/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_hypothalamus/dataframe_no_prog_at_each_level.p"
-df_pth = "/Volumes/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-ontology_file = "/Volumes/LightSheetTransfer/atlas/allen_atlas/allen.json"
+src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pooled_cell_counts_hypothalamus/dataframe_no_prog_at_each_level.p"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 cells_regions = pd.DataFrame(pckl.load(open(src, "rb"), encoding = "latin1"))
 cells_regions["Structure"] = cells_regions.index
@@ -126,12 +126,12 @@ vol = []
 for soi in sois:
     progeny = []; counts = []
     try:
-        counts.append(ann_df.loc[ann_df.name == soi, "voxels_in_structure"].values[0]/2)
+        counts.append(ann_df.loc[ann_df.name == soi, "voxels_in_structure"].values[0])
     except:
         counts.append(0)
     get_progeny(ontology_dict, soi, progeny)
     for progen in progeny:
-        counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+        counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0])
     vol.append(np.array(counts).sum(axis = 0))
 vol = np.array(vol)        
 
