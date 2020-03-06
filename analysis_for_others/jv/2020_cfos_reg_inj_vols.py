@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon May 20 11:26:43 2019
+Created on Fri Mar  6 13:54:26 2020
 
 @author: wanglab
 """
 
-import os, tifffile, sys
-sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
+import os, tifffile, time, shutil
 import cv2
 import numpy as np, subprocess as sp
 from scipy.ndimage import zoom
@@ -96,15 +95,31 @@ def elastix_command_line_call(fx, mv, out, parameters, fx_mask=False, verbose=Fa
 
     return ElastixResultFile, TransformParameterFile
 
+#%%
 if __name__ == "__main__":
     
     #setup
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
     
-    outdr = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/injection/processed"
-    src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed"
+    outdr = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/processed"
+    src = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/processed"
     
-    animals = ["an19", "an20", "an21", "an22", "an23", "an24", "an25", "an26", "an27", "an28"]
+    animals = ["an10_crus1_lat", "an10_vecctrl_ymaze", "an11_crus1_lat",
+       "an12_crus1_lat", "an13_crus1_lat", "an14_crus1_lat",
+       "an15_crus1_lat", "an16_crus1_lat", "an17_crus1_lat",
+       "an18_crus1_lat", "an19_crus1_lat", "an1_crus1_lat", "an1_saline",
+       "an1_vecctrl_ymaze", "an20_crus1_lat", "an21_crus1_lat",
+       "an22_crus1_lat", "an23_crus1_lat", "an24_crus1_lat",
+       "an25_crus1_lat", "an26_crus1_lat", "an27_crus1_lat",
+       "an28_crus1_lat", "an29_crus1_lat", "an2_crus1_lat", "an2_saline",
+       "an2_vecctrl_ymaze", "an30_crus1_lat", "an31_crus1_lat",
+       "an32_crus1_lat", "an33_crus1_lat", "an34_crus1_lat",
+       "an3_crus1_lat", "an3_saline", "an3_vecctrl_ymaze",
+       "an4_crus1_lat", "an4_saline", "an4_vecctrl_ymaze", "an5_cno",
+       "an5_crus1_lat", "an5_vecctrl_ymaze", "an6_cno", "an6_crus1_lat",
+       "an6_vecctrl_ymaze", "an7_cno", "an7_crus1_lat",
+       "an7_vecctrl_ymaze", "an8_cno", "an8_crus1_lat",
+       "an8_vecctrl_ymaze", "an9_crus1_lat", "an9_vecctrl_ymaze"]
     
     animal = animals[jobid]
     
@@ -155,8 +170,8 @@ if __name__ == "__main__":
     #save out, overwrite
     tifffile.imsave(mv, resmpld)
 #    
-    params = ["/jukebox/wang/zahra/lightsheet_copy/parameterfolder/Order1_Par0000affine.txt", 
-              "/jukebox/wang/zahra/lightsheet_copy/parameterfolder/Order2_Par0000bspline.txt"]
+    params = ["/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order1_Par0000affine.txt", 
+              "/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order2_Par0000bspline.txt"]
 #    
     elastix_command_line_call(fx, mv, out, params, fx_mask=False, verbose=False)
 #    
