@@ -98,9 +98,7 @@ def elastix_command_line_call(fx, mv, out, parameters, fx_mask=False, verbose=Fa
 #%%
 if __name__ == "__main__":
     
-    #setup
-    jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
-    
+    #setup    
     outdr = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/processed"
     src = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/processed"
     
@@ -121,71 +119,75 @@ if __name__ == "__main__":
        "an7_vecctrl_ymaze", "an8_cno", "an8_crus1_lat",
        "an8_vecctrl_ymaze", "an9_crus1_lat", "an9_vecctrl_ymaze"]
     
-    animal = animals[jobid]
+    #locally
+    for jobid in range(len(animals)):
+        animal = animals[jobid]
     
-    dst = os.path.join(outdr, animal)
-    
-    volumes = [os.path.join((os.path.join(src, animal)), "full_sizedatafld/"+xx) for xx in 
-              os.listdir(os.path.join(os.path.join(src, animal), "full_sizedatafld")) if not xx[-3:] == "txt"]
-    
-    #part of step1    
-    start = time.time()
-    
-    for job in range(900):
-        process_planes_from_fullsizedatafolder(volumes, job, 12, outdr, verbose=True)
+        dst = os.path.join(outdr, animal)
+        if not os.path.exists(dst):
+            os.mkdir(dst)
         
-    print("\n\ntook {} minutes".format((time.time()-start)/60))    
-    
-    #step2
-    
-    volumes = listdirfull(dst); volumes.sort()
-    
-    for vol in volumes:
-        plns = listdirfull(vol); plns.sort()
-        y,x = tifffile.imread(plns[0]).shape
-        #set destination
-        memmap_dst = os.path.join(dst, os.path.join(os.path.basename(vol) + ".npy"))
-        resz = np.lib.format.open_memmap(memmap_dst, dtype = 'uint16', mode = 'w+', shape = (len(plns), y, x))
-        for i, pln in enumerate(plns):
-            resz[i] = tifffile.imread(pln)
-            if i%50 == 0: resz.flush()
-        resz = np.transpose(resz, [2, 1, 0]) #sagittal
-        img = os.path.join(dst, os.path.join(os.path.basename(vol)+".tif"))
-        tifffile.imsave(img, resz)
-        #delete unnecessary things once we have the image
-        os.remove(memmap_dst)
-        shutil.rmtree(vol)
-
-    #step3
-    #reg to atlas
-    fx = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
-    out = os.path.join(os.path.join(outdr, animal), "elastix"); makedir(out)
-    
-    mv = [os.path.join(dst, xx) for xx in os.listdir(dst) if "488" in xx][0]
-    resz_shp = (702, 832, 457)
-    img = tifffile.imread(mv)
-    #resize
-    resmpld = zoom(img, (resz_shp[0]/img.shape[0], resz_shp[1]/img.shape[1], resz_shp[2]/img.shape[2]), order = 3)
-    
-    #save out, overwrite
-    tifffile.imsave(mv, resmpld)
-#    
-    params = ["/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order1_Par0000affine.txt", 
-              "/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order2_Par0000bspline.txt"]
-#    
-    elastix_command_line_call(fx, mv, out, params, fx_mask=False, verbose=False)
-#    
-    #inj to reg
-    out = os.path.join(os.path.join(outdr, animal), "elastix")
-    fx = os.path.join(out, "result.1.tif")
-    mv = [os.path.join(dst, xx) for xx in os.listdir(dst) if "647" in xx][0]
-    resz_shp = (702, 832, 457)
-    img = tifffile.imread(mv)
-    #resize
-    resmpld = zoom(img, (resz_shp[0]/img.shape[0], resz_shp[1]/img.shape[1], resz_shp[2]/img.shape[2]), order = 3)
-    
-    #save out, overwrite
-    tifffile.imsave(mv, resmpld)
-    
-    out = os.path.join(out, os.path.basename(mv)[:-17]); makedir(out)
-    elastix_command_line_call(fx, mv, out, params, fx_mask=False, verbose=False)
+            volumes = [os.path.join((os.path.join(src, animal)), "full_sizedatafld/"+xx) for xx in 
+                      os.listdir(os.path.join(os.path.join(src, animal), "full_sizedatafld")) if not xx[-3:] == "txt"]
+            
+            #part of step1    
+            start = time.time()    
+            for job in range(900):
+                process_planes_from_fullsizedatafolder(volumes, job, 12, outdr, verbose=True)
+            print("\n\ntook {} minutes".format((time.time()-start)/60))    
+            
+            #step2    
+            volumes = listdirfull(dst); volumes.sort()
+            
+            for vol in volumes:
+                plns = listdirfull(vol); plns.sort()
+                y,x = tifffile.imread(plns[0]).shape
+                #set destination
+                memmap_dst = os.path.join(dst, os.path.join(os.path.basename(vol) + ".npy"))
+                resz = np.lib.format.open_memmap(memmap_dst, dtype = 'uint16', mode = 'w+', shape = (len(plns), y, x))
+                for i, pln in enumerate(plns):
+                    resz[i] = tifffile.imread(pln)
+                    if i%50 == 0: resz.flush()
+                resz = np.transpose(resz, [2, 1, 0]) #sagittal
+                img = os.path.join(dst, os.path.join(os.path.basename(vol)+".tif"))
+                tifffile.imsave(img, resz)
+                #delete unnecessary things once we have the image
+                os.remove(memmap_dst)
+                shutil.rmtree(vol)
+        
+            #step3
+            #reg to atlas
+            fx = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+            out = os.path.join(os.path.join(outdr, animal), "elastix"); makedir(out)
+            
+            mv = [os.path.join(dst, xx) for xx in os.listdir(dst) if "488" in xx][0]
+            resz_shp = (702, 832, 457)
+            img = tifffile.imread(mv)
+            #resize
+            resmpld = zoom(img, (resz_shp[0]/img.shape[0], resz_shp[1]/img.shape[1], resz_shp[2]/img.shape[2]), order = 3)
+            
+            #save out, overwrite
+            tifffile.imsave(mv, resmpld)
+           
+            params = ["/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order1_Par0000affine.txt", 
+                      "/jukebox/wang/zahra/python/lightsheet_py3/parameterfolder/Order2_Par0000bspline.txt"]
+            elastix_command_line_call(fx, mv, out, params, fx_mask=False, verbose=False)
+           
+            #inj to reg
+            out = os.path.join(os.path.join(outdr, animal), "elastix")
+            fx = os.path.join(out, "result.1.tif")
+            mv = [os.path.join(dst, xx) for xx in os.listdir(dst) if "647" in xx][0]
+            resz_shp = (702, 832, 457)
+            img = tifffile.imread(mv)
+            #resize
+            resmpld = zoom(img, (resz_shp[0]/img.shape[0], resz_shp[1]/img.shape[1], resz_shp[2]/img.shape[2]), order = 3)
+            
+            #save out, overwrite
+            tifffile.imsave(mv, resmpld)
+            
+            out = os.path.join(out, os.path.basename(mv)[:-17]); makedir(out)
+            elastix_command_line_call(fx, mv, out, params, fx_mask=False, verbose=False)
+        
+        else:
+            print("brain {} already processed".format(os.path.basename(animals[jobid])))
+        
