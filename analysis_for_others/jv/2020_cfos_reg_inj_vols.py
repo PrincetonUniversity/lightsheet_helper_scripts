@@ -188,6 +188,8 @@ if __name__ == "__main__":
         out = os.path.join(out, os.path.basename(mv)[:-17]); makedir(out)
         
         if "result.1.tif" not in os.listdir(out):
+            params = ["/jukebox/wang/zahra/python/BrainPipe/parameterfolder/Order1_Par0000affine.txt", 
+                      "/jukebox/wang/zahra/python/BrainPipe/parameterfolder/Order2_Par0000bspline.txt"]
             elastix_command_line_call(fx, mv, out, params, fx_mask=False, verbose=False)
         
             # else:
