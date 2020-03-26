@@ -6,29 +6,28 @@ Created on Tue Jun 25 15:05:21 2019
 @author: wanglab
 """
 
-
 import pandas as pd, os
 import numpy as np
 
 #set the id table, and annotation file paths
-df_pth = "/jukebox/wang/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx"
-ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
+df_pth = r"Z:/pisano/Python/lightsheet/supp_files/ls_id_table_w_voxelcounts.xlsx"
+ann_pth = r"Y:/atlas/annotation_sagittal_atlas_20um_iso.tif"
 
 #path to appropriate csv file
-percent_density_csv_pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv"
+percent_density_csv_pth = r"Z:/Jess/lightsheet_output/201904_ymaze_cfos/pooled_analysis/60um_erosion_analysis/cell_counts_dataframe_w_percents_density.csv"
 
 #SET THE DESTINATION DIRECTORY HERE
-dst = "/home/wanglab/Desktop"
+dst = r"C:/Users/zahhr/Downloads"
  
 #give list of structures you want to pool
-pth = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
+pth = r"Z:/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
 
-#run this first cell the way it is, imports tom's class for allen ontology
+#run this first cell the way it is, imports tom"s class for allen ontology
 class structure:
     """Class to represent a brain structure
     """
-    kind='structure'    
-    def __init__(self, idnum, excelfl, units='pixels', scale_factor=1):
+    kind="structure"    
+    def __init__(self, idnum, excelfl, units="pixels", scale_factor=1):
         self.idnum=float(idnum)        #id of structure 
         self.idnum_int = int(idnum)    #id of structure as float, sometimes useful for comparisions
         self.excelfl=excelfl            #path to excelfl
@@ -39,7 +38,7 @@ class structure:
         self.parent=()                  #parent id, acronym, name
         self.children=[]                #children one level down (first sublevel)
         self.progeny=[]                 #all children, grandchildren, etc
-        self.progeny_pixels=[idnum]     #all progeny pixel IDs and it's own
+        self.progeny_pixels=[idnum]     #all progeny pixel IDs and it"s own
         self.progenitor_chain=[]        #list moving up the heirarchy. i.e.: LGN->Thal->Interbrain
         self.volume=()                  #number of voxels, scale factor is not accounted for unless provided
         self.volume_progeny=()           #number of voxels, scale factor is not accounted for unless provided of progeny+structure
@@ -67,21 +66,21 @@ class structure:
 
 def find_progeny(struct, df):
     #find children (first sublevel)   
-    #children = [x for x in df[df['parent_structure_id'] == str(struct.idnum)].itertuples()]
-    children = [x for x in df[df['parent_structure_id'] == struct.idnum].itertuples()]
+    #children = [x for x in df[df["parent_structure_id"] == str(struct.idnum)].itertuples()]
+    children = [x for x in df[df["parent_structure_id"] == struct.idnum].itertuples()]
     
     #find all progeny
     allchildstructures=[]
     while len(children) > 0:
         child = children.pop()
         allchildstructures.append(child)
-        #kiditems = df[df['parent_structure_id'] == str(child.id)]
-        kiditems = df[df['parent_structure_id'] == child.id]
+        #kiditems = df[df["parent_structure_id"] == str(child.id)]
+        kiditems = df[df["parent_structure_id"] == child.id]
         for kid in kiditems.itertuples():
             allchildstructures.append(kid)            
             #if kid has children append them list to walk through it
-            #if len(df[df['parent_structure_id'] == str(kid.id)]) != 0:
-            if len(df[df['parent_structure_id'] == kid.id]) != 0:                
+            #if len(df[df["parent_structure_id"] == str(kid.id)]) != 0:
+            if len(df[df["parent_structure_id"] == kid.id]) != 0:                
                 children.append(kid)
     #remove duplicates
     allchildstructures = list(set(allchildstructures))
@@ -91,7 +90,7 @@ def find_progeny(struct, df):
     [struct.add_progeny_pixels(xx.id) for xx in allchildstructures] #<---11/1/17, this was atlas_id, changing to id
     #add progeny count
     struct.add_cellcount_progeny(struct.cellcount + sum([int(xx.cell_count) for xx in allchildstructures]))
-    if 'voxels_in_structure' in df.columns: struct.volume_progeny = struct.volume + sum([int(xx.voxels_in_structure) for xx in allchildstructures])
+    if "voxels_in_structure" in df.columns: struct.volume_progeny = struct.volume + sum([int(xx.voxels_in_structure) for xx in allchildstructures])
     
     return struct
     
@@ -100,7 +99,7 @@ def create_progenitor_chain(structures, df, verbose = False):
     new_structures=[]
     for struct in structures:
         if verbose: print(struct.name)
-        if struct.name == 'root' or struct.name == 'Basic cell groups and regions':
+        if struct.name == "root" or struct.name == "Basic cell groups and regions":
             pass
         else:
             chain = []
@@ -109,7 +108,7 @@ def create_progenitor_chain(structures, df, verbose = False):
             while loop:
                 #find parent
                 parent = current_struct.parent[1]
-                if parent == 'nan' or parent == 'null' or parent == 'root': break
+                if parent == "nan" or parent == "null" or parent == "root": break
                 else:#append
                     chain.append(parent)
                     current_struct = [xx for xx in structures if xx.name == parent][0]
@@ -122,7 +121,7 @@ def make_structure_objects(excelfl, remove_childless_structures_not_repsented_in
 
     #load
     df = pd.read_excel(excelfl)
-    if not 'cell_count' in df.columns: df['cell_count'] = 0
+    if not "cell_count" in df.columns: df["cell_count"] = 0
     #make structure objects for each df row
     structures = []
     
@@ -133,11 +132,11 @@ def make_structure_objects(excelfl, remove_childless_structures_not_repsented_in
         struct.add_acronym(str(row.acronym)) #add acronym
         struct.add_cellcount(row.cell_count) #add cell count
         struct.add_parent((row.parent_structure_id, str(row.parent_name), str(row.parent_acronym))) #parent id, acronym, name
-        if 'voxels_in_structure' in df.columns: struct.volume = row.voxels_in_structure
+        if "voxels_in_structure" in df.columns: struct.volume = row.voxels_in_structure
         
         #find children (first sublevel)   
-        #children = [x for x in df[df['parent_structure_id'] == str(struct.idnum_int)].itertuples()]
-        children = [x for x in df[df['parent_structure_id'] == struct.idnum_int].itertuples()]
+        #children = [x for x in df[df["parent_structure_id"] == str(struct.idnum_int)].itertuples()]
+        children = [x for x in df[df["parent_structure_id"] == struct.idnum_int].itertuples()]
         struct.add_child([xx for xx in children])
               
         #add structure to structures list
@@ -152,8 +151,6 @@ def make_structure_objects(excelfl, remove_childless_structures_not_repsented_in
  
 #build structures class
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=ann_pth)
-
-
 
 """ pools regions together based on allen name """    
 
@@ -234,14 +231,15 @@ rotate_df["condition"] = groups
 rotate_df.to_csv(os.path.join(dst, "select_structures_percent_counts_for_plots.csv"), index = False)
 
 print("saved in :{}".format(dst))
-    
+#%%
 
 #anova for cell counts, percents, and density across all conditions, per structure
 from scipy.stats import f_oneway
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+from statsmodels.stats.multicomp import MultiComparison
 
 #do first for all structures
-df = pd.read_csv(os.path.join(dst,'select_structures_percent_counts_for_plots.csv'))
-#df = pd.read_csv(os.path.join(path,'select_structures_percent_counts_for_plots.csv'))
+df = pd.read_csv(os.path.join(dst,"select_structures_percent_counts_for_plots.csv"))
 
 df_anova = pd.DataFrame()
 df_anova["name"] = np.unique(df["name"].values)
@@ -254,57 +252,13 @@ for nm in np.unique(df.name.values)[:-1]: #only gets unique names
     
     df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_f"] = f
     df_anova.loc[(df_anova["name"] == nm), "anova_percent_counts_pval"] = pval
-        
-df_anova.to_csv(os.path.join(dst, "one_way_anova_all_structures.csv"))
-
-
-"""
-https://pythonfordatascience.org/anova-2-way-n-way/
-"""
-
-# 2 way ANOVA
-import statsmodels
-from statsmodels.formula.api import ols
-from scipy.stats import f_oneway
-import pandas as pd, os
-import numpy as np
-
-df = pd.read_csv(os.path.join(dst, 'select_structures_percent_counts_for_plots.csv'), index_col = None)
-#remove homecage control
-df = df[df.condition != "homecage_control"]
-df.loc[(df.condition == "CNO_control_reversal"), "reversal"] = "reversal"
-df.loc[(df.condition == "DREADDs"), "reversal"] = "reversal"
-df.loc[(df.condition == "CNO_control_no_reversal"), "reversal"] = "no_reversal"
-#df.loc[(df.Condition == "homecage_control"), "reversal"] = "no_reversal"
-
-#not sure about this but lets try..
-df.loc[(df.condition == "CNO_control_no_reversal"), "DREADDs"] = "control"
-df.loc[(df.condition == "CNO_control_reversal"), "DREADDs"] = "control"
-df.loc[(df.condition == "DREADDs"), "DREADDs"] = "DREADDs"
-
-#now lets do for all structures
-structs = df.name.unique()
-
-#make new df for 2 way anova
-df_2wayanova = pd.DataFrame()
-df_2wayanova["name"] = structs
-
-#forreversal
-for nm in structs:
-    print(nm)
-    formula = "percent ~ C(reversal)+C(DREADDs)"# +  C(reversal):C(DREADDs)"
-    model = ols(formula, df[df.name == nm]).fit()
-    aov_table = statsmodels.stats.anova.anova_lm(model, typ=2)
-    pval = np.asarray(aov_table)[0,3]
-    df_2wayanova.loc[(df_2wayanova.name == nm), "two_way_pval_rev_vs_norev"] = pval
-    #get second comparison vals
-    pval = np.asarray(aov_table)[1,3]
-    df_2wayanova.loc[(df_2wayanova.name == nm), "two_way_pval_ctrl_vs_dreadds"] = pval
     
-#    #doing post hoc on significant structures
-#    if pval < 0.05:
-#        res = pairwise_tukeyhsd(df[df.name == nm]["percent"].values, df[df.name == nm]["reversal"].values)
-#        pval_tukey = psturng(np.abs(res.meandiffs / res.std_pairs), len(res.groupsunique), res.df_total)
-#        df.loc[(df["name"] == nm), "tukey"] = pval_tukey
+    #doing post hoc on significant structures
+    if pval < 0.05:
+        mc = MultiComparison(df[df.name == nm]["percent"].values, df[df.name == nm ].condition.values)
+        result = mc.tukeyhsd(alpha=0.05) #cutoff at 0.05
+        
+        print(result)
+        print(mc.groupsunique)
             
-df_2wayanova.to_csv(os.path.join(dst, "two_way_anova_all_structures.csv"), index = None) 
+df_anova.to_csv(os.path.join(dst, "one_way_anova_all_structures.csv"))

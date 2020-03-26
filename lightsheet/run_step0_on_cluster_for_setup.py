@@ -10,5 +10,7 @@ if not os.path.exists(os.path.join(params['outputdirectory'], 'lightsheet')):
 #clearmap package
 updateparams(os.getcwd(), **params) # e.g. single job assuming directory_determiner function has been properly set
 #copy folder into output for records
-if not os.path.exists(os.path.join(params['outputdirectory'], 'clearmap_cluster')): shutil.copytree(os.getcwd(), os.path.join(params['outputdirectory'], 'clearmap_cluster'), ignore=shutil.ignore_patterns('^.git')) #copy run folder into output to save run info
+if not os.path.exists(os.path.join(params['outputdirectory'], 
+                                   'clearmap_cluster')): 
+    shutil.copytree(os.getcwd(), os.path.join(params['outputdirectory'], 'clearmap_cluster'), ignore=shutil.ignore_patterns('^.git')) #copy run folder into output to save run info
 
