@@ -5,7 +5,7 @@ Created on Tue Jan 28 13:52:54 2020
 @author: wanglab
 """
 
-import numpy as np, os, matplotlib.pyplot as plt, tifffile, pandas as pd, seaborn as sns
+import numpy as np, os, matplotlib.pyplot as plt, tifffile, pandas as pd, seaborn as sns, SimpleITK as sitk
 from collections import Counter
 os.chdir(r"Z:\zahra\python\lightsheet_py3")
 from tools.analysis.network_analysis import make_structure_objects
@@ -15,12 +15,12 @@ erode_pth = r"Z:\zahra\kelly_cell_detection_analysis\annotation_allen_2017_25um_
 dilate_pth = r"Z:\zahra\kelly_cell_detection_analysis\dilated_atlases"
 
 fig_dst = r"C:\Users\wanglab\Desktop\zahra"
-df_pth = r"Y:\atlas\allen_atlas\allen_id_table_w_voxel_counts_16bit.xlsx"
-ann_pth = r"Y:\atlas\allen_atlas\annotation_2017_25um_sagittal_forDVscans_16bit.tif"
+df_pth = r"Y:\atlas\allen_atlas\allen_id_table_w_voxel_counts.xlsx"
+ann_pth = r"Y:\atlas\allen_atlas\annotation_2017_25um_sagittal_forDVscans.nrrd"
 
 #%%
 #read vols
-ann = tifffile.imread(ann_pth)
+ann = sitk.GetArrayFromImage(sitk.ReadImage(ann_pth))
 df = pd.read_excel(df_pth)
 er_ann = tifffile.imread(erode_pth)
 dl_anns = [os.path.join(dilate_pth, xx) for xx in os.listdir(dilate_pth)]

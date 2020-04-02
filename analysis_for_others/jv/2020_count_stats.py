@@ -242,6 +242,7 @@ df = pd.read_csv(os.path.join(dst,"select_structures_percent_counts_for_plots.cs
 
 df_anova = pd.DataFrame()
 df_anova["name"] = np.unique(df["name"].values)
+df_anova["tukeyhsd"] = np.ones(len(df_anova))*np.nan
 
 for nm in np.unique(df.name.values)[:-1]: #only gets unique names
 
@@ -257,7 +258,6 @@ for nm in np.unique(df.name.values)[:-1]: #only gets unique names
         mc = MultiComparison(df[df.name == nm]["percent"].values, df[df.name == nm ].condition.values)
         result = mc.tukeyhsd(alpha=0.05) #cutoff at 0.05
         
-        print(result)
-        print(mc.groupsunique)
+        df_anova.loc[(df_anova["name"] == nm), "tukeyhsd"] = np.min(result.pvalues)
             
 df_anova.to_csv(os.path.join(dst, "one_way_anova_all_structures.csv"))
