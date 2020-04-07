@@ -83,7 +83,8 @@ for iii,zplane in enumerate(bigdvann):
 for iii, tif in enumerate(os.listdir(save_dst)):
     img = tifffile.imread(os.path.join(save_dst, tif))
     img[img > 0] = 255
-    tifffile.imsave(os.path.join(save_dst, "%s_brain_vol_Z%04d.tif" % (os.path.basename(brain), iii)), img.astype("uint8"))
+    tifffile.imsave(os.path.join(save_dst,
+        "%s_brain_vol_Z%04d.tif" % (os.path.basename(brain), iii)), img.astype("uint8"))
     print("\nmade z plane # {} for brain volume".format(iii))
 
 print("\n\ntook {} minutes for {}\n".format(round((time.time()-start)/60, 2), brain))
