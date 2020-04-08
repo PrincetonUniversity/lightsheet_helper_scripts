@@ -56,7 +56,7 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef):
 
     #exception if only 1 channel is imaged
     cellch = os.path.join(fzfld, [xx for xx in os.listdir(fzfld) if "647" in xx][0])
-    
+
     #not the greatest way to do things, but works
     src = [os.path.join(cellch, xx) for xx in os.listdir(cellch) if xx[-3:] == "tif" and int(xx[-7:-4]) in range(zstart, zstop)]; src.sort()
 
@@ -66,14 +66,14 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef):
         raw[i, :, :] = tifffile.imread(src[i])
 
     pth = os.path.join(brain, "clearmap_cluster_output/cells.npy")
-    cells = np.load(pth)
+    cells = np.load(pth) #this is in x,y,z!!!!!!!!!!!!!!!
 
-    cells = cells[(cells[:, 0] >= zstart) & (cells[:, 0] <= zstop-1)] #-1 to account for range
+    cells = cells[(cells[:, 2] >= zstart) & (cells[:, 2] <= zstop-1)] #-1 to account for range
 
     cell_centers = np.zeros(raw.shape)
 
     for i, r in enumerate(cells):
-        cell_centers[r[0]-zstart, r[1]-2:r[1]+2, r[2]-2:r[2]+2] = 50000
+        cell_centers[r[2]-zstart, r[1]-1:r[1]+1, r[0]-1:r[0]+1] = 50000
 
     rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), np.zeros_like(raw)], -1)
 
@@ -99,14 +99,14 @@ def check_cell_center_to_resampled(brain, zstart, zstop, dst):
     raw = tifffile.imread(tifs[len(tifs)-1])
 
     pth = os.path.join(brain, "clearmap_cluster_output/cells.npy")
-    cells = np.load(pth)
+    cells = np.load(pth) #this is in x,y,z!!!!!!!!!!!!!!!
 
-    cells = cells[(cells[:, 0] >= zstart) & (cells[:, 0] <= zstop-1)] #-1 to account for range
-    
+    cells = cells[(cells[:, 2] >= zstart) & (cells[:, 2] <= zstop-1)] #-1 to account for range
+
     cell_centers = np.zeros(raw.shape)
 
     for i, r in enumerate(cells):
-        cell_centers[r[0]-zstart, r[1]-2:r[1]+2, r[2]-2:r[2]+2] = 50000
+        cell_centers[r[2]-zstart, r[1]-1:r[1]+1, r[0]-1:r[0]+1] = 50000
 
     rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), np.zeros_like(raw)], -1)
 
