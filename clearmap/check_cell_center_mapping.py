@@ -117,13 +117,13 @@ def check_cell_center_to_resampled(brain, zstart, zstop, dst):
 
 
 if __name__ == "__main__":
-
+    src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed/"
+    dst = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/qc"
+    if not os.path.exists(dst): os.mkdir(dst)
+    zstart = 300; zstop = 320 #z-plane #'s you want to visualize at a time, 250-400 is probably ideal for thalamus
+    resizef = 1 #factor by which to downsize raw and cell center overlay, keep 1 if you do not want to downsize
     ids = ["an20"]
 
     for i in ids:
-        brain = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed/"+i
-        zstart = 300; zstop = 320
-        dst = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/qc"
-        if not os.path.exists(dst): os.mkdir(dst)
-
-        check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, 1)
+        brain = os.path.join(src, i)
+        check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef)
