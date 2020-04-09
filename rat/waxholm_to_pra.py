@@ -6,8 +6,9 @@ Created on Thu Dec 12 15:13:28 2019
 @author: wanglab
 """
 
-import os, tifffile as tif
+import os, tifffile as tif, sys
 from scipy.ndimage import zoom
+sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
 from tools.registration.register import elastix_command_line_call
 
 mv = "/jukebox/LightSheetData/brodyatlas/atlas/for_registration_to_lightsheet/WHS_SD_rat_T2star_v1.01_atlas.tif"
@@ -20,7 +21,7 @@ pra = tif.imread(fx)
 zf,yf,xf = (pra.shape[0]/watl.shape[0])*1.4, (pra.shape[1]/watl.shape[1])*1.4, (pra.shape[2]/watl.shape[2])*1.4
 watl_for_pra = zoom(watl, (zf,yf,xf), order = 1)
 
-tif.imsave("/jukebox/LightSheetData/brodyatlas/atlas/for_registration_to_lightsheet/WHS_SD_rat_T2star_v1.01_atlas_for_pra_reg.tif", 
+tif.imsave("/jukebox/LightSheetData/brodyatlas/atlas/for_registration_to_lightsheet/WHS_SD_rat_T2star_v1.01_atlas_for_pra_reg.tif",
            watl_for_pra.astype("uint16"))
 
 mv = "/jukebox/LightSheetData/brodyatlas/atlas/for_registration_to_lightsheet/WHS_SD_rat_T2star_v1.01_atlas_for_pra_reg.tif"
