@@ -1,0 +1,441 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Feb 25 15:48:49 2020
+
+@author: wanglab
+"""
+
+
+import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, json, itertools, statsmodels.api as sm
+from patsy import dmatrices
+
+from scipy.stats import ttest_ind as ttest
+from statsmodels.stats.multitest import multipletests
+
+import matplotlib.colors, statsmodels.formula.api as smf
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "red"]) #lime color makes cells pop
+ 
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
+
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
+fig_dst = "/home/wanglab/Desktop"
+
+ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+
+#collect 
+data_pth = os.path.join(dst, "data/thal_hsv_maps_contra_allen.p")
+data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
+
+primary_pool = data["primary_pool"]
+frac_of_inj_pool = data["frac_of_inj_pool"]
+ak_pool = data["ak_pool"]
+brains = np.array(data["brains"])
+
+primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
+frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in frac_of_inj_pool])
+
+#collect counts
+cells_regions_pth = os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
+
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
+scale_factor = 0.025
+ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
+
+def get_progeny(dic,parent_structure,progeny_list):
+    """ 
+    ---PURPOSE---
+    Get a list of all progeny of a structure name.
+    This is a recursive function which is why progeny_list is an
+    argument and is not returned.
+    ---INPUT---
+    dic                  A dictionary representing the JSON file 
+                         which contains the ontology of interest
+    parent_structure     The structure
+    progeny_list         The list to which this function will 
+                         append the progeny structures. 
+    """
+    
+    if "msg" in list(dic.keys()): dic = dic["msg"][0]
+    
+    name = dic.get("name")
+    children = dic.get("children")
+    if name == parent_structure:
+        for child in children: # child is a dict
+            child_name = child.get("name")
+            progeny_list.append(child_name)
+            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
+        return
+    
+    for child in children:
+        child_name = child.get("name")
+        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
+    return 
+
+#get progeny of all large structures
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+
+with open(ontology_file) as json_file:
+    ontology_dict = json.load(json_file)
+
+nuclei = ["Thalamus", "Paracentral nucleus", "Anterodorsal nucleus",
+       "Central medial nucleus of the thalamus",
+       "Subparafascicular nucleus", "Parataenial nucleus",
+       "Submedial nucleus of the thalamus", "Lateral habenula",
+       "Central lateral nucleus of the thalamus", "Medial habenula",
+       "Ventral part of the lateral geniculate complex",
+       "Parafascicular nucleus", "Anteromedial nucleus",
+       "Anteroventral nucleus of thalamus",
+       "Paraventricular nucleus of the thalamus", "Nucleus of reuniens",
+       "Dorsal part of the lateral geniculate complex",
+       "Medial geniculate complex",
+       "Ventral anterior-lateral complex of the thalamus",
+       "Ventral posterolateral nucleus of the thalamus",
+       "Ventral medial nucleus of the thalamus",
+       "Lateral dorsal nucleus of thalamus",
+       "Lateral posterior nucleus of the thalamus",
+       "Posterior complex of the thalamus",
+       "Mediodorsal nucleus of thalamus",
+       "Reticular nucleus of the thalamus",
+       "Ventral posteromedial nucleus of the thalamus"]
+
+#first calculate counts across entire nc region
+counts_per_struct = []
+for soi in nuclei:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    #add counts from main structure
+    counts.append([cells_regions.loc[cells_regions.Structure == soi, brain].values[0] for brain in brains])
+    for progen in progeny:
+        counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    counts_per_struct.append(np.array(counts).sum(axis = 0))
+counts_per_struct = np.array(counts_per_struct)
+
+pcounts = np.nan_to_num(np.asarray([((brain[1:]/brain[0])*100) for brain in counts_per_struct.T]))    
+
+#voxels
+vol = []
+for soi in nuclei:
+    progeny = []; counts = []; iids = []
+    get_progeny(ontology_dict, soi, progeny)
+    #add counts from main structure
+    try:
+        counts.append(ann_df.loc[ann_df.name == soi, "voxels_in_structure"].values[0]/2)
+    except:
+        print(soi)
+    for progen in progeny:
+        counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+    vol.append(np.array(counts).sum(axis = 0))
+vol = np.array(vol)        
+
+density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T) #remove thalamus
+
+#remove thalamus from density
+nuclei = nuclei[1:]
+density = density[:, 1:]
+
+#%%
+
+#% COUNT ANALYSIS!!!!
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+
+fig,ax = plt.subplots(figsize=(3,9))
+
+show = mean_counts.T 
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+
+#set min and max of colorbar
+vmin = 0
+vmax = 8
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("Mean % of thalamic neurons", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(nuclei, fontsize="small")
+
+plt.savefig(os.path.join(fig_dst,"thal_mean_pcount.pdf"), bbox_inches = "tight")
+
+mean_pcount_shuf = []
+pcount_shuf = []
+#now shuffle all counts 100 times?
+
+for itera in range(100):
+    #shuffle injection
+    inj = frac_of_inj_pool#.T[np.random.choice(np.arange(len(frac_of_inj_pool.T)), replace=False, 
+                                              # size=len(frac_of_inj_pool.T)),:].T
+    #shuffle counts
+    _pcounts = pcounts.T[np.random.choice(np.arange(len(pcounts.T)), replace=False, size=len(pcounts.T)),:].T
+    primary_pool_shuf = np.array([np.argmax(e) for e in inj])
+    mean_pcount_shuf.append(np.asarray([np.mean(_pcounts[np.where(primary_pool_shuf == idx)[0]], axis=0)
+                                   for idx in np.unique(primary_pool_shuf)]))
+    pcount_shuf.append(_pcounts)
+    
+pcount_shuf = np.median(np.array(pcount_shuf), axis = 0)
+mean_pcount_shuf = np.median(np.array(mean_pcount_shuf), axis = 0)
+
+#t-test for count shuffle
+t, pval = ttest(pcounts, pcount_shuf, equal_var = False)
+
+mean_pcount_shuf = []
+primary_inj_shuf = []
+pcount_shuf = []
+#now shuffle all injection sites 100 times?
+
+for itera in range(30):
+    #shuffle injection
+    inj = frac_of_inj_pool.T[np.random.choice(np.arange(len(frac_of_inj_pool.T)), replace=False, 
+                                               size=len(frac_of_inj_pool.T)),:].T
+    #shuffle counts
+    _pcounts = pcounts#.T[np.random.choice(np.arange(len(pcounts.T)), replace=False, size=len(pcounts.T)),:].T
+    primary_pool_shuf = np.array([np.argmax(e) for e in inj])
+    mean_pcount_shuf.append(np.asarray([np.mean(_pcounts[np.where(primary_pool_shuf == idx)[0]], axis=0)
+                                   for idx in np.unique(primary_pool_shuf)]))
+    primary_inj_shuf.append(primary_pool_shuf)
+
+pcount_shuf = np.median(np.array(pcount_shuf), axis = 0)
+mean_pcount_shuf = np.median(np.array(mean_pcount_shuf), axis = 0)
+    
+#now get the pcounts per injection for each of the injection shuffles???
+#need to do this for each thalamic region
+correct = True
+pvals = []
+for i in range(len(nuclei)):
+    pcount_per_inj = np.squeeze(np.array([np.array([np.array([pcounts[:, i][np.where(primary_pool_shuf == idx)[0]]
+                                        for idx in np.unique(primary_pool_shuf)])]) 
+                                for primary_pool_shuf in primary_inj_shuf]))
+
+    
+    comp_arr = np.array([pcounts[:, i][np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)])
+    
+    #take mean of all "injection bins" formed from shuffle... idk if this is the proper way but w/e
+    a = np.array([[pcount_per_inj[j][i].mean() for i in range(7)] for j in range(30)])
+   
+    #now get pval per injection site...
+    pvals_inj = []
+    for j in range(len(ak_pool)):
+        t, pval  = ttest(comp_arr[j], a[:, j])
+        pvals_inj.append(pval)
+        
+    if correct:
+        #correct pvalues
+        b, pvals_inj_corr, a, bnf = multipletests(np.array(pvals_inj)[~np.isnan(pvals_inj)], alpha = 0.05, method = "fdr_bh")
+        
+        #add nans for n =1 columns back in (column 0, 2)
+        a = np.ones(np.array(pvals_inj).shape)*np.nan
+        a[~np.isnan(pvals_inj)] = pvals_inj_corr
+    else:
+        a = np.array(pvals_inj)
+        
+    pvals.append(a)
+    
+pvals = np.array(pvals)
+
+#plot
+fig,ax = plt.subplots(figsize=(3,9))
+show = pvals
+
+# SET COLORMAP
+cmap = plt.cm.Blues_r
+cmap.set_over(cmap(1.0))
+cmap.set_under(cmap(0))
+#set min and max of colorbar
+vmin = 0
+vmax = 0.1
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("P-value", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+
+#plot p < 0.05
+sig = pvals < .05#/np.size(pmat)
+
+for y,x in np.argwhere(sig):
+    pass
+    ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment='center', verticalalignment='center',
+            color = "white", transform=ax.transData)
+    
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(nuclei, fontsize="small")
+
+plt.savefig(os.path.join(fig_dst,"thal_pcount_pval_inj_shuffle.pdf"), bbox_inches = "tight")
+
+#%%
+
+#hide high count brain for model?
+mask = [True]*23
+mask[6] = False
+# mask[21] = False
+
+density_m = density[mask]
+primary_pool_m = primary_pool[mask]
+frac_of_inj_pool_m = frac_of_inj_pool[mask]
+#density_m ANALYSIS!!!!
+#only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
+mean_counts = np.asarray([np.mean(density_m[np.where(primary_pool_m == idx)[0]], axis=0) 
+                          for idx in np.unique(primary_pool_m)])
+
+fig,ax = plt.subplots(figsize=(3,9))
+
+show = mean_counts.T 
+
+# SET COLORMAP
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+
+#set min and max of colorbar
+vmin = 0
+vmax = 30
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("Mean neurons / mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+        
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize=8)
+# yticks
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(nuclei, fontsize="small")
+
+plt.savefig(os.path.join(fig_dst,"thal_mean_density.pdf"), bbox_inches = "tight")
+
+mean_pcount_shuf = []
+pcount_shuf = []
+#now shuffle all counts 100 times?
+
+for itera in range(30):
+    #shuffle injection
+    inj = frac_of_inj_pool_m#.T[np.random.choice(np.arange(len(frac_of_inj_pool.T)), replace=False, 
+                                              # size=len(frac_of_inj_pool.T)),:].T
+    #shuffle counts
+    d_m = density_m.T[np.random.choice(np.arange(len(density_m.T)), replace=False, size=len(density_m.T)),:].T
+    primary_pool_shuf = np.array([np.argmax(e) for e in inj])
+    mean_pcount_shuf.append(np.asarray([np.mean(density_m[np.where(primary_pool_shuf == idx)[0]], axis=0)
+                                   for idx in np.unique(primary_pool_shuf)]))
+    pcount_shuf.append(d_m)
+    
+pcount_shuf = np.median(np.array(pcount_shuf), axis = 0)
+mean_pcount_shuf = np.median(np.array(mean_pcount_shuf), axis = 0)
+
+#t-test for count shuffle
+t, pval = ttest(density_m, pcount_shuf, equal_var = False)
+
+mean_pcount_shuf = []
+primary_inj_shuf = []
+pcount_shuf = []
+correct = True
+#now shuffle all injection sites 100 times?
+
+for itera in range(30):
+    #shuffle injection
+    inj = frac_of_inj_pool_m.T[np.random.choice(np.arange(len(frac_of_inj_pool_m.T)), replace=False, 
+                                               size=len(frac_of_inj_pool_m.T)),:].T
+    #shuffle counts
+    _density_m = density_m#.T[np.random.choice(np.arange(len(density_m.T)), replace=False, size=len(density_m.T)),:].T
+    primary_pool_shuf = np.array([np.argmax(e) for e in inj])
+    mean_pcount_shuf.append(np.asarray([np.mean(_density_m[np.where(primary_pool_shuf == idx)[0]], axis=0)
+                                   for idx in np.unique(primary_pool_shuf)]))
+    primary_inj_shuf.append(primary_pool_shuf)
+
+pcount_shuf = np.median(np.array(pcount_shuf), axis = 0)
+mean_pcount_shuf = np.median(np.array(mean_pcount_shuf), axis = 0)
+    
+#now get the density_m per injection for each of the injection shuffles???
+#need to do this for each thalamic region
+pvals = []
+for i in range(len(nuclei)):
+    pcount_per_inj = np.squeeze(np.array([np.array([np.array([density_m[:, i][np.where(primary_pool_shuf == idx)[0]]
+                                        for idx in np.unique(primary_pool_shuf)])]) 
+                                for primary_pool_shuf in primary_inj_shuf]))
+
+    
+    comp_arr = np.array([density_m[:, i][np.where(primary_pool_m == idx)[0]] for idx in np.unique(primary_pool_m)])
+    
+    #take mean of all "injection bins" formed from shuffle... idk if this is the proper way but w/e
+    a = np.array([[pcount_per_inj[j][i].mean() for i in range(7)] for j in range(30)])
+   
+    #now get pval per injection site...
+    pvals_inj = []
+    for j in range(len(ak_pool)):
+        t, pval  = ttest(comp_arr[j], a[:, j])
+        pvals_inj.append(pval)
+    
+    if correct:
+        #correct pvalues
+        b, pvals_inj_corr, a, bnf = multipletests(np.array(pvals_inj)[~np.isnan(pvals_inj)], alpha = 0.05, method = "fdr_bh")
+        
+        #add nans for n =1 columns back in (column 0, 2)
+        a = np.ones(np.array(pvals_inj).shape)*np.nan
+        a[~np.isnan(pvals_inj)] = pvals_inj_corr
+    else:
+        a = np.array(pvals_inj)
+    
+    pvals.append(a)
+    
+pvals = np.array(pvals)
+
+#plot
+fig,ax = plt.subplots(figsize=(3,9))
+show = pvals
+
+# SET COLORMAP
+cmap = plt.cm.Blues_r
+cmap.set_over(cmap(1.0))
+cmap.set_under(cmap(0))
+#set min and max of colorbar
+vmin = 0
+vmax = 0.1
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("P-value", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+
+#plot p < 0.05
+sig = pvals < .05#/np.size(pmat)
+
+for y,x in np.argwhere(sig):
+    pass
+    ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment='center', verticalalignment='center',
+            color = "white", transform=ax.transData)
+    
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+lbls = np.asarray(ak_pool)
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize="small")
+# yticks
+ax.set_yticks(np.arange(len(nuclei))+.5)
+ax.set_yticklabels(nuclei, fontsize="small")
+
+plt.savefig(os.path.join(fig_dst,"thal_density_pval_inj_shuffle.pdf"), bbox_inches = "tight")
