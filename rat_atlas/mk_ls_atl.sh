@@ -19,4 +19,4 @@ module load anacondapy/5.3.1
 
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
-python make_atlas_from_lightsheet_images.py ${SLURM_ARRAY_TASK_ID}
+python step1_make_atlas_from_lightsheet_images.py ${SLURM_ARRAY_TASK_ID}

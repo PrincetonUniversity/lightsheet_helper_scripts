@@ -20,4 +20,4 @@ module load elastix/4.8
 
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
-python compile_atlas.py ${SLURM_ARRAY_TASK_ID}
+python step2_compile_atlas.py ${SLURM_ARRAY_TASK_ID}
