@@ -84,10 +84,14 @@ def export_to_tiff(pth, dst, z_step = 10, final_res = 25):
 
 if __name__ == "__main__":
 
+    #these parameters are for running an the array job on the cluster
+    #e.g. sbatch --array=0-50 mk_ls_atl.sh
+    #to run locally, turn the variable 'jobid' into a for loop and loop through brains one-by-one
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
 
     src = "/jukebox/LightSheetData/brodyatlas/processed"
+    dst = "/jukebox/LightSheetData/brodyatlas/atlas/2019_meta_atlas/volumes"
 
     brains = ["k293"]
 #            ["a235",
@@ -117,5 +121,4 @@ if __name__ == "__main__":
     #run
     run_downsizing(pth)
     #FIXME: can combine these 2 functions
-    dst = "/jukebox/LightSheetData/brodyatlas/atlas/2019_meta_atlas/volumes"
     export_to_tiff(pth, dst)
