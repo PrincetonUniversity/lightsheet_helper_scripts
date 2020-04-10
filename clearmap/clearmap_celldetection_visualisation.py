@@ -195,20 +195,18 @@ class Sagittal():
 #%%
 if __name__ == "__main__":
     #grabbing sagittal volume
-    dst = "/home/wanglab/Desktop/zahra"
+    dst = "/jukebox/LightSheetData/falkner-mouse/scooter/qc"
     if not os.path.exists(dst): os.mkdir(dst)
 
-    # pth = "/jukebox/LightSheetData/pni_viral_vector_core/201902_promoter_exp_6mo/processed"
-    # flds = os.listdir(pth)
+    pth = "/jukebox/LightSheetData/falkner-mouse/scooter/clearmap_processed"
+    flds = os.listdir(pth)
     
-    # for fld in flds:
-    pth = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/processed/"
-    fld = "an10_vecctrl_ymaze"
-    src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
-    cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
-    if os.path.exists(cells):
-        sagittal = Sagittal(src, dst, cells)
-        sagittal.makeClearMapCellOverlayHorizontalSections(volume = True, save = True)
+    for fld in flds:
+        src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
+        cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
+        if os.path.exists(cells):
+            sagittal = Sagittal(src, dst, cells)
+            sagittal.makeClearMapCellOverlayHorizontalSections(volume = True, save = True)
 
 
         
