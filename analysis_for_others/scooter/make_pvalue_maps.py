@@ -322,36 +322,37 @@ if __name__ == "__main__":
     
     #Generate the p-values map
     ##########################
-    #first comparison: mm vs. fm
-    comparison = ["fm_v_mm"]
     cutoff = 0.01 #set p-value cutoff
+
+    #first comparison: mm vs. fm
+    comparison = "fm_v_mm"
     #pcutoff: only display pixels below this level of significance
     pvals, psign = stat.tTestVoxelization(mm.astype("float"), 
                     fm.astype("float"), signed = True, pcutoff = cutoff)
-    
     #color the p-values according to their sign 
     #(defined by the sign of the difference of the means between the 2 groups)
-    pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0]);
-    dst = os.path.join(pvaldst, "pvalues_%s.tif" % comparison)
-    io.writeData(dst, rsp.sagittalToCoronalData(pvalsc.astype("float32")));
+    pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0])
+    tifffile.imsave(os.path.join(pvaldst, "pvalues_%s.tif" % comparison), 
+                 np.transpose(pvalsc, [1, 0, 2, 3]).astype("float32"),
+                 photometric = "minisblack", planarconfig = "contig", bigtiff = True)
     
     #second comparison: mm vs. mf
-    comparison = ["mf_v_mm"]
+    comparison = "mf_v_mm"
     pvals, psign = stat.tTestVoxelization(mm.astype("float"), 
-                mf.astype("float"), signed = True, pcutoff = cutoff)
-    
+                mf.astype("float"), signed = True, pcutoff = cutoff)   
     pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0]);
-    dst = os.path.join(pvaldst, "pvalues_%s.tif" % comparison)
-    io.writeData(dst, rsp.sagittalToCoronalData(pvalsc.astype("float32")))
+    tifffile.imsave(os.path.join(pvaldst, "pvalues_%s.tif" % comparison), 
+                 np.transpose(pvalsc, [1, 0, 2, 3]).astype("float32"),
+                 photometric = "minisblack", planarconfig = "contig", bigtiff = True)
     
     #third comparison: mf vs. fm
-    comparison = ["mf_v_fm"]
+    comparison = "mf_v_fm"
     pvals, psign = stat.tTestVoxelization(fm.astype("float"), 
-                    mf.astype("float"), signed = True, pcutoff = cutoff)
-    
+                    mf.astype("float"), signed = True, pcutoff = cutoff)   
     pvalsc = stat.colorPValues(pvals, psign, positive = [0,1], negative = [1,0]);
-    dst = os.path.join(pvaldst, "pvalues_%s.tif" % comparison)
-    io.writeData(dst, rsp.sagittalToCoronalData(pvalsc.astype("float32")))
+    tifffile.imsave(os.path.join(pvaldst, "pvalues_%s.tif" % comparison), 
+                 np.transpose(pvalsc, [1, 0, 2, 3]).astype("float32"),
+                 photometric = "minisblack", planarconfig = "contig", bigtiff = True)
 
 #####################END OF SCRIPT THAT MAKES P-VALUE MAPS####################
 #%%
