@@ -135,7 +135,6 @@ if __name__ == "__main__":
     allen_id_table = os.path.join(atl_src, "allen_id_table_w_voxel_counts.xlsx")
     ann_pth = os.path.join(atl_src, "annotation_2017_25um_sagittal_forDVscans.nrrd")
     atl_pth = os.path.join(atl_src, "average_template_25_sagittal_forDVscans.tif")
-    ontology_file = os.path.join(atl_src, "allen.json")
     src = "/jukebox/LightSheetData/falkner-mouse/scooter/pooled_analysis/pvalue_maps"
     
     conditions = ["fm_v_mm","mf_v_mm","mf_v_fm"]

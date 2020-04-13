@@ -7,21 +7,77 @@ Created on Fri Apr 10 19:54:05 2020
 """
 
 import pandas as pd, matplotlib.pyplot as plt, os, matplotlib as mpl, json
-from skimage.external import tifffile
 import SimpleITK as sitk, numpy as np, scipy, matplotlib.patches as mpatches, sys
-sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
-from tools.registration.allen_structure_json_to_pandas import annotation_location_to_structure
-from tools.analysis.network_analysis import make_structure_objects
+from skimage.external import tifffile
+from collections import Counter
 sys.path.append("/jukebox/wang/zahra/python/ClearMapCluster")
 from ClearMap.Analysis.Voxelization import voxelize
 import ClearMap.Analysis.Statistics as stat
-import ClearMap.Alignment.Resampling as rsp
-import ClearMap.IO.IO as io
 
-#formatting LUTs for annotation overlay?
+#formatting LUTs for annotation overlay
 tab20cmap = [plt.cm.tab20(xx) for xx in range(20)]
 tab20cmap_nogray = tab20cmap[:14] + tab20cmap[16:]
 tab20cmap_nogray = mpl.colors.ListedColormap(tab20cmap_nogray, name = "tab20cmap_nogray")
+#formatting for figure making
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
+
+def make_heatmaps(pth, subdir=False):
+    """ 
+    makes clearmap style heatmaps 
+    NOTE: do not need to do this if you have already succesfully run your images using ClearMap
+    """
+    #make heatmaps
+    vox_params = {"method": "Spherical", "size": (15, 15, 15), "weights": None}
+    #if cells detected separateful from clearmap
+    if subdir:
+        if subdir in os.listdir(pth):
+            points = np.load(os.path.join(pth, subdir+"/posttransformed_zyx_voxels.npy"))
+            
+            #run clearmap style blurring
+            vox = voxelize(np.asarray(points), dataSize = (456, 528, 320), **vox_params)
+            dst = os.path.join(pth, subdir+"/cells_heatmap.tif")
+        else:
+            print("no transformed cells")         
+    else:
+        points = np.load(os.path.join(pth, "clearmap_cluster_output/cells_transformed_to_Atlas.npy"))
+        #reorder to ZYX
+        points = np.array([[pnt[2], pnt[1], pnt[0]] for pnt in points])
+        #run clearmap style blurring
+        vox = voxelize(np.asarray(points), dataSize = (456, 528, 320), **vox_params)
+        dst = os.path.join(pth, "cells_heatmap.tif")
+    tifffile.imsave(dst, vox.astype("float32"))
+    
+    return dst
+
+def annotation_location_to_structure(id_table, args, ann=False):
+    """Function that returns a list of structures based on annotation z,y,x cooridnate
+    
+    Removes 0 from list
+    
+    Inputs:
+        id_table=path to excel file generated from scripts above
+        args=list of ZYX coordinates. [[77, 88, 99], [12,32,53]]
+        ann = annotation file
+        
+    Returns
+    ---------
+    list of counts, structure name
+    """
+    df = pd.read_excel(id_table)
+    #find locs 
+    vals=[]; [vals.append(ann[i[0], i[1], i[2]]) for i in args]
+    c = Counter(vals) #dict of value: occurences     
+    #remove 0 and find structs
+    if 0 in c: del c[0] 
+    lst = []
+    for k,v in c.items():
+        try:
+            lst.append((v, str(list(df.name[df.id==k])[0])))
+        except Exception as e:
+            print("Removing {}, as generating this error: {}".format(k, e))
+
+    return lst
 
 def get_progeny(dic,parent_structure,progeny_list):
     """ 
@@ -51,25 +107,6 @@ def get_progeny(dic,parent_structure,progeny_list):
         child_name = child.get("name")
         get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
     return 
-
-def make_heatmaps(pth, subdir):
-    """ 
-    makes clearmap style heatmaps 
-    NOTE: do not need to do this if you have already succesfully run your images using ClearMap
-    """
-    #make heatmaps
-    vox_params = {"method": "Spherical", "size": (15, 15, 15), "weights": None}
-    
-    if subdir in os.listdir(pth):
-        points = np.load(os.path.join(pth, subdir+"/posttransformed_zyx_voxels.npy"))
-        
-        #run clearmap style blurring
-        vox = voxelize(np.asarray(points), dataSize = (456, 528, 320), **vox_params)
-        dst = os.path.join(pth, subdir+"/cells_heatmap.tif")
-        tifffile.imsave(dst, vox.astype("int32"))
-    else:
-        print("no transformed cells")
-    return dst
 
 def consolidate_parents_structures_cfos(id_table, ann, namelist, ontology_file, 
                                         verbose=False):
@@ -117,22 +154,56 @@ def consolidate_parents_structures_cfos(id_table, ann, namelist, ontology_file,
             nann[np.where(ann==int(idnum))] = cmap[i]
             #find progeny
             progeny = []; get_progeny(ontology_dict, nm, progeny)
-            for ii in progeny:
-                if ii[3] != "null": nann[np.where(ann==int(ii[3]))] = cmap[i]
+            for progen in progeny:
+                iid = df_ann.loc[df_ann.name == progen, "id"].values[0]
+                nann[np.where(ann==iid)] = cmap[i]
         except Exception as e:
             print(nm, e)
     #sitk.Show(sitk.GetImageFromArray(nann))
     #change nann to have NAN where zeros
-    nann = nann.astype("float")
-    nann[nann == 0] = "nan"
+    nann = nann.astype("float32")
+    nann[nann == 0] = np.nan
 
-    return nann, zip(cmap[:], namelist)
+    return nann, list(zip(cmap[:], namelist))
 
-def make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table, 
+def make_2D_overlay_of_heatmaps(comparison, src, atl_pth, ann_pth, allen_id_table, 
                                 save_dst, ontology_file, positive = True, negative = True,
                                 no_structures_to_keep = 20, zstep = 40,
                                 colorbar_cutoff = 65):
+    """
+    Function to take p-value maps between conditions and make 2-D overlays
+    with atlas annotations.
     
+    Parameters
+    ----------
+    comparison : string
+        conditions you are comparing, to be used to save filename
+        typically something like 'male_v_female'
+    src : string
+        pvalue map for comparisons
+    atl_pth : string
+        path to 3D sagittal atlas file used for transformation
+    ann_pth : string
+        path to 3D sagittal annotation file accompanying atlas file
+    allen_id_table : string
+        path to look-up table for annotations, derived from the annotation ontology
+    save_dst : string
+        path to save positive/negative comparison folders
+    ontology_file : string
+        path to allen json ontology file
+    positive : TYPE, optional
+        make overlays for postiviely correlated voxels. The default is True.
+    negative : TYPE, optional
+        make overlays for postiviely correlated voxels. The default is True.
+    no_structures_to_keep : TYPE, optional
+        # of structures to display at once in 2D. The default is 20.
+    zstep : TYPE, optional
+        spacing b/w z-planes to display 2D overlays. The default is 40.
+    colorbar_cutoff : TYPE, optional
+        a cutoff value to display the number of planes in which the positively
+        correlated voxel exists; < less voxels / plane, > more voxels / plane. 
+        The default is 65.
+    """
     #read in volumes/dataframes
     vol = tifffile.imread(src)
     atl = tifffile.imread(atl_pth)
@@ -165,7 +236,8 @@ def make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table,
     pvol[pvol!=0.0] = 1.0
     nvol[nvol!=0.0] = 1.0
     
-    rngs = range(0, ann.shape[0]+zstep, zstep)
+    rngs = range(0, ann.shape[0]+zstep, zstep) #have to make 2d maps every X # of planes
+    #for the entire volume
     for iii in range(len(rngs)-1):
         rng = (rngs[iii], rngs[iii+1])
     
@@ -180,64 +252,61 @@ def make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table,
             #select only subset
             parent_list=parent_list[:no_structures_to_keep]
             nann, lst = consolidate_parents_structures_cfos(allen_id_table, 
-                ann[rng[0]:rng[1]], parent_list, verbose=True, structures=structures)
+                ann[rng[0]:rng[1]], parent_list, ontology_file, verbose=True)
     
             #make fig
-            plt.figure(figsize=(15,18))
+            plt.figure(figsize=(8,11))
             ax = plt.subplot(2,1,1)
-            fig = plt.imshow(np.max(atl[rng[0]:rng[1]], axis=0), cmap="gray", alpha=1)
-            fig.axes.get_xaxis().set_visible(False)
-            fig.axes.get_yaxis().set_visible(False)
+            plt.imshow(np.max(atl[rng[0]:rng[1]], axis=0), cmap="gray", alpha=1)
             ax.set_title("ABA structures")
             mode = scipy.stats.mode(nann, axis=0, nan_policy="omit") #### THIS IS REALLY IMPORTANT
             most = list(np.unique(mode[1][0].ravel())); most = sorted(most, reverse=True)
             ann_mode = mode[0][0]
             masked_data = np.ma.masked_where(ann_mode < 0.1, ann_mode)
             im = plt.imshow(masked_data, cmap=tab20cmap_nogray, alpha=0.8, vmin=0, vmax=255)
-            patches = [mpatches.Patch(color=im.cmap(im.norm(i[0])), label="{}".format(i[1])) for i in lst]
+            patches = [mpatches.Patch(color=im.cmap(im.norm(i[0])), 
+                                      label="{}".format(i[1])) for i in lst]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
             ax.set_anchor("W")
-    
+            plt.axis("off")
+            
             #pvals
             ax = plt.subplot(2,1,2)
-            ax.set_title("Number of positively correlated voxels in AP dimension")
+            ax.set_title("# of + correlated voxels")
+            ax.set_anchor("W")
             #modify colormap
             my_cmap = plt.cm.viridis(np.arange(plt.cm.RdBu.N))
-            #my_cmap = plt.cm.RdYlGn(np.arange(plt.cm.RdBu.N))
             my_cmap[:colorbar_cutoff,:4] = 0.0
             my_cmap = mpl.colors.ListedColormap(my_cmap)
             my_cmap.set_under("w")
             #plot
-            fig = plt.imshow(np.max(atl[rng[0]:rng[1]], axis=0), cmap="gray", alpha=1)
-            #plt.imshow(np.max(pvol[rng[0]:rng[1]], axis=0), cmap=my_cmap, alpha=0.9) #old way
+            plt.imshow(np.max(atl[rng[0]:rng[1]], axis=0), cmap="gray", alpha=1)
             plt.imshow(np.sum(pvol[rng[0]:rng[1]], axis=0), cmap=my_cmap, alpha=0.95, vmin=0, vmax=zstep)
             plt.colorbar()
-            fig.axes.get_xaxis().set_visible(False)
-            fig.axes.get_yaxis().set_visible(False)
-            ax.set_anchor("W")
-            #plt.tight_layout()
-            pdst = os.path.join(save_dst, "positive_overlays_zstep{}".format(zstep))
+            pdst = os.path.join(save_dst, "{}_positive_overlays_zstep{}".format(comparison, zstep))
             if not os.path.exists(pdst): os.mkdir(pdst)
-            plt.savefig(os.path.join(pdst, "cfos_z{}-{}.pdf".format(rng[0],rng[1])), dpi=300, transparent=True)
+            plt.axis("off")
+            plt.savefig(os.path.join(pdst, "cfos_z{}-{}.pdf".format(rng[0],rng[1])), dpi=300, 
+                        bbox_inches = "tight", transparent=True)
             plt.close()
     
         #negative
         if negative:
             print(rng, "negative")
             #get highest
-            olist = annotation_location_to_structure(allen_id_table, zip(*np.nonzero(nvol[rng[0]:rng[1]])), ann[rng[0]:rng[1]])
+            olist = annotation_location_to_structure(allen_id_table, 
+                    zip(*np.nonzero(nvol[rng[0]:rng[1]])), ann[rng[0]:rng[1]])
             srt = sorted(olist, key=lambda x: x[0], reverse=True)
             parent_list = [xx[1] for xx in srt]
             #select only subset
             parent_list=parent_list[0:no_structures_to_keep]
-            nann, lst = consolidate_parents_structures_cfos(allen_id_table, ann[rng[0]:rng[1]], parent_list, verbose=True, structures=structures)
+            nann, lst = consolidate_parents_structures_cfos(allen_id_table, 
+                ann[rng[0]:rng[1]], parent_list, ontology_file, verbose=True)
     
             #make fig
-            plt.figure(figsize=(15,18))
+            plt.figure(figsize=(8,11))
             ax = plt.subplot(2,1,1)
-            fig = plt.imshow(np.max(atl[rng[0]:rng[1]], axis=0), cmap="gray", alpha=1)
-            fig.axes.get_xaxis().set_visible(False)
-            fig.axes.get_yaxis().set_visible(False)
+            plt.imshow(np.max(atl[rng[0]:rng[1]], axis=0), cmap="gray", alpha=1)
             ax.set_title("ABA structures")
             mode = scipy.stats.mode(nann, axis=0, nan_policy="omit") #### THIS IS REALLY IMPORTANT
             most = list(np.unique(mode[1][0].ravel())); most = sorted(most, reverse=True)
@@ -247,39 +316,37 @@ def make_2D_overlay_of_heatmaps(src, atl_pth, ann_pth, allen_id_table,
             patches = [mpatches.Patch(color=im.cmap(im.norm(i[0])), label="{}".format(i[1])) for i in lst]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
             ax.set_anchor("W")
-    
+            plt.axis("off")
+            
             #pvals
             ax = plt.subplot(2,1,2)
-            ax.set_title("Number of negatively correlated voxels in AP dimension")
+            ax.set_title("# of - correlated voxels")
             #modify colormap
-            import matplotlib as mpl
             my_cmap = plt.cm.plasma(np.arange(plt.cm.RdBu.N))
             my_cmap[:colorbar_cutoff,:4] = 0.0
             my_cmap = mpl.colors.ListedColormap(my_cmap)
             my_cmap.set_under("w")
             #plot
-            fig = plt.imshow(np.max(atl[rng[0]:rng[1]], axis=0), cmap="gray", alpha=1)
+            plt.imshow(np.max(atl[rng[0]:rng[1]], axis=0), cmap="gray", alpha=1)
             plt.imshow(np.sum(nvol[rng[0]:rng[1]], axis=0), cmap=my_cmap, alpha=0.95, vmin=0, vmax=zstep)
             plt.colorbar()
-            fig.axes.get_xaxis().set_visible(False)
-            fig.axes.get_yaxis().set_visible(False)
-            ax.set_anchor("W")
-            #plt.tight_layout()
-            ndst = os.path.join(save_dst, "negative_overlays_zstep{}".format(zstep))
+            ndst = os.path.join(save_dst, "{}_negative_overlays_zstep{}".format(comparison, zstep))
             if not os.path.exists(ndst): os.mkdir(ndst)
-            plt.savefig(os.path.join(ndst, "cfos_z{}-{}.pdf".format(rng[0],rng[1])), dpi=300, transparent=True)
+            plt.axis("off")
+            plt.savefig(os.path.join(ndst, "cfos_z{}-{}.pdf".format(rng[0],rng[1])), dpi=300, 
+                        bbox_inches = "tight", transparent=True)
             plt.close()
             
-    return parent_list
+    return
 
 #%%
 if __name__ == "__main__":
-   
-    ########################MAKE P-VALUE MAPS########################
-    #make destination directory
+    #set paths
     src = "/jukebox/LightSheetData/falkner-mouse/scooter/clearmap_processed"
     pvaldst = "/jukebox/LightSheetData/falkner-mouse/scooter/pooled_analysis/pvalue_maps"
     if not os.path.exists(pvaldst): os.mkdir(pvaldst)
+########################MAKE P-VALUE MAPS########################
+    cutoff = 0.05 #set p-value cutoff for maps
     
     #set up heatmaps per condition
     mm_du_heatmaps = [os.path.join(src, os.path.join(xx, "cells_heatmap.tif")) 
@@ -288,12 +355,10 @@ if __name__ == "__main__":
                       for xx in os.listdir(src) if "fm" in xx]
     mf_du_heatmaps = [os.path.join(src, os.path.join(xx, "cells_heatmap.tif")) 
                       for xx in os.listdir(src) if "mf" in xx]
-    
     #read all the heatmaps belonging to each group
     mm = stat.readDataGroup(mm_du_heatmaps)
     fm = stat.readDataGroup(fm_du_heatmaps)
     mf = stat.readDataGroup(mf_du_heatmaps)
-    
     #find mean and standard deviation of heatmap in each group
     mm_mean = np.mean(mm, axis = 0)
     mm_std = np.std(mm, axis = 0)
@@ -303,7 +368,6 @@ if __name__ == "__main__":
     
     mf_mean = np.mean(mf, axis = 0)
     mf_std = np.std(mf, axis = 0)
-    
     #write mean and standard dev maps to destination
     tifffile.imsave(os.path.join(pvaldst, "mm_mean.tif"), 
                     np.transpose(mm_mean, [1, 0, 2]).astype("float32"))
@@ -321,9 +385,7 @@ if __name__ == "__main__":
                     np.transpose(mf_std, [1, 0, 2]).astype("float32"))
     
     #Generate the p-values map
-    ##########################
-    cutoff = 0.01 #set p-value cutoff
-
+    #########################
     #first comparison: mm vs. fm
     comparison = "fm_v_mm"
     #pcutoff: only display pixels below this level of significance
@@ -335,7 +397,6 @@ if __name__ == "__main__":
     tifffile.imsave(os.path.join(pvaldst, "pvalues_%s.tif" % comparison), 
                  np.transpose(pvalsc, [1, 0, 2, 3]).astype("float32"),
                  photometric = "minisblack", planarconfig = "contig", bigtiff = True)
-    
     #second comparison: mm vs. mf
     comparison = "mf_v_mm"
     pvals, psign = stat.tTestVoxelization(mm.astype("float"), 
@@ -344,7 +405,6 @@ if __name__ == "__main__":
     tifffile.imsave(os.path.join(pvaldst, "pvalues_%s.tif" % comparison), 
                  np.transpose(pvalsc, [1, 0, 2, 3]).astype("float32"),
                  photometric = "minisblack", planarconfig = "contig", bigtiff = True)
-    
     #third comparison: mf vs. fm
     comparison = "mf_v_fm"
     pvals, psign = stat.tTestVoxelization(fm.astype("float"), 
@@ -353,84 +413,20 @@ if __name__ == "__main__":
     tifffile.imsave(os.path.join(pvaldst, "pvalues_%s.tif" % comparison), 
                  np.transpose(pvalsc, [1, 0, 2, 3]).astype("float32"),
                  photometric = "minisblack", planarconfig = "contig", bigtiff = True)
-
-#####################END OF SCRIPT THAT MAKES P-VALUE MAPS####################
-#%%
-    ########################LOOK AT P-VALUE MAPS IN 2D###############################
+#####################END OF SCRIPT THAT MAKES P-VALUE MAPS#######################
+########################LOOK AT P-VALUE MAPS IN 2D###############################
     #set destination of p value map you want to analyze
-#     atl_src = "/jukebox/LightSheetData/falkner-mouse/allen_atlas/"
-#     allen_id_table = os.path.join(atl_src, "allen_id_table_w_voxel_counts.xlsx")
-#     ann_pth = os.path.join(atl_src, "annotation_2017_25um_sagittal_forDVscans.nrrd")
-#     atl_pth = os.path.join(atl_src, "average_template_25_sagittal_forDVscans.tif")
-#     ontology_file = os.path.join(atl_src, "allen.json")
+    atl_src = "/jukebox/LightSheetData/falkner-mouse/allen_atlas/"
+    allen_id_table = os.path.join(atl_src, "allen_id_table_w_voxel_counts.xlsx")
+    ann_pth = os.path.join(atl_src, "annotation_2017_25um_sagittal_forDVscans.nrrd")
+    atl_pth = os.path.join(atl_src, "average_template_25_sagittal_forDVscans.tif")
+    ontology_file = os.path.join(atl_src, "allen.json")
 
-#     comparisons = ["fm_v_mm","mf_v_mm","mf_v_fm"]
-#     #make 2d overlays
-#     for comp in comparisons:
-#         flnm = os.path.join(pvaldst, "pvalues_%s.tif" % comp)
-#         make_2D_overlay_of_heatmaps(flnm, atl_pth, ann_pth, allen_id_table, 
-#                                     pvaldst, ontology_file, positive = True, negative = True)
-    
-# #%%        
-# #get significant structures by order    
-# p_val_maps = [
-#         listdirfull(os.path.join(dorsal, "observer_v_control"), "tif")[0],
-#         listdirfull(os.path.join(dorsal, "demonstrator_v_observer"), "tif")[0], 
-#         listdirfull(os.path.join(dorsal, "demonstrator_v_control"), "tif")[0]
-#         ]
-
-# atl = tifffile.imread(atl_pth)
-# ann = tifffile.imread(ann_pth)
-
-# atl = np.rot90(np.transpose(atl, [1, 0, 2]), axes = (2,1)) #sagittal to coronal
-# ann = np.rot90(np.transpose(ann, [1, 0, 2]), axes = (2,1)) #sagittal to coronal
-
-# df = pd.DataFrame()
-
-# for src in p_val_maps:
-#     print(src)
-    
-#     vol = tifffile.imread(src)
-#     #positive correlation
-#     pvol = vol[:,:,:,1]
-    
-#     pix_values = list(np.unique(ann.ravel().astype("float64")))
-    
-#     #collect names of parents OR ##optionally get sublist
-#     #make structures to find parents
-#     structures = make_structure_objects(allen_id_table)
-#     parent_list = list(set([yy.parent[1] for xx in pix_values for yy in structures if xx == yy.idnum]))
-    
-#     #find counts of highest labeled areas
-#     olist = annotation_location_to_structure(allen_id_table, args=zip(*np.nonzero(pvol)), ann=ann)
-#     srt = sorted(olist, key=lambda x: x[0], reverse=True)
-#     parent_list = [xx[1] for xx in srt]
-    
-#     if "dorsal" in src:
-#         column_name = os.path.basename(src)[8:-4]+"_dorsal_up_positive_corr"
-#     else:
-#         column_name = os.path.basename(src)[8:-4]+"_ventral_up_positive_corr"
-        
-#     df[column_name] = pd.Series(parent_list)
-#     #negative correlation            
-#     nvol = vol[:,:,:,0]
-#     pix_values = list(np.unique(ann.ravel().astype("float64")))
-
-#     structures = make_structure_objects(allen_id_table)
-#     parent_list = list(set([yy.parent[1] for xx in pix_values for yy in structures if xx == yy.idnum]))
-    
-#     olist = annotation_location_to_structure(allen_id_table, args=zip(*np.nonzero(nvol)), ann=ann)
-#     srt = sorted(olist, key=lambda x: x[0], reverse=True)
-#     parent_list = [xx[1] for xx in srt]
-    
-#     if "dorsal" in src:
-#         column_name = os.path.basename(src)[8:-4]+"_dorsal_up_negative_corr"
-#     else:
-#         column_name = os.path.basename(src)[8:-4]+"_ventral_up_negative_corr"
-    
-#     df[column_name] = pd.Series(parent_list)
-
-# #save out
-# dfdst = os.path.join(pvaldst, "significant_structures_based_on_pvalue_maps.xlsx")       
-# df.to_excel(dfdst, index = None)
+    comparisons = ["fm_v_mm","mf_v_mm","mf_v_fm"]
+    #make 2d overlays
+    for comp in comparisons:
+        flnm = os.path.join(pvaldst, "pvalues_%s.tif" % comp)
+        make_2D_overlay_of_heatmaps(comp, flnm, atl_pth, ann_pth, allen_id_table, 
+                                    pvaldst, ontology_file, positive = True, negative = True,
+                                    zstep = 40, colorbar_cutoff = 50)
     
