@@ -10,13 +10,14 @@ from collections import Counter
 os.chdir("/jukebox/wang/zahra/python/BrainPipe")
 from tools.analysis.network_analysis import make_structure_objects
 
-#set appropriate pths
-erode_pth = "/jukebox/wang/zahra/kelly_cell_detection_analysis/annotation_allen_2017_25um_sagittal_erode_80um.tif"
-dilate_pth = "/jukebox/wang/zahra/kelly_cell_detection_analysis/dilated_atlases"
+#set appropriate pth
+src = "/jukebox/wang/zahra/kelly_cell_detection_analysis"
+erode_pth = os.path.join(src, "annotation_allen_2017_25um_sagittal_erode_80um.tif")
+dilate_pth = os.path.join(src, "dilated_atlases")
 
 fig_dst = "/home/wanglab/Desktop"
-df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
-ann_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.nrrd"
+df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts_16bit.xlsx"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans_16bit.tif"
 
 #%%
 #read vols
@@ -25,20 +26,19 @@ df = pd.read_excel(df_pth)
 er_ann = tifffile.imread(erode_pth)
 dl_anns = [os.path.join(dilate_pth, xx) for xx in os.listdir(dilate_pth)]
 
-org_iids = np.unique(ann)[1:] #excluding 0, basic cell groups
+org_iids = np.unique(ann)[1:] #excluding 0
 er_iids = np.unique(er_ann)[1:]
 
 missing = [iid for iid in org_iids if iid not in er_iids]
 
-missing_struct_names = [nm for nm in df.name.values if df.loc[df.name == nm, "id"].values[0] in missing][1:] #excluding root
+missing_struct_names = [nm for nm in df.name.values if df.loc[df.name == nm, "id"].values[0] in missing] #excluding root
 missing_struct_voxels = [df.loc[df.name == nm, "voxels_in_structure"].values[0] for nm in missing_struct_names]
 #replace id column that matches to names
 missing_struct_ids = [df.loc[df.name == nm, "id"].values[0] for nm in missing_struct_names]
 
-#make structures to traverse hierarchy
-structures = make_structure_objects(df_pth)
-
-missing_struct_parents = [obj.parent[1] for obj in structures if obj.name in missing_struct_names]
+#get parent names
+missing_struct_parents = [df.loc[df["id"] == iid, "parent_name"].values[0]
+                          for iid in missing_struct_ids]
 
 #%%
 #plot results
@@ -107,7 +107,7 @@ dataf["id"] = missing_struct_ids
 dataf["parent_name"] = missing_struct_parents
 dataf["voxels_in_structure"] = missing_struct_voxels
 
-dataf.to_csv("/jukebox/wang/zahra/kelly_cell_detection_analysis/structures_zeroed_after_80um_erosion_allen_annotation_2017_ids_fixed.csv")
+dataf.to_csv(os.path.join(src, "structures_zeroed_after_80um_erosion_allen_annotation_2017_ids_fixed_v2.csv"))
 
 #%%
 
