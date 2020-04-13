@@ -6,7 +6,7 @@ Created on Mon Apr 13 17:06:17 2020
 @author: wanglab
 """
 
-import os, pandas as pd, tifffile
+import os, pandas as pd, tifffile, numpy as np
 
 csvpth = "/jukebox/wang/zahra/kelly_cell_detection_analysis/structures_zeroed_after_80um_erosion_allen_annotation_2017_ids_fixed_v2.csv"
 df = pd.read_csv(csvpth)
