@@ -11,16 +11,16 @@ Created on Mon Feb 18 11:50:58 2019
 import os, sys, tifffile, numpy as np
 from skimage.exposure import rescale_intensity
 from itertools import product
-os.chdir("/jukebox/wang/zahra/clearmap_cluster_copy")
+sys.path.append("/jukebox/wang/zahra/python/ClearMapCluster")
 from ClearMap.cluster.par_tools import celldetection_operations
 from ClearMap.cluster.utils import load_kwargs
 from ClearMap.cluster.preprocessing import makedir, listdirfull, removedir
 
 
-#sweep parameters copy & modifications 
+#sweep parameters copy & modifications
 def sweep_parameters_cluster(dst, jobid, optimization_chunk=7, pth=False, rescale=False, cleanup=True, **kwargs):
     """Function to sweep parameters
-    
+
     final outputs will be saved in outputdirectory/parameter_sweep
     second copy will be saved in outputdirectory/parameter_sweep_jobid if cleanup=False
 
@@ -45,38 +45,38 @@ def sweep_parameters_cluster(dst, jobid, optimization_chunk=7, pth=False, rescal
     fIP_method_r = ["Max"] #["Max, "Mean"]
     fIP_size_r = [5]#range(1,5)
 #    dCSP_threshold_r = range(10, 105, 20) #<-- IMPORTANT TO SWEEP
-#    
+#
     #second cleanup=False
     rBP_size_r = [5] #zmd commented out
     dCSP_threshold_r = [150, 175, 200, 225]
     ######################################################################################################
     ######################################################################################################
     ######################################################################################################
-    
-    
+
+
     # calculate number of iterations
     tick = 0
     for rBP_size, fEMP_hmax, fEMP_size, fEMP_threshold, fIP_method, fIP_size, dCSP_threshold in product(rBP_size_r, fEMP_hmax_r, fEMP_size_r, fEMP_threshold_r, fIP_method_r, fIP_size_r, dCSP_threshold_r):
         tick +=1
 
     sys.stdout.write("\n\nNumber of iterations is {}:".format(tick))
-    
+
     #if pth is set - zmd added
     if pth:
         kwargs = load_kwargs(pth)
-        
+
     #make folder for final output:
     opt = dst; makedir(opt)
     out = opt+"/parameter_sweep"; makedir(out)
     out0 = opt+"/parameter_sweep_jobid_{}".format(str(jobid).zfill(4)); makedir(out0)
 
     ntick = 0
-    rBP_size, fEMP_hmax, fEMP_size, fEMP_threshold, fIP_method, fIP_size, dCSP_threshold=[(rBP_size, fEMP_hmax, fEMP_size, fEMP_threshold, 
-                    fIP_method, fIP_size, dCSP_threshold) for rBP_size, fEMP_hmax, fEMP_size, fEMP_threshold, fIP_method, fIP_size, 
+    rBP_size, fEMP_hmax, fEMP_size, fEMP_threshold, fIP_method, fIP_size, dCSP_threshold=[(rBP_size, fEMP_hmax, fEMP_size, fEMP_threshold,
+                    fIP_method, fIP_size, dCSP_threshold) for rBP_size, fEMP_hmax, fEMP_size, fEMP_threshold, fIP_method, fIP_size,
                     dCSP_threshold in product(rBP_size_r, fEMP_hmax_r, fEMP_size_r, fEMP_threshold_r, fIP_method_r, fIP_size_r, dCSP_threshold_r)][jobid]
 
     #zmd modified
-    pth = out0+"/parametersweep_rBP_size{}_fEMP_hmax{}_fEMP_size{}_fEMP_threshold{}_fIP_method{}_fIP_size{}_dCSP_threshold{}.tif".format(rBP_size, 
+    pth = out0+"/parametersweep_rBP_size{}_fEMP_hmax{}_fEMP_size{}_fEMP_threshold{}_fIP_method{}_fIP_size{}_dCSP_threshold{}.tif".format(rBP_size,
                                         fEMP_hmax, fEMP_size, fEMP_threshold, fIP_method, fIP_size, dCSP_threshold)
 
     if not os.path.exists(pth):
@@ -102,7 +102,7 @@ def sweep_parameters_cluster(dst, jobid, optimization_chunk=7, pth=False, rescal
             #run cell detection
             ntick+=1
             sys.stdout.write("\n\n\n           *****Iteration {} of {}*****\n\n\n".format(ntick, tick))
-            sys.stdout.write("    Iteration parameters: {}     {}     {}     {}     {}     {}     {}".format(kwargs["removeBackgroundParameter_size"], 
+            sys.stdout.write("    Iteration parameters: {}     {}     {}     {}     {}     {}     {}".format(kwargs["removeBackgroundParameter_size"],
                              kwargs["findExtendedMaximaParameter_hmax"], kwargs["findExtendedMaximaParameter_size"], kwargs["findExtendedMaximaParameter_threshold"],         kwargs["findIntensityParameter_method"],         kwargs["findIntensityParameter_size"],        kwargs["detectCellShapeParameter_threshold"]))
             celldetection_operations(optimization_chunk, testing = True, **kwargs)
 
@@ -125,12 +125,12 @@ def sweep_parameters_cluster(dst, jobid, optimization_chunk=7, pth=False, rescal
             bigim = np.concatenate((raw_mx, bkg_mx, cell_mx), axis = 1); del bkg, bkg_im, bkg_mx, cell, cell_im,cell_mx
             if cleanup: removedir(out0)
             if not cleanup: tifffile.imsave(pth, bigim, compress = 1)
-            
+
             #save in main
-            npth = out+"/jobid_{}_parametersweep_rBP_size{}_fEMP_hmax{}_fEMP_size{}_fEMP_threshold{}_fIP_method{}_fIP_size{}_dCSP_threshold{}.tif".format(str(jobid).zfill(4), 
+            npth = out+"/jobid_{}_parametersweep_rBP_size{}_fEMP_hmax{}_fEMP_size{}_fEMP_threshold{}_fIP_method{}_fIP_size{}_dCSP_threshold{}.tif".format(str(jobid).zfill(4),
                                rBP_size, fEMP_hmax, fEMP_size, fEMP_threshold, fIP_method, fIP_size, dCSP_threshold)
             tifffile.imsave(npth, bigim, compress = 1)
-            
+
 
         except Exception, e:
             print ("Error on: {}\n\nerror={}".format(pth,e))
@@ -150,5 +150,5 @@ dst = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/parameter_sweep/an
 #parameter sweep cell detection parameters. NOTE read all of functions description before using. VERY CPU intensive
 #for first pass at cell detection
 for jobid in range(4): #to find the range value, run lines 152 - 173 in this script, part of sweep_parameters_cluster func
-    
+
     sweep_parameters_cluster(dst, jobid, cleanup = False, **kwargs)
