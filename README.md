@@ -2,7 +2,7 @@
 
 Written by Z. Dhanerawala and A. Hoag (zmd@princeton.edu, ahoag@princeton.edu).
 
-#### Relies on [BrainPipe](https://github.com/PrincetonUniversity/BrainPipe) and [ClearMapCluster](https://github.com/PrincetonUniversity/ClearMapCluster) local installations.
+### Relies on [BrainPipe](https://github.com/PrincetonUniversity/BrainPipe) and [ClearMapCluster](https://github.com/PrincetonUniversity/ClearMapCluster) local installations.
 
 ## Module functions:
 * `analysis_for_others` --> project-specific scripts written for Princeton Neuro researchers
