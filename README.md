@@ -17,7 +17,7 @@ Written by Z. Dhanerawala and A. Hoag (zmd@princeton.edu, ahoag@princeton.edu).
 ### Project specific module functions:
 In `projects`:
 * `braincogs` --> general analysis scripts written for BRAIN CoGS members/labs
-* `esteban_engel` --> analysis scripts related to Engel lab LAP promoter project [Maturana et al. (2020)](https://www.sciencedirect.com/science/article/pii/S2329050120300644)
+* `esteban_engel` --> analysis scripts related to Engel lab LAP promoter project in [Maturana et al. (2020)](https://www.sciencedirect.com/science/article/pii/S2329050120300644)
 * `jv` --> cfos and general analysis scripts for J. Verpeut
 * `malaz` --> analysis scripts to quantify clearing efficacy based on a summer undergraduate research project
 * `mkislin` --> probe detection analysis scripts for M. Kislin in-vivo recording work
