@@ -49,14 +49,16 @@ def orientation_crop_check(src, axes = ("0","1","2"), crop = False, dst=False):
     if dst: plt.savefig(dst, dpi=300)
     return src
 
-def optimize_inj_detect(src, threshold=3, filter_kernel = (3,3,3), dst=False):
+def optimize_inj_detect(src, threshold=3, filter_kernel = (3,3,3), dst=False,
+                        num_sites_to_keep=1):
     """Function to test detection parameters
     
     "dst": (optional) path+extension to save image
     
     """
     if type(src) == str: src = tifffile.imread(src)
-    arr = find_site(src, thresh=threshold, filter_kernel=filter_kernel)*45000
+    arr = find_site(src, thresh=threshold, 
+          filter_kernel=filter_kernel, num_sites_to_keep=num_sites_to_keep)*45000
     fig = plt.figure()
     fig.add_subplot(1,2,1)
     plt.imshow(np.max(arr, axis=0));  plt.axis("off")
@@ -244,20 +246,21 @@ def find_site(im, thresh=10, filter_kernel=(5,5,5), num_sites_to_keep=1):
 #%%
 if __name__ == "__main__":
     
-    #check if reorientation is necessary
-#    src = "/home/wanglab/mounts/wang/Jess/lightsheet_output/201904_ymaze_cfos/injection/processed/an26/elastix/an26_ymazefos_021519_1d3x_647_008na_1hfds_z10um_400msec_ch00/result.1.tif"
-#    src = orientation_crop_check(src, axes = ("2","1","0"), crop = "[:,500:,:200]")
-#    
-#    #optimize detection parameters for inj det
-#    optimize_inj_detect(src, threshold=5, filter_kernel = (1,1,1))
-#    
+    # #check if reorientation is necessary
+    # src = "/home/wanglab/wang/Jess/lightsheet_output/201906_development_cno/processed/an10/elastix/result.1.tif"
+    # src = orientation_crop_check(src, axes = ("2","0","1"), crop = "[:,500:,:]")
+    
+    # #optimize detection parameters for inj det
+    # optimize_inj_detect(src, threshold=15, filter_kernel = (3,3,3), num_sites_to_keep=2)
+    
     #run
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
-    brains = ["an01", "an02", "an03", "an04", "an05", "an06",
-       "an07", "an09", #"an10",
-       "an12", "an13", "an14", "an15", "an16",
-       "an17"]
+    brains = ["an10"]
+       #  ["an01", "an02", "an03", "an04", "an05", "an06",
+       # "an07", "an09", #"an10",
+       # "an12", "an13", "an14", "an15", "an16",
+       # "an17"]
     # , "an20", "an21", "an22", "an23", "an24", "an25", "an26",
     #    "an27", "an30", "an31"]
     
@@ -284,7 +287,7 @@ if __name__ == "__main__":
               "injectionscale": 45000, 
               "imagescale": 3,
               "reorientation": ("2","0","1"),
-              "crop": "[:, 450:, :]",
+              "crop": "[:, 500:, :]",
               "crop_atlas": "[:, 450:, :]",
               "dst": "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/pooled_analysis",
               "save_individual": True, 
