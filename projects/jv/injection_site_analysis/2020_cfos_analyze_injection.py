@@ -6,15 +6,15 @@ Created on Tue Mar 10 17:19:51 2020
 @author: wanglab
 """
 
-import os, numpy as np
+import os, numpy as np, sys, matplotlib as mpl, SimpleITK as sitk
+import pandas as pd, matplotlib.pyplot as plt
+sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
 from skimage.external import tifffile
-import matplotlib as mpl
+from collections import Counter
 from tools.imageprocessing.orientation import fix_orientation
 from tools.registration.transform import count_structure_lister, transformed_pnts_to_allen_helper_func
 from tools.utils.io import makedir
-from collections import Counter
-import SimpleITK as sitk, pandas as pd
-import matplotlib.pyplot as plt; plt.ion()
+plt.ion()
 
 def orientation_crop_check(src, axes = ("0","1","2"), crop = False, dst=False):
     """Function to check orientation and cropping. MaxIPs along 0 axis.
@@ -215,17 +215,18 @@ if __name__ == "__main__":
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
     brains = ["an1_crus1_lat",
-       "an1_vecctrl_ymaze", "an2_vecctrl_ymaze", "an3_crus1_lat",
-       "an3_vecctrl_ymaze", "an4_crus1_lat", "an4_vecctrl_ymaze",
-       "an5_crus1_lat", "an5_vecctrl_ymaze", "an6_crus1_lat",
-       "an6_vecctrl_ymaze", "an7_crus1_lat", "an7_vecctrl_ymaze",
-       "an8_crus1_lat", "an8_vecctrl_ymaze", "an9_crus1_lat",
-       "an9_vecctrl_ymaze", "an10_crus1_lat", "an10_vecctrl_ymaze", "an11_crus1_lat",
-        "an13_crus1_lat", "an14_crus1_lat",
+       "an1_vecctrl_ymaze", "an2_crus1_lat",
+       "an2_vecctrl_ymaze", "an3_crus1_lat", "an3_vecctrl_ymaze",
+       "an4_crus1_lat", "an4_vecctrl_ymaze", "an5_crus1_lat",
+       "an5_vecctrl_ymaze", "an6_crus1_lat", "an6_vecctrl_ymaze",
+       "an7_crus1_lat", "an7_vecctrl_ymaze", "an8_crus1_lat",
+       "an8_vecctrl_ymaze", "an9_crus1_lat", "an9_vecctrl_ymaze",
+       "an10_crus1_lat", "an10_vecctrl_ymaze", "an11_crus1_lat",
+       "an12_crus1_lat", "an13_crus1_lat", "an14_crus1_lat",
        "an15_crus1_lat", "an16_crus1_lat", "an17_crus1_lat",
-       "an18_crus1_lat", "an19_crus1_lat"]
+       "an18_crus1_lat", "an19_crus1_lat", "an20_crus1_lat"]
     
-    pth = "/home/wanglab/wang/Jess/lightsheet_output/202002_cfos/injection/processed"
+    pth = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/processed"
     brains = [os.path.join(pth, xx) for xx in brains]
     inputlist = []
     
@@ -251,6 +252,6 @@ if __name__ == "__main__":
               "annotation":"/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif",
               "id_table": "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
             }              
-              
-    
+
+    #run              
     df = pool_injections_for_analysis(**kwargs)
