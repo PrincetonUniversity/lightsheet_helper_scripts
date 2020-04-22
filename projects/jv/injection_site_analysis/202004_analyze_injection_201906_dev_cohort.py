@@ -288,7 +288,7 @@ if __name__ == "__main__":
               "crop_atlas": "[:, 450:, :]",
               "dst": "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/pooled_analysis",
               "save_individual": True, 
-              "save_tif": False,
+              "save_tif": True,
               "colormap": "plasma", 
               "atlas": "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif",
               "annotation":"/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif",
@@ -297,3 +297,45 @@ if __name__ == "__main__":
 
     #run              
     df = pool_injections_for_analysis(**kwargs)
+    
+#%% 
+    # src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/injection/pooled_analysis/all_except_an26"
+    
+    # #grab inj vols
+    # vols = [os.path.join(src, xx) for xx in os.listdir(src) if xx[-7:] == "inj.tif"]
+    # vols.append("/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/injection/pooled_analysis/same_parameters/an26_inj.tif")
+    
+    # nz = [np.nonzero(tifffile.imread(vol)) for vol in vols]
+    # nonzeros = [list(zip(*pts)) for pts in nz] #<-for pooled image
+    # #load atlas
+    # atlas = tifffile.imread(kwargs["atlas"])
+    # if kwargs['crop_atlas']: atlas = eval('atlas{}'.format(kwargs['crop_atlas']))
+    
+    # #condense nonzero pixels
+    # nzs = [str(x) for xx in nonzeros for x in xx] #this list has duplicates if two brains had the same voxel w label
+    # c = Counter(nzs)
+    # array = np.zeros_like(atlas)
+    # print('Collecting nonzero pixels for pooled image...')
+    # tick = 0
+    # #generating pooled array where voxel value = total number of brains with that voxel as positive
+    # for k,v in c.items():
+    #     k = [int(xx) for xx in k.replace('(','').replace(')','').split(',')]
+    #     array[k[0], k[1], k[2]] = int(v)
+    #     tick+=1
+    #     if tick % 50000 == 0: print('   {}'.format(tick))
+    
+    # #reslice
+    # atlas = fix_orientation(atlas, axes = kwargs["reorientation"])
+    # arr = fix_orientation(array, axes = kwargs["reorientation"])
+    
+    # my_cmap = eval('plt.cm.{}(np.arange(plt.cm.RdBu.N))'.format("plasma"))
+    # my_cmap[:1,:4] = 0.0  
+    # my_cmap = mpl.colors.ListedColormap(my_cmap)
+    # my_cmap.set_under('w')
+    # plt.figure()
+    # plt.imshow(np.max(atlas, axis=0), cmap='gray')
+    # plt.imshow(np.max(arr, axis=0), alpha=0.99, cmap=my_cmap); plt.colorbar(); plt.axis('off')
+    # plt.savefig('/home/wanglab/Desktop/test/heatmap.pdf', dpi = 300, transparent=True)
+    # plt.close()
+    
+    # print('Saved as {}'.format('/home/wanglab/Desktop/test/heatmap.pdf'))    
