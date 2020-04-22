@@ -251,22 +251,22 @@ if __name__ == "__main__":
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
     brains = ["an01", "an02", "an03", "an04", "an05", "an06",
        "an07", "an09", "an10", "an12", "an13", "an14", "an15", "an16",
-       "an17", "an20", "an21", "an22", "an23", "an24", "an25", "an26",
-       "an27", "an30", "an31"]
+       "an17"]
+    # , "an20", "an21", "an22", "an23", "an24", "an25", "an26",
+    #    "an27", "an30", "an31"]
     
     pth = "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/processed"
     brains = [os.path.join(pth, xx) for xx in brains]
     inputlist = []
     channel = "647" #channel for signal/injection volume
     for brain in brains:
-        print(brain)
+        # print(brain)
         reg_pth = os.path.join(pth, os.path.join(brain, "elastix"))
         try: #try with channel first
             inj_pth = [os.path.join(reg_pth, xx) for xx in os.listdir(reg_pth) if os.path.isdir(os.path.join(reg_pth, xx))
                    and channel in xx][0]
-        except:
-            inj_pth = [os.path.join(reg_pth, xx) for xx in os.listdir(reg_pth) if os.path.isdir(os.path.join(reg_pth, xx))
-                   and os.path.basename(brain) in xx][0]
+        except: #an10 is messed up, sig and reg channel switched
+            inj_pth = reg_pth
         inputlist.append(os.path.join(inj_pth, "result.tif"))
 
     kwargs = {"inputlist": inputlist, 
