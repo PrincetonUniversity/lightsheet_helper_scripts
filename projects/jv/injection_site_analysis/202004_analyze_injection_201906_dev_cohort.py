@@ -265,9 +265,11 @@ if __name__ == "__main__":
         try: #try with channel first
             inj_pth = [os.path.join(reg_pth, xx) for xx in os.listdir(reg_pth) if os.path.isdir(os.path.join(reg_pth, xx))
                    and channel in xx][0]
+            inputlist.append(os.path.join(inj_pth, "result.tif"))
         except: #an10 is messed up, sig and reg channel switched
             inj_pth = reg_pth
-        inputlist.append(os.path.join(inj_pth, "result.tif"))
+            inputlist.append(os.path.join(inj_pth, "result.1.tif"))
+        
 
     kwargs = {"inputlist": inputlist, 
               "filter_kernel": (5, 5, 5),
