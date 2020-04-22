@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Mar 10 17:19:51 2020
+Created on Wed Apr 22 13:17:52 2020
 
 @author: wanglab
 """
@@ -249,26 +249,19 @@ if __name__ == "__main__":
     #run
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
-    brains = ["an1_crus1_lat",
-       "an1_vecctrl_ymaze", "an2_crus1_lat",
-       "an2_vecctrl_ymaze", "an3_crus1_lat", "an3_vecctrl_ymaze",
-       "an4_crus1_lat", "an4_vecctrl_ymaze", "an5_crus1_lat",
-       "an5_vecctrl_ymaze", "an6_crus1_lat", "an6_vecctrl_ymaze",
-       "an7_crus1_lat", "an7_vecctrl_ymaze", "an8_crus1_lat",
-       "an8_vecctrl_ymaze", "an9_crus1_lat", "an9_vecctrl_ymaze",
-       "an10_crus1_lat", "an10_vecctrl_ymaze", "an11_crus1_lat",
-       "an12_crus1_lat", "an13_crus1_lat", "an14_crus1_lat",
-       "an15_crus1_lat", "an16_crus1_lat", "an17_crus1_lat",
-       "an18_crus1_lat", "an19_crus1_lat", "an20_crus1_lat"]
+    brains = ["an01", "an02", "an03", "an04", "an05", "an06",
+       "an07", "an09", "an10", "an12", "an13", "an14", "an15", "an16",
+       "an17", "an20", "an21", "an22", "an23", "an24", "an25", "an26",
+       "an27", "an30", "an31"]
     
-    pth = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/processed"
+    pth = "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/processed"
     brains = [os.path.join(pth, xx) for xx in brains]
     inputlist = []
     
     for brain in brains:
         reg_pth = os.path.join(pth, os.path.join(brain, "elastix"))
         inj_pth = [os.path.join(reg_pth, xx) for xx in os.listdir(reg_pth) if os.path.isdir(os.path.join(reg_pth, xx))][0]
-        inputlist.append(os.path.join(inj_pth, "result.1.tif"))
+        inputlist.append(os.path.join(inj_pth, "result.tif"))
 
     kwargs = {"inputlist": inputlist, 
               "filter_kernel": (5, 5, 5),
@@ -279,9 +272,9 @@ if __name__ == "__main__":
               "reorientation": ("2","0","1"),
               "crop": "[:, 450:, :]",
               "crop_atlas": "[:, 450:, :]",
-              "dst": "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/pooled_analysis",
+              "dst": "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/pooled_analysis",
               "save_individual": True, 
-              "save_tif": True,
+              "save_tif": False,
               "colormap": "plasma", 
               "atlas": "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif",
               "annotation":"/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif",
