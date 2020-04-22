@@ -258,9 +258,11 @@ if __name__ == "__main__":
     brains = [os.path.join(pth, xx) for xx in brains]
     inputlist = []
     
+    channel = "647" #channel for signal/injection volume
     for brain in brains:
         reg_pth = os.path.join(pth, os.path.join(brain, "elastix"))
-        inj_pth = [os.path.join(reg_pth, xx) for xx in os.listdir(reg_pth) if os.path.isdir(os.path.join(reg_pth, xx))][0]
+        inj_pth = [os.path.join(reg_pth, xx) for xx in os.listdir(reg_pth) if os.path.isdir(os.path.join(reg_pth, xx))
+                   and channel in xx][0]
         inputlist.append(os.path.join(inj_pth, "result.tif"))
 
     kwargs = {"inputlist": inputlist, 
