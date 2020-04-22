@@ -281,8 +281,8 @@ if __name__ == "__main__":
         
 
     kwargs = {"inputlist": inputlist, 
-              "filter_kernel": (5, 5, 5),
-              "threshold": 3,
+              "filter_kernel": (3,3,3),
+              "threshold": 15,
               "num_sites_to_keep": 1,
               "injectionscale": 45000, 
               "imagescale": 3,
