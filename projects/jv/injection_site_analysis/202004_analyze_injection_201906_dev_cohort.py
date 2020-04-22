@@ -257,10 +257,10 @@ if __name__ == "__main__":
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
     brains = ["an10"]
-       #  ["an01", "an02", "an03", "an04", "an05", "an06",
-       # "an07", "an09", #"an10",
-       # "an12", "an13", "an14", "an15", "an16",
-       # "an17"]
+        #  ["an01", "an02", "an03", "an04", "an05", "an06",
+        # "an07", "an09", #"an10",
+        # "an12", "an13", "an14", "an15", "an16",
+        # "an17"]
     # , "an20", "an21", "an22", "an23", "an24", "an25", "an26",
     #    "an27", "an30", "an31"]
     
@@ -273,7 +273,7 @@ if __name__ == "__main__":
         reg_pth = os.path.join(pth, os.path.join(brain, "elastix"))
         try: #try with channel first
             inj_pth = [os.path.join(reg_pth, xx) for xx in os.listdir(reg_pth) if os.path.isdir(os.path.join(reg_pth, xx))
-                   and channel in xx][0]
+                    and channel in xx][0]
             inputlist.append(os.path.join(inj_pth, "result.tif"))
         except: #an10 is messed up, sig and reg channel switched
             inj_pth = reg_pth
@@ -298,47 +298,49 @@ if __name__ == "__main__":
               "id_table": "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
             }              
 
-    #run              
-    df = pool_injections_for_analysis(**kwargs)
+    # #run              
+    # df = pool_injections_for_analysis(**kwargs)
     
 #%% 
-    # src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/injection/pooled_analysis/all_except_an26"
+    src = "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/pooled_analysis"
     
-    # #grab inj vols
-    # vols = [os.path.join(src, xx) for xx in os.listdir(src) if xx[-7:] == "inj.tif"]
-    # vols.append("/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/injection/pooled_analysis/same_parameters/an26_inj.tif")
+    #grab inj vols
+    vols = [os.path.join(src, xx) for xx in os.listdir(src) if xx[-7:] == "inj.tif"]
     
-    # nz = [np.nonzero(tifffile.imread(vol)) for vol in vols]
-    # nonzeros = [list(zip(*pts)) for pts in nz] #<-for pooled image
-    # #load atlas
-    # atlas = tifffile.imread(kwargs["atlas"])
-    # if kwargs['crop_atlas']: atlas = eval('atlas{}'.format(kwargs['crop_atlas']))
+    nz = [np.nonzero(tifffile.imread(vol)) for vol in vols]
+    nonzeros = [list(zip(*pts)) for pts in nz] #<-for pooled image
+    #load atlas
+    atlas = tifffile.imread(kwargs["atlas"])
+    if kwargs["crop_atlas"]: atlas = eval("atlas{}".format(kwargs["crop_atlas"]))
     
-    # #condense nonzero pixels
-    # nzs = [str(x) for xx in nonzeros for x in xx] #this list has duplicates if two brains had the same voxel w label
-    # c = Counter(nzs)
-    # array = np.zeros_like(atlas)
-    # print('Collecting nonzero pixels for pooled image...')
-    # tick = 0
-    # #generating pooled array where voxel value = total number of brains with that voxel as positive
-    # for k,v in c.items():
-    #     k = [int(xx) for xx in k.replace('(','').replace(')','').split(',')]
-    #     array[k[0], k[1], k[2]] = int(v)
-    #     tick+=1
-    #     if tick % 50000 == 0: print('   {}'.format(tick))
+    #condense nonzero pixels
+    nzs = [str(x) for xx in nonzeros for x in xx] #this list has duplicates if two brains had the same voxel w label
+    c = Counter(nzs)
+    array = np.zeros_like(atlas)
+    print("Collecting nonzero pixels for pooled image...")
+    tick = 0
+    #generating pooled array where voxel value = total number of brains with that voxel as positive
+    for k,v in c.items():
+        k = [int(xx) for xx in k.replace("(","").replace(")","").split(",")]
+        array[k[0], k[1], k[2]] = int(v)
+        tick+=1
+        if tick % 50000 == 0: print("   {}".format(tick))
     
-    # #reslice
-    # atlas = fix_orientation(atlas, axes = kwargs["reorientation"])
-    # arr = fix_orientation(array, axes = kwargs["reorientation"])
+    #reslice
+    atlas = fix_orientation(atlas, axes = kwargs["reorientation"])
+    arr = fix_orientation(array, axes = kwargs["reorientation"])
     
-    # my_cmap = eval('plt.cm.{}(np.arange(plt.cm.RdBu.N))'.format("plasma"))
-    # my_cmap[:1,:4] = 0.0  
-    # my_cmap = mpl.colors.ListedColormap(my_cmap)
-    # my_cmap.set_under('w')
-    # plt.figure()
-    # plt.imshow(np.max(atlas, axis=0), cmap='gray')
-    # plt.imshow(np.max(arr, axis=0), alpha=0.99, cmap=my_cmap); plt.colorbar(); plt.axis('off')
-    # plt.savefig('/home/wanglab/Desktop/test/heatmap.pdf', dpi = 300, transparent=True)
-    # plt.close()
+    my_cmap = eval("plt.cm.{}(np.arange(plt.cm.RdBu.N))".format("plasma"))
+    my_cmap[:1,:4] = 0.0  
+    my_cmap = mpl.colors.ListedColormap(my_cmap)
+    my_cmap.set_under("w")
+    plt.figure()
+    plt.imshow(np.max(atlas, axis=0), cmap="gray")
+    plt.imshow(np.max(arr, axis=0), alpha=0.99, cmap=my_cmap)
+    cb=plt.colorbar()
+    cb.set_label("# Brains expressing", labelpad=3)
+    cb.ax.set_visible(True)
+    plt.axis("off")
+    plt.savefig(os.path.join(src, "heatmap.pdf"), dpi = 300, transparent=True)
+    plt.close()
     
-    # print('Saved as {}'.format('/home/wanglab/Desktop/test/heatmap.pdf'))    
