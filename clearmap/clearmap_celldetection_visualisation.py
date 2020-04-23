@@ -143,7 +143,7 @@ class Sagittal():
         cell_map = np.asarray([cv2.dilate(cell_map[i], selem, iterations = 1) for i in range(cell_map.shape[0])])
         
         #resampling cells
-        resizef = (1/1.6, 1/3.2, 1/3.2) #in z,y,x, depends on resampling, maybe better not to be hardcoded; always resampled this way in ClearMap
+        resizef = (1/1.6, 1/9.81, 1/9.81) #in z,y,x, depends on resampling, maybe better not to be hardcoded; always resampled this way in ClearMap
         print("resizing by factors (z,y,x): {}\n this can take some time...\n".format(resizef))
         resz_cell_map = zoom(cell_map, resizef, order = 1) #right now only linear interpolation
         print("horizontal resampled cell map shape: {}\n".format(resz_cell_map.shape))
@@ -175,7 +175,7 @@ class Sagittal():
         for n in range(6):
             #open figure
             plt.figure(figsize=(8.27, 11.69))
-            a = np.max(self.horizontal[slice-chunk:slice, :, :]*10, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
+            a = np.max(self.horizontal[slice-chunk:slice, :, :]*30, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
             b = np.max(resz_cell_map[slice-chunk:slice, :, :]*3,axis = 0)
             plt.imshow(a, "gist_yarg")
             plt.imshow(b, cmap, alpha = alpha)
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
     if os.path.exists(cells):
         sagittal = Sagittal(src, dst, cells)
-        sagittal.makeClearMapCellOverlayHorizontalSections(volume = True, save = True)
+        sagittal.makeClearMapCellOverlayHorizontalSections(volume = False, save = True)
 
 
         
