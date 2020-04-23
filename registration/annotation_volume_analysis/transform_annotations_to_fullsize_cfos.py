@@ -8,16 +8,16 @@ Created on Mon Oct 21 14:19:28 2019
 
 import os, numpy as np, sys, time
 from skimage.external import tifffile
-sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
-from tools.utils.io import makedir, load_memmap_arr, listall, load_kwargs
+sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
+from tools.utils.io import makedir
 from tools.registration.register import change_interpolation_order, transformix_command_line_call
 from tools.registration.transform_list_of_points import modify_transform_files
 from scipy.ndimage.interpolation import zoom
 
 #setting paths
-ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif"
+ann = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.tif"
 scratch_dir = "/jukebox/scratch/zmd"
-src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed"
+src = "/jukebox/LightSheetData/falkner-mouse/scooter/clearmap_processed"
 
 #set brain name
 brain = os.path.join(src, "an19")
@@ -59,11 +59,11 @@ flszdt = os.path.join(brain, "full_sizedatafld")
 cellfld = [os.path.join(flszdt, xx) for xx in os.listdir(flszdt) if "647" in xx][0]
 pl0 = tifffile.imread(os.path.join(cellfld, os.listdir(cellfld)[0]))
 dv0,ap0,ml0 = len(os.listdir(cellfld)), pl0.shape[0], pl0.shape[1]
-
 ml1,ap1,dv1 = tann.shape
 
 #scale in dv only first and rotate to hor orientation
-bigdvann = np.swapaxes(zoom(tann, [1,1,dv0/float(dv1)], order=0),0,2)
+bigdvann = np.flip(np.swapaxes(zoom(tann, [1,1,dv0/float(dv1)], order=0),0,2),0) #ALSO REVERSE IN Z FOR VENTRAL TO DORSAL IMAGING
+#remove np.flip if imaging D --> V
 save_dst = os.path.join(aldst, "single_tifs"); makedir(save_dst)
 
 #now rotate and scale each in ap and ml

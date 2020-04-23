@@ -224,7 +224,7 @@ if __name__ == "__main__":
     flnm = "Annotated_counts"
     
     #make a list of structures you want to sum up
-    struct_csv = "/jukebox/wang/zahra/cfos/structures.csv"
+    struct_csv = "/home/wanglab/LightSheetData/falkner-mouse/allen_atlas/structures.csv"
     dst = "/home/wanglab/Desktop/"
     
     #get list of summed structures
@@ -261,7 +261,6 @@ if __name__ == "__main__":
             df.loc[df.name == struct, "counts"] = np.sum(np.array(counts))
         #add summed structures
         for struct in sum_str:
-            print(struct)
             #add summed structure to df
             progeny = []; counts = []; voxels = []
             get_progeny(ontology_dict, struct, progeny)
