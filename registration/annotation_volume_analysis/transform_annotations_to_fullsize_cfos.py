@@ -19,8 +19,13 @@ ann = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagitt
 scratch_dir = "/jukebox/scratch/zmd"
 src = "/jukebox/LightSheetData/falkner-mouse/scooter/clearmap_processed"
 
+#for array job parallelization
+print(sys.argv)
+print(os.environ["SLURM_ARRAY_TASK_ID"])
+jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
+brains = [os.path.join(src,xx) for xx in os.listdir(src)]
 #set brain name
-brain = os.path.join(src, "an19")
+brain = brains[jobid]
 
 start = time.time()
 

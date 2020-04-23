@@ -18,4 +18,6 @@ module load anacondapy/5.3.1
 module load elastix/4.8
 . activate lightsheet
 
-python transform_annotations_to_fullsize_cfos.py
+echo "Array Index: $SLURM_ARRAY_TASK_ID"
+
+python transform_annotations_to_fullsize_cfos.py ${SLURM_ARRAY_TASK_ID}
