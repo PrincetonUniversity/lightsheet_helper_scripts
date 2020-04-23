@@ -195,18 +195,19 @@ class Sagittal():
 #%%
 if __name__ == "__main__":
     #grabbing sagittal volume
-    dst = "/jukebox/LightSheetData/falkner-mouse/scooter/qc"
+    dst = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing/qc"
     if not os.path.exists(dst): os.mkdir(dst)
 
-    pth = "/jukebox/LightSheetData/falkner-mouse/scooter/clearmap_processed"
-    flds = os.listdir(pth)
+    pth = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing/clearmap"
+    # flds = os.listdir(pth)
     
-    for fld in flds:
-        src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
-        cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
-        if os.path.exists(cells):
-            sagittal = Sagittal(src, dst, cells)
-            sagittal.makeClearMapCellOverlayHorizontalSections(volume = True, save = True)
+    # for fld in flds:
+    fld = "z265"
+    src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
+    cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
+    if os.path.exists(cells):
+        sagittal = Sagittal(src, dst, cells)
+        sagittal.makeClearMapCellOverlayHorizontalSections(volume = True, save = True)
 
 
         

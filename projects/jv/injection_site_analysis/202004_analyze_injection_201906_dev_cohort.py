@@ -34,18 +34,16 @@ def orientation_crop_check(src, axes = ("0","1","2"), crop = False, dst=False):
     
     """
     fig = plt.figure()
-    plt.axis("off")
     fig.add_subplot(1,2,1)
     if type(src) == str: src = tifffile.imread(src)
     plt.imshow(np.max(src, axis=0))
     plt.title("Before reorientation")
-    
     fig.add_subplot(1,2,2)
     if crop: src = eval("src{}".format(crop))
     src = fix_orientation(src, axes=axes)
     plt.imshow(np.max(src, axis=0))
     plt.title("After reorientation")
-    
+    plt.axis("off")
     if dst: plt.savefig(dst, dpi=300)
     return src
 
