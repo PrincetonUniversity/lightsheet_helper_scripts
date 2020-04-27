@@ -13,8 +13,8 @@ from skimage.external import tifffile
 from tools.registration.transform import count_structure_lister, transformed_pnts_to_allen_helper_func
 plt.ion()
 
-src = "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/pooled_analysis"
-dst = "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/pooled_analysis_unilateral"
+src = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/pooled_analysis"
+dst = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/pooled_analysis_unilateral"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
 id_tb_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif",
@@ -37,8 +37,10 @@ plt.imshow(ann_left[400])
 side = "right"
 #grab inj vols
 nonzeros = []
-vols = [os.path.join(src, xx) for xx in os.listdir(src) if xx[-7:] == "inj.tif"]
+vols = [os.path.join(src, xx) for xx in os.listdir(src) 
+        if xx[-7:] == "inj.tif" and "crus1" in xx]
 for i,vol in enumerate(vols):
+    print("\n*******"+os.path.basename(vol)+"*******\n")
     nz = np.nonzero(tifffile.imread(vol))
     nonzeros.append(list(zip(*nz))) #<-for pooled image
     pos = transformed_pnts_to_allen_helper_func(np.asarray(list(zip(*[nz[2], 
@@ -59,6 +61,7 @@ side = "left"
 nonzeros = []
 vols = [os.path.join(src, xx) for xx in os.listdir(src) if xx[-7:] == "inj.tif"]
 for i,vol in enumerate(vols):
+    print("\n*******"+os.path.basename(vol)+"*******\n")
     nz = np.nonzero(tifffile.imread(vol))
     nonzeros.append(list(zip(*nz))) #<-for pooled image
     pos = transformed_pnts_to_allen_helper_func(np.asarray(list(zip(*[nz[2], 
