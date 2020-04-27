@@ -39,7 +39,7 @@ def resize_merged_stack(pth, dst, dtype = "uint16", resizef = 3):
 
     return dst
 
-def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef):
+def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef, annotation=False):
     """
     maps cnn cell center coordinates to full size cell channel images
     inputs:
@@ -76,13 +76,24 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef):
         cell_centers[r[2]-zstart, r[1]-1:r[1]+1, r[0]-1:r[0]+1] = 50000
 
     rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), np.zeros_like(raw)], -1)
-
+    
+    #add the annotation volume transformed-to-raw-space as the 'blue' channel in the RGB stack (3 color overlay)
+    if annotation:
+        src = [os.path.join(annotation, xx) for xx in os.listdir(annotation) if xx[-3:] == "tif" and int(xx[-7:-4]) in range(zstart, zstop)]; src.sort()
+        #populate corresponding annotation volume
+        ann_raw = np.zeros((len(src), tifffile.imread(src[0]).shape[0], tifffile.imread(src[0]).shape[1]))
+        for i in range(len(src)):
+            ann_raw[i, :, :] = tifffile.imread(src[i])
+        #add 'blue' channel to rbg stack
+        rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), ann_raw("uint16")], -1)
+        
+    #resize the whole stack
     resize_merged_stack(rbg, os.path.join(dst, "{}_raw_cell_centers_resizedfactor{}_z{}-{}.tif".format(os.path.basename(brain),
                                           resizef, zstart, zstop)), "uint16", resizef)
 
     print("took %0.1f seconds to make merged maps for %s" % ((time.time()-start), brain))
 
-def check_cell_center_to_resampled(brain, zstart, zstop, dst):
+def check_cell_center_to_resampled(brain, zstart, zstop, dst, annotation=False):
     """
     maps cnn cell center coordinates to resampled stack
     inputs:
@@ -109,7 +120,13 @@ def check_cell_center_to_resampled(brain, zstart, zstop, dst):
         cell_centers[r[2]-zstart, r[1]-1:r[1]+1, r[0]-1:r[0]+1] = 50000
 
     rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), np.zeros_like(raw)], -1)
-
+    
+    #add the annotation volume transformed-to-raw-space as the 'blue' channel in the RGB stack (3 color overlay)
+    if annotation:
+        #add 'blue' channel to rbg stack
+        ann = tifffile.imread(annotation)
+        rbg = np.stack([raw.astype("uint16"), cell_centers.astype("uint16"), ann("uint16")], -1)
+        
     resize_merged_stack(rbg, os.path.join(dst, "{}_raw_cell_centers_resized_z{}-{}.tif".format(os.path.basename(brain),
                                           zstart, zstop)), "uint16", 6)
 
