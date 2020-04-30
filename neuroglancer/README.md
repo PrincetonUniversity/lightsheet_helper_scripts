@@ -40,19 +40,32 @@
 - mk_ng_vol.sh
   - Slurm script to run the make_precomputed_tracing.py script on spock/other slurm-based cluster
 
-# Tip: To run most of these notebooks/scripts make an anaconda environment: 
+# Tip: To run most of these notebooks/scripts make an anaconda environment:
 
-conda create --name ng python=3.6
+conda create --name ng python=3.6 <br>
 conda activate ng # go into the environment (or source activate if you're using anaconda2)
-# Get numpy
-pip install numpy
-# install cloudvolume
-# Clone the repo, then go into the repo directory wherever you put your git stuff, e.g.:
-cd ~/Git/cloud-volume/
-pip install -e .[all_viewers]
-# install neuroglancer
-pip install neuroglancer
-# get igneous - needed in order to show objects in 3D in neuroglancer
-cd ~/Git/igneous/
-pip install -r requirements.txt
-python setup.py develop # Make sure to be inside your ng conda environment for this
+
+\# Get numpy
+
+`pip install numpy`
+
+\# install cloudvolume<br>
+\# Clone the repo: https://github.com/seung-lab/cloud-volume, then go into the repo directory wherever you put your git stuff, e.g.:
+
+`cd ~/Git/cloud-volume/`
+
+`pip install -e .[all_viewers]`
+
+\# install neuroglancer
+
+`pip install neuroglancer`
+
+\# install igneous - needed in order to mesh (show objects in 3D in neuroglancer) and to downsample (needed for large volumes)
+
+\# Clone the repo: https://github.com/seung-lab/igneous, then go into the repo directory, e.g.:
+
+`cd ~/Git/igneous/`
+
+`pip install -r requirements.txt`
+
+`python setup.py develop` # Make sure to be inside your ng conda environment for this
