@@ -297,7 +297,7 @@ if __name__ == "__main__":
             }              
 
     # #run              
-    # df = pool_injections_for_analysis(**kwargs)
+    df = pool_injections_for_analysis(**kwargs)
     
 #%% 
     # src = "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/pooled_analysis"
