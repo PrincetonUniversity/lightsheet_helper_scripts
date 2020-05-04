@@ -254,11 +254,11 @@ if __name__ == "__main__":
     #run
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
-    brains = ["an01", "an02", "an03", "an04", "an05", "an06",
-        "an07", "an09", #"an10",
-        "an12", "an13", "an14", "an15", "an16",
-        "an17"]
-    # ["an10"]
+    brains = ["an10"]
+        # ["an01", "an02", "an03", "an04", "an05", "an06",
+        # "an07", "an09", #"an10",
+        # "an12", "an13", "an14", "an15", "an16",
+        # "an17"]
     # , "an20", "an21", "an22", "an23", "an24", "an25", "an26",
     #    "an27", "an30", "an31"]
     
@@ -279,17 +279,17 @@ if __name__ == "__main__":
         
 
     kwargs = {"inputlist": inputlist, 
-              "filter_kernel": (5,5,5),
-              "threshold": 3,
+              "filter_kernel": (3,3,3),
+              "threshold": 15,
               "num_sites_to_keep": 1,
               "injectionscale": 45000, 
               "imagescale": 3,
               "reorientation": ("2","0","1"),
-              "crop": "[:, 450:, :]",
+              "crop": "[:, 500 :]",
               "crop_atlas": "[:, 450:, :]",
               "dst": "/jukebox/wang/Jess/lightsheet_output/201906_development_cno/pooled_analysis",
-              "save_individual": True, 
-              "save_tif": True,
+              "save_individual": False, 
+              "save_tif": False,
               "colormap": "plasma", 
               "atlas": "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif",
               "annotation":"/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif",
