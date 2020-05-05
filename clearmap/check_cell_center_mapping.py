@@ -38,7 +38,8 @@ def resize_merged_stack(pth, dst, dtype = "uint16", resizef = 3):
 
     return dst
 
-def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef, annotation=False):
+def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, 
+                    resizef, annotation=False, stitched=False):
     """
     maps cnn cell center coordinates to full size cell channel images
     inputs:
@@ -55,7 +56,13 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef, annota
     fzfld = os.path.join(brain, "full_sizedatafld")
 
     #exception if only 1 channel is imaged
-    cellch = os.path.join(fzfld, [xx for xx in os.listdir(fzfld) if "647" in xx][0])
+    if not stitched:
+        cellch = os.path.join(fzfld, [xx for xx in os.listdir(fzfld) if "647" in xx][0])
+    else: #if done with stitched data
+        try:
+            cellch = os.path.join(fzfld, [xx for xx in os.listdir(fzfld) if "ch01" in xx][0])
+        except:
+            cellch = os.path.join(fzfld, [xx for xx in os.listdir(fzfld) if "ch00" in xx][0])
 
     #not the greatest way to do things, but works
     src = [os.path.join(cellch, xx) for xx in os.listdir(cellch) if xx[-3:] == "tif" and int(xx[-7:-4]) in range(zstart, zstop)]; src.sort()
@@ -139,4 +146,4 @@ if __name__ == "__main__":
 
     for i in ids:
         brain = os.path.join(src, i)
-        check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef)
+        check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef, stitched=True)
