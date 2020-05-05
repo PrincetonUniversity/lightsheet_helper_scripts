@@ -6,9 +6,8 @@ Created on Mon Dec 17 11:09:29 2018
 @author: wanglab
 """
 
-import numpy as np, os, time, cv2, pandas as pd
+import numpy as np, os, time, cv2
 from skimage.external import tifffile
-import matplotlib.pyplot as plt
 
 def resize_merged_stack(pth, dst, dtype = "uint16", resizef = 3):
     """
@@ -66,7 +65,8 @@ def check_cell_center_to_fullsizedata(brain, zstart, zstop, dst, resizef, annota
     pth = os.path.join(brain, "clearmap_cluster_output/cells.npy")
     cells = np.load(pth) #this is in x,y,z!!!!!!!!!!!!!!!
     cells = cells[(cells[:, 2] >= zstart) & (cells[:, 2] <= zstop-1)] #-1 to account for range
-    cell_centers = np.zeros(raw.shape
+    cell_centers = np.zeros(raw.shape)
+    #make cell center map
     print("\n**********making cell center map**********\n")
     for i, r in enumerate(cells):
         cell_centers[r[2]-zstart, r[1]-1:r[1]+1, r[0]-1:r[0]+1] = 50000
