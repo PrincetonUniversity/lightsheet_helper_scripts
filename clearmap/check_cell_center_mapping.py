@@ -142,7 +142,7 @@ if __name__ == "__main__":
     if not os.path.exists(dst): os.mkdir(dst)
     zstart = 300; zstop = 310 #z-plane #'s you want to visualize at a time, 250-400 is probably ideal for thalamus
     resizef = 2 #factor by which to downsize raw and cell center overlay, keep 1 if you do not want to downsize
-    ids = ["z266", "z267", "z268", "z269"]
+    ids = ["z268", "z269"]
 
     for i in ids:
         brain = os.path.join(src, i)
