@@ -249,17 +249,22 @@ if __name__ == "__main__":
     #run
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
-    brains = ["an1_crus1_lat",
-       "an1_vecctrl_ymaze", "an2_crus1_lat",
-       "an2_vecctrl_ymaze", "an3_crus1_lat", "an3_vecctrl_ymaze",
-       "an4_crus1_lat", "an4_vecctrl_ymaze", "an5_crus1_lat",
-       "an5_vecctrl_ymaze", "an6_crus1_lat", "an6_vecctrl_ymaze",
-       "an7_crus1_lat", "an7_vecctrl_ymaze", "an8_crus1_lat",
-       "an8_vecctrl_ymaze", "an9_crus1_lat", "an9_vecctrl_ymaze",
-       "an10_crus1_lat", "an10_vecctrl_ymaze", "an11_crus1_lat",
-       "an12_crus1_lat", "an13_crus1_lat", "an14_crus1_lat",
-       "an15_crus1_lat", "an16_crus1_lat", "an17_crus1_lat",
-       "an18_crus1_lat", "an19_crus1_lat", "an20_crus1_lat"]
+    brains = ["an0_mcherrydymaze", "an10_mcherrydymaze",
+             "an11_mcherrydymaze", "an12_mcherrydymaze", "an13_mcherrydymaze",
+             "an14_mcherrydymaze", "an1_mcherrydymaze", "an2_mcherrydymaze",
+             "an3_mcherrydymaze", "an4_mcherrydymaze", "an6_mcherrydymaze",
+             "an7_mcherrydymaze", "an8_mcherrydymaze", "an9_mcherrydymaze"]   
+#    ["an1_crus1_lat",
+#       "an1_vecctrl_ymaze", "an2_crus1_lat",
+#       "an2_vecctrl_ymaze", "an3_crus1_lat", "an3_vecctrl_ymaze",
+#       "an4_crus1_lat", "an4_vecctrl_ymaze", "an5_crus1_lat",
+#       "an5_vecctrl_ymaze", "an6_crus1_lat", "an6_vecctrl_ymaze",
+#       "an7_crus1_lat", "an7_vecctrl_ymaze", "an8_crus1_lat",
+#       "an8_vecctrl_ymaze", "an9_crus1_lat", "an9_vecctrl_ymaze",
+#       "an10_crus1_lat", "an10_vecctrl_ymaze", "an11_crus1_lat",
+#       "an12_crus1_lat", "an13_crus1_lat", "an14_crus1_lat",
+#       "an15_crus1_lat", "an16_crus1_lat", "an17_crus1_lat",
+#       "an18_crus1_lat", "an19_crus1_lat", "an20_crus1_lat"]
     
     pth = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/processed"
     brains = [os.path.join(pth, xx) for xx in brains]
@@ -279,7 +284,7 @@ if __name__ == "__main__":
               "reorientation": ("2","0","1"),
               "crop": "[:, 450:, :]",
               "crop_atlas": "[:, 450:, :]",
-              "dst": "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/pooled_analysis",
+              "dst": "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/pooled_analysis/diluted_mcherry",
               "save_individual": True, 
               "save_tif": True,
               "colormap": "plasma", 

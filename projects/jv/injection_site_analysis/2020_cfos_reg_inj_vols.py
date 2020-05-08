@@ -102,7 +102,12 @@ if __name__ == "__main__":
     outdr = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/injection/processed"
     src = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/processed"
     
-    animals = ["an2_crus1_lat","an20_crus1_lat"]
+    animals = ['an0_mcherrydymaze', 'an10_mcherrydymaze',
+ 'an11_mcherrydymaze', 'an12_mcherrydymaze', 'an13_mcherrydymaze',
+ 'an14_mcherrydymaze', 'an1_mcherrydymaze', 'an2_mcherrydymaze',
+ 'an3_mcherrydymaze', 'an4_mcherrydymaze', 'an6_mcherrydymaze',
+ 'an7_mcherrydymaze', 'an8_mcherrydymaze', 'an9_mcherrydymaze']
+	# ["an2_crus1_lat","an20_crus1_lat"]
        #  ["an10_crus1_lat", "an10_vecctrl_ymaze", "an11_crus1_lat",
        # "an12_crus1_lat", "an13_crus1_lat", "an14_crus1_lat",
        # "an15_crus1_lat", "an16_crus1_lat", "an17_crus1_lat",
