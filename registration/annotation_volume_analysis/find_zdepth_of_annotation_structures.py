@@ -83,9 +83,13 @@ for struct in structs:
     print("******%s******\n" % struct)
     progeny = []; z_depths = []
     get_progeny(ontology_dict, struct, progeny)
+    #add original structure z-depth to list
+    if struct in df.name.values: z_depths.append(df.loc[df.name == struct, "z-depth"].values[0])
     for progen in progeny:
         if progen in df.name.values:
             z_depths.append(df.loc[df.name == progen, "z-depth"].values[0])
-    structs_df.loc[structs_df[0] == struct, "z-depth"] = np.median(np.array(z_depths))
+    structs_df.loc[structs_df[0] == struct, "z-depth"] = np.nanmedian(np.array(z_depths))
     
-structs_df.to_csv(os.path.join(os.path.dirname(str_pth), "structures_4.13.20_w_zdepth.csv"))
+#format and export
+structs_df.columns = ["name", "z-depth"]
+structs_df.to_csv(os.path.join(os.path.dirname(str_pth), "structures_4.13.20_w_zdepth.csv"), index = None)
