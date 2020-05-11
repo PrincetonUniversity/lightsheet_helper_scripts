@@ -16,6 +16,6 @@ cat /proc/$$/status | grep Cpus_allowed_list
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
 module load anacondapy/5.3.1
-. activate lightsheet
+. activate idisco
 
 python correct_clearmap_cell_detection.py ${SLURM_ARRAY_TASK_ID}
