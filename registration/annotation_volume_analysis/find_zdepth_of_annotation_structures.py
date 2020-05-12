@@ -20,19 +20,19 @@ def get_progeny(dic,parent_structure,progeny_list):
     progeny_list         The list to which this function will 
                          append the progeny structures. 
     """
-    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
+    if "msg" in list(dic.keys()): dic = dic["msg"][0]
     
-    name = dic.get('name')
-    children = dic.get('children')
+    name = dic.get("name")
+    children = dic.get("children")
     if name == parent_structure:
         for child in children: # child is a dict
-            child_name = child.get('name')
+            child_name = child.get("name")
             progeny_list.append(child_name)
             get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
         return
     
     for child in children:
-        child_name = child.get('name')
+        child_name = child.get("name")
         get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
     return 
     
@@ -41,31 +41,31 @@ ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 dst = "/jukebox/LightSheetTransfer/atlas"
 ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
-ann = tifffile.imread(ann_pth)
-df = pd.read_excel(df_pth)
+# ann = tifffile.imread(ann_pth)
+# df = pd.read_excel(df_pth)
 
 #get progeny of all large structures
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
     
-#init z-depth column in dataframe
-df["dorsal-ventral_coordinate"] = [np.nan]*len(df)
-#get all structure ids
-iids = np.unique(ann).astype("float32")
+# #init z-depth column in dataframe
+# df["dorsal-ventral_coordinate"] = [np.nan]*len(df)
+# #get all structure ids
+# iids = np.unique(ann).astype("float32")
 
-#iterate through ids
-for i,iid in enumerate(iids):
-    #find coordinates where the id/structure exists
-    zid, yid, xid = np.where(ann == iid)
-    #take the median of the z-coordinate to get 'center' in z
-    x_median = np.median(xid)
-    if i%50==0:
-        print("******%s******\n" % iid)
-        print("******median dorsal-ventral_coordinate is %s******\n" % x_median)
-    df.loc[df.id == iid, "dorsal-ventral_coordinate"] = x_median
+# #iterate through ids
+# for i,iid in enumerate(iids):
+#     #find coordinates where the id/structure exists
+#     zid, yid, xid = np.where(ann == iid)
+#     #take the median of the z-coordinate to get 'center' in z
+#     x_median = np.median(xid)
+#     if i%50==0:
+#         print("******%s******\n" % iid)
+#         print("******median dorsal-ventral_coordinate is %s******\n" % x_median)
+#     df.loc[df.id == iid, "dorsal-ventral_coordinate"] = x_median
 
-print("******saving to dataframe...******\n")
-df.to_csv(os.path.join(dst, "ls_id_table_w_voxelcounts_n_DVcoord.csv"))
+# print("******saving to dataframe...******\n")
+# df.to_csv(os.path.join(dst, "ls_id_table_w_voxelcounts_n_DVcoord.csv"))
 
 #%%
 
