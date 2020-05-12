@@ -17,7 +17,7 @@ roi_pths = [os.path.join(pth, xx) for xx in os.listdir(pth) if "RoiSet.zip" in x
 
 #these will be zyx 
 #note that importing it this way, the z dimension does not start from 0, but neither does clearmaps, so probably ok???
-annotated_cells = np.array([np.array([[int(yy) for yy in xx[0].replace(".roi", "").split("-")]for xx in
+annotated_cells = np.array([np.array([[int(yy) for yy in xx[0].replace(".roi", "").split("-")] for xx in
                             read_roi_zip(roi_pth, include_roi_name=True)]) for roi_pth in roi_pths])
 
 #voxel pair cutoff

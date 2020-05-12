@@ -182,42 +182,43 @@ if __name__ == "__main__":
 
     #sweep
     rBPs = [3,5,7]
-    fIPszs = np.arange(5,30,5)
-    dCSPs = np.arange(50,300,50)
+    fIPszs = np.arange(1,8,2) #this probably won't make a huge difference
+    dCSPs = np.arange(50,400,50)
+    thresholds_rows = [[(500, 10000), (2,2)], [(1500, 10000), (2,2)], [(20,900), (3,3)]]
     
     dst = "/jukebox/wang/zahra/kelly_cell_detection_analysis/comparison_to_clearmap/may2020"
-    iterlst = [(fn, dst, rBP, fIPsz, dCSP) for fn in vols for rBP in rBPs
-               for fIPsz in fIPszs for dCSP in dCSPs]
+    iterlst = [(fn, dst, rBP, fIPsz, dCSP, thresh) for fn in vols for rBP in rBPs
+               for fIPsz in fIPszs for dCSP in dCSPs for thresh in thresholds_rows]
     
     print("\n\niterations: %d\n\n" % (len(iterlst)))
     
     def sweep_params(params):
         
-        fn, dst, rBP, fIPsz, dCSP = params
+        fn, dst, rBP, fIPsz, dCSP, thresh = params
         brain_dst = os.path.join(dst, os.path.basename(fn)[:-4])
         if not os.path.exists(brain_dst): os.mkdir(brain_dst)
         
-        svdst = os.path.join(brain_dst,"rBP%02d_fIPsize%03d_dCSP%05d.npy" % (rBP, fIPsz, dCSP))
-        if not os.path.exists(svdst): #if params have not been tried already
-            img = tifffile.imread(fn) #read as z,y,x
-            img = img.astype("uint16")
-            
-            #find spots
-            c = detectSpots(img, detectSpotsParameter = None, correctIlluminationParameter = None, 
-                    removeBackgroundParameter = {"size": (rBP, rBP)},
-                    findIntensityParameter = {"size": (fIPsz,fIPsz,fIPsz), "method": "Max"}, #size is based on cell size/resolution
-                    detectCellShapeParameter = {"threshold": dCSP}, verbose = False)
-            #c is a tuple output, 0 = points, 1 = intensities
-            #INTENSITY BASED THRESHOLDING
-            #HARDCODED THRESHOLD FOR NOW, BUT MAY HAVE TO ITERATE THROUGH
-            threshold = (500, 10000); row = (2,2)
-            points, intensities = thresholdPoints(c[0].astype(int), c[1].astype(int), 
-                                        threshold = threshold, row = row)
-            
-            np.save(svdst, points.astype(int)) #save cells wth volume name, c in z,y,x
-            
-            print("thresholded and saved to %s\nnumber of cells = %d" % (svdst, len(c[0])))
+        svdst = os.path.join(brain_dst,
+        "rBP%02d_fIPsize%03d_dCSP%05d_thres%04d_row%02d.npy" % (rBP, fIPsz,
+                    dCSP, thresh[0][0],thresh[1][0]))
+        # if not os.path.exists(svdst): #if params have not been tried already
+        img = tifffile.imread(fn) #read as z,y,x
+        img = img.astype("uint16")
         
+        #find spots
+        c = detectSpots(img, detectSpotsParameter = None, correctIlluminationParameter = None, 
+                removeBackgroundParameter = {"size": (rBP, rBP)},
+                findIntensityParameter = {"size": (fIPsz,fIPsz,fIPsz), "method": "Max"}, #size is based on cell size/resolution
+                detectCellShapeParameter = {"threshold": dCSP}, verbose = False)
+        #c is a tuple output, 0 = points, 1 = intensities
+        #INTENSITY OR SIZE BASED THRESHOLDING        
+        points, intensities = thresholdPoints(c[0].astype(int), c[1].astype(int), 
+                                    threshold = thresh[0], row = thresh[1])
+        
+        np.save(svdst, points.astype(int)) #save cells wth volume name, c in z,y,x
+        
+        print("thresholded and saved to %s\nnumber of cells = %d" % (svdst, len(c[0])))
+    
         return svdst
     
     p = mp.Pool(6)
