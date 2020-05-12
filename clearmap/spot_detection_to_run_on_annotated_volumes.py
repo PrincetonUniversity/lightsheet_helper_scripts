@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  4 15:29:59 2019
-
-@author: wanglab
-"""
-
 # -*- coding: utf-8 -*-
 """
 Functions to detect spots in images
@@ -56,16 +48,15 @@ the folder "Test/Data/CellShape/cellshape\_\\d{3}.tif".
 import sys
 import numpy
 
-
 from ClearMap.ImageProcessing.IlluminationCorrection import correctIllumination
 from ClearMap.ImageProcessing.BackgroundRemoval import removeBackground
 from ClearMap.ImageProcessing.Filter.DoGFilter import filterDoG
 from ClearMap.ImageProcessing.MaximaDetection import findExtendedMaxima, findPixelCoordinates, findIntensity, findCenterOfMaxima
 from ClearMap.ImageProcessing.CellSizeDetection import detectCellShape, findCellSize, findCellIntensity
+from ClearMap.Analysis.Statistics import thresholdPoints
 
 from ClearMap.Utils.Timer import Timer
 from ClearMap.Utils.ParameterTools import getParameter
-
 
 ##############################################################################
 # Spot detection
@@ -178,55 +169,54 @@ def detectSpots(img, detectSpotsParameter = None, correctIlluminationParameter =
 if __name__ == "__main__": 
     
     import os, multiprocessing as mp
-    import ClearMap.ImageProcessing.SpotDetection as self
-    reload(self)
-    import ClearMap.IO as io  
     import numpy as np
     import tifffile
     
     #run it on cfos volumes
-    inputs = "/jukebox/wang/pisano/conv_net/annotations/all_better_res/h129/input_files"
-    test_imgs = ["20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_05_500-550.tif",
-                 "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_00.tif",
-                 "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_04.tif"]
-#                 "20170130_tp_bl6_sim_1750r_03_647_010na_1hfds_z7d5um_50msec_10povlp_ch00_z200-400_y2050-2400_x1350-1700.tif",
-#                 "20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y1000-1350_x2050-2400.tif"]
+    src = "/jukebox/wang/zahra/kelly_cell_detection_analysis/comparison_to_clearmap/annotated_volumes"
+    test_imgs = ["171209_f37104_demonstrator_20171016_790_015na_1hfsds_z5um_1000msec_15-46-13_plane500to519_volume1.tif",
+                 "171210_m37079_mouse2_20171014_790_015na_1hfsds_z5um_1000msec_17-25-29_planes280to299_volume1.tif",
+                 "181011_f37077_observer_20171011_790_017na_1hfds_z5um_1000msec_13-29-49_planes280to299_volume1.tif"]
     
-    vols = [os.path.join(inputs, xx) for xx in test_imgs]
+    vols = [os.path.join(src, xx) for xx in test_imgs]
 
     #sweep
-    max_thresholds = [25]
-    DoGs = [10]
-    backgrounds = [3]
-    sizes = np.arange(0, 100, 1)
-    int_thresholds = [700]
+    rBPs = [3,5,7]
+    fIPszs = np.arange(5,30,5)
+    dCSPs = np.arange(50,300,50)
     
-    dst = "/jukebox/wang/zahra/cnn_to_clearmap_comparison/roc_curve/cell_arrays"
-    iterlst = [(fn, dst, max_thres, DoG, bckgrd, sz, int_thres) for fn in vols for max_thres in max_thresholds for DoG in DoGs for bckgrd in backgrounds for sz in sizes for int_thres in int_thresholds]
+    dst = "/jukebox/wang/zahra/kelly_cell_detection_analysis/comparison_to_clearmap/may2020"
+    iterlst = [(fn, dst, rBP, fIPsz, dCSP) for fn in vols for rBP in rBPs
+               for fIPsz in fIPszs for dCSP in dCSPs]
     
     print("\n\niterations: %d\n\n" % (len(iterlst)))
     
     def sweep_params(params):
         
-        fn, dst, max_thres, DoG, bckgrd, sz, int_thres = params
+        fn, dst, rBP, fIPsz, dCSP = params
         brain_dst = os.path.join(dst, os.path.basename(fn)[:-4])
         if not os.path.exists(brain_dst): os.mkdir(brain_dst)
-        svdst = os.path.join(brain_dst, "int_thres%05d_max_thres%03d_DoG%02d_sz%05d_bckgrd%02d.npy" % (int_thres,
-                                                             max_thres, DoG, sz, bckgrd))
+        
+        svdst = os.path.join(brain_dst,"rBP%02d_fIPsize%03d_dCSP%05d.npy" % (rBP, fIPsz, dCSP))
         if not os.path.exists(svdst): #if params have not been tried already
             img = tifffile.imread(fn) #read as z,y,x
             img = img.astype("uint16")
             
+            #find spots
             c = detectSpots(img, detectSpotsParameter = None, correctIlluminationParameter = None, 
-                    removeBackgroundParameter = {"size": (bckgrd, bckgrd)},
-                    filterDoGParameter = {"size": (int(DoG/3), DoG, DoG)}, findExtendedMaximaParameter = {"h-max": None, 
-                                          "size": sz, "threshold": max_thres},
-                    findIntensityParameter = {"size": (10,10,10), "method": "Max"}, #size is based on cell size/resolution
-                    detectCellShapeParameter = {"threshold": int_thres}, verbose = False)
+                    removeBackgroundParameter = {"size": (rBP, rBP)},
+                    findIntensityParameter = {"size": (fIPsz,fIPsz,fIPsz), "method": "Max"}, #size is based on cell size/resolution
+                    detectCellShapeParameter = {"threshold": dCSP}, verbose = False)
+            #c is a tuple output, 0 = points, 1 = intensities
+            #INTENSITY BASED THRESHOLDING
+            #HARDCODED THRESHOLD FOR NOW, BUT MAY HAVE TO ITERATE THROUGH
+            threshold = (500, 10000); row = (2,2)
+            points, intensities = thresholdPoints(c[0].astype(int), c[1].astype(int), 
+                                        threshold = threshold, row = row)
             
-            np.save(svdst, c[0].astype(int)) #save cells wth volume name, c in z,y,x
+            np.save(svdst, points.astype(int)) #save cells wth volume name, c in z,y,x
             
-            print("saved to %s\nnumber of cells = %d" % (svdst, len(c[0])))
+            print("thresholded and saved to %s\nnumber of cells = %d" % (svdst, len(c[0])))
         
         return svdst
     
