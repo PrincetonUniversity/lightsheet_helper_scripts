@@ -156,15 +156,16 @@ if __name__ == "__main__":
     #inputs
     
     #LUT
-    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit_60um_edge_80um_vntric_erosion.tif"
+    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_edge_80um_vent_erosion.tif"
     ann_lut = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 
     pth = "/jukebox/wang/Jess/lightsheet_output/202002_cfos/processed"
-    brains = ["an0_mcherrydymaze", "an10_mcherrydymaze",
-             "an11_mcherrydymaze", "an12_mcherrydymaze", "an13_mcherrydymaze",
-             "an14_mcherrydymaze", "an1_mcherrydymaze", "an2_mcherrydymaze",
-             "an3_mcherrydymaze", "an4_mcherrydymaze", "an6_mcherrydymaze",
-             "an7_mcherrydymaze", "an8_mcherrydymaze", "an9_mcherrydymaze"]
+    brains = os.listdir(pth)
+            # ["an0_mcherrydymaze", "an10_mcherrydymaze",
+            #  "an11_mcherrydymaze", "an12_mcherrydymaze", "an13_mcherrydymaze",
+            #  "an14_mcherrydymaze", "an1_mcherrydymaze", "an2_mcherrydymaze",
+            #  "an3_mcherrydymaze", "an4_mcherrydymaze", "an6_mcherrydymaze",
+            #  "an7_mcherrydymaze", "an8_mcherrydymaze", "an9_mcherrydymaze"]
     
     for src in brains:
         make_table_of_transformed_cells(os.path.join(pth, src), ann, ann_lut)
