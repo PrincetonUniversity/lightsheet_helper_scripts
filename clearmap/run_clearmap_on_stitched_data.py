@@ -11,7 +11,7 @@ import os, shutil
 src = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing/"
 dst = "/jukebox/LightSheetTransfer/brody"
 #format of raw data filename you want to convert this to
-temp = "10-50-16_UltraII_raw_RawDataStack[00 x 00]_C00_xyz-Table %s_UltraII Filter000%s.ome.tif"
+temp = "10-50-20_UltraII_raw_RawDataStack[00 x 00]_C00_xyz-Table %s_UltraII Filter000%s.ome.tif"
 brains = ["z265", "z266", "z267", "z268", "z269"]
 
 for brain in brains:
