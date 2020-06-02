@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
 #custom
-src = "/Volumes/wang/zahra/h129_contra_vs_ipsi/data"
-atl_pth = "/Volumes/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
-ann_pth = "/Volumes/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-cells_regions_pth = "/Volumes/wang/zahra/h129_contra_vs_ipsi/data/nc_contra_counts_33_brains_pma.csv"
-dst = "/Users/zahra/Desktop/"
-df_pth = "/Volumes/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-ontology_file = "/Volumes/LightSheetTransfer/atlas/allen_atlas/allen.json"
+src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
+atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
+cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_contra_counts_33_brains_pma.csv"
+dst = "/home/wanglab/Desktop/"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
@@ -258,7 +258,7 @@ ax.set_xticks(np.arange(len(ylbls))+.5)
 ax.set_xticklabels(ylbls)
 
 plt.savefig(os.path.join(dst, "hsv_nc_layers_pcount_normalized.pdf"), bbox_inches = "tight")
-
+plt.savefig(os.path.join(dst, "hsv_nc_layers_pcount_normalized.jpg"), bbox_inches = "tight")
 #%%
 
 #make blue layer heatmap
@@ -285,6 +285,7 @@ ax.set_xticks(np.arange(len(ylbls))+.5)
 ax.set_xticklabels(ylbls)
 
 plt.savefig(os.path.join(dst, "hsv_nc_layers_density.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_nc_layers_density.jpg"), bbox_inches = "tight")
 #%%
 
 #make boxplots!!

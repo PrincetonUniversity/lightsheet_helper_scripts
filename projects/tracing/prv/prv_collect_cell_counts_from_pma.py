@@ -6,7 +6,7 @@ Created on Fri Oct 18 15:44:38 2019
 @author: wanglab
 """
 
-import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, statsmodels.api as sm, itertools, seaborn as sns
+import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, matplotlib as mpl, statsmodels.api as sm, itertools, seaborn as sns
 from skimage.external import tifffile
 import matplotlib.colors as colors, json
 from scipy.ndimage.measurements import center_of_mass
@@ -18,7 +18,8 @@ from tools.analysis.network_analysis import make_structure_objects
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
-
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
 #set paths, variables, etc.
 dst = "/jukebox/wang/zahra/tracing_projects/prv/"
 fig_dst = "/home/wanglab/Desktop"
@@ -124,7 +125,6 @@ primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
 primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max(primary_pool)+1)])
 
 #make structures
-#FIXME: for some reason the allen table does not work on this, is it ok to use PMA        
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=pma_ann_pth)
 
@@ -292,6 +292,237 @@ ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
+#%%
+#get counts by layer/area for revision
+soi = "Isocortex"
+sois = []
+get_progeny(ontology_dict, soi, sois)
+#first calculate counts across entire nc region
+counts_per_struct = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    #add structure itself
+    counts.append([cells_regions.loc[cells_regions.Structure == soi, brain].values[0] for brain in brains])
+    counts_per_struct.append(np.array(counts).sum(axis = 0))
+counts_per_struct = np.array(counts_per_struct)
+
+#only get those layers/areas with nonzero counts
+sumareas = np.array([np.sum(xx) for xx in counts_per_struct])
+sois_non_zero = np.array(sois)[sumareas.astype(bool)]
+print("\n********%s layers with non zero counts*******" % len(sois_non_zero))
+
+#get counts for all of neocortex
+sois = ["Somatosensory areas", "Somatomotor areas", "Visual areas", "Entorhinal area", 
+       "Retrosplenial area", "Agranular insular area", "Auditory areas",
+       "Anterior cingulate area", "Orbital area",
+       "Temporal association areas",
+       "Posterior parietal association areas", "Prelimbic area",
+       "Visceral area", "Ectorhinal area", "Gustatory areas",
+       "Perirhinal area", "Infralimbic area",
+       "Frontal pole, cerebral cortex"]
+
+#get counts by layers
+layer1 = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-7:] == "layer 1" or progen[-7:] == "Layer 1":
+            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    layer1.append(np.array(counts).sum(axis = 0))
+layer1 = np.array(layer1)
+
+layer23 = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-9:] == "layer 2/3" or progen[-9:] == "Layer 2/3":
+            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    layer23.append(np.array(counts).sum(axis = 0))
+layer23 = np.array(layer23)
+
+l4sois = ["Gustatory areas", "Visceral area", "Somatosensory areas", "Visual areas", "Temporal association areas",
+            "Auditory areas"]
+layer4 = []
+for soi in sois:
+    if soi not in l4sois:
+        layer4.append([0]*len(brains))
+    else:
+        progeny = []; counts = []
+        get_progeny(ontology_dict, soi, progeny)
+        for progen in progeny:
+            if progen[-7:] == "layer 4" or progen[-7:] == "Layer 4":
+                counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+        layer4.append(np.array(counts).sum(axis = 0))
+layer4 = np.array(layer4)
+
+layer5 = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
+            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    layer5.append(np.array(counts).sum(axis = 0))
+layer5 = np.array(layer5)
+
+layer6a = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-8:] == "layer 6a" or progen[-8:] == "Layer 6a":
+            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    layer6a.append(np.array(counts).sum(axis = 0))
+layer6a = np.array(layer6a)
+
+layer6b = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6b":
+            counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    layer6b.append(np.array(counts).sum(axis = 0))
+layer6b = np.array(layer6b)
+
+#get vol
+vollayer1 = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-7:] == "layer 1" or progen[-7:] == "Layer 1":
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+    vollayer1.append(np.array(counts).sum(axis = 0))
+vollayer1 = np.array(vollayer1)
+
+vollayer23 = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-9:] == "layer 2/3" or progen[-9:] == "Layer 2/3":
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+    vollayer23.append(np.array(counts).sum(axis = 0))
+vollayer23 = np.array(vollayer23)
+
+l4sois = ["Gustatory areas", "Visceral area", "Somatosensory areas", "Visual areas", "Temporal association areas",
+            "Auditory areas"]
+vollayer4 = []
+for soi in sois:
+    if soi not in l4sois:
+        vollayer4.append(0)
+    else:
+        progeny = []; counts = []
+        get_progeny(ontology_dict, soi, progeny)
+        for progen in progeny:
+            if progen[-7:] == "layer 4" or progen[-7:] == "Layer 4":
+                counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+        vollayer4.append(np.array(counts).sum(axis = 0))
+vollayer4 = np.array(vollayer4)
+
+vollayer5 = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-7:] == "layer 5" or progen[-7:] == "Layer 5":
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+    vollayer5.append(np.array(counts).sum(axis = 0))
+vollayer5 = np.array(vollayer5)
+
+vollayer6a = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-8:] == "layer 6a" or progen[-8:] == "Layer 6a":
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+    vollayer6a.append(np.array(counts).sum(axis = 0))
+vollayer6a = np.array(vollayer6a)
+
+vollayer6b = []
+for soi in sois:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        if progen[-8:] == "layer 6b" or progen[-8:] == "Layer 6b":
+            counts.append(ann_df.loc[ann_df.name == progen, "voxels_in_structure"].values[0]/2)
+    vollayer6b.append(np.array(counts).sum(axis = 0))
+vollayer6b = np.array(vollayer6b)
+
+layer_counts = np.array([layer1, layer23, layer4, layer5, layer6a, layer6b])
+layers_counts_mean = np.array([np.mean(layer, axis = 1) for layer in layer_counts])
+
+layer_vol = np.array([vollayer1, vollayer23, vollayer4, vollayer5, vollayer6a, vollayer6b])
+layers_density = np.nan_to_num(np.array([np.array([xx/(layer_vol[l,i]*(scale_factor**3)) 
+                                     for i, xx in enumerate(layer)]) 
+                           for l,layer in enumerate(layer_counts)]).T)
+#change inf numbers to 0
+layers_density[layers_density < 1**100] = 0
+layers_density_mean = layers_density.mean(axis = 0)
+layers_density_mean[layers_density_mean == np.inf] = 0
+
+#normalize p counts by region
+n = np.nan_to_num(np.array([xx/sum(xx) for xx in layers_counts_mean.T]))*100
+
+#%%
+#make blue layer heatmap
+fig, ax = plt.subplots(figsize = (2.7,6))
+show = np.flipud(n)
+
+cmap = plt.cm.Blues 
+cmap.set_over(cmap(1.0))
+cmap.set_under("white")
+vmin = 1
+vmax = 50
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.4)#
+cb.set_label("Mean % neurons\nper region", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(np.flipud(sois), fontsize="small")
+
+ylbls = np.array([ "I", "II/III", "IV", "V", "VIa", "VIb"])
+ax.set_xticks(np.arange(len(ylbls))+.5)
+ax.set_xticklabels(ylbls)
+
+plt.savefig(os.path.join(fig_dst, "prv_nc_layers_pcount_normalized.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_nc_layers_pcount_normalized.jpg"), bbox_inches = "tight")
+
+#make blue layer heatmap
+fig, ax = plt.subplots(figsize = (2.7,6))
+show = np.flipud(layers_density_mean)
+
+cmap = plt.cm.Blues 
+cmap.set_over(cmap(1.0))
+cmap.set_under("white")
+vmin = 1
+vmax = 100
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.4)#
+cb.set_label("Mean neurons/ mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(np.flipud(sois), fontsize="small")
+
+ylbls = np.array([ "I", "II/III", "IV", "V", "VIa", "VIb"])
+ax.set_xticks(np.arange(len(ylbls))+.5)
+ax.set_xticklabels(ylbls)
+
+plt.savefig(os.path.join(fig_dst, "prv_nc_layers_density.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_nc_layers_density.jpg"), bbox_inches = "tight")
+#%%
+
 #get counts for all of neocortex
 sois = ["Somatosensory areas",
  "Somatomotor areas",
@@ -456,10 +687,11 @@ show = np.fliplr(sort_pcounts).T
 
 vmin = 0
 vmax = maxpcount
-cmap = plt.cm.viridis
-cmap.set_over("orange")
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+cmap.set_under("white")
 #colormap
-bounds = np.linspace(vmin,vmax,((vmax-vmin)/5)+1)
+bounds = np.linspace(vmin,vmax,(int((vmax-vmin)/5)+1))
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
@@ -569,6 +801,199 @@ ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right"
 
 plt.savefig(os.path.join(fig_dst, "prv_density_nc.pdf"), bbox_inches = "tight")
 
+#%%
+#get counts for somatomotor/somatosensory layers
+sois = ["Somatosensory areas",
+ "Somatomotor areas"]
+sssm_big = []
+for soi in sois:
+    get_progeny(ontology_dict, soi, sssm_big)
+
+#check if layers have valid annotations
+df_ann = pd.read_excel(df_pth, index_col = None)
+sssm_full = [xx for xx in sssm_big if not df_ann.loc[df_ann.name == xx, "voxels_in_structure"].values[0] == 0]
+sssm = np.unique(np.array([xx[:-9] for xx in sssm_full]))
+#fixing
+sssm = ['Primary somatosensory area, barrel field',
+       'Primary somatosensory area, lower limb',
+       'Primary somatosensory area, mouth',
+       'Primary somatosensory area, nose',
+       'Primary somatosensory area, trunk',
+       'Primary somatosensory area, upper limb',
+       'Supplemental somatosensory area',
+       'Primary motor area', 
+       'Secondary motor area']
+#first calculate counts across entire nc region
+sssm_counts = []
+for soi in sssm:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
+    sssm_counts.append(np.array(counts).sum(axis = 0))
+sssm_counts = np.array(sssm_counts)
+
+vol = []
+for soi in sssm:
+    progeny = []; counts = []
+    get_progeny(ontology_dict, soi, progeny)
+    for progen in progeny:
+        counts.append(df_ann.loc[df_ann.name == progen, "voxels_in_structure"].values[0])
+    vol.append(np.array(counts).sum(axis = 0))
+vol = np.array(vol)        
+
+density_sssm = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(sssm_counts)]).T
+counts_nc = np.sum(counts_per_struct, axis =0)
+#%%
+#ss/sm p counts maps
+pcounts = np.array([xx/counts_nc[ii] for ii,xx in enumerate(sssm_counts.T)])*100
+
+#make % counts map like the h129 dataset (nc only for now)
+
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [3,5]})
+
+#set colorbar features 
+maxpcount = 25
+label_coordsy, label_coordsx  = -0.6,0.5 #for placement of vertical labels
+brain_lbl_size = "x-small"
+yaxis = sssm #for density by nc areas map
+
+#sort inj fractions by primary lob
+sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_pcounts = np.array(list(itertools.chain.from_iterable(sort_pcounts)))
+sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = list(itertools.chain.from_iterable(sort_brains))
+sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
+
+#inj fractions
+ax = axes[0]
+show = np.fliplr(sort_inj).T
+
+vmin = 0
+vmax = 0.8
+cmap = plt.cm.Reds 
+cmap.set_over('darkred')
+#colormap
+bounds = np.linspace(vmin,vmax,4)
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+
+ax = axes[1]
+show = np.fliplr(sort_pcounts).T
+
+vmin = 0
+vmax = maxpcount
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+cmap.set_under("white")
+#colormap
+bounds = np.linspace(vmin,vmax,(int((vmax-vmin)/5)+1))
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("% Neurons", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
+ax.set_ylabel("Neocortical areas", fontsize="small")
+ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
+
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+lbls = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+
+plt.savefig(os.path.join(fig_dst, "prv_pcounts_nc_sssm_areas.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_pcounts_nc_sssm_areas.jpg"), bbox_inches = "tight")
+#%%
+
+#density
+## display
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [3,5]})
+
+#set colorbar features 
+maxdensity = 200
+label_coordsy, label_coordsx  = -0.55,0.5 #for placement of vertical labels
+brain_lbl_size = "x-small"
+yaxis = sssm #for density by nc areas map
+
+#sort inj fractions by primary lob
+sort_density = [density_sssm[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
+sort_brains = list(itertools.chain.from_iterable(sort_brains))
+sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
+
+#inj fractions
+ax = axes[0]
+show = np.fliplr(sort_inj).T
+
+vmin = 0
+vmax = 0.8
+cmap = plt.cm.Reds 
+cmap.set_over("darkred")
+#colormap
+norm = colors.PowerNorm(gamma=0.5)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, ticks=bounds, boundaries=bounds, format="%d", 
+                  shrink=0.9, aspect=5)
+cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(False)
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+
+ax = axes[1]
+show = np.fliplr(sort_density).T
+
+vmin = 0
+vmax = maxdensity
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+cmap.set_under("white")
+#colormap
+bounds = np.linspace(vmin,vmax,(int((vmax-vmin)/50)+1))
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
+                  format="%0.1f", shrink=0.3, aspect=10)
+cb.set_label("Density (Cells/$mm^3$)", fontsize="x-small", labelpad=3)
+cb.ax.tick_params(labelsize="x-small")
+cb.ax.set_visible(True)
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
+ax.set_ylabel("Neocortical areas", fontsize="small")
+ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
+
+ax.set_xticks(np.arange(len(sort_brains))+.5)
+lbls = np.asarray(sort_brains)
+ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
+
+plt.savefig(os.path.join(fig_dst, "prv_density_sssm_areas.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_density_sssm_areas.jpg"), bbox_inches = "tight")
 #%%
 #glm?
 #VARIABLES FOR GLM           
