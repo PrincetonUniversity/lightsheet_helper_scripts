@@ -814,15 +814,15 @@ df_ann = pd.read_excel(df_pth, index_col = None)
 sssm_full = [xx for xx in sssm_big if not df_ann.loc[df_ann.name == xx, "voxels_in_structure"].values[0] == 0]
 sssm = np.unique(np.array([xx[:-9] for xx in sssm_full]))
 #fixing
-sssm = ['Primary somatosensory area, barrel field',
-       'Primary somatosensory area, lower limb',
-       'Primary somatosensory area, mouth',
-       'Primary somatosensory area, nose',
-       'Primary somatosensory area, trunk',
-       'Primary somatosensory area, upper limb',
-       'Supplemental somatosensory area',
-       'Primary motor area', 
-       'Secondary motor area']
+sssm = ["Primary somatosensory area, barrel field",
+       "Primary somatosensory area, lower limb",
+       "Primary somatosensory area, mouth",
+       "Primary somatosensory area, nose",
+       "Primary somatosensory area, trunk",
+       "Primary somatosensory area, upper limb",
+       "Supplemental somatosensory area",
+       "Primary motor area", 
+       "Secondary motor area"]
 #first calculate counts across entire nc region
 sssm_counts = []
 for soi in sssm:
