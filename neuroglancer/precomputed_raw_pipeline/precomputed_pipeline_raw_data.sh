@@ -1,5 +1,4 @@
 #!/bin/env bash
-#!/bin/env bash
 #
 #SBATCH -p all                # partition (queue)
 #SBATCH -n 1                      # number of cores

@@ -4,7 +4,7 @@ import os, sys
 import glob
 from concurrent.futures import ProcessPoolExecutor
 
-import numpy as np
+import numpy as np, tifffile, pandas as pd
 from PIL import Image
 
 from cloudvolume import CloudVolume
@@ -44,7 +44,7 @@ def make_info_file(volume_size,resolution,layer_dir,commit=True):
 
     vol = CloudVolume(f'file://{layer_dir}', info=info)
     vol.provenance.description = "Test on spock for profiling precomputed creation"
-    vol.provenance.owners = ['ahoag@princeton.edu'] # list of contact email addresses
+    vol.provenance.owners = ['zmd@princeton.edu'] # list of contact email addresses
     if commit:
         vol.commit_info() # generates info json file
         vol.commit_provenance() # generates provenance json file
@@ -94,24 +94,25 @@ if __name__ == "__main__":
     animal_id = sys.argv[3]
     print(f"Viz_dir: {viz_dir}")
     print(f"Animal id: {animal_id}")
-    rawcells_pth = os.path.join('/jukebox/wang/Jess/lightsheet_output',
-        '201904_ymaze_cfos','processed',f'an{animal_id}','clearmap_cluster_output',
-        'cells.npy')
+    rawcells_pth = os.path.join('/jukebox/wang/pisano/tracing_output/antero_4x',
+             f'{animal_id}','3dunet_output','pooled_cell_measures', f'{animal_id}_cell_measures.csv')
     layer_name = f'rawcells_an{animal_id}_dilated'
     layer_dir = os.path.join(viz_dir,layer_name)
     """ Make progress dir """
     progress_dir = mkdir(viz_dir + f'/progress_{layer_name}') # unlike os.mkdir doesn't crash on prexisting 
     """ Raw cells have the same dimensions as raw data """
-    x_dim = 2160
-    y_dim = 2560
    
-    full_sizedatafld = os.path.join('/jukebox/wang/Jess/lightsheet_output/',
-        '201904_ymaze_cfos/processed',f'an{animal_id}','full_sizedatafld')
-    rawdata_path = glob.glob(full_sizedatafld + f'/an{animal_id}*647*')[0]
+    full_sizedatafld = os.path.join('/jukebox/wang/pisano/tracing_output/antero_4x',
+                                    f'{animal_id}','full_sizedatafld')
+    rawdata_path = glob.glob(full_sizedatafld + f'/{animal_id}*647*')[0]
+     #zmd added - to grab dims automatically
+    img = tifffile.imread(os.path.join(rawdata_path, os.listdir(rawdata_path)[0]))
+    x_dim = img.shape[1]
+    y_dim = img.shape[0]
     all_slices = glob.glob(f"{rawdata_path}/*tif") 
     z_dim = len(all_slices)
     
-    x_scale_nm, y_scale_nm,z_scale_nm = 5000,5000,10000 # the same for all datasets
+    x_scale_nm, y_scale_nm,z_scale_nm = 10000,10000,10000 # the same for all datasets
 
     """ Handle the different steps """
     if step == 'step0':
@@ -124,9 +125,9 @@ if __name__ == "__main__":
 
         vol = CloudVolume(f'file://{layer_dir}')
         
-        # Read in the cell centers from the .npy file
-        converted_points = np.load(rawcells_pth)
-        xyz = np.asarray([(int(xx[0]), int(xx[1]), int(xx[2])) for xx in converted_points]) #cells are counted in horizontal volumes
+        # Read in the cell centers from the .csv file
+        points = pd.read_csv(rawcells_pth)
+        xyz = np.asarray([points["x"].values, points["y"].values, points["z"].values]).T #cells are counted in horizontal volumes
         # init empty vol 
         cell_map = np.zeros((z_dim,y_dim,x_dim)).astype('uint16')
         #fill volume
