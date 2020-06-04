@@ -277,12 +277,12 @@ def find_site(im, thresh=10, filter_kernel=(5,5,5), num_sites_to_keep=1):
 if __name__ == "__main__":
     
     #check if reorientation is necessary
-    src = "/home/wanglab/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/201707_mk63/elastix/mk63_647_014na_1hfsds_z10um_300_resized_ch00/result.tif"
+    # src = "/home/wanglab/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/201707_mk63/elastix/mk63_647_014na_1hfsds_z10um_300_resized_ch00/result.tif"
     # src = "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_i/elastix/20190130_mk_ai148_47018_i_1d3x_488_647_008na_1hfds_z10um_200msec_resized_ch01/result.tif"
-    src = orientation_crop_check(src, ("2","0","1"), crop = "[:,410:,:]")
+    # src = orientation_crop_check(src, ("2","0","1"), crop = "[:,410:,:]")
 #    
 #    #optimize detection parameters for inj det
-    optimize_inj_detect(src, threshold=2, filter_kernel = (3,3,3), num_sites_to_keep = 15)
+    # optimize_inj_detect(src, threshold=2, filter_kernel = (3,3,3), num_sites_to_keep = 15)
     
     #run
     #suggestion: save_individual=True,
@@ -311,7 +311,7 @@ if __name__ == "__main__":
               "channel": "01",
               "channel_type": "cellch",
               "filter_kernel": (3,3,3),
-              "threshold": 2,
+              "threshold": 4,
               "num_sites_to_keep": 15,
               "injectionscale": 40000, 
               "imagescale": 2,
