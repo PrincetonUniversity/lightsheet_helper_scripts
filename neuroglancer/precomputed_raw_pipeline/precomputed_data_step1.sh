@@ -20,7 +20,7 @@
 # echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
 module load anacondapy/5.3.1
-. activate precomputed
+. activate lightsheet
 xvfb-run -d python make_precomputed_rawdata.py step1 ${viz_dir} ${animal_id}
 
 # finish=$(date +%s.%N)

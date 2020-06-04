@@ -23,7 +23,7 @@ echo "Viz_dir: ${viz_dir}"
 echo "Animal id: ${animal_id}"
 
 module load anacondapy/5.3.1
-. activate precomputed
+. activate lightsheet
 xvfb-run -d python make_precomputed_rawdata.py step0 ${viz_dir} ${animal_id}
 
 # finish=$(date +%s.%N)
