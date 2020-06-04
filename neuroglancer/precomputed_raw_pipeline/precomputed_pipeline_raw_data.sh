@@ -1,5 +1,13 @@
 #!/bin/env bash
+#!/bin/env bash
 #
+#SBATCH -p all                # partition (queue)
+#SBATCH -n 1                      # number of cores
+#SBATCH -t 20                 # time (minutes)
+#SBATCH -o logs/main.out        # STDOUT
+#SBATCH -e logs/main.err        # STDERR
+
+
 # --- PURPOSE ---
 # Pipeline to make precomputed (i.e. Neuroglancer-friendly) 
 # volumes for raw light sheet images and
