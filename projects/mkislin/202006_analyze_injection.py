@@ -50,14 +50,14 @@ def orientation_crop_check(src, axes = ("0","1","2"), crop = False, dst=False):
     if dst: plt.savefig(dst, dpi=300)
     return src
 
-def optimize_inj_detect(src, threshold=3, filter_kernel = (3,3,3), dst=False):
+def optimize_inj_detect(src, threshold=3, filter_kernel = (3,3,3), num_sites_to_keep=1, dst=False):
     """Function to test detection parameters
     
     "dst": (optional) path+extension to save image
     
     """
     if type(src) == str: src = tifffile.imread(src)
-    arr = find_site(src, thresh=threshold, filter_kernel=filter_kernel)*45000
+    arr = find_site(src, thresh=threshold, filter_kernel=filter_kernel, num_sites_to_keep=num_sites_to_keep)*45000
     fig = plt.figure()
     fig.add_subplot(1,2,1)
     plt.imshow(np.max(arr, axis=0));  plt.axis("off")
@@ -277,30 +277,35 @@ def find_site(im, thresh=10, filter_kernel=(5,5,5), num_sites_to_keep=1):
 if __name__ == "__main__":
     
     #check if reorientation is necessary
+    src = "/home/wanglab/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/201707_mk63/elastix/mk63_647_014na_1hfsds_z10um_300_resized_ch00/result.tif"
     # src = "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_i/elastix/20190130_mk_ai148_47018_i_1d3x_488_647_008na_1hfds_z10um_200msec_resized_ch01/result.tif"
-    # src = orientation_crop_check(src, ("2","0","1"), crop = "[:,410:,:]")
+    src = orientation_crop_check(src, ("2","0","1"), crop = "[:,410:,:]")
 #    
 #    #optimize detection parameters for inj det
-    # optimize_inj_detect(src, threshold=2, filter_kernel = (3,3,3), num_sites_to_keep = 15)
+    optimize_inj_detect(src, threshold=2, filter_kernel = (3,3,3), num_sites_to_keep = 15)
     
     #run
     #suggestion: save_individual=True,
     #then inspect individual brains, which you can then remove bad brains from list and rerun function
-    inputlist = ["/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_41",
-                "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_i",
-                "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_iv",
-                "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_ii",
-                "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_29",
-                "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47"]
+    # inputlist = ["/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_41",
+    #             "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_i",
+    #             "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_iv",
+    #             "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47018_ii",
+    #             "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_29",
+    #             "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/ai148_47"]
     
-#     inputlist = [#"/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_50270_4",
-# #                 "/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49167_1043",
-#                  "/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_31",
-#                  "/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_33",
-#                  "/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_32",
-# #                 "/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_51115_1053",
-#                  "/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_23"]
-# #                 "/home/wanglab/mounts/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49824_1107"]
+    inputlist = ["/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/201707_mk61",
+                "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/201707_mk62",
+                  "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/201707_mk63"]
+    
+                # [#"/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_50270_4",
+                # # "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49167_1043",
+                #   "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_31",
+                #   "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_33",
+                #   "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_32",
+                # # "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_51115_1053",
+                #   "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/cntnap2_23"]
+                # # "/jukebox/wang/mkislin/lightsheet_brains/201903_cntnap2_tsc1_ai148/tsc1_49824_1107"]
     
     kwargs = {"inputlist": inputlist,
               "channel": "01",
