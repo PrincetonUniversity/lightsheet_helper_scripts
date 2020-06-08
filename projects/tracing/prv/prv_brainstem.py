@@ -74,7 +74,8 @@ sois = ["Cerebellar nuclei",
         "Superior colliculus, motor related", "Pontine gray",
         "Tegmental reticular nucleus", "Lateral reticular nucleus",
         "External cuneate nucleus", "Vestibular nuclei",
-        "Principal sensory nucleus of the trigeminal"]
+        "Principal sensory nucleus of the trigeminal",
+        "spinal tract of the trigeminal nerve"]
 
 #first calculate counts across entire region
 counts_per_struct = []
