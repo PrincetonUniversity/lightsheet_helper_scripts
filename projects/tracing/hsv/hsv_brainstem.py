@@ -78,7 +78,9 @@ sois = ["Cerebellar nuclei",
         "Tegmental reticular nucleus", "Lateral reticular nucleus",
         "External cuneate nucleus", "Vestibular nuclei",
         "Principal sensory nucleus of the trigeminal",
-        "spinal tract of the trigeminal nerve"]
+        "Spinal nucleus of the trigeminal, caudal part",
+        "Spinal nucleus of the trigeminal, interpolar part",
+        "Spinal nucleus of the trigeminal, oral part"]
 
 #first calculate counts across entire region
 counts_per_struct = []
@@ -117,7 +119,6 @@ density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enu
 #display
 #set colorbar features 
 maxdensity = 150
-yaxis = np.flipud(sois)
 
 #make density map like the h129 dataset
 ## display
@@ -128,6 +129,10 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,5), sharex = True, g
 #sort inj fractions by primary lob
 sort_density = [density[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
+#now sort sois by # of neurons/density
+sort_sois = np.array(sois)[np.argsort(np.median(sort_density,axis=0))]
+sort_density = sort_density.T[np.argsort(np.median(sort_density,axis=0))][::-1].T
+yaxis = sort_sois
 sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_brains = list(itertools.chain.from_iterable(sort_brains))
@@ -185,7 +190,6 @@ plt.savefig(os.path.join(dst, "hsv_density_brainstem.jpg"), bbox_inches = "tight
 #display - just counts
 #set colorbar features 
 maxdensity = 250
-yaxis = np.flipud(sois)
 
 #make density map like the h129 dataset
 ## display
@@ -196,6 +200,10 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,5), sharex = True, g
 #sort inj fractions by primary lob
 sort_density = [counts_per_struct.T[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
+#now sort sois by # of neurons/density
+sort_sois = np.array(sois)[np.argsort(np.median(sort_density,axis=0))]
+sort_density = sort_density.T[np.argsort(np.median(sort_density,axis=0))][::-1].T
+yaxis = sort_sois
 sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_brains = list(itertools.chain.from_iterable(sort_brains))
