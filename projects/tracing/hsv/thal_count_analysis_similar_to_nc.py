@@ -16,12 +16,12 @@ mpl.rcParams["ps.fonttype"] = 42
 mpl.rcParams["xtick.major.size"] = 6
 mpl.rcParams["ytick.major.size"] = 6
 
-dst = "/Volumes/wang/zahra/h129_contra_vs_ipsi/"
-fig_dst = "/Users/zahra/Desktop"
+dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
+fig_dst = "/home/wanglab/Desktop"
 
 ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
-df_pth = "/Volumes/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-ontology_file = "/Volumes/LightSheetTransfer/atlas/allen_atlas/allen.json"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 #collect 
 data_pth = os.path.join(dst, "data/thal_hsv_maps_contra_allen.p")
@@ -79,7 +79,7 @@ def get_progeny(dic,parent_structure,progeny_list):
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
-nuclei = ["Thalamus", "Ventral posteromedial nucleus of the thalamus",
+nuclei = ["Thalamus", "Zona incerta", "Ventral posteromedial nucleus of the thalamus",
        "Reticular nucleus of the thalamus",
        "Mediodorsal nucleus of thalamus",
        "Posterior complex of the thalamus",
@@ -92,8 +92,7 @@ nuclei = ["Thalamus", "Ventral posteromedial nucleus of the thalamus",
        "Dorsal part of the lateral geniculate complex",
        "Nucleus of reuniens", "Paraventricular nucleus of the thalamus",
        "Anteroventral nucleus of thalamus", "Anteromedial nucleus",
-       "Parafascicular nucleus",
-       "Ventral part of the lateral geniculate complex",
+       "Parafascicular nucleus", "Ventral part of the lateral geniculate complex",
        "Medial habenula", "Central lateral nucleus of the thalamus",
        "Lateral habenula", "Submedial nucleus of the thalamus",
        "Parataenial nucleus", "Subparafascicular nucleus",
@@ -134,12 +133,14 @@ density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enu
 #remove thalamus from density
 nuclei = nuclei[1:]
 density = density[:, 1:]
+counts_per_struct = counts_per_struct[1:,:]
 #%%
 
+#boxplots for counts
 import seaborn as sns
 
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
-order = np.argsort(np.median(pcounts, axis = 0))[::-1]
+order = np.argsort(np.median(counts_per_struct.T, axis = 0))[::-1]
 sois_sort = np.array(nuclei)[order][:10]
 
 #boxplots of percent counts
@@ -149,13 +150,13 @@ df.columns = nuclei
 g = sns.stripplot(data = df,  color = "dimgrey", orient = "h", order = sois_sort)
 sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
             boxprops={'facecolor':'None'}, order = sois_sort)
-plt.xlabel("% of total thalamic neurons")
+plt.xlabel("# Neurons")
 plt.ylabel("Subnucleus")
-plt.savefig(os.path.join(fig_dst, "thal_pcounts_boxplots.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "thal_counts_boxplots.pdf"), bbox_inches = "tight")
 
 #%%
-import seaborn as sns
 
+#boxplots of density
 #first, rearrange structures in ASCENDING order (will be plotted as descending, -_-) by density and counts
 order = np.argsort(np.median(density, axis = 0))[::-1]
 sois_sort = np.array(nuclei)[order][:10]
@@ -269,8 +270,6 @@ ax.set_yticklabels(yaxis, fontsize="x-small")
 ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
 ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 
-ax.tick_params(length=6)
-
 plt.savefig(os.path.join(fig_dst, "hsv_pcounts_thal.pdf"), bbox_inches = "tight")
 
 #%%
@@ -281,7 +280,7 @@ yaxis = np.flipud(nuclei)
 
 #make density map like the h129 dataset
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,7), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,7), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [1.5,5]})
 
 
@@ -334,9 +333,8 @@ cb.ax.set_visible(True)
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="small")
 
-ax.set_xticks(np.arange(0, len(sort_brains))+.5)
-ax.set_xticklabels(sort_brains, rotation = "vertical")#np.arange(0, len(sort_brains), 5)+1)
-ax.tick_params(length=6)
+ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
+ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
 
 plt.savefig(os.path.join(fig_dst, "hsv_density_thal.pdf"), bbox_inches = "tight")
 #%%
@@ -345,7 +343,7 @@ mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], axi
 
 fig,ax = plt.subplots(figsize=(3,9))
 
-show = mean_counts.T 
+show = np.flipud(mean_counts.T) 
 
 # SET COLORMAP
 cmap = plt.cm.Blues
@@ -358,8 +356,8 @@ vmax = 8
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
-cb.set_label("Mean % of thalamic neurons", fontsize="x-small", labelpad=5)
-cb.ax.tick_params(labelsize="x-small")
+cb.set_label("Mean % of thalamic neurons", fontsize="medium", labelpad=5)
+cb.ax.tick_params(labelsize="medium")
 
 cb.ax.set_visible(True)
         
@@ -370,7 +368,7 @@ ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lo
                    rotation="vertical", fontsize=8)
 # yticks
 ax.set_yticks(np.arange(len(nuclei))+.5)
-ax.set_yticklabels(nuclei, fontsize="small")
+ax.set_yticklabels(np.flipud(nuclei), fontsize="medium")
 ax.tick_params(length=6)
 
 plt.savefig(os.path.join(fig_dst,"thal_mean_count.pdf"), bbox_inches = "tight")
@@ -395,8 +393,8 @@ vmax = 40
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.3, aspect=10)
-cb.set_label("Mean neurons / mm$^3$", fontsize="small", labelpad=5)
-cb.ax.tick_params(labelsize="small")
+cb.set_label("Mean neurons / mm$^3$", fontsize="medium", labelpad=5)
+cb.ax.tick_params(labelsize="medium")
 
 cb.ax.set_visible(True)
         
@@ -404,10 +402,10 @@ cb.ax.set_visible(True)
 ax.set_xticks(np.arange(len(ak_pool))+.5)
 lbls = np.asarray(ak_pool)
 ax.set_xticklabels(["{} ({})".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
-                   rotation="vertical", fontsize=8)
+                   rotation="vertical", fontsize="medium")
 # yticks
 ax.set_yticks(np.arange(len(nuclei))+.5)
-ax.set_yticklabels(nuclei[::-1], fontsize="small")
+ax.set_yticklabels(nuclei[::-1], fontsize="medium")
 
 plt.savefig(os.path.join(fig_dst,"thal_mean_density.pdf"), bbox_inches = "tight")
 
@@ -528,8 +526,8 @@ annotations = False
 #colormap
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
-cb.set_label("Model weight / SE", fontsize="small", labelpad=5)
-cb.ax.tick_params(labelsize="small")
+cb.set_label("Model weight / SE", fontsize="medium", labelpad=5)
+cb.ax.tick_params(labelsize="medium")
 cb.ax.set_visible(True)
 
 # exact value annotations
@@ -549,24 +547,23 @@ nullmean = null.mean()
 nullstd = null.std()
 for y,x in np.argwhere(sig):
     pass
-    ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment='center', verticalalignment='center',
-            color = "k", transform=ax.transData)
+    ax.text(x+0.5, y+0.4, "*", fontsize=18, horizontalalignment='center', verticalalignment='center',
+            color = "w", transform=ax.transData)
 # ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
 ax.set_xticks(np.arange(len(ak_pool))+.5)
-ax.set_xticklabels(ak_pool, rotation="vertical", fontsize=10)
+ax.set_xticklabels(ak_pool, rotation="vertical", fontsize="medium")
 
 # yticks
 ax.set_yticks(np.arange(len(nuclei))+.5)
-ax.set_yticklabels(np.flipud(nuclei), fontsize="small")
+ax.set_yticklabels(np.flipud(nuclei), fontsize="medium")
 ax.tick_params(length=6)
 
 plt.savefig(os.path.join(fig_dst, "thal_pcount_glm_contra_allen.pdf"), bbox_inches = "tight")
 
 #%%
-
-
+###DOES NOT WORK###
 #hide high count brain for model?
 mask = [True]*23
 mask[6] = False
