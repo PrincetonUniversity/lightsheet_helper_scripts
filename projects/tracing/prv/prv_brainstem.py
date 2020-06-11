@@ -117,6 +117,7 @@ density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enu
 #display
 #set colorbar features 
 maxdensity = 500
+#set true if need to sort structures in descending order of density/neurons
 sort_descending = False
 
 #make density map like the h129 dataset
