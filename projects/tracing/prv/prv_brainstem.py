@@ -145,7 +145,7 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 ax = axes[0]
 show = np.fliplr(sort_inj).T
 
-cmap = plt.cm.Reds 
+cmap = plt.cm.RdPu 
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
@@ -220,7 +220,7 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 ax = axes[0]
 show = np.fliplr(sort_inj).T
 
-cmap = plt.cm.Reds 
+cmap = plt.cm.RdPu 
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
