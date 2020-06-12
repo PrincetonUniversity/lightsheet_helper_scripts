@@ -11,26 +11,28 @@ before running scripts, activate lightsheet env in each window that has neurogla
 make sure you are connected to Princeton VPN and mounted on scratch/bucket
 """
 
-brainname = "20170419_db_bl6_cri_rpv_53hr"
+brainname = "20180322_jg_bl6f_prv_28"
 ###WINDOW 1###
 #in the first ipython window run:
 import neuroglancer 
 neuroglancer.set_static_content_source(url="https://nglancer.pni.princeton.edu")
+port=1337
 
 ###WINDOW 2###
 #in a new ipython window:
 from cloudvolume import CloudVolume
-brainname = "20170419_db_bl6_cri_rpv_53hr"
+brainname = "20180322_jg_bl6f_prv_28"
+port=1337
 layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/647" % brainname
 vol = CloudVolume(f"file://{layer_dir}")
-vol.viewer(port=1339)
+vol.viewer(port=port)
 
 ###WINDOW 1###
 #go back to first window and run
 neuroglancer.set_static_content_source(url="https://nglancer.pni.princeton.edu")
 viewer = neuroglancer.Viewer()
 with viewer.txn() as s:
-    s.layers["%s" % brainname] = neuroglancer.ImageLayer(source="precomputed://http://localhost:1339"
+    s.layers["%s" % brainname] = neuroglancer.ImageLayer(source="precomputed://http://localhost:%s" % port
     )
 print(viewer)
 #this should add the above volume to the neuroglancer window
@@ -38,15 +40,16 @@ print(viewer)
 ###WINDOW 3###
 #to add another layer (aka the atlas), in a new ipython window:
 from cloudvolume import CloudVolume
-brainname = "20170419_db_bl6_cri_rpv_53hr"
+brainname = "20180322_jg_bl6f_prv_28"
+port=1337
 layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/atlas" % brainname
 vol = CloudVolume(f"file://{layer_dir}")
-vol.viewer(port=1340) #make sure this port is different from the first    
+vol.viewer(port=port+1) #make sure this port is different from the first    
 
 ###WINDOW 1###
 #go back to first window and run
 with viewer.txn() as s:
-    s.layers["%s_atlas" % brainname] = neuroglancer.SegmentationLayer(source="precomputed://http://localhost:1340"
+    s.layers["%s_atlas" % brainname] = neuroglancer.SegmentationLayer(source="precomputed://http://localhost:%s" % int(port+1)
     )
 print(viewer)
 #this should add the atlas volume to the neuroglancer window

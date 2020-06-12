@@ -122,9 +122,8 @@ sort_descending = False
 
 #make density map like the h129 dataset
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2.5,5]})
-
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,7), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2.5,5], "width_ratios": [30,1]})
 
 #sort inj fractions by primary lob
 sort_density = [density[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
@@ -142,10 +141,10 @@ sort_brains = list(itertools.chain.from_iterable(sort_brains))
 sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 
 #inj fractions
-ax = axes[0]
+ax = axes[0,0]
 show = np.fliplr(sort_inj).T
 
-cmap = plt.cm.RdPu 
+cmap = plt.cm.Reds 
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
@@ -161,7 +160,7 @@ ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="medium")
 ax.tick_params(length=6)
 
-ax = axes[1]
+ax = axes[1,0]
 show = np.fliplr(sort_density).T
 
 # SET COLORMAP
@@ -181,9 +180,30 @@ cb.ax.set_visible(True)
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="medium")
-
 ax.set_xticks(np.arange(0, len(sort_brains))+.5)
 ax.set_xticklabels(sort_brains, fontsize="x-small",rotation = "vertical")#np.arange(0, len(sort_brains), 5)+1)
+ax.tick_params(length=6)
+
+ax = axes[0,1]
+ax.axis("off")
+ax = axes[1,1]
+show = np.flipud(np.array([np.mean(sort_density, axis=0)]).T)
+
+# SET COLORMAP
+vmin = 0
+vmax = maxdensity
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+
+# aesthetics
+# yticks
+ax.set_xticks(np.arange(1)+.5)
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels([])
+ax.set_xticklabels(["Mean \ncells / mm$^3$"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "prv_density_brainstem.pdf"), bbox_inches = "tight")
@@ -197,9 +217,8 @@ yaxis = np.flipud(sois)
 
 #make density map like the h129 dataset
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (8,6), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2.5,5]})
-
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,7), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [2.5,5], "width_ratios": [30,1]})
 
 #sort inj fractions by primary lob
 sort_density = [counts_per_struct.T[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
@@ -217,10 +236,10 @@ sort_brains = list(itertools.chain.from_iterable(sort_brains))
 sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 
 #inj fractions
-ax = axes[0]
+ax = axes[0,0]
 show = np.fliplr(sort_inj).T
 
-cmap = plt.cm.RdPu 
+cmap = plt.cm.Reds 
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
@@ -236,7 +255,7 @@ ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="medium")
 ax.tick_params(length=6)
 
-ax = axes[1]
+ax = axes[1,0]
 show = np.fliplr(sort_density).T
 
 # SET COLORMAP
@@ -256,9 +275,28 @@ cb.ax.set_visible(True)
 # yticks
 ax.set_yticks(np.arange(len(yaxis))+.5)
 ax.set_yticklabels(yaxis, fontsize="medium")
-
 ax.set_xticks(np.arange(0, len(sort_brains))+.5)
 ax.set_xticklabels(sort_brains, fontsize="x-small",rotation = "vertical")#np.arange(0, len(sort_brains), 5)+1)
+ax.tick_params(length=6)
+
+ax = axes[0,1]
+ax.axis("off")
+
+ax = axes[1,1]
+show = np.flipud(np.array([np.mean(sort_density, axis=0)]).T)
+
+# SET COLORMAP
+vmin = 0
+vmax = maxdensity
+cmap = plt.cm.Blues
+cmap.set_over(cmap(1.0))
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+# aesthetics
+ax.set_xticks(np.arange(1)+.5)
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels([])
+ax.set_xticklabels(["Mean \n# Neurons"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
 plt.savefig(os.path.join(dst, "prv_counts_brainstem.pdf"), bbox_inches = "tight")
