@@ -70,7 +70,7 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 if __name__ == "__main__":
     
     #setting dirs
-    home_dir = "/jukebox/scratch/zmd/contra_ipsi_projection_studies_20191125"
+    home_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125"
     
     brain = str(sys.argv[1])
     type_vol = str(sys.argv[2]) #to separate raw images from atlas
