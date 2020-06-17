@@ -15,10 +15,9 @@ from scipy.ndimage.interpolation import zoom
 
 #setting paths
 ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-scratch_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125"
+scratch_dir = "/jukebox/scratch/zmd/"
 src = "/jukebox/wang/pisano/tracing_output/antero_4x"
-brains = ["20161207_db_bl6_lob6a_50rml_53d5hr", "20161207_db_bl6_lob6a_850r_53hr",
-          "20170115_tp_bl6_lob6b_500r_05", "20170410_tp_bl6_lob6a_ml_repro_01"]
+brains = ["20180410_jg51_bl6_lob6b_04"]
 #for array job parallelization
 print(os.environ["SLURM_ARRAY_TASK_ID"])
 jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])

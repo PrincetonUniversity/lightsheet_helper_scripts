@@ -39,9 +39,11 @@ def process(z):
     
     if "full_sizedatafld" in tif_dir: #if raw images
         img_name = os.path.join(tif_dir, os.path.basename(tif_dir)+"_C00_Z%04d.tif" % z)
-    else: #if atlas vol
+    elif "transformed_annotations" in tif_dir: #if atlas vol
         brain = os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))
         img_name = os.path.join(tif_dir, brain+"_annotation_Z%04d.tif" % z)
+    else:
+        img_name = os.path.join(tif_dir, "cells_%04d.tif" % z)
         
     print("Processing ", img_name)
     image = Image.open(img_name)
@@ -82,7 +84,10 @@ if __name__ == "__main__":
     elif type_vol == "atlas":
         src = "/jukebox/scratch/zmd"
         tif_dir = os.path.join(os.path.join(src, brain), "transformed_annotations/single_tifs")
-    
+    elif type_vol == "cells":
+        src = "/jukebox/scratch/zmd"
+        tif_dir = os.path.join(os.path.join(src, brain), "cells")
+        
     #get x,y,z resolution
     y,x = tifffile.imread(os.path.join(tif_dir, os.listdir(tif_dir)[0])).shape
     volume_size = [x, y, len(os.listdir(tif_dir))]
@@ -97,4 +102,4 @@ if __name__ == "__main__":
     with ProcessPoolExecutor(max_workers=12) as executor:
         executor.map(process, to_upload)
     
-    make_demo_downsample(type_vol, mip_start=0,num_mips=4)
+    make_demo_downsample(type_vol, mip_start=0,num_mips=5)
