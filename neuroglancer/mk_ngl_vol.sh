@@ -17,4 +17,4 @@ cat /proc/$$/status | grep Cpus_allowed_list
 module load anacondapy/5.3.1
 . activate lightsheet
 
-python make_precomputed_tracing.py 20161207_db_bl6_lob6a_850r_53hr cells
+python make_precomputed_tracing.py 20170116_tp_bl6_lob6b_lpv_07 cells

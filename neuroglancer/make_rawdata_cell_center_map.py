@@ -12,9 +12,7 @@ from scipy.ndimage import gaussian_filter
 
 src = "/jukebox/wang/pisano/tracing_output/antero_4x"
 dst = "/jukebox/scratch/zmd"
-brains = ["20170116_tp_bl6_lob6b_lpv_07",
-          "20161207_db_bl6_lob6a_50rml_53d5hr", "20161207_db_bl6_lob6a_850r_53hr",
-          "20170115_tp_bl6_lob6b_500r_05", "20170410_tp_bl6_lob6a_ml_repro_01"]
+brains = ["20180410_jg51_bl6_lob6b_04"]
 
 #for array job parallelization
 print(os.environ["SLURM_ARRAY_TASK_ID"])
