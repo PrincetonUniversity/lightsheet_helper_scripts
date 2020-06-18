@@ -11,7 +11,7 @@ before running scripts, activate lightsheet env in each window that has neurogla
 make sure you are connected to Princeton VPN and mounted on scratch/bucket
 """
 
-brainname = "20180322_jg_bl6f_prv_28"
+brainname = "20170116_tp_bl6_lob6b_lpv_07"
 ###WINDOW 1###
 #in the first ipython window run:
 import neuroglancer 
@@ -21,7 +21,7 @@ port=1337
 ###WINDOW 2###
 #in a new ipython window:
 from cloudvolume import CloudVolume
-brainname = "20180322_jg_bl6f_prv_28"
+brainname = "20170116_tp_bl6_lob6b_lpv_07"
 port=1337
 layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/647" % brainname
 vol = CloudVolume(f"file://{layer_dir}")
@@ -40,7 +40,7 @@ print(viewer)
 ###WINDOW 3###
 #to add another layer (aka the atlas), in a new ipython window:
 from cloudvolume import CloudVolume
-brainname = "20180322_jg_bl6f_prv_28"
+brainname = "20170116_tp_bl6_lob6b_lpv_07"
 port=1337
 layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/atlas" % brainname
 vol = CloudVolume(f"file://{layer_dir}")

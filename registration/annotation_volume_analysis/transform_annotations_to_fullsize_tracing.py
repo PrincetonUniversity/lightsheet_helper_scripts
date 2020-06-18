@@ -7,19 +7,23 @@ Created on Thu Oct 31 16:15:28 2019
 """
 import os, numpy as np, sys, time
 from skimage.external import tifffile
-sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
+sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
 from tools.utils.io import makedir, load_memmap_arr, listall, load_kwargs
 from tools.registration.register import change_interpolation_order, transformix_command_line_call
 from tools.registration.transform_list_of_points import modify_transform_files
 from scipy.ndimage.interpolation import zoom
 
 #setting paths
-ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif"
-scratch_dir = "/jukebox/scratch/zmd"
-src = "/jukebox/wang/pisano/tracing_output/retro_4x"
+ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
+scratch_dir = "/jukebox/scratch/zmd/"
+src = "/jukebox/wang/pisano/tracing_output/antero_4x"
+brains = ["20180410_jg51_bl6_lob6b_04"]
+#for array job parallelization
+print(os.environ["SLURM_ARRAY_TASK_ID"])
+jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
 
 #set brain name
-brain = os.path.join(src, "20180322_jg_bl6f_prv_28")
+brain = os.path.join(src, brains[jobid])
 
 start = time.time()
 
