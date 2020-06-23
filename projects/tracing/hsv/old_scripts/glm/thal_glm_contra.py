@@ -6,7 +6,6 @@ Created on Tue Dec 17 19:22:25 2019
 @author: wanglab
 """
 
-
 import statsmodels.api as sm
 import matplotlib as mpl, json
 import matplotlib.pyplot as plt
@@ -17,6 +16,7 @@ from skimage.external import tifffile
 src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
+inj_pth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/thalamus/injection_sites"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/thal_contra_counts_23_brains_80um_ventric_erosion.csv"
 dst = "/home/wanglab/Desktop"
@@ -131,19 +131,19 @@ def get_progeny(dic,parent_structure,progeny_list):
     progeny_list         The list to which this function will 
                          append the progeny structures. 
     """
-    if 'msg' in list(dic.keys()): dic = dic['msg'][0]
+    if "msg" in list(dic.keys()): dic = dic["msg"][0]
     
-    name = dic.get('name')
-    children = dic.get('children')
+    name = dic.get("name")
+    children = dic.get("children")
     if name == parent_structure:
         for child in children: # child is a dict
-            child_name = child.get('name')
+            child_name = child.get("name")
             progeny_list.append(child_name)
             get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
         return
     
     for child in children:
-        child_name = child.get('name')
+        child_name = child.get("name")
         get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
     return 
 
@@ -153,7 +153,7 @@ ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
-sois = ["Thalamus", "Ventral posteromedial nucleus of the thalamus",
+sois = ["Thalamus", "Zona incerta","Ventral posteromedial nucleus of the thalamus",
        "Reticular nucleus of the thalamus",
        "Mediodorsal nucleus of thalamus",
        "Posterior complex of the thalamus",
@@ -244,8 +244,9 @@ plt.savefig(os.path.join(dst,"thal_mean_count.pdf"), bbox_inches = "tight")
 
 #%%
 #glm
-X = expr_all_as_frac_of_inj_pool_norm
+X = frac_of_inj_pool_norm
 Y = pcounts
+# Y = pcounts
 
 c_mat = []
 mat = []
@@ -257,8 +258,8 @@ rs = []
 fit = []
 fit_shuf = []
 
-for itera in range(1000):
-    if itera%100 == 0: print(itera)
+for itera in range(10):
+    if itera%10 == 0: print(itera)
     if itera == 0:
         shuffle = False
         inj = X.copy()
@@ -277,7 +278,7 @@ for itera in range(1000):
             inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
             
 #            glm = sm.OLS(count, inj_)
-            glm = sm.GLM(count, inj_, family=sm.families.Poisson())
+            glm = sm.GLM(count, inj_, family=sm.families.Binomial())
             res = glm.fit()
             
             coef = res.params[:-1]
@@ -343,15 +344,17 @@ fit_shuf = np.array(fit_shuf)
 
 #%%
 ## display
-fig = plt.figure(figsize=(5,5))
+fig = plt.figure(figsize=(5,8))
 ax = fig.add_axes([.4,.1,.5,.8])
 
 # map 1: weights
 show = mat
 
 vmin = 0
-vmax = 5
+vmax = 100
 whitetext = 4
+annotation = False
+
 cmap = plt.cm.Reds
 cmap.set_under("w")
 cmap.set_over("maroon")
@@ -370,12 +373,13 @@ cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
 
 # exact value annotations
-for ri,row in enumerate(show):
-    for ci,col in enumerate(row):
-        if col > whitetext:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
-        else:
-            ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
+if annotation:
+    for ri,row in enumerate(show):
+        for ci,col in enumerate(row):
+            if col > whitetext:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
+            else:
+                ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
 
 # signif
 sig = pmat < .05#/np.size(pmat)
@@ -387,16 +391,18 @@ for y,x in np.argwhere(sig):
     pass
     ax.text(x, y+0.3, "*", fontsize=10, ha="left", va="bottom", color = "black", transform=ax.transData)
 #ax.text(.5, 1.06, "X: p<0.05", ha="center", va="center", fontsize="small", transform=ax.transAxes)
-ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
+ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, 
+     nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
 ax.set_xticks(np.arange(len(ak_pool))+.5)
 
 #remaking labeles so it doesn"t look squished
 lbls = np.asarray(ak_pool)
-ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], rotation=30, fontsize=6, ha="right")
+ax.set_xticklabels(["{}\nn = {}".format(ak, n) for ak, n in zip(lbls, primary_lob_n)], 
+                   rotation="vertical", fontsize="small", ha="left")
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-ax.set_yticklabels(["{}".format(bi) for bi in regions], fontsize="small")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
+ax.set_yticklabels(regions, fontsize="medium")#plt.savefig(os.path.join(dst, "thal_glm.pdf"), bbox_inches = "tight")
 
-plt.savefig(os.path.join(dst,"thal_glm.pdf"), bbox_inches = "tight")
+# plt.savefig(os.path.join(dst,"thal_glm.pdf"), bbox_inches = "tight")

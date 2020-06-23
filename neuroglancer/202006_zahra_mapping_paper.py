@@ -15,13 +15,13 @@ make sure you are connected to Princeton VPN and mounted on scratch/bucket
 #in the first ipython window run:
 import neuroglancer 
 neuroglancer.set_static_content_source(url="https://nglancer.pni.princeton.edu")
-brainname = "20170410_tp_bl6_lob6a_ml_repro_01"
+brainname = "20170116_tp_bl6_lob6b_lpv_07"
 port=1341
 
 ###WINDOW 2###
 #in a new ipython window:
 from cloudvolume import CloudVolume
-brainname = "20170410_tp_bl6_lob6a_ml_repro_01"
+brainname = "20170116_tp_bl6_lob6b_lpv_07"
 port=1341
 layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/647" % brainname
 vol = CloudVolume(f"file://{layer_dir}")
@@ -40,7 +40,7 @@ print(viewer)
 ###WINDOW 3###
 #to add another layer (aka the atlas), in a new ipython window:
 from cloudvolume import CloudVolume
-brainname = "20170410_tp_bl6_lob6a_ml_repro_01"
+brainname = "20170116_tp_bl6_lob6b_lpv_07"
 port=1341
 layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/atlas" % brainname
 vol = CloudVolume(f"file://{layer_dir}")
@@ -57,7 +57,7 @@ print(viewer)
 ###WINDOW 4###
 #to add another layer (cell centers), in a new ipython window:
 from cloudvolume import CloudVolume
-brainname = "20170410_tp_bl6_lob6a_ml_repro_01"
+brainname = "20170116_tp_bl6_lob6b_lpv_07"
 port=1341
 layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/cells" % brainname
 vol = CloudVolume(f"file://{layer_dir}")

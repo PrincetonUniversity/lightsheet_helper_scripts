@@ -10,6 +10,11 @@ import os, pandas as pd, numpy as np, pickle as pckl
 import matplotlib.pyplot as plt, seaborn as sns, json, matplotlib as mpl
 import itertools
 
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
+
 #figure dest 
 dst = "/home/wanglab/Desktop"
 
@@ -69,14 +74,21 @@ def get_progeny(dic,parent_structure,progeny_list):
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
-sois = ["Cerebellar nuclei", "Vestibular nuclei", "Pontine gray",
+# sois = ["Cerebellar nuclei", "Vestibular nuclei", "Pontine gray",
+#         "Tegmental reticular nucleus", "Lateral reticular nucleus",
+#         "Superior colliculus, motor related", 
+#         "Superior colliculus, sensory related",
+#         "Spinal nucleus of the trigeminal, caudal part",
+#         "Spinal nucleus of the trigeminal, interpolar part",
+#         "Spinal nucleus of the trigeminal, oral part",
+#         "Principal sensory nucleus of the trigeminal",
+#         "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus"
+#         ]
+sois =  ["Pontine gray",
         "Tegmental reticular nucleus", "Lateral reticular nucleus",
-        "Superior colliculus, motor related", 
-        "Superior colliculus, sensory related",
         "Spinal nucleus of the trigeminal, caudal part",
         "Spinal nucleus of the trigeminal, interpolar part",
         "Spinal nucleus of the trigeminal, oral part",
-        "Principal sensory nucleus of the trigeminal",
         "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus"
         ]
 
@@ -96,6 +108,10 @@ for soi in sois:
     counts_per_struct.append(np.array(counts).sum(axis = 0))
 counts_per_struct = np.array(counts_per_struct)
 
+combined_sois = ["BPN/NRTP", "LRN", "Spinal trigeminal nuclei", 
+                 "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus"]
+combined_counts = np.array([np.array([xx[0]+xx[1], xx[2], xx[3]+xx[4]+xx[5],
+                 xx[6],xx[7],xx[8]]) for xx in counts_per_struct.T]).T
 #voxels
 vol = []
 for soi in sois:
@@ -111,8 +127,10 @@ for soi in sois:
     vol.append(np.array(counts).sum(axis = 0))
 vol = np.array(vol)        
 
+combined_vol = np.array([vol[0]+vol[1], vol[2], vol[3]+vol[4]+vol[5],
+                 vol[6],vol[7],vol[8]]).T
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T) 
-
+combined_density = np.nan_to_num(np.array([xx/(combined_vol[i]*(scale_factor**3)) for i, xx in enumerate(combined_counts)]).T) 
 #%%
 #display
 #set colorbar features 
@@ -122,19 +140,20 @@ sort_descending = False
 
 #make density map like the h129 dataset
 ## display
-fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,7), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2.5,5], "width_ratios": [30,1]})
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,4), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [4,5], "width_ratios": [30,1]})
 
 #sort inj fractions by primary lob
-sort_density = [density[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_density = [combined_density[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
 if sort_descending == True:
     #now sort sois by # of neurons/density
-    sort_sois = np.array(sois)[np.argsort(np.median(sort_density,axis=0))]
+    sort_sois = np.array(combined_sois)[np.argsort(np.median(sort_density,axis=0))]
     sort_density = sort_density.T[np.argsort(np.median(sort_density,axis=0))][::-1].T
     yaxis = sort_sois
 else: 
-    yaxis = np.flipud(sois)
+    yaxis = np.flipud(combined_sois)
+    
 sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_brains = list(itertools.chain.from_iterable(sort_brains))
@@ -206,8 +225,8 @@ ax.set_yticklabels([])
 ax.set_xticklabels(["Mean \ncells / mm$^3$"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "prv_density_brainstem.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "prv_density_brainstem.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_density_brainstem_dorsal_column_nuc_3_regions.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_density_brainstem_dorsal_column_nuc_3_regions.jpg"), bbox_inches = "tight")
 
 #%%
 #display - just counts
@@ -217,19 +236,20 @@ yaxis = np.flipud(sois)
 
 #make density map like the h129 dataset
 ## display
-fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,7), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [2.5,5], "width_ratios": [30,1]})
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,4), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [4,5], "width_ratios": [30,1]})
 
 #sort inj fractions by primary lob
-sort_density = [counts_per_struct.T[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_density = [combined_counts.T[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
 if sort_descending == True:
     #now sort sois by # of neurons/density
-    sort_sois = np.array(sois)[np.argsort(np.median(sort_density,axis=0))]
+    sort_sois = np.array(combined_sois)[np.argsort(np.median(sort_density,axis=0))]
     sort_density = sort_density.T[np.argsort(np.median(sort_density,axis=0))][::-1].T
     yaxis = sort_sois
 else: 
-    yaxis = np.flipud(sois)
+    yaxis = np.flipud(combined_sois)
+    
 sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_brains = list(itertools.chain.from_iterable(sort_brains))
@@ -299,5 +319,5 @@ ax.set_yticklabels([])
 ax.set_xticklabels(["Mean \n# Neurons"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "prv_counts_brainstem.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "prv_counts_brainstem.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_counts_brainstem_dorsal_column_nuc_3_regions.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_counts_brainstem_dorsal_column_nuc_3_regions.jpg"), bbox_inches = "tight")
