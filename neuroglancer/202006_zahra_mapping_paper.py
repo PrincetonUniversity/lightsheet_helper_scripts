@@ -27,6 +27,15 @@ layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%
 vol = CloudVolume(f"file://{layer_dir}")
 vol.viewer(port=port)
 
+###WINDOW 3###
+#to add another layer (aka the atlas), in a new ipython window:
+from cloudvolume import CloudVolume
+brainname = "20161207_db_bl6_lob6a_850r_53hr"
+port=1341
+layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/atlas" % brainname
+vol = CloudVolume(f"file://{layer_dir}")
+vol.viewer(port=port+1) #make sure this port is different from the first    
+
 ###WINDOW 1###
 #go back to first window and run
 neuroglancer.set_static_content_source(url="https://nglancer.pni.princeton.edu")
@@ -36,15 +45,6 @@ with viewer.txn() as s:
     )
 print(viewer)
 #this should add the above volume to the neuroglancer window
-
-###WINDOW 3###
-#to add another layer (aka the atlas), in a new ipython window:
-from cloudvolume import CloudVolume
-brainname = "20161207_db_bl6_lob6a_850r_53hr"
-port=1341
-layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/atlas" % brainname
-vol = CloudVolume(f"file://{layer_dir}")
-vol.viewer(port=port+1) #make sure this port is different from the first    
 
 ###WINDOW 1###
 #go back to first window and run
