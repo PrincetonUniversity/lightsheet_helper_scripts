@@ -101,9 +101,9 @@ for soi in sois:
 counts_per_struct = np.array(counts_per_struct)
 
 combined_sois = ["BPN/NRTP", "LRN", "Spinal trigeminal nuclei", 
-                 "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus"]
+                 "Dorsal column nuclei"]
 combined_counts = np.array([np.array([xx[0]+xx[1], xx[2], xx[3]+xx[4]+xx[5],
-                 xx[6],xx[7],xx[8]]) for xx in counts_per_struct.T]).T
+                 xx[6]+xx[7]+xx[8]]) for xx in counts_per_struct.T]).T
 #voxels
 vol = []
 for soi in sois:
@@ -120,19 +120,22 @@ for soi in sois:
 vol = np.array(vol)        
 
 combined_vol = np.array([vol[0]+vol[1], vol[2], vol[3]+vol[4]+vol[5],
-                 vol[6],vol[7],vol[8]]).T
+                 vol[6]+vol[7]+vol[8]]).T
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T) 
 combined_density = np.nan_to_num(np.array([xx/(combined_vol[i]*(scale_factor**3)) for i, xx in enumerate(combined_counts)]).T) 
 
 #%%
 #display
 #set colorbar features 
-maxdensity = 300
+maxdensity = 200
 #set true if need to sort structures in descending order of density/neurons
 sort_descending = False
 
 fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (5,6), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [5,5], "width_ratios": [15,1]})
+
+#divide density by maximum
+norm_combined_density = np.array([xx/sum(xx) for xx in combined_density])
 
 #sort inj fractions by primary lob
 if not lobvi:
@@ -221,13 +224,16 @@ ax.set_yticklabels([])
 ax.set_xticklabels(["Mean \ncells / mm$^3$"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "lobvi_hsv_density_brainstem_dorsal_column_nuc_1_regions.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "lobvi_hsv_density_brainstem_dorsal_column_nuc_1_regions.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "lobvi_hsv_density_brainstem_dorsal_column_nuc_3_regions.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "lobvi_hsv_density_brainstem_dorsal_column_nuc_3_regions.jpg"), bbox_inches = "tight")
 
 #%%
 #display - just counts
 #set colorbar features 
-maxdensity = 400
+maxdensity = 60
+
+#make % counts array
+pcounts = np.array([xx/sum(xx) for xx in combined_counts.T])*100
 
 #make density map like the h129 dataset
 ## display
@@ -236,14 +242,14 @@ fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (5,6), sharex = False, 
 
 #sort inj fractions by primary lob
 if not lobvi:
-    sort_density = [combined_counts.T[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+    sort_density = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
     sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
     sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
     sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
     sort_brains = list(itertools.chain.from_iterable(sort_brains))
     sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 else:
-    sort_density = combined_counts.T
+    sort_density = pcounts
     sort_brains = brains
     sort_inj = frac_of_inj_pool
     
@@ -319,5 +325,5 @@ ax.set_yticklabels([])
 ax.set_xticklabels(["Mean \n# Neurons"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "lobvi_hsv_counts_brainstem_dorsal_column_nuc_3_regions.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "lobvi_hsv_counts_brainstem_dorsal_column_nuc_3_regions.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "lobvi_hsv_pcounts_brainstem_dorsal_column_nuc_3_regions.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "lobvi_hsv_pcounts_brainstem_dorsal_column_nuc_3_regions.jpg"), bbox_inches = "tight")
