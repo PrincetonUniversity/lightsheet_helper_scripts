@@ -6,11 +6,11 @@ Created on Mon Jul 20 12:04:02 2020
 @author: wanglab
 """
 
-import os, numpy as np, tifffile as tif, cv2, multiprocessing as mp
+import os, numpy as np, tifffile as tif, SimpleITK as sitk, cv2, multiprocessing as mp
 
 def resize_helper(img, dst, resizef):
     print(os.path.basename(img))
-    im = tif.imread(img)
+    im = sitk.GetArrayFromImage(sitk.ReadImage(img))
     y,x = im.shape
     yr = int(y/resizef); xr = int(x/resizef)
     im = cv2.resize(im, (xr, yr), interpolation=cv2.INTER_LINEAR)
