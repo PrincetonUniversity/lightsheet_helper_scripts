@@ -57,5 +57,5 @@ z = len(imgs)
 resizef = 5 #factor to downsize imgs by
 iterlst = [(img, dst, resizef) for img in imgs]
 p = mp.Pool(12)
-p.map(resize_helper, iterlst)
+p.starmap(resize_helper, iterlst)
 p.terminate()
