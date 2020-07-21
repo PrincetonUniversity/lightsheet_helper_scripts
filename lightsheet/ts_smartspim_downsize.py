@@ -75,8 +75,10 @@ for i,img in enumerate(imgs):
     if i%10==0: print(i)
     arr[i,:,:] = sitk.GetArrayFromImage(sitk.ReadImage(img)) #horizontal
 #switch to sagittal
-arr = np.swapaxes(arr,2,0)
+arrsag = np.swapaxes(arr,2,0)
+z,y,x = arrsag.shape
+print((z,y,x))
 print("\n**********downsizing....heavy!**********\n")
 
-arrd = zoom(arr, ((atlz*1.4/z),(atly*1.4/y),(atlx*1.4/x)), order=1)
-tif.imsave(os.path.join(os.path.dirname(dst), "downsized_for_atlas.tif"), arrd.astype("uint16"))
+arrsagd = zoom(arrsag, ((atlz*1.4/z),(atly*1.4/y),(atlx*1.4/x)), order=1)
+tif.imsave(os.path.join(os.path.dirname(dst), "downsized_for_atlas.tif"), arrsagd.astype("uint16"))
