@@ -14,4 +14,4 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-terastitcher -1 --volin=/jukebox/LightSheetTransfer/tp/20200701_14_15_35_20180205_jg_b6f_04/Ex_642_Em_2/ --ref1=x --ref2=-y --ref3=z --vxl1=1.866 --vxl2=1.866 --vxl3=4 --projout=xml_import
+terastitcher -1 --volin=/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/ --ref1=x --ref2=y --ref3=z --vxl1=1.81 --vxl2=1.81 --vxl3=2 --projout=xml_import

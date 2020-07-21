@@ -17,4 +17,4 @@ cat /proc/$$/status | grep Cpus_allowed_list
 module load anacondapy/5.3.1
 . activate lightsheet
 
-python make_precomputed_smartspim.py 20200701_12_55_28_20170207_db_bl6_crii_rpv_01
+python make_precomputed_smartspim_prv.py 20200701_14_15_35_20180205_jg_b6f_04
