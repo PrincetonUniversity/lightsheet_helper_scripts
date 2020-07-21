@@ -63,9 +63,9 @@ from scipy.ndimage import zoom
 
 #now downsample to 140% of allen atlas
 dst = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_488_Em_0/downsized"
-imgs = [os.path.join(dst, xx) for xx in os.listdir(dst)]
+imgs = [os.path.join(dst, xx) for xx in os.listdir(dst)]; imgs.sort()
 z = len(imgs)
-y,x = sitk.GetArrayFromImage(sitk.ReadImage(imgs[0]))
+y,x = sitk.GetArrayFromImage(sitk.ReadImage(imgs[0])).shape
 arr = np.zeros((z,y,x))
 atlpth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
 atl = sitk.GetArrayFromImage(sitk.ReadImage(atlpth))
