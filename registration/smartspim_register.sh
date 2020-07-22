@@ -18,4 +18,4 @@ module load anacondapy/5.3.1
 module load elastix/4.8
 . activate lightsheet
 
-python smartspim_register.py 1
+python smartspim_register.py 2
