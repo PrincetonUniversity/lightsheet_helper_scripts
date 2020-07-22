@@ -20,7 +20,7 @@ def resize_helper(img, dst, resizef):
 
 if __name__ == "__main__":
 
-    pth = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/stitched/RES\(7604x5720x3553\)/102090/102090_120640"
+    pth = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/stitched/RES(7604x5720x3553)/102090/102090_120640"
     #path to store downsized images
     dst = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/downsized"
     if not os.path.exists(dst): os.mkdir(dst)
