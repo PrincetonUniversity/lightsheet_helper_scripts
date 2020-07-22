@@ -23,8 +23,17 @@ if stepid == 0:
     
     param_fld = "/jukebox/wang/zahra/python/BrainPipe/parameterfolder"
     params = [os.path.join(param_fld, xx) for xx in os.listdir(param_fld)]
-    
+    #run
     e_out, transformfiles = elastix_command_line_call(fx, mv, out, params)
 elif stepid == 1:
     #cell vol to registration vol
-    fx = 
+    mv = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/downsized_for_atlas.tif"
+    fx = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_488_Em_0/downsized_for_atlas.tif"
+    
+    out = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/elastix/sig785_to_reg"
+    if not os.path.exists(out): os.mkdir(out)
+    
+    param_fld = "/jukebox/wang/zahra/python/BrainPipe/parameterfolder"
+    params = [os.path.join(param_fld, xx) for xx in os.listdir(param_fld)]
+    #run
+    e_out, transformfiles = elastix_command_line_call(fx, mv, out, params)
