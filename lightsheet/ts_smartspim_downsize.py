@@ -20,17 +20,17 @@ def resize_helper(img, dst, resizef):
 
 if __name__ == "__main__":
 
-    pth = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/stitched/RES(7604x5720x3553)/102090/102090_120640"
-    #path to store downsized images
-    dst = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/downsized"
-    if not os.path.exists(dst): os.mkdir(dst)
-    imgs = [os.path.join(pth, xx) for xx in os.listdir(pth)]
-    z = len(imgs)
-    resizef = 5 #factor to downsize imgs by
-    iterlst = [(img, dst, resizef) for img in imgs]
-    p = mp.Pool(12)
-    p.starmap(resize_helper, iterlst)
-    p.terminate()
+    # pth = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/stitched/RES(7604x5720x3553)/102090/102090_120640"
+    # #path to store downsized images
+    # dst = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/downsized"
+    # if not os.path.exists(dst): os.mkdir(dst)
+    # imgs = [os.path.join(pth, xx) for xx in os.listdir(pth) if "tif" in xx]
+    # z = len(imgs)
+    # resizef = 5 #factor to downsize imgs by
+    # iterlst = [(img, dst, resizef) for img in imgs]
+    # p = mp.Pool(12)
+    # p.starmap(resize_helper, iterlst)
+    # p.terminate()
     
     #now downsample to 140% of allen atlas
     dst = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/downsized"
