@@ -2,11 +2,11 @@
 #
 #SBATCH -p all                # partition (queue)
 #SBATCH -c 12                      # number of cores
-#SBATCH -t 200                # time (minutes)
-#SBATCH -o /scratch/zmd/logs/mk_ngl_%j.out        # STDOUT #add _%a to see each array job
-#SBATCH -e /scratch/zmd/logs/mk_ngl_%j.err        # STDERR #add _%a to see each array job
+#SBATCH -t 400                # time (minutes)
+#SBATCH -o /scratch/zmd/logs/mk_ngl_spim_%j.out        # STDOUT #add _%a to see each array job
+#SBATCH -e /scratch/zmd/logs/mk_ngl_spim_%j.err        # STDERR #add _%a to see each array job
 #SBATCH --contiguous #used to try and get cpu mem to be contigous
-#SBATCH --mem 50000 #50 gbs
+#SBATCH --mem 80000 #80 gbs
 
 echo "In the directory: `pwd` "
 echo "As the user: `whoami` "
@@ -17,4 +17,4 @@ cat /proc/$$/status | grep Cpus_allowed_list
 module load anacondapy/5.3.1
 . activate lightsheet
 
-python make_precomputed_tracing.py 20180410_jg51_bl6_lob6b_04 cells
+python make_precomputed_smartspim_prv.py 20200701_14_15_35_20180205_jg_b6f_04
