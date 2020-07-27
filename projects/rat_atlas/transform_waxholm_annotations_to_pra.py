@@ -28,7 +28,7 @@ watl_for_pra = zoom(watl, (zf,yf,xf), order = 1)
 #saved out annotation volume
 print("\nsaving zoomed volume...")
 tif.imsave(os.path.join(src, "WHS_SD_rat_atlas_v3_annotation_for_pra_reg.tif"),
-           watl_for_pra.astype("uint16"))
+           watl_for_pra.astype("float32"))
 
 reg = os.path.join(src, "waxholm_to_pra")
 a2r = [os.path.join(reg, xx) for xx in os.listdir(reg) if "Transform" in xx]; a2r.sort()
