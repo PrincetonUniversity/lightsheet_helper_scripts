@@ -22,10 +22,11 @@ fx = "/jukebox/LightSheetData/brodyatlas/atlas/2019_meta_atlas/median_image.tif"
 watl = tif.imread(ann)
 pra = tif.imread(fx)
 zf,yf,xf = (pra.shape[0]/watl.shape[0])*1.4, (pra.shape[1]/watl.shape[1])*1.4, (pra.shape[2]/watl.shape[2])*1.4
+print("\nzooming...")
 watl_for_pra = zoom(watl, (zf,yf,xf), order = 1)
 
 #saved out annotation volume
-print("saving zoomed volume...")
+print("\nsaving zoomed volume...")
 tif.imsave(os.path.join(src, "WHS_SD_rat_atlas_v3_annotation_for_pra_reg.tif"),
            watl_for_pra.astype("uint16"))
 
@@ -49,5 +50,6 @@ for fl in transformfiles:# Read in the file
     with open(fl, "w") as file:
       file.write(filedata)
 #run transformix  
-transformix_command_line_call(watl_for_pra, dst, transformfiles[-1])
+transformix_command_line_call(os.path.join(src, "WHS_SD_rat_atlas_v3_annotation_for_pra_reg.tif"), 
+                              dst, transformfiles[-1])
     
