@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt, seaborn as sns, json, matplotlib as mpl
 import itertools
 
 #only get lobvi counts
-lobvi = True
+lobvi = False
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
 mpl.rcParams["xtick.major.size"] = 6
@@ -96,7 +96,9 @@ sois =  ["Pontine gray",
         "Spinal nucleus of the trigeminal, caudal part",
         "Spinal nucleus of the trigeminal, interpolar part",
         "Spinal nucleus of the trigeminal, oral part",
-        "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus"
+        # "Principal sensory nucleus of the trigeminal",
+        "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus",
+        "Inferior olivary complex"
         ]
 
 #first calculate counts across entire region
@@ -116,9 +118,9 @@ for soi in sois:
 counts_per_struct = np.array(counts_per_struct)
 
 combined_sois = ["BPN/NRTP", "LRN", "Spinal trigeminal nuclei", 
-                 "Dorsal column nuclei"]
+                 "Dorsal column nuclei", "Inferior olive"]
 combined_counts = np.array([np.array([xx[0]+xx[1], xx[2], xx[3]+xx[4]+xx[5],
-                 xx[6]+xx[7]+xx[8]]) for xx in counts_per_struct.T]).T
+                 xx[6]+xx[7]+xx[8], xx[9]]) for xx in counts_per_struct.T]).T
 #voxels
 vol = []
 for soi in sois:
@@ -135,9 +137,11 @@ for soi in sois:
 vol = np.array(vol)        
 
 combined_vol = np.array([vol[0]+vol[1], vol[2], vol[3]+vol[4]+vol[5],
-                 vol[6]+vol[7]+vol[8]]).T
+                 vol[6]+vol[7]+vol[8], vol[9]]).T
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T) 
 combined_density = np.nan_to_num(np.array([xx/(combined_vol[i]*(scale_factor**3)) for i, xx in enumerate(combined_counts)]).T) 
+
+
 #%%
 #display
 #set colorbar features 
@@ -147,7 +151,7 @@ sort_descending = False
 
 #make density map like the h129 dataset
 ## display
-fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (3,6), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,6), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [5,5], "width_ratios": [15,1]})
 
 #sort inj fractions by primary lob
@@ -237,8 +241,8 @@ ax.set_yticklabels([])
 ax.set_xticklabels(["Mean \ncells / mm$^3$"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "prv_density_brainstem_dorsal_column_nuc_1_regions.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "prv_density_brainstem_dorsal_column_nuc_1_regions.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_density_brainstem.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_density_brainstem.jpg"), bbox_inches = "tight")
 
 #%%
 #display - just counts
@@ -248,7 +252,7 @@ yaxis = np.flipud(sois)
 
 #make density map like the h129 dataset
 ## display
-fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (3,6), sharex = False, 
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,6), sharex = False, 
                          gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [5,5], "width_ratios": [10,1]})
 
@@ -337,5 +341,5 @@ ax.set_yticklabels([])
 ax.set_xticklabels(["Mean \n# Neurons"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "prv_counts_brainstem_dorsal_column_nuc_1_regions.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "prv_counts_brainstem_dorsal_column_nuc_1_regions.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_counts_brainstem.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_counts_brainstem.jpg"), bbox_inches = "tight")

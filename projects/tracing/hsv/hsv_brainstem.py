@@ -16,7 +16,7 @@ mpl.rcParams["xtick.major.size"] = 6
 mpl.rcParams["ytick.major.size"] = 6
 
 #only get lobvi counts
-lobvi = True
+lobvi = False
 src = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
 df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 cells_regions_pth_contra = os.path.join(src, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
@@ -81,7 +81,8 @@ sois =  ["Pontine gray",
         "Spinal nucleus of the trigeminal, interpolar part",
         "Spinal nucleus of the trigeminal, oral part",
         # "Principal sensory nucleus of the trigeminal",
-        "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus"
+        "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus",
+        "Inferior olivary complex"
         ]
 
 #first calculate counts across entire region
@@ -101,9 +102,9 @@ for soi in sois:
 counts_per_struct = np.array(counts_per_struct)
 
 combined_sois = ["BPN/NRTP", "LRN", "Spinal trigeminal nuclei", 
-                 "Dorsal column nuclei"]
+                 "Dorsal column nuclei", "Inferior olive"]
 combined_counts = np.array([np.array([xx[0]+xx[1], xx[2], xx[3]+xx[4]+xx[5],
-                 xx[6]+xx[7]+xx[8]]) for xx in counts_per_struct.T]).T
+                 xx[6]+xx[7]+xx[8], xx[9]]) for xx in counts_per_struct.T]).T
 #voxels
 vol = []
 for soi in sois:
@@ -120,7 +121,7 @@ for soi in sois:
 vol = np.array(vol)        
 
 combined_vol = np.array([vol[0]+vol[1], vol[2], vol[3]+vol[4]+vol[5],
-                 vol[6]+vol[7]+vol[8]]).T
+                 vol[6]+vol[7]+vol[8], vol[9]]).T
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T) 
 combined_density = np.nan_to_num(np.array([xx/(combined_vol[i]*(scale_factor**3)) for i, xx in enumerate(combined_counts)]).T) 
 
@@ -131,7 +132,7 @@ maxdensity = 200
 #set true if need to sort structures in descending order of density/neurons
 sort_descending = False
 
-fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (5,6), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,6), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [5,5], "width_ratios": [15,1]})
 
 #divide density by maximum
@@ -208,7 +209,7 @@ ax = axes[1,1]
 show = np.flipud(np.array([np.mean(sort_density, axis=0)]).T)
 
 # SET COLORMAP
-vmin = 0
+vmin = 0.1
 vmax = maxdensity
 cmap = plt.cm.Blues
 cmap.set_over(cmap(1.0))
@@ -224,8 +225,8 @@ ax.set_yticklabels([])
 ax.set_xticklabels(["Mean \ncells / mm$^3$"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "lobvi_hsv_density_brainstem_dorsal_column_nuc_3_regions.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "lobvi_hsv_density_brainstem_dorsal_column_nuc_3_regions.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_density_brainstem.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_density_brainstem.jpg"), bbox_inches = "tight")
 
 #%%
 #display - just counts
@@ -237,7 +238,7 @@ pcounts = np.array([xx/sum(xx) for xx in combined_counts.T])*100
 
 #make density map like the h129 dataset
 ## display
-fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (5,6), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 2, nrows = 2, figsize = (8,6), sharex = False, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [5,5], "width_ratios": [15,1]})
 
 #sort inj fractions by primary lob
@@ -285,7 +286,7 @@ ax = axes[1,0]
 show = np.fliplr(sort_density).T
 
 # SET COLORMAP
-vmin = 0
+vmin = 0.1
 vmax = maxdensity
 cmap = plt.cm.Blues
 cmap.set_over(cmap(1.0))
@@ -325,5 +326,5 @@ ax.set_yticklabels([])
 ax.set_xticklabels(["Mean \n# Neurons"])#np.arange(0, len(sort_brains), 5)+1)
 ax.tick_params(length=6)
 
-plt.savefig(os.path.join(dst, "lobvi_hsv_pcounts_brainstem_dorsal_column_nuc_3_regions.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "lobvi_hsv_pcounts_brainstem_dorsal_column_nuc_3_regions.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_pcounts_brainstem.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "hsv_pcounts_brainstem.jpg"), bbox_inches = "tight")
