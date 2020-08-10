@@ -133,50 +133,6 @@ def modify_transform_files(transformfiles, dst):
 				fl.close()
 		
 	return ntransformfiles
-	
-
-def modify_transform_files(transformfiles, dst):
-	"""Function to copy over transform files, modify paths in case registration was done on the cluster, and tether them together
-	
-		Inputs
-	---------
-	transformfiles = 
-		list of all elastix transform files used, and in order of the original transform****
-	
-	"""
-	
-	#new
-	ntransformfiles = [os.path.join(dst, "order{}_{}".format(i,os.path.basename(xx))) for i,xx in enumerate(transformfiles)]
-	
-	#copy files over
-	[shutil.copy(xx, ntransformfiles[i]) for i,xx in enumerate(transformfiles)]
-	
-	#modify each with the path
-	for i,pth in enumerate(ntransformfiles):
-		
-		#skip first
-		if i!=0:
-			
-			#read
-			with open(pth, "r") as fl:
-				lines = fl.readlines()
-				fl.close()
-			
-			#copy
-			nlines = lines
-			
-			#iterate
-			for ii, line in enumerate(lines):
-				if "(InitialTransformParametersFileName" in line:
-					nlines[ii] = "(InitialTransformParametersFileName {})\n".format(ntransformfiles[i-1])
-			
-			#write
-			with open(pth, "w") as fl:
-				for nline in lines:
-					fl.write(str(nline))
-				fl.close()
-		
-	return ntransformfiles
    
 def point_transformix(pretransform_text_file, transformfile, dst):
 	"""apply elastix transform to points
@@ -287,8 +243,8 @@ def load_dictionary(pth):
 
 	return kwargs
 
+#%%
 if __name__ == "__main__":
-	
 	
 	###NOTE CHECK TO ENSURE ACCOUNTING FOR INPUT RESAMPLING, and ORIENTATION CHANGE*****
 	
@@ -300,11 +256,10 @@ if __name__ == "__main__":
 	# src = "/home/wanglab/Downloads/transform_test/nx3_zyx_points.npy"
 	# dst = "/home/wanglab/Downloads/transform_test"; makedir(dst) # folder location to write points
 	# brain = "/home/ahoag/ngdemo/data/test_raw_cells/an21/"
-	brain = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed/an21"
+	brain = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed/an22"
 
-	# src = "/home/ahoag/progs/cell_erosion_test/cells_registered_pma.npy" # x,y,z sagittal 
-	src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed/an21/clearmap_cluster_output/cells_transformed_to_Atlas.npy" # x,y,z sagittal 
-	dst = "/home/ahoag/progs/cell_erosion_test"
+	src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed/an22/clearmap_cluster_output/cells_transformed_to_Atlas.npy" # x,y,z sagittal 
+	dst = "/home/wanglab/Desktop/cell_erosion_test"
 
 	# np.save(src, (np.random.rand(10,3)*20).astype("int"))
 	 
@@ -316,7 +271,7 @@ if __name__ == "__main__":
 	r2s1 = os.path.join(brain, "clearmap_cluster_output/elastix_auto_to_atlas/TransformParameters.1.txt")
 
 	#set destination directory
-	braindst = '/home/ahoag/progs/cell_erosion_test'
+	braindst = dst 
 
 	# makedir(braindst)
 	# print("made brain directory: ",braindst)    
@@ -357,34 +312,23 @@ if __name__ == "__main__":
 
 	# print(coordinates)
 	coordinates *= np.array([z_factor_h,y_factor_h,y_factor_h]) # still, z,y,x horizontal
-	coordinates[:,[0,2]] = coordinates[:,[2,0]] # x,y,z horizontal
 	final_coordinates_filename = npy_file.replace('.npy','_raw.npy')
-	np.save(final_coordinates_filename,coordinates)
+	np.save(final_coordinates_filename,coordinates.astype(int))
 	print(f"saved {final_coordinates_filename}")
 
-	#EXAMPLE USING LIGHTSHEET - when marking centers in the  "raw" full sized cfos channel. This will transform those centers into "atlas" space (in this case the moving image)
-	# in this case the "inverse transform has the atlas as the moving image in the first step, and the autofluorescence channel as the moving image in the second step 
-	# transformfiles = ["/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration/m37071_demons/elastix_inverse_transform/cellch_m37071_demonstrator_20171006_790_015na_1hfsds_z5um_1000msec/m37071_demonstrator_20171006_790_015na_1hfsds_z5um_1000msec_resized_ch00_resampledforelastix_atlas2reg2sig/atlas2reg_TransformParameters.0.txt", # this is auto = fixed image; atlas = moving image
-	#                   "/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration/m37071_demons/elastix_inverse_transform/cellch_m37071_demonstrator_20171006_790_015na_1hfsds_z5um_1000msec/m37071_demonstrator_20171006_790_015na_1hfsds_z5um_1000msec_resized_ch00_resampledforelastix_atlas2reg2sig/atlas2reg_TransformParameters.1.txt", # this is auto = fixed image; atlas = moving image
-	#                   "/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration/m37071_demons/elastix_inverse_transform/cellch_m37071_demonstrator_20171006_790_015na_1hfsds_z5um_1000msec/m37071_demonstrator_20171006_790_015na_1hfsds_z5um_1000msec_resized_ch00_resampledforelastix_atlas2reg2sig/reg2sig_TransformParameters.0.txt", # this is cfos = fixed image; auto = moving image
-	#                   "/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration/m37071_demons/elastix_inverse_transform/cellch_m37071_demonstrator_20171006_790_015na_1hfsds_z5um_1000msec/m37071_demonstrator_20171006_790_015na_1hfsds_z5um_1000msec_resized_ch00_resampledforelastix_atlas2reg2sig/reg2sig_TransformParameters.1.txt"] # this is cfos = fixed image; auto = moving image   
-
-	# #optional resampling between fullsized and input to elastix
-	# # original_dims = (687, 2560, 2160)
-	# # resample_dims = (592, 686, 416)
-	# # resample_points = [original_dims, resample_dims]
-	
-	# #if there was an orientation change
-	# param_dictionary_for_reorientation = "/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration/m37071_demons/param_dict.p"
-	
-	# #apply
-	# transform_points(src, dst, transformfiles, resample_points)
-
-
-	# # Code for converting .npy to .mat
-	# f = "/some/path/.npy" # full path to the .npy that you want converted
-	# new_path = "some_other_path.mat" # full path to where the .mat file should be saved and what it should be named
-	# data = np.load(f) # Load the .npy matrix into the workspace
-	# save_dict = dict(x=data) # convert it to a dictionary
-	# savemat(new_path, save_dict) # save the dictionary as a .mat file
-
+#%%
+    #check if mapping is correct, don't need to run if you are confident the script works
+    import matplotlib.pyplot as plt
+    cells = coordinates.astype(int)
+    #map all cells to vol
+    cellvol = np.zeros((z_dim_raw_h,y_dim_raw_h,x_dim_raw_h))
+    # cellrs = cells.T[:3].T.astype(int)
+    for i,cell in enumerate(cells):
+        #only map if non negative coordinates
+        if i%100000==0: print("%s cells mapped" % i)
+        try:
+            cellvol[cell[0],cell[1],cell[2]] = 255
+        except:
+            print("Cell coordinate out of bounds")
+            
+    plt.imshow(np.max(cellvol[500:600],axis=0))

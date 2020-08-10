@@ -246,11 +246,10 @@ if __name__ == "__main__":
     
     
     ###NOTE CHECK TO ENSURE ACCOUNTING FOR INPUT RESAMPLING, and ORIENTATION CHANGE*****
-        
     #inputs
     #numpy file consiting of nx3 (ZYX points) or if .mat file structure where zyx is called "cell_centers_orig_coord"
-    src = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/stitched/RES(7604x5720x3553)/102090/102090_120640/sliding_diff_peak_find_95percentile_test20200728_all_coord.mat"
-    dst = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/cells" # folder location to write points
+    src = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/stitched/RES(7604x5720x3553)/102090/102090_120640/sliding_diff_peak_find_95percentile_test20200806_all_coord.mat"
+    dst = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/cells_95percentile_test20200806" # folder location to write points
     if not os.path.exists(dst): os.mkdir(dst)
     
     #when marking centers in the  "raw" full sized cfos channel. This will transform those centers into "atlas" space (in this case the moving image)
@@ -268,9 +267,10 @@ if __name__ == "__main__":
     #apply
     transform_points(src, dst, transformfiles, resample_points)
 
-    #check if mapping is correct
+#%%
+    #check if mapping is correct, don't need to run if you are confident the script works
     import matplotlib.pyplot as plt, tifffile as tif
-    cellspth = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/cells/posttransformed_zyx_voxels.npy"
+    cellspth = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/cells_95percentile_test20200806/posttransformed_zyx_voxels.npy"
     cells = np.load(cellspth).astype(int)
     atlpth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
     # atlpth = "/jukebox/LightSheetTransfer/kelly/2020_07_15/20200715_12_14_06_f37080_mouse2_20171015/Ex_785_Em_3/downsized_for_atlas.tif"
