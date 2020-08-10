@@ -6,10 +6,12 @@ Created on Fri Aug  7 15:39:28 2020
 @author: wanglab
 """
 
-
-import os, sys, numpy as np, shutil
+lsfld = "/jukebox/wang/zahra/python/BrainPipe"
+import os, sys, numpy as np, shutil, tifffile
+sys.path.append(lsfld)
 from scipy.io import loadmat, savemat
 import pickle
+from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister
 
 def transform_points(src, dst, transformfiles, resample_points=False):
     """
@@ -290,7 +292,14 @@ if __name__ == "__main__":
     plt.imshow(np.max(cellvol[250:300],axis=0))
 
 #%%
-
+    #align to annotation
+    annpth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.tif"
+    idtable = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+    point_lst = transformed_pnts_to_allen_helper_func(np.load(os.path.join(dst, "posttransformed_zyx_voxels.npy")), tifffile.imread(annpth), order = "ZYX")
+    df = count_structure_lister(idtable, *point_lst).fillna(0)
+    df.drop(columns = "Unnamed: 0").to_csv(os.path.join(dst, os.path.basename(idtable).replace(".xlsx", "")+"_f37080_mouse2_20171015.csv"), index=None)
+        
+#%%
     # Code for converting .npy to .mat
     f = "/some/path/.npy" # full path to the .npy that you want converted
     new_path = "some_other_path.mat" # full path to where the .mat file should be saved and what it should be named
