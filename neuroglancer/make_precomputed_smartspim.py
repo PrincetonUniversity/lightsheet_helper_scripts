@@ -18,7 +18,7 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     layer_type = "image", # "image" or "segmentation"
     data_type = "uint16", # 32 not necessary for Princeton atlas, but was for Allen atlas 
     encoding = "raw", # other options: "jpeg", "compressed_segmentation" (req. uint32 or uint64)
-    resolution = [ 1866, 1866, 4000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
+    resolution = [ 1810, 1810, 4000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
     voxel_offset = [ 0, 0, 0 ], # values X,Y,Z values in voxels
     chunk_size = [ 1024, 1024, 1], # rechunk of image X,Y,Z in voxels, 
     volume_size = volume_size, # X,Y,Z size in voxels
@@ -36,7 +36,7 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     
 def process(args):
     vol,z = args
-    img_name = os.path.join(tif_dir, "090560_115045_%06d.tif" % int((z*40)+000)) #ZMD CHANGED FOR CUSTOM DSET
+    img_name = os.path.join(tif_dir, "20200701_12_55_28_20170207_db_bl6_crii_rpv_01_annotation_Z%04d.tif") % int(z)
         
     print("Processing ", img_name)
     assert os.path.exists(img_name) == True
@@ -71,11 +71,11 @@ if __name__ == "__main__":
     #setting dirs
     home_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125"
     
-    brain = str(sys.argv[1])
+    brain = "20200701_12_55_28_20170207_db_bl6_crii_rpv_01"
     print(brain)
     
-    tif_dir = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/Ex_642_Em_2/stitched/RES(7559x5723x1792)/090560/090560_115045"
-    type_vol = "647"
+    tif_dir = "/jukebox/scratch/zmd/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/transformed_annotations/single_tifs"
+    type_vol = "atlas"
 
     #get x,y,z resolution
     image = Image.open(os.path.join(tif_dir, os.listdir(tif_dir)[0]))

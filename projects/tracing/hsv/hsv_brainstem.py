@@ -17,14 +17,16 @@ mpl.rcParams["ytick.major.size"] = 6
 
 #only get lobvi counts
 lobvi = False
-src = "/jukebox/wang/zahra/h129_contra_vs_ipsi"
-df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
-cells_regions_pth_contra = os.path.join(src, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
-cells_regions_pth_ipsi = os.path.join(src, "data/thal_ipsi_counts_23_brains_80um_ventric_erosion.csv")
-dst = "/home/wanglab/Desktop"
+src =  r"Z:\zahra\h129_contra_vs_ipsi"
+df_pth = r"Y:\atlas\allen_atlas\allen_id_table_w_voxel_counts.xlsx" #"/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+cells_regions_pth_contra = os.path.join(src, r"data\thal_contra_counts_23_brains_80um_ventric_erosion.csv")
+cells_regions_pth_ipsi = os.path.join(src, r"data\thal_ipsi_counts_23_brains_80um_ventric_erosion.csv")
+dst = r"C:\Users\lvbt\Desktop"#"/home/wanglab/Desktop"
+#get progeny of all large structures
+ontology_file = r"Y:\atlas\allen_atlas\allen.json" #"/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 #collect 
-data_pth = os.path.join(src, "data/thal_hsv_maps_contra_allen.p")
+data_pth = os.path.join(src, r"data\thal_hsv_maps_contra_allen.p")
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 primary_pool = data["primary_pool"]
@@ -67,9 +69,6 @@ def get_progeny(dic,parent_structure,progeny_list):
         child_name = child.get("name")
         get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
     return 
-
-#get progeny of all large structures
-ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
