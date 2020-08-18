@@ -14,4 +14,8 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-terastitcher --displproj --projin=/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/Ex_488_Em_0/xml_displcomp.xml
+terastitcher --displproj --projin="$1"+/xml_displcomp.xml
+
+terastitcher --displthres --projin="$1"+/xml_displproj.xml --projout="$1"+/xml_displthres.xml --threshold=0.7
+
+terastitcher --placetiles --projin="$1"+/xml_displthres.xml --projout="$1"+/xml_placetiles.xml --algorithm=MST

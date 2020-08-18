@@ -14,5 +14,5 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-terastitcher --displcompute --projin=/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/Ex_488_Em_0/xml_import.xml --subvoldim=100 --projout=xml_displcomp
+terastitcher --displcompute --projin="$1"+/xml_import.xml --subvoldim=100 --projout=xml_displcomp
 
