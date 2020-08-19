@@ -14,4 +14,4 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-terastitcher --merge --projin=/jukebox/LightSheetData/wang-mouse/seagravesk/20200810_13_10_58_f37080_mouse2_20171015_slow_focus/Ex_785_Em_3/xml_placetiles.xml --volout=/jukebox/LightSheetData/wang-mouse/seagravesk/20200810_13_10_58_f37080_mouse2_20171015_slow_focus/Ex_785_Em_3/stitched --imout_depth=16 --resolutions=0
+terastitcher --merge --projin="$1"+/xml_placetiles.xml --volout="$2" --imout_depth=16 --resolutions=0

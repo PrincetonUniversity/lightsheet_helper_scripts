@@ -14,4 +14,8 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-terastitcher --displproj --projin=/jukebox/LightSheetData/wang-mouse/seagravesk/20200810_13_10_58_f37080_mouse2_20171015_slow_focus/Ex_785_Em_3/xml_displcomp.xml
+terastitcher --displproj --projin="$1"+/xml_displcomp.xml
+
+terastitcher --displthres --projin="$1"+/xml_displproj.xml --projout="$1"+/xml_displthres.xml --threshold=0.7
+
+terastitcher --placetiles --projin="$1"+/xml_displthres.xml --projout="$1"+/xml_placetiles.xml --algorithm=MST

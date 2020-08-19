@@ -16,27 +16,26 @@ from scipy.ndimage.interpolation import zoom
 #setting paths
 ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
 scratch_dir = "/jukebox/scratch/zmd/"
-src = "/jukebox/wang/pisano/tracing_output/retro_4x"
-brains = ["20180205_jg_bl6f_prv_03", "20180205_jg_bl6f_prv_04",
-          "20180215_jg_bl6f_prv_09", "20180305_jg_bl6f_prv_11"]
+src = "/jukebox/LightSheetTransfer/tp"
+brains = ["20200701_12_55_28_20170207_db_bl6_crii_rpv_01"]
 #for array job parallelization
-print(os.environ["SLURM_ARRAY_TASK_ID"])
-jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
-
+# print(os.environ["SLURM_ARRAY_TASK_ID"])
+# jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
+jobid=0
 #set brain name
 brain = os.path.join(src, brains[jobid])
 
 start = time.time()
 
-kwargs = load_kwargs(brain)
-
 #accessing parameter dictionary
-cellvol = [xx for xx in kwargs["volumes"] if xx.ch_type == "cellch"][0]
+cellvol = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/Ex_642_Em_2/stitched/RES(7559x5723x1792)/090560/090560_115045"
 
-a2r0 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.0" in xx and "cellch" in xx][0]
-a2r1 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.1" in xx and "cellch" in xx][0]
-r2s0 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "reg2sig_TransformParameters.0" in xx and "cellch" in xx][0]
-#r2s1 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "reg2sig_TransformParameters.1" in xx and "cellch" in xx][0] #does not using this one improve the registration quality?
+a2r0 = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/elastix_inverse_transform/reg_to_sig642/TransformParameters.0.txt"
+a2r1 = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/elastix_inverse_transform/reg_to_sig642/TransformParameters.1.txt"
+# a2r0 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.0" in xx and "cellch" in xx][0]
+# a2r1 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.1" in xx and "cellch" in xx][0]
+r2s0 = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/elastix_inverse_transform/TransformParameters.0.txt"
+r2s1 = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/elastix_inverse_transform/TransformParameters.1.txt"
 
 #set destination directory
 braindst = os.path.join(scratch_dir, os.path.basename(brain))
@@ -46,7 +45,7 @@ makedir(braindst)
 aldst = os.path.join(braindst, "transformed_annotations"); makedir(aldst)
 #
 #transformix
-transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0], dst = aldst)
+transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0, r2s1], dst = aldst)
 [change_interpolation_order(xx,0) for xx in transformfiles]
 
 #change the parameter in the transform files that outputs 16bit images instead
@@ -64,8 +63,8 @@ transformix_command_line_call(ann, aldst, transformfiles[-1])
 #now zoom out - this is heavy!
 transformed_ann = os.path.join(aldst, "result.tif")
 tann = tifffile.imread(transformed_ann)
-pl0 = tifffile.imread(os.path.join(cellvol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox"), os.listdir(cellvol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox"))[0]))
-dv0,ap0,ml0 = len(os.listdir(cellvol.full_sizedatafld_vol.replace("/home/wanglab", "/jukebox"))), pl0.shape[0], pl0.shape[1]
+pl0 = tifffile.imread(os.path.join(cellvol, os.listdir(cellvol)[0]))
+dv0,ap0,ml0 = len(os.listdir(cellvol)), pl0.shape[0], pl0.shape[1]
 
 ml1,ap1,dv1 = tann.shape
 

@@ -18,18 +18,18 @@ mpl.rcParams["xtick.major.size"] = 6
 mpl.rcParams["ytick.major.size"] = 6
 
 #figure dest 
-dst = "/home/wanglab/Desktop"
+dst = r"C:\Users\lvbt\Desktop"#"/home/wanglab/Desktop"
 
 #bucket path for data
-src = "/jukebox/wang/zahra/tracing_projects/prv"
-df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
-cells_regions_pth_contra = os.path.join(src, "for_tp/nc_contra_counts_25_brains_pma.csv")
-cells_regions_pth_ipsi = os.path.join(src, "for_tp/nc_ipsi_counts_25_brains_pma.csv")
+src = r"Z:\zahra\tracing_projects\prv"#"/jukebox/wang/zahra/tracing_projects/prv"
+df_pth = r"Y:\atlas\ls_id_table_w_voxelcounts.xlsx" #"/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = r"Y:\atlas\allen_atlas\allen.json" #"/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+cells_regions_pth_contra = os.path.join(src, r"for_tp\nc_contra_counts_25_brains_pma.csv")
+cells_regions_pth_ipsi = os.path.join(src, r"for_tp\nc_ipsi_counts_25_brains_pma.csv")
 
 #imports
 #path to pickle file
-data_pth = os.path.join(src, "for_tp/prv_maps_contra_pma.p")
+data_pth = os.path.join(src, r"for_tp\prv_maps_contra_pma.p")
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set the appropritate variables
