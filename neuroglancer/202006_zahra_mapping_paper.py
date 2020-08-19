@@ -15,7 +15,7 @@ make sure you are connected to Princeton VPN and mounted on scratch/bucket
 #in a new ipython window:
 from cloudvolume import CloudVolume
 brainname = "20200701_12_55_28_20170207_db_bl6_crii_rpv_01"
-port=1339
+port=1350
 layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/647" % brainname
 vol = CloudVolume(f"file://{layer_dir}")
 vol.viewer(port=port)
@@ -24,7 +24,7 @@ vol.viewer(port=port)
 #to add another layer (aka the atlas), in a new ipython window:
 from cloudvolume import CloudVolume
 brainname = "20200701_12_55_28_20170207_db_bl6_crii_rpv_01"
-port=1339
+port=1350
 layer_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/%s/atlas" % brainname
 vol = CloudVolume(f"file://{layer_dir}")
 vol.viewer(port=port+1) #make sure this port is different from the first    
@@ -35,7 +35,7 @@ vol.viewer(port=port+1) #make sure this port is different from the first
 import neuroglancer 
 neuroglancer.set_static_content_source(url="https://nglancer.pni.princeton.edu")
 brainname = "20200701_12_55_28_20170207_db_bl6_crii_rpv_01"
-port=1339
+port=1350
 viewer = neuroglancer.Viewer()
 with viewer.txn() as s:
     s.layers["%s" % brainname] = neuroglancer.ImageLayer(source="precomputed://http://localhost:%s" % port
@@ -48,6 +48,34 @@ with viewer.txn() as s:
     )
 print(viewer)
 #this should add the atlas volume to the neuroglancer window
+
+###WINDOW 3###
+#take screenshots
+#NOTE: THIS DOESN'T WORK IN A SPYDER, CONSOLE, ACTIVATE ENV AND RUN IN IPYTHON SHELL
+import os
+svdst = "/home/wanglab/Desktop/%s/cortex_wo_overlay_zoom "% brainname
+#make sure these directories exist
+if not os.path.exists(os.path.dirname(svdst)): os.mkdir(os.path.dirname(svdst)) #brain directory
+if not os.path.exists(svdst): os.mkdir(svdst) #structure directory
+ss = neuroglancer.ScreenshotSaver(viewer, svdst)
+with viewer.config_state.txn() as s:
+	s.show_ui_controls = False
+	s.show_panel_borders = False
+for i in range(2700,4000,30):
+    if i%10==0: print(i)
+    with viewer.txn() as s:
+        s.voxel_coordinates = [1787,i,442] #the xy coords here are from the neuroglancer window
+        #(where the L center scale is located)
+    #optionally limit window size
+#    with viewer.config_state.txn() as s:
+#        s.viewer_size = [1000,1000]
+    ss.capture(index=i)
+
+#after, return controls to neuroglancer browser
+with viewer.config_state.txn() as s: 
+    s.show_ui_controls = True 
+    s.show_panel_borders = True 
+
 
 ###WINDOW 4###
 #to add another layer (cell centers), in a new ipython window:
@@ -64,33 +92,6 @@ with viewer.txn() as s:
     s.layers["%s_cells" % brainname] = neuroglancer.SegmentationLayer(source="precomputed://http://localhost:%s" % int(port+2)
     )
 print(viewer)
-
-###WINDOW 3###
-#take screenshots
-#NOTE: THIS DOESN'T WORK IN A SPYDER, CONSOLE, ACTIVATE ENV AND RUN IN IPYTHON SHELL
-import os
-svdst = "/home/wanglab/Desktop/%s/vestnuc "% brainname
-#make sure these directories exist
-if not os.path.exists(os.path.dirname(svdst)): os.mkdir(os.path.dirname(svdst)) #brain directory
-if not os.path.exists(svdst): os.mkdir(svdst) #structure directory
-ss = neuroglancer.ScreenshotSaver(viewer, svdst)
-for i in range(5200,6200,30):
-    if i%10==0: print(i)
-    with viewer.config_state.txn() as s:
-        s.show_ui_controls = False
-        s.show_panel_borders = False
-    with viewer.txn() as s:
-        s.voxel_coordinates = [2561,i,740] #the xy coords here are from the neuroglancer window
-        #(where the L center scale is located)
-    #optionally limit window size
-#    with viewer.config_state.txn() as s:
-#        s.viewer_size = [1000,1000]
-    ss.capture(index=i)
-
-#after, return controls to neuroglancer browser
-with viewer.config_state.txn() as s: 
-    s.show_ui_controls = True 
-    s.show_panel_borders = True 
 
 #%%
 

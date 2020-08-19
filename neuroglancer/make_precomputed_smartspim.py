@@ -15,7 +15,7 @@ from taskqueue import LocalTaskQueue
 def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     info = CloudVolume.create_new_info(
     num_channels = 1,
-    layer_type = "image", # "image" or "segmentation"
+    layer_type = "segmentation", # "image" or "segmentation"
     data_type = "uint16", # 32 not necessary for Princeton atlas, but was for Allen atlas 
     encoding = "raw", # other options: "jpeg", "compressed_segmentation" (req. uint32 or uint64)
     resolution = [ 1810, 1810, 4000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
@@ -47,9 +47,10 @@ def process(args):
     array = array.reshape((1, height, width)).T
     print(array.shape)
     vol[:,:, z] = array
-    print("\nExported to Cloudvolume!!!!!!!!!!!!!!!!!!!!!!!!!\n")
     image.close()
     touch(os.path.join(progress_dir, str(z)))
+
+    return "success"
 
 def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 	cloudpath = "file://"+home_dir+"/"+brain+"/"+type_vol
@@ -91,8 +92,12 @@ if __name__ == "__main__":
     to_upload.sort()
     
     print("Running processor...\n")
-    with ProcessPoolExecutor(max_workers=12) as executor:
-        executor.map(process, to_upload)
+    with ProcessPoolExecutor(max_workers=10) as executor:
+		for job in executor.map(process_slice,to_upload):
+			try:
+				print(job)
+			except Exception as exc:
+				print(f'generated an exception: {exc}')
     
     print("Downsampling...\n")
     make_demo_downsample(type_vol, mip_start=0,num_mips=7)
