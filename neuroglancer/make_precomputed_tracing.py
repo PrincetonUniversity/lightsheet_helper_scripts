@@ -19,9 +19,9 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
 		layer_type = "image", # "image" or "segmentation"
 		data_type = "uint16", # 32 not necessary for Princeton atlas, but was for Allen atlas 
 		encoding = "raw", # other options: "jpeg", "compressed_segmentation" (req. uint32 or uint64)
-		resolution = [ 1630, 1630, 7500 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
+		resolution = [ 1630, 1630, 3000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
 		voxel_offset = [ 0, 0, 0 ], # values X,Y,Z values in voxels
-		chunk_size = [ 1024, 1024, 1 ], # rechunk of image X,Y,Z in voxels, 
+		chunk_size = [ 1024, 1024, 32 ], # rechunk of image X,Y,Z in voxels, 
 		volume_size = volume_size, # X,Y,Z size in voxels
 	)
 
@@ -38,7 +38,7 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
 def process(z):
     
     if "full_sizedatafld" in tif_dir: #if raw images
-        img_name = os.path.join(tif_dir, os.path.basename(tif_dir)+"_C00_Z%04d.tif" % z)
+        img_name = os.path.join(tif_dir, os.path.basename(tif_dir)[:-5]+"_C01_Z%04d.tif" % z)
     elif "transformed_annotations" in tif_dir: #if atlas vol
         brain = os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))
         img_name = os.path.join(tif_dir, brain+"_annotation_Z%04d.tif" % z)
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     type_vol = str(sys.argv[2]) #to separate raw images from atlas
     
     if type_vol == "647":
-        src = "/jukebox/wang/pisano/tracing_output/antero_4x"
+        src = "/jukebox/wang/pisano/tracing_output/bl6_ts"
         fullszdt_dir = os.path.join(os.path.join(src, brain), "full_sizedatafld")
         tif_dir = [os.path.join(fullszdt_dir, xx) for xx in os.listdir(fullszdt_dir) if "647" in xx][0]
     elif type_vol == "atlas":
