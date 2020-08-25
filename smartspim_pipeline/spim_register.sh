@@ -18,4 +18,10 @@ module load anacondapy/5.3.1
 module load elastix/4.8
 . activate lightsheet
 
-python smartspim_register.py 2
+python smartspim_register.py 1 /jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01 Ex_642_Ex_2
+
+#functionality
+#takes 4 command line arguments max
+#stepid = int(sys.argv[1]) - regular or inverse transform, mostly just need inverse for cells/atlas
+#src = str(sys.argv[2]) - folder to stitched images, e.g. /jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/
+#reg = str(sys.argv[3]) - folder fo registration channel, e.g. Ex_488_Em_0

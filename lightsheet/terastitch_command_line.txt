@@ -1,8 +1,0 @@
-
-
-terastitcher -1 --volin=/home/wanglab/Documents/terastitcher/vol --ref1=1 --ref2=2 --ref3=3 --vxl1=5.91 --vxl2=5.91 --vxl3=10 --projout=xml_import.xml
-terastitcher --displcompute --projin="xml_import.xml" --algorithm=MIPNCC --D0=300 --D1=310 --sV=100 --sH=100 --sD=5
-terastitcher --displproj --projin="xml_displcomp.xml"
-terastitcher --displthres --projin="xml_displproj.xml" --projout="xml_displthres.xml" --threshold=0.6
-terastitcher --placetiles --projin="xml_displthres.xml" --projout="xml_placetiles.xml" --algorithm=MST
-terastitcher --merge --projin="xml_placetiles.xml" --volout=out --imout_depth=16 --resolutions=0 --algorithm=SINBLEND --D0=300 --D1=310
