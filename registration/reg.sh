@@ -3,10 +3,10 @@
 #SBATCH -p all                # partition (queue)
 #SBATCH -n 12                      # number of cores
 #SBATCH -t 500                 # time (minutes)
-#SBATCH -o /scratch/zmd/logs/reg.out        # STDOUT
-#SBATCH -e /scratch/zmd/logs/reg.err        # STDERR
+#SBATCH -o /scratch/zmd/logs/reg_%a_%j.out        # STDOUT
+#SBATCH -e /scratch/zmd/logs/reg_%a_%j.err        # STDERR
 #SBATCH --contiguous #used to try and get cpu mem to be contigous
-#SBATCH --mem 50000
+#SBATCH --mem 120000 #120gbs
 
 module load anacondapy/5.3.1
 module load elastix/4.8
@@ -18,7 +18,9 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-python register_one_time.py
+echo "Array Index: $SLURM_ARRAY_TASK_ID"
+
+python register_one_time.py ${SLURM_ARRAY_TASK_ID}
 
 # Usage notes:
 # after = go once the specified job starts

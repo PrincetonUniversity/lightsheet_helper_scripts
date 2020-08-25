@@ -6,7 +6,7 @@ Created on Mon Jul 20 12:04:02 2020
 @author: wanglab
 """
 
-import os, numpy as np, tifffile as tif, SimpleITK as sitk, cv2, multiprocessing as mp
+import os, numpy as np, tifffile as tif, SimpleITK as sitk, cv2, multiprocessing as mp, shutil, sys
 from scipy.ndimage import zoom
 
 def resize_helper(img, dst, resizef):
@@ -19,10 +19,14 @@ def resize_helper(img, dst, resizef):
                     im.astype("uint16"), compress=1)
 
 if __name__ == "__main__":
-
-    pth = "/home/wanglab/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/Ex_642_Em_2/stitched/RES(7559x5723x1792)/090560/090560_115045"
+    
+    #takes 2 command line args
+    print(sys.argv)
+    pth = str(sys.argv[1])
+    print("\nPath to stitched images: %s\n\n" % pth)
     #path to store downsized images
-    dst = "/home/wanglab/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/Ex_642_Em_2/downsized"
+    dst = str(sys.argv[2])
+    print("\nPath to storage directory: %s\n\n" % dst)
     if not os.path.exists(dst): os.mkdir(dst)
     imgs = [os.path.join(pth, xx) for xx in os.listdir(pth) if "tif" in xx]
     z = len(imgs)
@@ -37,12 +41,12 @@ if __name__ == "__main__":
     z = len(imgs)
     y,x = sitk.GetArrayFromImage(sitk.ReadImage(imgs[0])).shape
     arr = np.zeros((z,y,x))
-    atlpth = "/home/wanglab/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+    atlpth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
     atl = sitk.GetArrayFromImage(sitk.ReadImage(atlpth))
     atlz,atly,atlx = atl.shape #get shape, sagittal
     #read all the downsized images
     for i,img in enumerate(imgs):
-        if i%10==0: print(i)
+        if i%500==0: print(i)
         arr[i,:,:] = sitk.GetArrayFromImage(sitk.ReadImage(img)) #horizontal
     #switch to sagittal
     arrsag = np.swapaxes(arr,2,0)
@@ -52,3 +56,5 @@ if __name__ == "__main__":
     
     arrsagd = zoom(arrsag, ((atlz*1.4/z),(atly*1.4/y),(atlx*1.4/x)), order=1)
     tif.imsave(os.path.join(os.path.dirname(dst), "downsized_for_atlas.tif"), arrsagd.astype("uint16"))
+    print("\ndeleting storage directory after making volume...\n %s" % dst)
+    shutil.rmtree(dst)

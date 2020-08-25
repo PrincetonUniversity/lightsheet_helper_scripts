@@ -20,7 +20,7 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     encoding = "raw", # other options: "jpeg", "compressed_segmentation" (req. uint32 or uint64)
     resolution = [ 1810, 1810, 2000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
     voxel_offset = [ 0, 0, 0 ], # values X,Y,Z values in voxels
-    chunk_size = [ 1024, 1024, 32], # rechunk of image X,Y,Z in voxels, 
+    chunk_size = [ 1024, 1024, 1], # rechunk of image X,Y,Z in voxels, 
     volume_size = volume_size, # X,Y,Z size in voxels
     )
     
@@ -38,14 +38,12 @@ def process(args):
     vol,z = args
     img_name = os.path.join(tif_dir, os.path.basename(tif_dir)+"_%06d.tif" % int((z*20)+380))
         
-    print("Processing ", img_name)
     assert os.path.exists(img_name) == True
     image = Image.open(img_name)
     width, height = image.size
     
     array = np.array(list( image.getdata() ), dtype=np.uint16, order="F")
     array = array.reshape((1, height, width)).T
-    print(array.shape)
     vol[:,:, z] = array
     image.close()
     touch(os.path.join(progress_dir, str(z)))
@@ -75,7 +73,7 @@ if __name__ == "__main__":
     brain = "07142020_tp_hsv20hr_6"
     print(brain)
     
-    tif_dir = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_HSV-H129/natneuroreviews_tompisano_HSV-H129_20hr-006/imaging_request_1/output/processing_request_1/resolution_4x/RES(7561x5725x3565)/111940/111940_101428"
+    tif_dir = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_HSV-H129/natneuroreviews_tompisano_HSV-H129_20hr-006/imaging_request_1/output/processing_request_1/resolution_4x/Ex_642_Em_2/RES(7561x5725x3565)/111940/111940_101428"
     type_vol = "647"
     print(os.path.basename(tif_dir))
 
@@ -93,12 +91,12 @@ if __name__ == "__main__":
     to_upload.sort()
     
     print("Running processor...\n")
-    with ProcessPoolExecutor(max_workers=10) as executor:
-		for job in executor.map(process_slice,to_upload):
-			try:
-				print(job)
-			except Exception as exc:
-				print(f'generated an exception: {exc}')
+    with ProcessPoolExecutor(max_workers=12) as executor:
+        for job in executor.map(process,to_upload):
+            try:
+                print(job)
+            except Exception as exc:
+                print(f'generated an exception: {exc}')
     
     print("Downsampling...\n")
     make_demo_downsample(type_vol, mip_start=0,num_mips=6)

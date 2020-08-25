@@ -19,7 +19,7 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     layer_type = "image", # "image" or "segmentation"
     data_type = "uint16", # 32 not necessary for Princeton atlas, but was for Allen atlas 
     encoding = "raw", # other options: "jpeg", "compressed_segmentation" (req. uint32 or uint64)
-    resolution = [ 1866, 1866, 4000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
+    resolution = [ 1810, 1810, 2000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
     voxel_offset = [ 0, 0, 0 ], # values X,Y,Z values in voxels
     chunk_size = [ 1024, 1024, 1], # rechunk of image X,Y,Z in voxels, 
     volume_size = volume_size, # X,Y,Z size in voxels
@@ -37,7 +37,7 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     
 def process(args):
     vol,z = args
-    img_name = os.path.join(tif_dir, "090560_107801_%06d.tif" % int((z*40)+240)) #ZMD CHANGED FOR CUSTOM DSET
+    img_name = os.path.join(tif_dir, "097690_113260_%06d.tif" % int((z*20))) #ZMD CHANGED FOR CUSTOM DSET
         
     print("Processing ", img_name)
     assert os.path.exists(img_name) == True
@@ -46,11 +46,10 @@ def process(args):
     
     array = np.array(list( image.getdata() ), dtype=np.uint16, order="F")
     array = array.reshape((1, height, width)).T
-    print(array.shape)
     vol[:,:, z] = array
-    print("\nExported to Cloudvolume!!!!!!!!!!!!!!!!!!!!!!!!!\n")
     image.close()
     touch(os.path.join(progress_dir, str(z)))
+    return "success"
 
 def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 	cloudpath = "file://"+home_dir+"/"+brain+"/"+type_vol
@@ -70,13 +69,14 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 if __name__ == "__main__":
     
     #setting dirs
-    home_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125"
+    src = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_CTB/natneuroreviews_tompisano_CTB-001/imaging_request_1"
+    home_dir = os.path.join(src, "viz")
     
-    brain = str(sys.argv[1])
+    brain = "CTB-001"
     print(brain)
-    
-    tif_dir = "/jukebox/LightSheetTransfer/tp/20200701_14_15_35_20180205_jg_b6f_04/Ex_642_Em_2/stitched/RES(7552x5666x1628)/090560/090560_107801"
-    type_vol = "647"
+
+    tif_dir = os.path.join(src, "output/processing_request_1/resolution_4x/Ex_561_Em_1/RES(7542x5719x2992)/097690/097690_113260")
+    type_vol = "561"
 
     #get x,y,z resolution
     image = Image.open(os.path.join(tif_dir, os.listdir(tif_dir)[0]))
@@ -96,4 +96,4 @@ if __name__ == "__main__":
         executor.map(process, to_upload)
     
     print("Downsampling...\n")
-    make_demo_downsample(type_vol, mip_start=0,num_mips=7)
+    make_demo_downsample(type_vol, mip_start=0,num_mips=5)
