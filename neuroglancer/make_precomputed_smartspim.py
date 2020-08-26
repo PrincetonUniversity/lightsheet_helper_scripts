@@ -36,7 +36,8 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     
 def process(args):
     vol,z = args
-    img_name = os.path.join(tif_dir, os.path.basename(tif_dir)+"_%06d.tif" % int((z*20)+380))
+    img_name = os.path.join(tif_dir, os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))+"_annotation_Z%04d.tif" % z) #tempfix for atlas
+    # img_name = os.path.join(tif_dir, os.path.basename(tif_dir)+"_%06d.tif" % int((z*20)+380))
         
     assert os.path.exists(img_name) == True
     image = Image.open(img_name)
@@ -68,13 +69,13 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 if __name__ == "__main__":
     
     #setting dirs
-    home_dir = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_HSV-H129/natneuroreviews_tompisano_HSV-H129_20hr-006/imaging_request_1/viz"
+    home_dir = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_CTB/natneuroreviews_tompisano_CTB-002/imaging_request_1/viz"
     
-    brain = "07142020_tp_hsv20hr_6"
+    brain = "CTB-002"
     print(brain)
     
-    tif_dir = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_HSV-H129/natneuroreviews_tompisano_HSV-H129_20hr-006/imaging_request_1/output/processing_request_1/resolution_4x/Ex_642_Em_2/RES(7561x5725x3565)/111940/111940_101428"
-    type_vol = "647"
+    tif_dir = "/jukebox/scratch/zmd/natneuroreviews_tompisano_CTB-002/transformed_annotations/single_tifs"
+    type_vol = "atlas"
     print(os.path.basename(tif_dir))
 
     #get x,y,z resolution
