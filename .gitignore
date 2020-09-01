@@ -7,3 +7,4 @@ token.pickle
 logs/
 *.ipynb_checkpoints/
 *.DS_Store
+*.log

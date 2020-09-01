@@ -25,9 +25,9 @@ if __name__ == "__main__":
     #setting paths
     ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
     scratch_dir = "/jukebox/scratch/zmd/"
-    src = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_CTB"
-    brains = ["natneuroreviews_tompisano_CTB-001",
-              "natneuroreviews_tompisano_CTB-002"]
+    src = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_PRV"
+    brains = ["natneuroreviews_tompisano_PRV_28hr-011",
+              "natneuroreviews_tompisano_PRV_36hr-015"]
     #for array job parallelization
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])

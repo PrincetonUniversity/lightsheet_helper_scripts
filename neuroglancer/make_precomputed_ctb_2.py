@@ -38,9 +38,8 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     
 def process(args):
     vol,z = args
-    img_name = os.path.join(tif_dir, "115080_109689_%06d.tif" % int((z*20)+620)) #ZMD CHANGED FOR CUSTOM DSET
+    img_name = os.path.join(tif_dir, "111940_101391_%06d.tif" % int((z*20)+240)) #ZMD CHANGED FOR CUSTOM DSET
         
-    print("Processing ", img_name)
     assert os.path.exists(img_name) == True
     image = Image.open(img_name)
     width, height = image.size
@@ -51,7 +50,7 @@ def process(args):
     image.close()
     touch(os.path.join(progress_dir, str(z)))
     
-    return "success"
+    return "Processing %s" % img_name
 def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 	cloudpath = "file://"+home_dir+"/"+brain+"/"+type_vol
 	with LocalTaskQueue(parallel=8) as tq:
@@ -70,14 +69,14 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 if __name__ == "__main__":
     
     #setting dirs
-    src = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_CTB/natneuroreviews_tompisano_CTB-002/imaging_request_1"
+    src = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_PRV/natneuroreviews_tompisano_PRV_36hr-015/imaging_request_1"
     home_dir = os.path.join(src, "viz")
     
-    brain = "CTB-002"
+    brain = "PRV_36hr-015"
     print(brain)
 
-    tif_dir = os.path.join(src, "output/processing_request_1/resolution_4x/Ex_561_Em_1/RES(7552x5746x3204)/115080/115080_109689")
-    type_vol = "561"
+    tif_dir = os.path.join(src, "output/processing_request_1/resolution_4x/Ex_642_Em_2/RES(7576x5732x3270)/111940/111940_101391")
+    type_vol = "642"
 
     #get x,y,z resolution
     image = Image.open(os.path.join(tif_dir, os.listdir(tif_dir)[0]))

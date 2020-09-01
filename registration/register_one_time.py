@@ -12,21 +12,16 @@ from tools.registration.register import elastix_command_line_call
 
 # print(os.environ["SLURM_ARRAY_TASK_ID"])
 # jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
-jobid=0
-imgs = ["/jukebox/LightSheetData/kocher-bee/volume_analysis/Grp16_2.575.tif",
-        "/jukebox/LightSheetData/kocher-bee/volume_analysis/IsoYellow_2.575.tif"]
-mv = imgs[jobid]
 
-fx = "/jukebox/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_rotate.tif"
+fx = "/jukebox/wang/pisano/tracing_output/bl6_ts/20150804_tp_bl6_ts04/20150804_tp_bl6_ts04_488w_647_z3um_250msec_1hfds_resized_ch01_resampledforelastix.tif"
+mv = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
 
-out = mv[:-4]+"_elastix"
+out = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/20150804_tp_bl6_ts04/elastix_inverse_transform"
 print(out)
 
-mv = "/jukebox/LightSheetData/kocher-bee/volume_analysis/Grp16_2.575_elastix/result.0.tif"
-out = "/jukebox/LightSheetData/kocher-bee/volume_analysis/Grp16_2.575_elastix_2"
 if not os.path.exists(out): os.mkdir(out)
 
-param_fld = "/jukebox/LightSheetData/kocher-bee/volume_analysis/parameter_files"
+param_fld = "/jukebox/wang/zahra/python/BrainPipe/parameterfolder"
 params = [os.path.join(param_fld, xx) for xx in os.listdir(param_fld)]
 
 e_out, transformfiles = elastix_command_line_call(fx, mv, out, params)
