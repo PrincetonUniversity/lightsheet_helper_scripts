@@ -6,27 +6,24 @@ Created on Tue Sep  1 09:47:38 2020
 @author: wanglab
 """
 
-import os, numpy as np, sys, time
-import tifffile, SimpleITK as sitk
-sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
-from tools.utils.io import makedir, load_memmap_arr, listall, load_kwargs
-from tools.registration.register import change_interpolation_order, transformix_command_line_call
-from tools.registration.transform_list_of_points import modify_transform_files
-from scipy.ndimage.interpolation import zoom
+import tifffile
 
-tr0 = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/IsoYellow_2.575_elastix/TransformParameters.0.txt"
-tr1 = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/IsoYellow_2.575_elastix_2/TransformParameters.0.txt"
-dst = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/IsoYellow_2.575_transform"
-if not os.path.exists(dst): os.mkdir(dst)
-transformfiles = modify_transform_files(transformfiles=[tr0,tr1], dst=dst)
-[change_interpolation_order(xx,0) for xx in transformfiles]
+#read original template
+pth = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_rotate.tif"
+img = tifffile.imread(pth)
+#crop in Z
+img_mod = img[:190]
+dst = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_rotate_croppedZ.tif"
+tifffile.imsave(dst, img_mod)
 
-#%%
+#do same for annotation
+pth = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_segment.tif"
+img = tifffile.imread(pth)
+#crop in Z
+img_mod = img[:190]
+dst = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_segment_croppedZ.tif"
+tifffile.imsave(dst, img_mod)
 
-#read jacobian determinant
-imgpth1 = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/IsoYellow_2.575_jac/spatialJacobian.tif"
-jac1 = tifffile.imread(imgpth1)
-
-imgpth2 = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/Grp16_2.575_jac/spatialJacobian.tif"
-jac2 = tifffile.imread(imgpth2)
-
+#read in jacobian
+jcpth = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/brain_to_template/Grp16_2.575_elastix/spatialJacobian.tif"
+jac = tifffile.imread(jcpth)
