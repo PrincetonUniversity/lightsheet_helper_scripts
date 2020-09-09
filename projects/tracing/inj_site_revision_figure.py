@@ -7,13 +7,14 @@ Created on Fri Sep  4 13:25:05 2020
 """
 
 import os, tifffile, matplotlib.pyplot as plt, numpy as np, matplotlib, pickle, copy
-cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "red"]) #lime color makes cells pop
 
 #path to segmented injection sites
 # injpth = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/linear_modeling/neocortex/injection_sites"
 injpth = "/home/wanglab/wang/zahra/tracing_projects/prv/prv_injection_sites"
 #path to brain data
 brainpth = "/home/wanglab/wang/pisano/tracing_output/retro_4x"
+#destination dir
+dst = "/jukebox/wang/zahra/tracing_projects/mapping_paper/revision_images/inj_sites_figure"
 #imports
 #path to pickle file
 #hsv
@@ -34,7 +35,6 @@ brainpth = "/home/wanglab/wang/pisano/tracing_output/retro_4x"
 src = "/jukebox/wang/zahra/tracing_projects/prv"
 data_pth = os.path.join(src, "for_tp/prv_maps_contra_pma.p")
 data = pickle.load(open(data_pth, "rb"), encoding = "latin1")
-
 #set the appropritate variables
 brains = np.array(data["brains"])
 frac_of_inj_pool = data["frac_of_inj_pool"]
@@ -49,6 +49,9 @@ atl = tifffile.imread(atlpth)
 atlc = atl[:,460:,:] #crop same way?
 #plot segment on top of atlas
 atl_cor = np.rot90(np.transpose(atlc, [1,0,2]),axes=(2,1))
+
+#optionally save out max projection of inj vol
+mxproj = False
     
 for brain in os.listdir(injpth):
     
@@ -97,12 +100,13 @@ for brain in os.listdir(injpth):
         
         #now put it together in a figure
         #first, separately save out maxprojected registered image you can adjust in imagej
-        dst = "/home/wanglab/Desktop/inj_sites"
-        tifffile.imsave(os.path.join(dst, brain+"_prv_nc.tif"), 
-                np.max(reginjvolc_cor[np.min(nzy):np.max(nzy)], axis=0))
+        if mxproj: 
+            tifffile.imsave(os.path.join(dst, brain+"_hsv_thal.tif"), 
+                    np.max(reginjvolc_cor[np.min(nzy):np.max(nzy)], axis=0))
         fig, axes = plt.subplots(ncols = 2, nrows = 1, figsize = (7,5), gridspec_kw = {"wspace":0, "hspace":0,
                                  "width_ratios": [5,0.2]})
         
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "red"]) #lime color makes cells pop
         #flattened segment on atlas
         ax = axes[0]
         ax.imshow(np.max(atl_cor, axis=0), cmap="gist_yarg")
@@ -115,8 +119,8 @@ for brain in os.listdir(injpth):
         cmap = copy.copy(plt.cm.Reds)
         cmap.set_over(cmap(1.0))
         cmap.set_under("white")
-        vmin = 0
-        vmax = max(show)-0.1
+        vmin = 0.001
+        vmax = 0.5
         #colormap
         pc = ax.imshow(show, cmap=cmap, vmin=vmin, vmax=vmax)
         #corresponding color bar
