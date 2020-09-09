@@ -15,18 +15,31 @@ mpl.rcParams["ps.fonttype"] = 42
 mpl.rcParams["xtick.major.size"] = 6
 mpl.rcParams["ytick.major.size"] = 6
 
+def get_progeny(dic,parent_structure,progeny_list):
+    if "msg" in list(dic.keys()): dic = dic["msg"][0]
+    name = dic.get("name")
+    children = dic.get("children")
+    if name == parent_structure:
+        for child in children: # child is a dict
+            child_name = child.get("name")
+            progeny_list.append(child_name)
+            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
+        return
+    
+    for child in children:
+        child_name = child.get("name")
+        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
+    return
+ 
 if __name__ == "__main__":
     
     #figure dest 
     fig_dst = "/home/wanglab/Desktop"
-    
     #bucket path for data
     src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
     df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
     ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
-    
     cells_regions_pth = os.path.join(src, "nc_contra_counts_33_brains_pma.csv")
-    
     cells_regions = pd.read_csv(cells_regions_pth)
     #rename structure column
     cells_regions["Structure"] = cells_regions["Unnamed: 0"]
@@ -36,17 +49,14 @@ if __name__ == "__main__":
         ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
     except:
         ann_df = pd.read_excel(df_pth)
-    
     #imports
     #path to pickle file
     data_pth = os.path.join(src, "nc_hsv_maps_contra_pma.p")
     data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
-    
     #set the appropritate variables
     brains = data["brains"]
     expr_all_as_frac_of_inj = data["expr_all_as_frac_of_inj"]
     ak_pool = data["ak_pool"]
-    
     #change the lettering slightly 
     ak_pool = np.array(["Lob. I-V", "Lob. VI, VII", "Lob. VIII-X",
            "Simplex", "Crus I", "Crus II", "PM, CP"])
@@ -54,24 +64,6 @@ if __name__ == "__main__":
                                     for xx in expr_all_as_frac_of_inj])
     primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
     primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max(primary_pool)+1)])
-    
-    def get_progeny(dic,parent_structure,progeny_list):
-        
-        if "msg" in list(dic.keys()): dic = dic["msg"][0]
-        
-        name = dic.get("name")
-        children = dic.get("children")
-        if name == parent_structure:
-            for child in children: # child is a dict
-                child_name = child.get("name")
-                progeny_list.append(child_name)
-                get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
-            return
-        
-        for child in children:
-            child_name = child.get("name")
-            get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
-        return 
     
     #get progeny of all large structures
     with open(ontology_file) as json_file:
@@ -108,7 +100,6 @@ if __name__ == "__main__":
             counts.append([cells_regions.loc[cells_regions.Structure == progen, brain].values[0] for brain in brains])
         str_counts.append(np.array(counts).sum(axis = 0))
     str_counts = np.array(str_counts)
-    
     #get volumes
     vol = []
     for soi in sois:
@@ -124,12 +115,10 @@ if __name__ == "__main__":
         vol.append(np.array(counts).sum(axis = 0))
         print(np.array(counts).sum(axis = 0))
     vol = np.array(vol)        
-    
     density = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(str_counts)]).T #includes isocortex
     #p counts maps
     #currently just summing across all the structures listed
     pcounts = np.array([xx/sum(xx) for ii,xx in enumerate(str_counts.T)])*100
-    
     #only get counts for brains with lobule vi, crus 1, and crus 2 injections
     #row =brain for pcounts array
     pcounts_inj = pcounts[np.where((primary_pool==1) | (primary_pool==4) | (primary_pool==5))[0]]
@@ -150,7 +139,6 @@ if __name__ == "__main__":
     pcounts_inj = pcounts_inj[mask] 
     density_inj = density_inj[mask]
     #%%
-    
     #make figures
     #take mean of only lob vi,vii, crus 1, crus 2 injections
     from matplotlib import colors 
@@ -168,10 +156,8 @@ if __name__ == "__main__":
     #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
     mean_counts = np.asarray([np.mean(pcounts_inj[np.where(primary_pool[m] == idx)[0]],axis=0) 
         for idx in [1,4,5]])
-    
     fig, ax = plt.subplots(figsize=(1.5,10))
     show = np.flipud(mean_counts.T )
-    
     #colormap
     pc = ax.pcolor(show, cmap=cmap, norm=colors.PowerNorm(gamma=0.45), vmin=vmin, vmax=vmax)
     cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.3, aspect=10)
@@ -184,7 +170,6 @@ if __name__ == "__main__":
     ax.set_xticklabels(["{} ({})".format(a, n) for a, n in zip(ak, [primary_lob_n[1],primary_lob_n[4],
                                                                          primary_lob_n[5]])], 
                         rotation = "vertical")
-    
     ax.set_yticks(np.arange(len(sois))+.5)
     ax.set_yticklabels(np.flipud(np.array(sois)))
     plt.savefig(os.path.join(fig_dst,"hsv_nc_mean_pcounts_jv.pdf"), bbox_inches = "tight")
@@ -192,7 +177,6 @@ if __name__ == "__main__":
     #mean density
     cmap = copy.copy(plt.cm.Reds)
     cmap.set_over(cmap(1.0))
-    
     #set min and max of colorbar
     vmin = 0
     vmax = 400
@@ -202,7 +186,6 @@ if __name__ == "__main__":
     
     fig, ax = plt.subplots(figsize=(1.5,10))
     show = np.flipud(mean_counts.T )
-    
     #colormap
     pc = ax.pcolor(show, cmap=cmap, norm=colors.PowerNorm(gamma=1), vmin=vmin, vmax=vmax)
     cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.3, aspect=10)
@@ -215,7 +198,6 @@ if __name__ == "__main__":
     ax.set_xticklabels(["{} ({})".format(a, n) for a, n in zip(ak, [primary_lob_n[1],primary_lob_n[4],
                                                                          primary_lob_n[5]])], 
                         rotation = "vertical")
-    
     ax.set_yticks(np.arange(len(sois))+.5)
     ax.set_yticklabels(np.flipud(np.array(sois)))
     plt.savefig(os.path.join(fig_dst,"hsv_nc_mean_density_jv.pdf"), bbox_inches = "tight")
