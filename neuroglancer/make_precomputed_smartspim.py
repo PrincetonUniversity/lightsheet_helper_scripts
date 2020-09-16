@@ -69,12 +69,12 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 if __name__ == "__main__":
     
     #setting dirs
-    home_dir = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_CTB/natneuroreviews_tompisano_CTB-002/imaging_request_1/viz"
+    home_dir = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_PRV/natneuroreviews_tompisano_PRV_36hr-015/imaging_request_1/viz"
     
-    brain = "CTB-002"
+    brain = "PRV_36hr-015"
     print(brain)
     
-    tif_dir = "/jukebox/scratch/zmd/natneuroreviews_tompisano_CTB-002/transformed_annotations/single_tifs"
+    tif_dir = "/jukebox/scratch/zmd/natneuroreviews_tompisano_PRV_36hr-015/transformed_annotations/single_tifs"
     type_vol = "atlas"
     print(os.path.basename(tif_dir))
 

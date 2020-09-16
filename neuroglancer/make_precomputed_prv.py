@@ -37,7 +37,7 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     
 def process(args):
     vol,z = args
-    img_name = os.path.join(tif_dir, "097690_113260_%06d.tif" % int((z*20))) #ZMD CHANGED FOR CUSTOM DSET
+    img_name = os.path.join(tif_dir, "119640_111241_%06d.tif" % int((z*20)+580)) #ZMD CHANGED FOR CUSTOM DSET
         
     print("Processing ", img_name)
     assert os.path.exists(img_name) == True
@@ -69,14 +69,14 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 if __name__ == "__main__":
     
     #setting dirs
-    src = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_CTB/natneuroreviews_tompisano_CTB-001/imaging_request_1"
+    src = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_PRV/natneuroreviews_tompisano_PRV_28hr-011/imaging_request_1"
     home_dir = os.path.join(src, "viz")
     
-    brain = "CTB-001"
+    brain = "PRV_28hr-011"
     print(brain)
 
-    tif_dir = os.path.join(src, "output/processing_request_1/resolution_4x/Ex_561_Em_1/RES(7542x5719x2992)/097690/097690_113260")
-    type_vol = "561"
+    tif_dir = os.path.join(src, "output/processing_request_1/resolution_4x/Ex_642_Em_2/RES(7583x5733x3265)/119640/119640_111241")
+    type_vol = "642"
 
     #get x,y,z resolution
     image = Image.open(os.path.join(tif_dir, os.listdir(tif_dir)[0]))

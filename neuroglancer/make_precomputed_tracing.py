@@ -16,10 +16,10 @@ from taskqueue import LocalTaskQueue
 def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
 	info = CloudVolume.create_new_info(
 		num_channels = 1,
-		layer_type = "image", # "image" or "segmentation"
+		layer_type = "segmentation", # "image" or "segmentation"
 		data_type = "uint16", # 32 not necessary for Princeton atlas, but was for Allen atlas 
 		encoding = "raw", # other options: "jpeg", "compressed_segmentation" (req. uint32 or uint64)
-		resolution = [ 1810, 1810, 2000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
+		resolution = [ 1630, 1630, 3000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
 		voxel_offset = [ 0, 0, 0 ], # values X,Y,Z values in voxels
 		chunk_size = [ 1024, 1024, 1 ], # rechunk of image X,Y,Z in voxels, 
 		volume_size = volume_size, # X,Y,Z size in voxels

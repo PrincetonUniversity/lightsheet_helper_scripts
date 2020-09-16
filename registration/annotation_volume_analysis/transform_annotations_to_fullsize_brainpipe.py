@@ -17,7 +17,7 @@ from scipy.ndimage.interpolation import zoom
 if __name__ == "__main__":
     
     #setting paths
-    ann = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.tif"
+    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
     scratch_dir = "/jukebox/scratch/zmd/"
     src = "/jukebox/wang/pisano/tracing_output/bl6_ts"
     brains = ["20150804_tp_bl6_ts04"]
@@ -33,9 +33,9 @@ if __name__ == "__main__":
     #accessing parameter dictionary
     cellvol = "/jukebox/wang/pisano/tracing_output/bl6_ts/20150804_tp_bl6_ts04/full_sizedatafld/20150804_tp_bl6_ts04_488w_647_z3um_250msec_1hfds_ch01"
     
-    a2r0 = "/jukebox/wang/pisano/tracing_output/bl6_ts/20150804_tp_bl6_ts04/elastix_inverse_transform/cellch_20150804_tp_bl6_ts04_555_z3um_70msec_3hfds/20150804_tp_bl6_ts04_555_z3um_70msec_3hfds_resized_ch00_resampledforelastix_atlas2reg2sig/atlas2reg_TransformParameters.0.txt"
-    a2r1 = "/jukebox/wang/pisano/tracing_output/bl6_ts/20150804_tp_bl6_ts04/elastix_inverse_transform/cellch_20150804_tp_bl6_ts04_555_z3um_70msec_3hfds/20150804_tp_bl6_ts04_555_z3um_70msec_3hfds_resized_ch00_resampledforelastix_atlas2reg2sig/atlas2reg_TransformParameters.1.txt"
-    r2s0 = "/jukebox/wang/pisano/tracing_output/bl6_ts/20150804_tp_bl6_ts04/elastix_inverse_transform/cellch_20150804_tp_bl6_ts04_555_z3um_70msec_3hfds/20150804_tp_bl6_ts04_555_z3um_70msec_3hfds_resized_ch00_resampledforelastix_atlas2reg2sig/reg2sig_TransformParameters.0.txt"
+    a2r0 = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/20150804_tp_bl6_ts04/elastix_inverse_transform/TransformParameters.0.txt"
+    a2r1 = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125/20150804_tp_bl6_ts04/elastix_inverse_transform/TransformParameters.1.txt"
+    # r2s0 = "/jukebox/wang/pisano/tracing_output/bl6_ts/20150804_tp_bl6_ts04/elastix_inverse_transform/cellch_20150804_tp_bl6_ts04_555_z3um_70msec_3hfds/20150804_tp_bl6_ts04_555_z3um_70msec_3hfds_resized_ch00_resampledforelastix_atlas2reg2sig/reg2sig_TransformParameters.0.txt"
     # r2s1 = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/elastix_inverse_transform/TransformParameters.1.txt"
     
     #set destination directory
@@ -46,8 +46,8 @@ if __name__ == "__main__":
     aldst = os.path.join(braindst, "transformed_annotations"); makedir(aldst)
     
     #transformix
-    transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0], dst = aldst)
-    # transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1], dst = aldst)
+    # transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0], dst = aldst)
+    transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1], dst = aldst)
     [change_interpolation_order(xx,0) for xx in transformfiles]
     
     #change the parameter in the transform files that outputs 16bit images instead
