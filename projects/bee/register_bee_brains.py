@@ -15,7 +15,7 @@ if __name__ == "__main__":
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
     
-    src = "/jukebox/LightSheetData/kocher-bee/volume_analysis"
+    src = "/jukebox/LightSheetData/kocher-bee/volume_analysis/volumes_downsized_to_template"
     fxs = [os.path.join(src,"Grp16_2.575.tif"),
           os.path.join(src,"IsoYellow_2.575.tif"),
           os.path.join(src,"retc17_2.575umstep.tif")]
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     e_out, transformfiles = elastix_command_line_call(fx, mv, out, params)
 
     #transform atlas
-    transform = transformfiles[-1]
+    transform = transformfiles
     with open(transform, "r") as file:
         filedata = file.read()
         # Replace the target string
