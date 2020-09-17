@@ -51,25 +51,26 @@ tifffile.imsave("/home/wanglab/LightSheetData/kocher-bee/volume_analysis/downsiz
 tifffile.imsave("/home/wanglab/LightSheetData/kocher-bee/volume_analysis/downsized_template_registration/Bombus45_2.575umstep_rotate.tif", templ_downsized)
 
 #%%
-import sys
-sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
-from tools.registration.register import transformix_command_line_call
+#moved to reg script
+# import sys
+# sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
+# from tools.registration.register import transformix_command_line_call
 
-#tranform annotation volume to experimental brain space
-transform = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template_to_brain/Bombus45_2.575umstep_rotate_croppedZ_elastix/TransformParameters.1.txt"
+# #tranform annotation volume to experimental brain space
+# transform = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template_to_brain/Bombus45_2.575umstep_rotate_croppedZ_elastix/TransformParameters.1.txt"
 
-with open(transform, "r") as file:
-    filedata = file.read()
-    # Replace the target string
-    filedata = filedata.replace('(ResultImagePixelType "short")', '(ResultImagePixelType "float")')
-    filedata = filedata.replace('(FinalBSplineInterpolationOrder 3)', '(FinalBSplineInterpolationOrder 0)')
-    # Write the file out again
-    with open(transform, "w") as file:
-      file.write(filedata)
+# with open(transform, "r") as file:
+#     filedata = file.read()
+#     # Replace the target string
+#     filedata = filedata.replace('(ResultImagePixelType "short")', '(ResultImagePixelType "float")')
+#     filedata = filedata.replace('(FinalBSplineInterpolationOrder 3)', '(FinalBSplineInterpolationOrder 0)')
+#     # Write the file out again
+#     with open(transform, "w") as file:
+#       file.write(filedata)
           
-ann = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_segment_croppedZ.tif"
-dst = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template_to_brain/Bombus45_2.575umstep_rotate_croppedZ_elastix"
-transformix_command_line_call(ann, dst, transform)
+# ann = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_segment_croppedZ.tif"
+# dst = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template_to_brain/Bombus45_2.575umstep_rotate_croppedZ_elastix"
+# transformix_command_line_call(ann, dst, transform)
 
 #read transformed file
 trsfmpth = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/template_to_brain/Bombus45_2.575umstep_rotate_croppedZ_elastix/result.tif"
@@ -86,3 +87,22 @@ plt.imshow(np.max(arr,axis=0))
 total_voxels_region2_Grp16 = np.sum(arr)
 #compare to original annotation
 total_voxels_region2 = np.sum((tifffile.imread(ann)==2).astype(int))
+
+#%%
+#make all volumes the same size?
+dst = "/jukebox/LightSheetData/kocher-bee/volume_analysis/volumes_downsized_to_template"
+
+src = "/jukebox/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_rotate_croppedZ.tif"
+templ = tifffile.imread(src)
+zt,yt,xt = templ.shape
+
+brs = [#"/jukebox/LightSheetData/kocher-bee/volume_analysis/Grp16_2.575.tif",
+      "/jukebox/LightSheetData/kocher-bee/volume_analysis/IsoYellow_2.575.tif",
+      "/jukebox/LightSheetData/kocher-bee/volume_analysis/retc17_2.575umstep.tif"]
+
+for br in brs:
+    print(br)
+    img = tifffile.imread(br)
+    z,y,x = img.shape
+    imgsz = zoom(img, zoom=((zt/z),(yt/y),(xt/x)), order=1)
+    tifffile.imsave(os.path.join(dst, os.path.basename(br)), imgsz)
