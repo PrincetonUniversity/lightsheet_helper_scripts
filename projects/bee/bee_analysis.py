@@ -6,7 +6,7 @@ Created on Tue Sep  1 09:47:38 2020
 @author: wanglab
 """
 
-import tifffile
+import tifffile,os
 from scipy.ndimage import zoom
 
 #read original template
@@ -92,13 +92,12 @@ total_voxels_region2 = np.sum((tifffile.imread(ann)==2).astype(int))
 #make all volumes the same size?
 dst = "/jukebox/LightSheetData/kocher-bee/volume_analysis/volumes_downsized_to_template"
 
-src = "/jukebox/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_rotate_croppedZ.tif"
-templ = tifffile.imread(src)
+templpth = "/jukebox/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_rotate_croppedZ.tif"
+templ = tifffile.imread(templpth)
 zt,yt,xt = templ.shape
 
-brs = [#"/jukebox/LightSheetData/kocher-bee/volume_analysis/Grp16_2.575.tif",
-      "/jukebox/LightSheetData/kocher-bee/volume_analysis/IsoYellow_2.575.tif",
-      "/jukebox/LightSheetData/kocher-bee/volume_analysis/retc17_2.575umstep.tif"]
+src = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/experimental_brains"
+brs = [os.path.join(src,xx) for xx in os.listdir(src)]
 
 for br in brs:
     print(br)
