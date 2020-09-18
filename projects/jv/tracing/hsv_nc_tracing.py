@@ -142,7 +142,8 @@ if __name__ == "__main__":
     #make figures
     #take mean of only lob vi,vii, crus 1, crus 2 injections
     from matplotlib import colors 
-    cmap = copy.copy(plt.cm.Reds)
+    #CHANGE COLORMAP HERE
+    cmap = copy.copy(plt.cm.viridis)
     cmap.set_over(cmap(1.0))
     
     #set min and max of colorbar
@@ -159,14 +160,14 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=(1.5,10))
     show = np.flipud(mean_counts.T )
     #colormap
-    pc = ax.pcolor(show, cmap=cmap, norm=colors.PowerNorm(gamma=0.45), vmin=vmin, vmax=vmax)
+    pc = ax.pcolor(show, cmap=cmap, norm=colors.PowerNorm(gamma=0.45))
     cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.3, aspect=10)
     cb.set_label("Mean % neurons", fontsize="medium", labelpad=5)
     cb.ax.tick_params(labelsize="medium")
     cb.ax.set_visible(True)
     ak = np.array(["Lob. VI, VII", "Crus I", "Crus II"])
-    ax.set_xticks(np.arange(len(ak_pool))+.5)
-    lbls = np.asarray(ak_pool)
+    ax.set_xticks(np.arange(len(ak))+.5)
+    lbls = np.asarray(ak)
     ax.set_xticklabels(["{} ({})".format(a, n) for a, n in zip(ak, [primary_lob_n[1],primary_lob_n[4],
                                                                          primary_lob_n[5]])], 
                         rotation = "vertical")
@@ -175,8 +176,6 @@ if __name__ == "__main__":
     plt.savefig(os.path.join(fig_dst,"hsv_nc_mean_pcounts_jv.pdf"), bbox_inches = "tight")
     
     #mean density
-    cmap = copy.copy(plt.cm.Reds)
-    cmap.set_over(cmap(1.0))
     #set min and max of colorbar
     vmin = 0
     vmax = 400
@@ -187,14 +186,14 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=(1.5,10))
     show = np.flipud(mean_counts.T )
     #colormap
-    pc = ax.pcolor(show, cmap=cmap, norm=colors.PowerNorm(gamma=1), vmin=vmin, vmax=vmax)
+    pc = ax.pcolor(show, cmap=cmap, norm=colors.PowerNorm(gamma=1))
     cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.3, aspect=10)
     cb.set_label("Mean neurons/$mm^3$", fontsize="medium", labelpad=5)
     cb.ax.tick_params(labelsize="medium")
     cb.ax.set_visible(True)
     ak = np.array(["Lob. VI, VII", "Crus I", "Crus II"])
-    ax.set_xticks(np.arange(len(ak_pool))+.5)
-    lbls = np.asarray(ak_pool)
+    ax.set_xticks(np.arange(len(ak))+.5)
+    lbls = np.asarray(ak)
     ax.set_xticklabels(["{} ({})".format(a, n) for a, n in zip(ak, [primary_lob_n[1],primary_lob_n[4],
                                                                          primary_lob_n[5]])], 
                         rotation = "vertical")
