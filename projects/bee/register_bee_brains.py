@@ -17,9 +17,14 @@ if __name__ == "__main__":
     
     src = "/jukebox/LightSheetData/kocher-bee/volume_analysis/volumes_downsized_to_template"
     dst = "/jukebox/LightSheetData/kocher-bee/volume_analysis/"
-    fxs = [os.path.join(src,"Grp16_2.575.tif"),
-          os.path.join(src,"IsoYellow_2.575.tif"),
-          os.path.join(src,"retc17_2.575umstep.tif")]
+    brs = ["RetB09_2.575.tif",
+             "GrpC19_2.575.tif",
+             "IsoC05_2.575umstep.tif",
+             "isoc08_2.575umstep.tif",
+             "yellowiso_2.575umstep.tif",
+             "IsoC04_2.575.tif",
+             "yellowiso2_2_2.575umstep.tif"]
+    fxs = [os.path.join(src,br) for xx in os.listdir(brs)]
     fx = fxs[jobid]
     mv = os.path.join(dst,"template/Bombus45_2.575umstep_rotate_croppedZ.tif")
     
