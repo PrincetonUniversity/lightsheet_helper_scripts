@@ -12,7 +12,7 @@ from tools.registration.register import change_transform_parameter_initial_trans
 from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files
 from tools.registration.transform_list_of_points import point_transformix, unpack_pnts
 from tools.utils.io import makedir
-from skimage.external import tifffile
+import tifffile
 from tools.analysis.network_analysis import make_structure_objects
 from scipy.ndimage.measurements import center_of_mass
 import matplotlib.colors
@@ -24,7 +24,7 @@ mpl.rcParams["ps.fonttype"] = 42
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 fig_dst = "/home/wanglab/Desktop"
 
-ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_80um_ventricular_erosion.tif")
+ann_pth = os.path.join(dst, "atlases/sagittal_allen_ann_25um_iso_60um_edge_160um_ventricular_erosion.tif")
 
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 
@@ -132,10 +132,11 @@ primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max
 #normalization  of inj site
 frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in frac_of_inj_pool])
 
+#%%
 lr_brains = list(lr_dist.keys())
 atl_dst = os.path.join(dst, "pma_to_aba"); makedir(atl_dst)
 id_table = pd.read_excel(df_pth)
-#%%
+
 #------------------------------------------------------------------------------------------------------------------------------
 #NOTE THAT ONLY HAVE TO DO THIS ONCE!!!! DO NOT NEED TO DO AGAIN UNLESS DOUBLE CHECKIHG
 #transform points to allen atlas space
@@ -145,87 +146,92 @@ src = "/jukebox/wang/pisano/tracing_output/antero_4x_analysis/201903_antero_pool
 post_transformed = [os.path.join(src, os.path.join(xx, "transformed_points/posttransformed_zyx_voxels.npy")) for xx in lr_brains]
 transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
                   "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
-#
-##collect 
-#for fl in post_transformed:
-#    arr = np.load(fl)
-#    #make into transformix-friendly text file
-#    brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
-#    print(brain)
-#    transformed_dst = os.path.join(atl_dst, brain); makedir(transformed_dst)
-#    pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
-#        
-#    #copy over elastix files
-#    trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
-#    change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
-#   
-#    #run transformix on points
-#    points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
-#    
-#    #convert registered points into structure counts
-#    converted_points = unpack_pnts(points_file, transformed_dst) 
-#    
 
-# def transformed_cells_to_allen(fld, ann, dst, fl_nm):
-#     """ consolidating to one function bc then no need to copy/paste """
-#     dct = {}
-    
-#     for fl in fld:
-#         converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
-#         print(converted_points)
-#         point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
-#         df = count_structure_lister(id_table, *point_lst).fillna(0)
-#         #for some reason duplicating columns, so use this
-#         nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
-#         fl_name = os.path.basename(fl)
-#         dct[fl_name]= nm_cnt
+#collect 
+# for fl in post_transformed:
+#     arr = np.load(fl)
+#     #make into transformix-friendly text file
+#     brain = os.path.basename(os.path.dirname(os.path.dirname(fl)))
+#     print(brain)
+#     transformed_dst = os.path.join(atl_dst, brain); makedir(transformed_dst)
+#     pretransform_text_file = create_text_file_for_elastix(arr, transformed_dst)
         
-#     #unpack
-#     index = dct[list(dct.keys())[0]].keys()
-#     columns = dct.keys()
-#     data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
-#     df = pd.DataFrame(data.T, columns=columns, index=index)
+#     #copy over elastix files
+#     trfm_fl = modify_transform_files(transformfiles, transformed_dst) 
+#     change_transform_parameter_initial_transform(trfm_fl[0], 'NoInitialTransform')
+  
+#     #run transformix on points
+#     points_file = point_transformix(pretransform_text_file, trfm_fl[-1], transformed_dst)
     
-#     #save before adding projeny counts at each level
-#     df.to_pickle(os.path.join(dst, fl_nm))
+#     #convert registered points into structure counts
+#     converted_points = unpack_pnts(points_file, transformed_dst) 
     
-#     return os.path.join(dst, fl_nm)
 
-# pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
-# #collect counts from right side
-# right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_allen_atl.p")
-# #collect counts from left side
-# left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_allen_atl.p")
-
-#------------------------------------------------------------------------------------------------------------------------------    
-
-#import dict of cells by region
-# r_cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_allen_atl.p"), "rb"), encoding = "latin1")
-# r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
-
-# contra = {}; ipsi = {} #collect contra and ipsi frame
-# for k,v in r_cells_regions.items():
-#     if lr_dist[k] < 0:
-#         contra[k] = v
-#     else:
-#         ipsi[k] = v
-
-# #LEFT SIDE
-# l_cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_allen_atl.p"), "rb"), encoding = "latin1")
-# l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
-
-# for k,v in l_cells_regions.items():
-#     if lr_dist[k] > 0:
-#         contra[k] = v
-#     else:
-#         ipsi[k] = v
+def transformed_cells_to_allen(fld, ann, dst, fl_nm):
+    """ consolidating to one function bc then no need to copy/paste """
+    dct = {}
+    
+    for fl in fld:
+        converted_points = os.path.join(fl, "posttransformed_zyx_voxels.npy")
+        print(converted_points)
+        point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), ann, order = "ZYX")
+        df = count_structure_lister(id_table, *point_lst).fillna(0)
+        #for some reason duplicating columns, so use this
+        nm_cnt = pd.Series(df.cell_count.values, df.name.values).to_dict()
+        fl_name = os.path.basename(fl)
+        dct[fl_name]= nm_cnt
         
-# contra_df = pd.DataFrame(contra)
-# contra_df.to_csv(os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")) 
+    #unpack
+    index = dct[list(dct.keys())[0]].keys()
+    columns = dct.keys()
+    data = np.asarray([[dct[col][idx] for idx in index] for col in columns])
+    df = pd.DataFrame(data.T, columns=columns, index=index)
+    
+    #save before adding projeny counts at each level
+    df.to_pickle(os.path.join(dst, fl_nm))
+    
+    return os.path.join(dst, fl_nm)
 
-# ipsi_df = pd.DataFrame(ipsi)
-# ipsi_df.to_csv(os.path.join(dst, "data/thal_ipsi_counts_23_brains_80um_ventric_erosion.csv"))         
+pma2aba_transformed = [os.path.join(atl_dst, xx) for xx in lr_brains]
+#collect counts from right side
+right = transformed_cells_to_allen(pma2aba_transformed, ann_right, dst, "thal_right_side_allen_atl_160um_erosion.p")
+#collect counts from left side
+left = transformed_cells_to_allen(pma2aba_transformed, ann_left, dst, "thal_left_side_allen_atl_160um_erosion.p")
+#collect bilateral
+bilateral = transformed_cells_to_allen(pma2aba_transformed, ann, dst, "thal_bilateral_allen_atl_160um_erosion.p")
+# ------------------------------------------------------------------------------------------------------------------------------    
 
+# import dict of cells by region
+r_cells_regions = pckl.load(open(os.path.join(dst, "thal_right_side_allen_atl_160um_erosion.p"), "rb"), encoding = "latin1")
+r_cells_regions = r_cells_regions.to_dict(orient = "dict")      
+
+contra = {}; ipsi = {} #collect contra and ipsi frame
+for k,v in r_cells_regions.items():
+    if lr_dist[k] < 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
+
+#LEFT SIDE
+l_cells_regions = pckl.load(open(os.path.join(dst, "thal_left_side_allen_atl_160um_erosion.p"), "rb"), encoding = "latin1")
+l_cells_regions = l_cells_regions.to_dict(orient = "dict")      
+
+for k,v in l_cells_regions.items():
+    if lr_dist[k] > 0:
+        contra[k] = v
+    else:
+        ipsi[k] = v
+
+#export        
+contra_df = pd.DataFrame(contra)
+contra_df.to_csv(os.path.join(dst, "data/thal_contra_counts_23_brains_160um_ventric_erosion.csv")) 
+ipsi_df = pd.DataFrame(ipsi)
+ipsi_df.to_csv(os.path.join(dst, "data/thal_ipsi_counts_23_brains_160um_ventric_erosion.csv"))         
+
+#do for bilateral
+b_cells_regions = pckl.load(open(os.path.join(dst, "thal_bilateral_allen_atl_160um_erosion.p"), "rb"), encoding = "latin1")
+b_cells_regions_df = pd.DataFrame(b_cells_regions)
+b_cells_regions_df.to_csv(os.path.join(dst, "data/thal_bilateral_counts_23_brains_160um_ventric_erosion.csv"))         
 #%%
 cells_regions_pth = os.path.join(dst, "data/thal_contra_counts_23_brains_80um_ventric_erosion.csv")
 

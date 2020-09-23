@@ -1,8 +1,8 @@
 #!/bin/env bash
 #
 #SBATCH -p all                # partition (queue)
-#SBATCH -c 1                      # number of cores
-#SBATCH -t 10                # time (minutes)
+#SBATCH -c 12                      # number of cores
+#SBATCH -t 1000                # time (minutes)
 #SBATCH -o /scratch/zmd/logs/kelly_stitch_%a_%j.out        # STDOUT #add _%a to see each array job
 #SBATCH -e /scratch/zmd/logs/kelly_stitch_%a_%j.err        # STDERR #add _%a to see each array job
 

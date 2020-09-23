@@ -141,10 +141,8 @@ ncdf["brain"] = ncdf.index
 ncdf["injection_loc"] = ncdf.apply(lambda xx: nm_loc[xx["brain"]],1)
 
 #max proj
-fig, ax = plt.subplots(figsize=(3,6))
 ncdf = ncdf.groupby("injection_loc").max().drop(columns=["brain"])
 
-#%%
 #max pcount shuffle test
 #make inj x nc region into an array
 maxpcount = np.array(ncdf.T[ak_pool].T) #row = inj, column =  areas
@@ -207,8 +205,8 @@ for y,x in np.argwhere(sig):
     ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment="center", verticalalignment="center",
             color=color, transform=ax.transData)
 # aesthetics
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-ax.set_xticklabels(ak_pool, rotation="vertical", fontsize=10)
+ax.set_xticks(np.arange(len(ncdf.index.values))+.5)
+ax.set_xticklabels(ncdf.index.values, rotation="vertical", fontsize=10)
 # yticks
 ax.set_yticks(np.arange(len(sois))+.5)
 ax.set_yticklabels(sois, fontsize=10)
@@ -217,6 +215,62 @@ plt.title("*'s indicate signifance by Welch's t-test (p<0.05) and Holm-Sidak\n\
 plt.savefig(os.path.join(fig_dst, "hsv_nc_maxpcount_shuffle.pdf"), bbox_inches = "tight")
 plt.close()
 
+#%%
+#just export plain max project map for p counts
+## display
+fig,ax = plt.subplots(figsize=(3,6))
+max_counts = np.asarray([np.max(pcounts[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+show = max_counts.T
+# SET COLORMAP
+vmin = 0
+vmax = 32
+cmap = copy.copy(plt.cm.Blues)
+cmap.set_over(cmap(1.0))
+annotation = False
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, format="%d", shrink=0.3, aspect=10)
+cb.set_label("Maximum % of neurons", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+# aesthetics
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+ax.set_xticklabels(ak_pool, rotation="vertical", fontsize=10)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois, fontsize=10)
+plt.savefig(os.path.join(fig_dst, "hsv_nc_maxpcount.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "hsv_nc_maxpcount.jpg"), bbox_inches = "tight")
+plt.close()
+
+#%%
+
+#just export plain max project map for density
+## display
+fig,ax = plt.subplots(figsize=(3,6))
+max_counts = np.asarray([np.max(density_l56[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
+show = max_counts.T
+# SET COLORMAP
+vmin = 0
+vmax = 600
+cmap = copy.copy(plt.cm.Blues)
+cmap.set_over(cmap(1.0))
+annotation = False
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, format="%d", shrink=0.3, aspect=10)
+cb.set_label("Maximum neurons/mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+# aesthetics
+ax.set_xticks(np.arange(len(ak_pool))+.5)
+ax.set_xticklabels(ak_pool, rotation="vertical", fontsize=10)
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois, fontsize=10)
+plt.savefig(os.path.join(fig_dst, "hsv_nc_maxdensity.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "hsv_nc_maxdensity.jpg"), bbox_inches = "tight")
+plt.close()
 #%%
 #sort inj fractions by primary lob
 sort_density = [density_l56[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
@@ -313,8 +367,8 @@ for y,x in np.argwhere(sig):
     ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment="center", verticalalignment="center",
             color=color, transform=ax.transData)
 # aesthetics
-ax.set_xticks(np.arange(len(ak_pool))+.5)
-ax.set_xticklabels(ak_pool, rotation="vertical", fontsize=10)
+ax.set_xticks(np.arange(len(ncdf.index.values))+.5)
+ax.set_xticklabels(ncdf.index.values, rotation="vertical", fontsize=10)
 # yticks
 ax.set_yticks(np.arange(len(sois))+.5)
 ax.set_yticklabels(sois, fontsize=10)
