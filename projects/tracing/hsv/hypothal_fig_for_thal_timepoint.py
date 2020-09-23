@@ -31,9 +31,20 @@ primary_pool = data["primary_pool"]
 frac_of_inj_pool = data["frac_of_inj_pool"]
 ak_pool = data["ak_pool"]
 brains = np.array(data["brains"])
-
-primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
-frac_of_inj_pool_norm = np.asarray([brain/brain.sum() for brain in frac_of_inj_pool])
+#brains to exclude that are part of the 'disynaptic' cohort (according to Tom's code)
+to_exclude = ["20170130_tp_bl6_sim_rlat_05",
+ "20170207_db_bl6_crii_rpv_01",
+ "20180410_jg51_bl6_lob6b_04",
+ "20180417_jg59_bl6_cri_03"]
+mask = [True]*len(brains)
+for i,br in enumerate(brains):
+    if br in to_exclude: 
+        mask[i]=False
+#mask all vars
+brains = brains[mask]
+primary_pool = primary_pool[mask]
+frac_of_inj_pool = frac_of_inj_pool[mask]
+# primary_lob_n = np.asarray([np.where(primary_pool == i)[0].shape[0] for i in np.unique(primary_pool)])
 
 #%%
 cells_regions_pth = os.path.join(dst, "data/thal_bilateral_counts_23_brains_160um_ventric_erosion.csv")
@@ -138,7 +149,7 @@ counts_per_struct = counts_per_struct[1:,:]
 
 ## display p counts
 #set colorbar features 
-maxpcount = 10
+maxpcount = 25
 yaxis = np.flipud(sois)
 
 #make % counts map like the h129 dataset
