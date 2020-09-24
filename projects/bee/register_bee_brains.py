@@ -24,7 +24,7 @@ if __name__ == "__main__":
              "yellowiso_2.575umstep.tif",
              "IsoC04_2.575.tif",
              "yellowiso2_2_2.575umstep.tif"]
-    fxs = [os.path.join(src,br) for xx in os.listdir(brs)]
+    fxs = [os.path.join(src,xx) for xx in brs]
     fx = fxs[jobid]
     mv = os.path.join(dst,"template/Bombus45_2.575umstep_rotate_croppedZ.tif")
     
