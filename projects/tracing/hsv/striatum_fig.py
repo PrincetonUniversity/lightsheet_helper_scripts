@@ -16,13 +16,13 @@ mpl.rcParams["xtick.major.size"] = 6
 mpl.rcParams["ytick.major.size"] = 6
 
 #figure dest 
-dst = "/Users/zahra/Desktop"
+dst = "/home/wanglab/Desktop"
 
 ###############################################################RUN AS IS#######################################################
 #bucket path for data
-src = "/Volumes/wang/zahra/h129_contra_vs_ipsi/data"
-df_pth = "/Volumes/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-ontology_file = "/Volumes/LightSheetTransfer/atlas/allen_atlas/allen.json"
+src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 cells_regions_pth = os.path.join(src, "nc_contra_counts_33_brains_pma.csv")
 
@@ -78,9 +78,11 @@ with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
 sois = ["Striatum", "Caudoputamen", "Nucleus accumbens",
- "Fundus of striatum", "Olfactory tubercle", "Lateral septal nucleus",
- "Septofimbrial nucleus", "Septohippocampal nucleus", "Anterior amygdalar area",
- "Central amygdalar nucleus", "Intercalated amygdalar nucleus", "Medial amygdalar nucleus"]
+       "Olfactory tubercle", "Lateral septal nucleus",
+       "Medial amygdalar nucleus", "Central amygdalar nucleus",
+       "Anterior amygdalar area", "Septofimbrial nucleus",
+       "Fundus of striatum", "Intercalated amygdalar nucleus",
+       "Septohippocampal nucleus"]
 
 #first calculate counts across entire nc region
 counts_per_struct = []
@@ -97,9 +99,6 @@ for soi in sois:
     counts_per_struct.append(np.array(counts).sum(axis = 0))
 counts_per_struct = np.array(counts_per_struct)
 
-#drop striatum from rest
-sois = sois[1:]
-
 #get volumes
 vol = []
 for soi in sois:
@@ -114,15 +113,143 @@ for soi in sois:
     vol.append(np.array(counts).sum(axis = 0))
 vol = np.array(vol)        
 
-density = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct[1:,:])]).T
+density = np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T
 
 #layer p counts maps
 pcounts = np.array([xx[1:]/xx[0] for xx in counts_per_struct.T])*100
 
-#sort pcounts and density by nuclei size
-sois = np.array(sois)[np.argsort(vol)]
-pcounts = pcounts.T[np.argsort(vol)].T
-density = density.T[np.argsort(vol)].T
+#remove striatum from density
+sois = sois[1:]
+density = density[:, 1:]
+counts_per_struct = counts_per_struct[1:,:]
+#%%
+## display p counts
+#set colorbar features 
+maxpcount = 30
+yaxis = np.flipud(sois)
+
+#make % counts map like the h129 dataset
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (6.5,3.5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [3,5]})
+
+#sort inj fractions by primary lob
+sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_pcounts = np.array(list(itertools.chain.from_iterable(sort_pcounts)))
+sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_brains = list(itertools.chain.from_iterable(sort_brains))
+sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
+
+#inj fractions
+ax = axes[0]
+show = np.fliplr(sort_inj).T
+
+cmap = copy.copy(plt.cm.Reds)
+cmap.set_over(cmap(1.0))
+cmap.set_under("white")
+vmin = 0.05
+vmax = 0.8
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.9)#
+cb.set_label("Injection % coverage\n of region", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True) #TP
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+ax.tick_params(length=6)
+
+ax = axes[1]
+show = np.fliplr(sort_pcounts).T
+
+# SET COLORMAP
+vmin = 0
+vmax = maxpcount
+cmap = copy.copy(plt.cm.Blues)
+cmap.set_over(cmap(1.0))
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, format="%d", shrink=0.7)
+cb.set_label("% of striatum\nneurons", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(yaxis, fontsize="small")
+ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
+ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
+
+plt.savefig(os.path.join(fig_dst, "nc_timepoint_hsv_pcounts_striatum.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "nc_timepoint_hsv_pcounts_striatum.jpg"), bbox_inches = "tight")
+plt.close()
+#%%
+## display density
+
+#set colorbar features 
+maxd = 800
+yaxis = np.flipud(sois)
+
+#make density map like the h129 dataset
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (6.5,3.5), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+                         "height_ratios": [3,5]})
+
+#sort inj fractions by primary lob
+sort_density = [density[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
+sort_density = np.array(list(itertools.chain.from_iterable(sort_density)))
+
+#inj fractions
+ax = axes[0]
+show = np.fliplr(sort_inj).T
+
+cmap = copy.copy(plt.cm.Reds)
+cmap.set_over(cmap(1.0))
+cmap.set_under("white")
+vmin = 0.05
+vmax = 0.8
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.9)#
+cb.set_label("Injection % coverage\n of region", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True) #TP
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+ax.tick_params(length=6)
+
+ax = axes[1]
+show = np.fliplr(sort_density).T
+
+# SET COLORMAP
+vmin = 0
+vmax = maxd
+cmap = copy.copy(plt.cm.Blues)
+cmap.set_over(cmap(1.0))
+
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, ax=ax, format="%d", shrink=0.7)
+cb.set_label("Neurons/ mm$^3$", fontsize="small", labelpad=5)
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(yaxis))+.5)
+ax.set_yticklabels(yaxis, fontsize="small")
+ax.set_xticks(np.arange(0, len(sort_brains), 5)+.5)
+ax.set_xticklabels(np.arange(0, len(sort_brains), 5)+1)
+
+plt.savefig(os.path.join(fig_dst, "nc_timepoint_hsv_density_striatum.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "nc_timepoint_hsv_density_striatum.jpg"), bbox_inches = "tight")
+plt.close()
+
 #%%
 #mean percent counts
 mean_counts = np.asarray([np.mean(pcounts[np.where(primary_pool == idx)[0]], 

@@ -24,8 +24,8 @@ if __name__ == "__main__":
     brain = brains[jobid]
     
     dst = os.path.join(brain, "Ex_785_Em_3", "stitched")
-    # if not os.path.exists(dst):
-    if len(os.listdir(dst))==0:
+    if not os.path.exists(dst):
+    # if len(os.listdir(dst))==0:
         # print("\nStitching for brain %s" % os.path.basename(brain))
         # #import
         # print(subprocess.check_output(["terastitcher", "-1", "--volin=%s" % (os.path.join(brain, "Ex_785_Em_3")),
@@ -34,30 +34,30 @@ if __name__ == "__main__":
         # #compute
         # print("\nDisplacement computation, this may take a while... \n\n")
         # print(subprocess.check_output(["terastitcher", "--displcompute",
-        #      "--projin=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_import.xml")),
-        #      "--subvoldim=100", "--projout=xml_displcomp"]))
+        #       "--projin=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_import.xml")),
+        #       "--subvoldim=100", "--projout=xml_displcomp"]))
         # #project, threshold, place tiles
         # print("\nProjecting and thresholding... \n\n")
         # print(subprocess.check_output(["terastitcher", "--displproj", 
-        #      "--projin=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_displcomp.xml"))]))
+        #       "--projin=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_displcomp.xml"))]))
         # #thresholding
         # print(subprocess.check_output(["terastitcher", "--displthres",
-        #      "--projin=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_displproj.xml")),
-        #      "--projout=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_displthres.xml")),
-        #      "--threshold=0.7"]))
+        #       "--projin=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_displproj.xml")),
+        #       "--projout=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_displthres.xml")),
+        #       "--threshold=0.7"]))
         # #tiles
         # print(subprocess.check_output(["terastitcher", "--placetiles",
-        #      "--projin=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_displthres.xml")), 
-        #      "--projout=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_placetiles.xml")),
-        #      "--algorithm=MST"]))
-        #merging
-        # os.mkdir(dst) #make stitched directory
+        #       "--projin=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_displthres.xml")), 
+        #       "--projout=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_placetiles.xml")),
+        #       "--algorithm=MST"]))
+        # merging
+        os.mkdir(dst) #make stitched directory
         print("\nBlending and merging...\n\n")
         print(subprocess.check_output(["terastitcher", "--merge",
              "--projin=%s" % (os.path.join(brain, "Ex_785_Em_3", "xml_placetiles.xml")),
              "--volout=%s" % dst,
              "--imout_depth=16", "--resolutions=0"]))
-    else:
-        print("\nDoes not need stitching")
+    # else:
+    #     print("\nDoes not need stitching")
 
         

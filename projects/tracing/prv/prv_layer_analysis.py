@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 24 15:53:28 2020
+Created on Tue Sep 29 11:34:36 2020
 
 @author: wanglab
 """
@@ -10,35 +10,6 @@ import matplotlib as mpl, os, pandas as pd, json, statsmodels.api as sm, seaborn
 import matplotlib.pyplot as plt
 import numpy as np, pickle as pckl
 
-#custom
-src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
-atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
-ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
-cells_regions_pth = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data/nc_contra_counts_33_brains_pma.csv"
-dst = "/home/wanglab/Desktop/"
-df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
-
-mpl.rcParams["pdf.fonttype"] = 42
-mpl.rcParams["ps.fonttype"] = 42
-mpl.rcParams["xtick.major.size"] = 4
-mpl.rcParams["ytick.major.size"] = 4
-
-data_pth = os.path.join(src, "nc_hsv_maps_contra_pma.p")
-data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
-
-#set the appropritate variables
-brains = data["brains"]
-expr_all_as_frac_of_inj = data["expr_all_as_frac_of_inj"]
-ak_pool = data["ak_pool"]
-frac_of_lob = data["expr_all_as_frac_of_lob"]
-
-cells_regions = pd.read_csv(cells_regions_pth)
-#rename structure column
-cells_regions["Structure"] = cells_regions["Unnamed: 0"]
-cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
-scale_factor = 0.020
-ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
 
 def get_progeny(dic,parent_structure,progeny_list):
     """ 
@@ -69,6 +40,35 @@ def get_progeny(dic,parent_structure,progeny_list):
         get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
     return 
 
+#custom
+src = "/jukebox/wang/zahra/tracing_projects/prv"
+atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
+cells_regions_pth = os.path.join(src, "for_tp/nc_contra_counts_25_brains_pma.csv")
+dst = "/home/wanglab/Desktop/"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
+mpl.rcParams["xtick.major.size"] = 6
+mpl.rcParams["ytick.major.size"] = 6
+
+data_pth = os.path.join(src, "for_tp/prv_maps_contra_pma.p")
+data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
+
+#set the appropritate variables
+brains = data["brains"]
+ak_pool = data["ak_pool"]
+frac_of_inj_pool = data["frac_of_inj_pool"]
+
+cells_regions = pd.read_csv(cells_regions_pth)
+#rename structure column
+cells_regions["Structure"] = cells_regions["Unnamed: 0"]
+cells_regions = cells_regions.drop(columns = ["Unnamed: 0"])
+scale_factor = 0.020
+ann_df = pd.read_excel(df_pth).drop(columns = ["Unnamed: 0"])
+
 #get progeny of all large structures
 
 with open(ontology_file) as json_file:
@@ -76,22 +76,22 @@ with open(ontology_file) as json_file:
 
 #get counts for all of neocortex
 
-sois =  ["Anterior cingulate area", "Orbital area",
-          "Prelimbic area","Infralimbic area",
-        "Frontal pole, cerebral cortex","Visual areas",
-        "Retrosplenial area", "Agranular insular area", "Auditory areas",
-        "Temporal association areas",
-        "Visceral area", "Gustatory areas",
-        "Somatosensory areas", "Somatomotor areas","Ectorhinal area", "Perirhinal area"]
-
-# sois = ["Somatosensory areas", "Somatomotor areas", "Visual areas",
+# sois =  ["Anterior cingulate area", "Orbital area",
+#          "Prelimbic area","Infralimbic area",
+#        "Frontal pole, cerebral cortex","Visual areas",
 #        "Retrosplenial area", "Agranular insular area", "Auditory areas",
-#        "Anterior cingulate area", "Orbital area",
-#        "Temporal association areas",
-#        "Posterior parietal association areas", "Prelimbic area",
-#        "Visceral area", "Ectorhinal area", "Gustatory areas",
-#        "Perirhinal area", "Infralimbic area",
-#        "Frontal pole, cerebral cortex"]
+#        "Temporal association areas","Posterior parietal association areas",
+#        "Visceral area", "Gustatory areas",
+#        "Somatosensory areas", "Somatomotor areas","Ectorhinal area", "Perirhinal area","Entorhinal area"]
+
+sois = ["Somatosensory areas", "Somatomotor areas", "Visual areas",
+       "Retrosplenial area", "Agranular insular area", "Auditory areas",
+       "Anterior cingulate area", "Orbital area",
+       "Temporal association areas",
+       "Posterior parietal association areas", "Prelimbic area",
+       "Visceral area", "Ectorhinal area", "Gustatory areas",
+       "Perirhinal area", "Infralimbic area",
+       "Frontal pole, cerebral cortex"]
 
 #get counts by layers
 layer1 = []
@@ -114,8 +114,8 @@ for soi in sois:
     layer23.append(np.array(counts).sum(axis = 0))
 layer23 = np.array(layer23)
 
-l4sois = ["Gustatory areas", "Visceral area", "Somatosensory areas", "Visual areas", 
-          "Temporal association areas","Auditory areas"]
+l4sois = ["Gustatory areas", "Visceral area", "Somatosensory areas", "Visual areas", "Temporal association areas",
+            "Auditory areas"]
 layer4 = []
 for soi in sois:
     if soi not in l4sois:
@@ -181,8 +181,8 @@ for soi in sois:
     vollayer23.append(np.array(counts).sum(axis = 0))
 vollayer23 = np.array(vollayer23)
 
-l4sois = ["Gustatory areas", "Visceral area", "Somatosensory areas", "Visual areas", 
-          "Temporal association areas", "Auditory areas"]
+l4sois = ["Gustatory areas", "Visceral area", "Somatosensory areas", "Visual areas", "Temporal association areas",
+            "Auditory areas"]
 vollayer4 = []
 for soi in sois:
     if soi not in l4sois:
@@ -266,8 +266,8 @@ ylbls = np.array([ "I", "II/III", "IV", "V", "VIa", "VIb"])
 ax.set_xticks(np.arange(len(ylbls))+.5)
 ax.set_xticklabels(ylbls)
 
-plt.savefig(os.path.join(dst, "hsv_nc_layers_pcount_normalized.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "hsv_nc_layers_pcount_normalized.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_nc_layers_pcount_normalized.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_nc_layers_pcount_normalized.jpg"), bbox_inches = "tight")
 #%%
 
 #make blue layer heatmap
@@ -293,8 +293,8 @@ ylbls = np.array([ "I", "II/III", "IV", "V", "VIa", "VIb"])
 ax.set_xticks(np.arange(len(ylbls))+.5)
 ax.set_xticklabels(ylbls)
 
-plt.savefig(os.path.join(dst, "hsv_nc_layers_density.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "hsv_nc_layers_density.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_nc_layers_density.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(dst, "prv_nc_layers_density.jpg"), bbox_inches = "tight")
 
 #%%
 #now show only counts

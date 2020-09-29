@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jun  2 15:00:16 2020
+Created on Tue Sep 29 12:45:59 2020
 
 @author: wanglab
 """
@@ -39,11 +39,11 @@ fig_dst = "/home/wanglab/Desktop"
 
 ###############################################################RUN AS IS#######################################################
 #bucket path for data
-src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
+src = "/jukebox/wang/zahra/tracing_projects/prv"
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
 ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
-cells_regions_pth = os.path.join(src, "nc_contra_counts_33_brains_pma.csv")
+cells_regions_pth = os.path.join(src, "for_tp/nc_contra_counts_25_brains_pma.csv")
 
 cells_regions = pd.read_csv(cells_regions_pth)
 #rename structure column
@@ -57,22 +57,14 @@ except:
 
 #imports
 #path to pickle file
-data_pth = os.path.join(src, "nc_hsv_maps_contra_pma.p")
+data_pth = os.path.join(src, "for_tp/prv_maps_contra_pma.p")
 data = pckl.load(open(data_pth, "rb"), encoding = "latin1")
 
 #set the appropritate variables
 brains = data["brains"]
-expr_all_as_frac_of_inj = data["expr_all_as_frac_of_inj"]
 ak_pool = data["ak_pool"]
-
-#change the lettering slightly 
-ak_pool = np.array(["Lob. I-V", "Lob. VI, VII", "Lob. VIII-X",
-       "Simplex", "Crus I", "Crus II", "PM, CP"])
-frac_of_inj_pool = np.array([[np.sum(xx[:4]),np.sum(xx[4:7]),np.sum(xx[7:10]), xx[10], xx[11], xx[12], np.sum(xx[13:16])] 
-                                for xx in expr_all_as_frac_of_inj])
-primary_pool = np.array([np.argmax(e) for e in frac_of_inj_pool])
-primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max(primary_pool)+1)])
-
+frac_of_inj_pool = data["frac_of_inj_pool"]
+primary_pool = data["primary_pool"]
 #get progeny of all large structures
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
@@ -172,8 +164,8 @@ ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
 ax.set_xticks([])
 ax.set_xticklabels([])
 
-plt.savefig(os.path.join(fig_dst, "hsv_pcounts_nc_sssm_areas.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(fig_dst, "hsv_pcounts_nc_sssm_areas.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_pcounts_nc_sssm_areas.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_pcounts_nc_sssm_areas.jpg"), bbox_inches = "tight")
 #%%
 
 #density
@@ -232,5 +224,5 @@ ax.set_yticklabels(np.flipud(yaxis), fontsize="small")
 ax.set_xticks([])
 ax.set_xticklabels([])
 
-plt.savefig(os.path.join(fig_dst, "hsv_density_sssm_areas.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(fig_dst, "hsv_density_sssm_areas.jpg"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_density_sssm_areas.pdf"), bbox_inches = "tight")
+plt.savefig(os.path.join(fig_dst, "prv_density_sssm_areas.jpg"), bbox_inches = "tight")
