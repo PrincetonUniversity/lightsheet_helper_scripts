@@ -36,8 +36,8 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     
 def process(args):
     vol,z = args
-    img_name = os.path.join(tif_dir, os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))+"_annotation_Z%04d.tif" % z) #tempfix for atlas
-    # img_name = os.path.join(tif_dir, os.path.basename(tif_dir)+"_%06d.tif" % int((z*20)+380))
+    # img_name = os.path.join(tif_dir, os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))+"_annotation_Z%04d.tif" % z) #tempfix for atlas
+    img_name = os.path.join(tif_dir, os.path.basename(tif_dir)+"_%06d.tif" % int((z*20)+540))
         
     assert os.path.exists(img_name) == True
     image = Image.open(img_name)
@@ -69,13 +69,10 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 if __name__ == "__main__":
     
     #setting dirs
-    home_dir = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_PRV/natneuroreviews_tompisano_PRV_36hr-015/imaging_request_1/viz"
-    
-    brain = "PRV_36hr-015"
-    print(brain)
-    
-    tif_dir = "/jukebox/scratch/zmd/natneuroreviews_tompisano_PRV_36hr-015/transformed_annotations/single_tifs"
-    type_vol = "atlas"
+    brain = "20200930_17_32_58_hsv_36hr_7"
+    home_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125"
+    tif_dir = "/jukebox/LightSheetTransfer/tp/%s/Ex_642_Em_2/stitched/RES(7571x5747x3273)/094950/094950_103770" % brain
+    type_vol = "642"
     print(os.path.basename(tif_dir))
 
     #get x,y,z resolution

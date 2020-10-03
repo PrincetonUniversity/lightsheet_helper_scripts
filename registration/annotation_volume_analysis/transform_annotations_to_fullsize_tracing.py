@@ -5,6 +5,7 @@ Created on Thu Oct 31 16:15:28 2019
 
 @author: wanglab
 """
+
 import os, numpy as np, sys, time
 import tifffile, SimpleITK as sitk
 sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
@@ -25,9 +26,8 @@ if __name__ == "__main__":
     #setting paths
     ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
     scratch_dir = "/jukebox/scratch/zmd/"
-    src = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_PRV"
-    brains = ["natneuroreviews_tompisano_PRV_28hr-011",
-              "natneuroreviews_tompisano_PRV_36hr-015"]
+    src = "/jukebox/LightSheetTransfer/tp"
+    brains = ["20200930_17_32_58_hsv_36hr_7"]
     #for array job parallelization
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
@@ -40,13 +40,9 @@ if __name__ == "__main__":
     #accessing parameter dictionary
     cellvol = fast_scandir(brain)[-1]
     
-    a2r0 = os.path.join(brain, "imaging_request_1/output/processing_request_1/resolution_4x/elastix_inverse_transform/TransformParameters.0.txt")
-    a2r1 = os.path.join(brain, "imaging_request_1/output/processing_request_1/resolution_4x/elastix_inverse_transform/TransformParameters.1.txt")
-    # a2r0 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.0" in xx and "cellch" in xx][0]
-    # a2r1 = [xx for xx in listall(cellvol.inverse_elastixfld.replace("/home/wanglab", "/jukebox")) if "atlas2reg_TransformParameters.1" in xx and "cellch" in xx][0]
-    # r2s0 = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/elastix_inverse_transform/TransformParameters.0.txt"
-    # r2s1 = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/elastix_inverse_transform/TransformParameters.1.txt"
-    
+    a2r0 = os.path.join(brain, "elastix_inverse_transform/TransformParameters.0.txt")
+    a2r1 = os.path.join(brain, "elastix_inverse_transform/TransformParameters.1.txt")
+
     #set destination directory
     braindst = os.path.join(scratch_dir, os.path.basename(brain))
     
@@ -86,7 +82,8 @@ if __name__ == "__main__":
     #now rotate and scale each in ap and ml
     for iii,zplane in enumerate(bigdvann):
         arr = zoom(zplane, (ap0/float(ap1), ml0/float(ml1)), order=0)
-        tifffile.imsave(os.path.join(save_dst, "%s_annotation_Z%04d.tif" % (os.path.basename(brain), iii)), arr, compress = 6)
-        if iii%100: print("\nmade z plane # {}".format(iii))
+        tifffile.imsave(os.path.join(save_dst, 
+        "%s_annotation_Z%04d.tif" % (os.path.basename(brain),iii)),arr.astype("float32"),compress=6)
+        if iii%100: print("made z plane # {}".format(iii))
               
     print("\n\ntook {} minutes for {}\n".format(round((time.time()-start)/60, 2), brain))

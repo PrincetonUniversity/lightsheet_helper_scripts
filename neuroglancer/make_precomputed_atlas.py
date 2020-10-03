@@ -37,7 +37,7 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     
 def process(args):
     vol,z = args
-    img_name = os.path.join(tif_dir, "119640_111241_%06d.tif" % int((z*20)+580)) #ZMD CHANGED FOR CUSTOM DSET
+    img_name = os.path.join(tif_dir, os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))+"_annotation_Z%04d.tif" % z) #tempfix for atlas
         
     print("Processing ", img_name)
     assert os.path.exists(img_name) == True
@@ -69,14 +69,10 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 if __name__ == "__main__":
     
     #setting dirs
-    src = "/jukebox/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_PRV/natneuroreviews_tompisano_PRV_28hr-011/imaging_request_1"
-    home_dir = os.path.join(src, "viz")
-    
-    brain = "PRV_28hr-011"
-    print(brain)
-
-    tif_dir = os.path.join(src, "output/processing_request_1/resolution_4x/Ex_642_Em_2/RES(7583x5733x3265)/119640/119640_111241")
-    type_vol = "642"
+    brain = "20200930_17_32_58_hsv_36hr_7"
+    home_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125"
+    tif_dir = "/jukebox/scratch/zmd/%s/transformed_annotations/single_tifs" % brain
+    type_vol = "atlas"
 
     #get x,y,z resolution
     image = Image.open(os.path.join(tif_dir, os.listdir(tif_dir)[0]))
