@@ -18,7 +18,7 @@ module load anacondapy/5.3.1
 module load elastix/4.8
 . activate lightsheet
 
-python smartspim_register.py 1 /jukebox/LightSheetTransfer/tp/20200930_17_32_58_hsv_36hr_7 Ex_642_Ex_2
+python spim_register.py 1 /jukebox/LightSheetTransfer/tp/20201001_17_13_35_hsv_28h_2/ Ex_642_Em_2
 
 #functionality
 #takes 4 command line arguments max

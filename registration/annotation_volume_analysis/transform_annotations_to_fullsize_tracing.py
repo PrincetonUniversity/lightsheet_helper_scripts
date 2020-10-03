@@ -28,6 +28,8 @@ if __name__ == "__main__":
     scratch_dir = "/jukebox/scratch/zmd/"
     src = "/jukebox/LightSheetTransfer/tp"
     brains = ["20200930_17_32_58_hsv_36hr_7"]
+    #channel to use as reference image
+    ch = "Ex_642_Em_2"
     #for array job parallelization
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
@@ -38,7 +40,8 @@ if __name__ == "__main__":
     start = time.time()
     
     #accessing parameter dictionary
-    cellvol = fast_scandir(brain)[-1]
+    #need to change this config depending on processing pipeline
+    cellvol = fast_scandir(os.path.join(brain,ch,"stitched"))[-1] 
     
     a2r0 = os.path.join(brain, "elastix_inverse_transform/TransformParameters.0.txt")
     a2r1 = os.path.join(brain, "elastix_inverse_transform/TransformParameters.1.txt")
