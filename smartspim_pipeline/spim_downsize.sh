@@ -17,7 +17,6 @@ cat /proc/$$/status | grep Cpus_allowed_list
 module load anacondapy/5.3.1
 . activate lightsheet
 
-echo "Experiment name:" "$1"
-echo "Storage directory:" "$2"
+echo "Storage directory:" "$1"
 
-python spim_downsize.py "$1" "$2"
+python spim_downsize.py "$1" 

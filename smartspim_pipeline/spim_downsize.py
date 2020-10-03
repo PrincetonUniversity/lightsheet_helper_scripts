@@ -25,7 +25,7 @@ if __name__ == "__main__":
     pth = str(sys.argv[1])
     print("\nPath to stitched images: %s\n\n" % pth)
     #path to store downsized images
-    dst = str(sys.argv[2])
+    dst = os.path.join(os.path.dirname(pth),"downsized")
     print("\nPath to storage directory: %s\n\n" % dst)
     if not os.path.exists(dst): os.mkdir(dst)
     imgs = [os.path.join(pth, xx) for xx in os.listdir(pth) if "tif" in xx]

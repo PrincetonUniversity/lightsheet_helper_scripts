@@ -18,7 +18,7 @@ module load anacondapy/5.3.1
 module load elastix/4.8
 . activate lightsheet
 
-python spim_register.py 1 /jukebox/LightSheetTransfer/tp/20201001_17_13_35_hsv_28h_2/ Ex_642_Em_2
+python spim_register.py 1 "$1"
 
 #functionality
 #takes 4 command line arguments max

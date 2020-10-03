@@ -13,8 +13,8 @@ from tools.registration.register import elastix_command_line_call
 #takes 4 command line arguments max
 print(sys.argv)
 stepid = int(sys.argv[1])
-src = str(sys.argv[2]) #folder to stitched images
-reg = str(sys.argv[3]) #folder fo registration channel, e.g. Ex_488_Em_0
+src = str(os.path.dirname(sys.argv[2])) #folder to stitched images
+reg = str(os.path.basename(sys.argv[2])) #folder fo registration channel, e.g. Ex_488_Em_0
 try:
     cell = str(sys.argv[4]) #folder for cell channel e.g. Ex_642_Em_2
 except:
