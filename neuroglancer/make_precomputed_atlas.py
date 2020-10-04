@@ -2,9 +2,8 @@
 """
 Created on Fri Jul  3 14:59:21 2020
 
-@author: lvbt
+@author: zahra
 """
-
 
 import os, numpy as np, igneous.task_creation as tc, sys
 from concurrent.futures import ProcessPoolExecutor
@@ -17,8 +16,8 @@ def make_info_file(brain, home_dir, volume_size, type_vol="647", commit=True):
     info = CloudVolume.create_new_info(
     num_channels = 1,
     layer_type = "segmentation", # "image" or "segmentation"
-    data_type = "uint32", # 32 not necessary for Princeton atlas, but was for Allen atlas 
-    encoding = "compressed_segmentation", # other options: "jpeg", "compressed_segmentation" (req. uint32 or uint64)
+    data_type = "uint16", # 32 not necessary for Princeton atlas, but was for Allen atlas 
+    encoding = "raw", # other options: "jpeg", "compressed_segmentation" (req. uint32 or uint64)
     resolution = [ 1810, 1810, 2000 ], # X,Y,Z values in nanometers, 40 microns in each dim. 
     voxel_offset = [ 0, 0, 0 ], # values X,Y,Z values in voxels
     chunk_size = [ 1024, 1024, 1], # rechunk of image X,Y,Z in voxels, 
@@ -37,7 +36,8 @@ def make_info_file(brain, home_dir, volume_size, type_vol="647", commit=True):
     
 def process(args):
     vol,z = args
-    img_name = os.path.join(tif_dir, os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))+"_annotation_Z%04d.tif" % z) #tempfix for atlas
+    img_name = os.path.join(tif_dir, 
+    os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))+"_annotation_Z%04d.tif" % z) #tempfix for atlas
     assert os.path.exists(img_name) == True
     image = Image.open(img_name)
     width, height = image.size
@@ -66,8 +66,16 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 
 if __name__ == "__main__":
     
+    brains = ["20201001_10_57_49_hsv_36h_6","20201001_10_01_03_hsv_36h_5",
+              "20201001_15_39_26_hsv_28h_4","20201001_17_13_35_hsv_28h_2",
+              "20200930_18_34_47_hsv_28hr_3"]
+    #for array job parallelization
+    print(os.environ["SLURM_ARRAY_TASK_ID"])
+    jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
+    
     #setting dirs
-    brain = "20200930_17_32_58_hsv_36hr_7"
+    brain = brains[jobid]
+    #make sure this is the folder hierarchy you want to keep
     home_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125"
     tif_dir = "/jukebox/scratch/zmd/%s/transformed_annotations/single_tifs" % brain
     type_vol = "atlas"

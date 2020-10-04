@@ -14,7 +14,7 @@ from tools.registration.register import elastix_command_line_call
 print(sys.argv)
 stepid = int(sys.argv[1])
 src = str(os.path.dirname(sys.argv[2])) #folder to stitched images
-reg = str(os.path.basename(sys.argv[2])) #folder fo registration channel, e.g. Ex_488_Em_0
+reg = str(os.path.basename(sys.argv[3])) #folder fo registration channel, e.g. Ex_488_Em_0
 try:
     cell = str(sys.argv[4]) #folder for cell channel e.g. Ex_642_Em_2
 except:
@@ -26,8 +26,7 @@ param_fld = "/jukebox/wang/zahra/python/BrainPipe/parameterfolder" #change if us
 # src = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/"
 
 if stepid == 0:
-    reg = os.path.join(src, reg)
-    mv = os.path.join(reg, "downsized_for_atlas.tif")
+    mv = os.path.join(src, reg, "downsized_for_atlas.tif")
     print("\nPath to downsized vol for registration to atlas: %s" % mv)
     fx = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
     print("\nPath to atlas: %s" % fx)
@@ -54,7 +53,7 @@ if stepid == 0:
 elif stepid == 1:
     #atlas to registration vol
     #inverse transform
-    fx = os.path.join(src, reg+"/downsized_for_atlas.tif")
+    fx = os.path.join(src, reg, "downsized_for_atlas.tif")
     mv = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
     print("\nPath to downsized vol for inverse registration to atlas: %s" % fx)
     print("\nPath to atlas: %s" % mv)

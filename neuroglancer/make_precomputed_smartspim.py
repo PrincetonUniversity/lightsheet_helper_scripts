@@ -12,6 +12,14 @@ from cloudvolume import CloudVolume
 from cloudvolume.lib import mkdir, touch
 from taskqueue import LocalTaskQueue
 
+
+def fast_scandir(dirname):
+    """ gets all folders recursively """
+    subfolders= [f.path for f in os.scandir(dirname) if f.is_dir()]
+    for dirname in list(subfolders):
+        subfolders.extend(fast_scandir(dirname))
+    return subfolders
+
 def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
     info = CloudVolume.create_new_info(
     num_channels = 1,
@@ -37,7 +45,9 @@ def make_info_file(brain, home_dir, volume_size, type_vol = "647", commit=True):
 def process(args):
     vol,z = args
     # img_name = os.path.join(tif_dir, os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))+"_annotation_Z%04d.tif" % z) #tempfix for atlas
-    img_name = os.path.join(tif_dir, os.path.basename(tif_dir)+"_%06d.tif" % int((z*20)+540))
+    imgs = [os.path.join(tif_dir,xx) for xx in os.listdir(tif_dir)]; imgs.sort()
+    f = int(imgs[0][-10:-4])
+    img_name = os.path.join(tif_dir, os.path.basename(tif_dir)+"_%06d.tif" % int((z*20)+f))
         
     assert os.path.exists(img_name) == True
     image = Image.open(img_name)
@@ -68,10 +78,19 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 
 if __name__ == "__main__":
     
+    brains = ["20201001_10_57_49_hsv_36h_6","20201001_10_01_03_hsv_36h_5",
+              "20201001_15_39_26_hsv_28h_4","20201001_17_13_35_hsv_28h_2",
+              "20200930_18_34_47_hsv_28hr_3"]
+    #for array job parallelization
+    print(os.environ["SLURM_ARRAY_TASK_ID"])
+    jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
+    
     #setting dirs
-    brain = "20200930_17_32_58_hsv_36hr_7"
+    brain = brains[jobid]
     home_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125"
-    tif_dir = "/jukebox/LightSheetTransfer/tp/%s/Ex_642_Em_2/stitched/RES(7571x5747x3273)/094950/094950_103770" % brain
+    #make sure all brains are in this format tho
+    tif_dir = "/jukebox/LightSheetTransfer/tp/%s/Ex_642_Em_2/stitched" % brain
+    tif_dir = fast_scandir(tif_dir)[-1]
     type_vol = "642"
     print(os.path.basename(tif_dir))
 
@@ -97,4 +116,4 @@ if __name__ == "__main__":
                 print(f'generated an exception: {exc}')
     
     print("Downsampling...\n")
-    make_demo_downsample(type_vol, mip_start=0,num_mips=6)
+    make_demo_downsample(type_vol, mip_start=0,num_mips=5)

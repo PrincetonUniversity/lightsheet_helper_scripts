@@ -9,6 +9,13 @@ Created on Mon Jul 20 12:04:02 2020
 import os, numpy as np, tifffile as tif, SimpleITK as sitk, cv2, multiprocessing as mp, shutil, sys
 from scipy.ndimage import zoom
 
+def fast_scandir(dirname):
+    """ gets all folders recursively """
+    subfolders= [f.path for f in os.scandir(dirname) if f.is_dir()]
+    for dirname in list(subfolders):
+        subfolders.extend(fast_scandir(dirname))
+    return subfolders
+
 def resize_helper(img, dst, resizef):
     print(os.path.basename(img))
     im = sitk.GetArrayFromImage(sitk.ReadImage(img))
@@ -20,12 +27,13 @@ def resize_helper(img, dst, resizef):
 
 if __name__ == "__main__":
     
-    #takes 2 command line args
+    #takes 1 command line args
     print(sys.argv)
-    pth = str(sys.argv[1])
-    print("\nPath to stitched images: %s\n\n" % pth)
+    src=str(sys.argv[1])
+    pth = fast_scandir(src)[-1] #gets to the end of directory tree
+    print("\nPath to stitched images: %s\n" % pth)
     #path to store downsized images
-    dst = os.path.join(os.path.dirname(pth),"downsized")
+    dst = os.path.join(os.path.dirname(src), "downsized")
     print("\nPath to storage directory: %s\n\n" % dst)
     if not os.path.exists(dst): os.mkdir(dst)
     imgs = [os.path.join(pth, xx) for xx in os.listdir(pth) if "tif" in xx]
@@ -46,7 +54,7 @@ if __name__ == "__main__":
     atlz,atly,atlx = atl.shape #get shape, sagittal
     #read all the downsized images
     for i,img in enumerate(imgs):
-        if i%500==0: print(i)
+        if i%5000==0: print(i)
         arr[i,:,:] = sitk.GetArrayFromImage(sitk.ReadImage(img)) #horizontal
     #switch to sagittal
     arrsag = np.swapaxes(arr,2,0)
