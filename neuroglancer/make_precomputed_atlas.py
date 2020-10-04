@@ -23,7 +23,6 @@ def make_info_file(brain, home_dir, volume_size, type_vol="647", commit=True):
     chunk_size = [ 1024, 1024, 1], # rechunk of image X,Y,Z in voxels, 
     volume_size = volume_size, # X,Y,Z size in voxels
     )
-    
     	# If you"re using amazon or the local file system, you can replace "gs" with "s3" or "file"
     vol = CloudVolume("file://"+home_dir+"/"+brain+"/"+type_vol, info=info)
     vol.provenance.description = "TP tracing"
@@ -36,12 +35,12 @@ def make_info_file(brain, home_dir, volume_size, type_vol="647", commit=True):
     
 def process(args):
     vol,z = args
+    #format images correctly for raw space annotation output
     img_name = os.path.join(tif_dir, 
     os.path.basename(os.path.dirname(os.path.dirname(tif_dir)))+"_annotation_Z%04d.tif" % z) #tempfix for atlas
     assert os.path.exists(img_name) == True
     image = Image.open(img_name)
     width, height = image.size
-    
     array = np.array(list( image.getdata() ), dtype=np.uint16, order="F")
     array = array.reshape((1, height, width)).T
     vol[:,:, z] = array
@@ -66,36 +65,35 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 
 if __name__ == "__main__":
     
+    #samples to compute
     brains = ["20201001_10_57_49_hsv_36h_6","20201001_10_01_03_hsv_36h_5",
               "20201001_15_39_26_hsv_28h_4","20201001_17_13_35_hsv_28h_2",
               "20200930_18_34_47_hsv_28hr_3"]
     #for array job parallelization
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
-    
     #setting dirs
     brain = brains[jobid]
     #make sure this is the folder hierarchy you want to keep
     home_dir = "/jukebox/scratch/zmd/save/contra_ipsi_projection_studies_20191125"
     tif_dir = "/jukebox/scratch/zmd/%s/transformed_annotations/single_tifs" % brain
-    type_vol = "atlas"
-
+    type_vol = "atlas" #change if needed, just makes the folder name this
     #get x,y,z resolution
     image = Image.open(os.path.join(tif_dir, os.listdir(tif_dir)[0]))
     x, y = image.size
     volume_size = [x, y, len(os.listdir(tif_dir))]
     vol = make_info_file(brain, home_dir, volume_size, type_vol = type_vol)
-    
+    #setup run
     progress_dir = mkdir(home_dir + "/progress_"+brain+"_"+type_vol)
     done_files = set([ int(z) for z in os.listdir(progress_dir) ])
     all_files = set(range(vol.bounds.minpt.z, vol.bounds.maxpt.z))
     to_upload = [ (vol,int(z)) for z in list(all_files.difference(done_files)) ]
     print("\n # of files to process: %s \n" % len(to_upload))
     to_upload.sort()
-    
+    #run
     print("Running processor...\n")
     with ProcessPoolExecutor(max_workers=12) as executor:
         executor.map(process, to_upload)
-    
+    #downsample
     print("Downsampling...\n")
     make_demo_downsample(type_vol, mip_start=0,num_mips=5)
