@@ -1,7 +1,7 @@
 #!/bin/env bash
 #
 #SBATCH -p all                # partition (queue)
-#SBATCH -c 12                      # number of cores
+#SBATCH -c 14                      # number of core
 #SBATCH -t 400                # time (minutes)
 #SBATCH -o /scratch/zmd/logs/mk_ngl_spim_%j_%a.out        # STDOUT #add _%a to see each array job
 #SBATCH -e /scratch/zmd/logs/mk_ngl_spim_%j_%a.err        # STDERR #add _%a to see each array job

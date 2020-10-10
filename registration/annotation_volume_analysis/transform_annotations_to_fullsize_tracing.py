@@ -25,19 +25,19 @@ def resize_helper(iii,zplane,ap0,ap1,ml0,ml1,brain,save_dst):
     arr = zoom(zplane, (ap0/float(ap1), ml0/float(ml1)), order=0)
     tifffile.imsave(os.path.join(save_dst, 
     "%s_annotation_Z%04d.tif" % (os.path.basename(brain),iii)),arr.astype("float32"),compress=6)
-    if iii%100: print("made z plane # {}".format(iii))
+    if iii%100==0: print("made z plane # {}".format(iii))
     return
     
 if __name__ == "__main__":
     
     #setting paths
-    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
+    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif" #atlas you registered to!
     scratch_dir = "/jukebox/scratch/zmd/"
     src = "/jukebox/LightSheetTransfer/tp"
-    brains = ["20201001_10_57_49_hsv_36h_6","20201001_10_01_03_hsv_36h_5",
+    brains = ["PRV_50hr-019", "20201001_10_57_49_hsv_36h_6","20201001_10_01_03_hsv_36h_5",
               "20201001_15_39_26_hsv_28h_4","20201001_17_13_35_hsv_28h_2",
               "20200930_18_34_47_hsv_28hr_3"]
-    #cores for parallelization
+    #cores for parallelization, make sure this matches bash script
     cores = 12
     #channel to use as reference image
     ch = "Ex_642_Em_2"

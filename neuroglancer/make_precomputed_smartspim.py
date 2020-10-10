@@ -77,9 +77,10 @@ def make_demo_downsample(type_vol="647", mip_start=0, num_mips=3):
 if __name__ == "__main__":
     
     #samples to compute
-    brains = ["20201001_10_57_49_hsv_36h_6","20201001_10_01_03_hsv_36h_5",
-              "20201001_15_39_26_hsv_28h_4","20201001_17_13_35_hsv_28h_2",
-              "20200930_18_34_47_hsv_28hr_3"]
+    brains = ["PRV_50hr-019"]
+              # "20201001_10_57_49_hsv_36h_6","20201001_10_01_03_hsv_36h_5",
+              # "20201001_15_39_26_hsv_28h_4","20201001_17_13_35_hsv_28h_2",
+              # "20200930_18_34_47_hsv_28hr_3"]
     #for array job parallelization
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])

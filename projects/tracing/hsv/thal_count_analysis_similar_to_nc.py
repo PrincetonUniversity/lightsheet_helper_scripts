@@ -6,15 +6,16 @@ Created on Fri Aug 16 17:24:45 2019
 @author: wanglab
 """
 
-import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl, json, itertools, statsmodels.api as sm
+import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl
+import matplotlib as mpl, json, itertools, statsmodels.api as sm, copy
 from patsy import dmatrices
 import matplotlib.colors, statsmodels.formula.api as smf
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "red"]) #lime color makes cells pop
  
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
-mpl.rcParams["xtick.major.size"] = 6
-mpl.rcParams["ytick.major.size"] = 6
+mpl.rcParams["xtick.major.size"] = 3
+mpl.rcParams["ytick.major.size"] = 3
 
 dst = "/jukebox/wang/zahra/h129_contra_vs_ipsi/"
 fig_dst = "/home/wanglab/Desktop"
@@ -278,7 +279,7 @@ plt.savefig(os.path.join(fig_dst, "hsv_pcounts_thal.pdf"), bbox_inches = "tight"
 maxdensity = 40
 yaxis = np.flipud(nuclei)
 
-#make density map like the h129 dataset
+#make density map
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,7), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [1.5,5]})
@@ -374,7 +375,6 @@ ax.tick_params(length=6)
 plt.savefig(os.path.join(fig_dst,"thal_mean_count.pdf"), bbox_inches = "tight")
 
 #%%
-
 #only look at mean counts per "cerebellar region" (i.e. that which had the highest contribution of the injection)    
 mean_counts = np.asarray([np.mean(density[np.where(primary_pool == idx)[0]], axis=0) for idx in np.unique(primary_pool)])
 
@@ -519,13 +519,13 @@ whitetext = 4
 annotation = False
 
 # SET COLORMAP
-cmap = plt.cm.Blues
+cmap = copy.copy(plt.cm.Blues)
 cmap.set_over(cmap(1.0))
 annotations = False
 
 #colormap
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.3, aspect=10)
 cb.set_label("Model weight / SE", fontsize="medium", labelpad=5)
 cb.ax.tick_params(labelsize="medium")
 cb.ax.set_visible(True)
@@ -540,7 +540,8 @@ if annotation:
                 ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
 
 # signif
-sig = np.flipud(pmat) < .05#/np.size(pmat)
+pmat_pos = np.where(mat < 0, pmat, pmat*10)
+sig = np.flipud(pmat_pos) < .05#/np.size(pmat)
 p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
 null = (p_shuf_pos < .05).sum(axis=(1,2))
 nullmean = null.mean()
@@ -558,7 +559,6 @@ ax.set_xticklabels(ak_pool, rotation="vertical", fontsize="medium")
 # yticks
 ax.set_yticks(np.arange(len(nuclei))+.5)
 ax.set_yticklabels(np.flipud(nuclei), fontsize="medium")
-ax.tick_params(length=6)
 
 plt.savefig(os.path.join(fig_dst, "thal_pcount_glm_contra_allen.pdf"), bbox_inches = "tight")
 
