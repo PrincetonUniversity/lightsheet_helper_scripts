@@ -7,7 +7,7 @@ Created on Fri Oct 18 15:44:38 2019
 """
 
 import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, matplotlib as mpl, statsmodels.api as sm, itertools, seaborn as sns
-from skimage.external import tifffile
+import tifffile
 import matplotlib.colors as colors, json
 from scipy.ndimage.measurements import center_of_mass
 

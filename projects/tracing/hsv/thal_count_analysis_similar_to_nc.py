@@ -524,7 +524,7 @@ cmap.set_over(cmap(1.0))
 annotations = False
 
 #colormap
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.3, aspect=10)
 cb.set_label("Model weight / SE", fontsize="medium", labelpad=5)
 cb.ax.tick_params(labelsize="medium")
@@ -540,7 +540,7 @@ if annotation:
                 ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
 
 # signif
-pmat_pos = np.where(mat < 0, pmat, pmat*10)
+pmat_pos = np.where(mat > 0, pmat, pmat*100000000000)
 sig = np.flipud(pmat_pos) < .05#/np.size(pmat)
 p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
 null = (p_shuf_pos < .05).sum(axis=(1,2))

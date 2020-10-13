@@ -7,7 +7,7 @@ Created on Thu Sep  6 13:07:15 2018
 """
 
 import os, sys, numpy as np
-from skimage.external import tifffile
+import tifffile
 import matplotlib as mpl
 from tools.imageprocessing.orientation import fix_orientation
 from tools.registration.transform import count_structure_lister, transformed_pnts_to_allen_helper_func
@@ -23,22 +23,25 @@ from scipy.ndimage import zoom
 if __name__ == '__main__':
     
     #check if reorientation is necessary
-    src = '/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg01/20180418_rbdg01_488_555_050na_1hfds_z7d5um_50msec_10povlp_resized_ch01_resampledforelastix.tif'
-    src = orientation_crop_check(src, axes = ('2','1','0'), crop = '[:,600:,:]') #'[:,390:,:]'
+    src = '/home/wanglab/LightSheetTransfer/tp/20200930_17_32_58_hsv_36hr_7/Ex_642_Em_2/downsized_for_atlas.tif'
+    src = orientation_crop_check(src, axes = ('2','1','0'), crop = '[:,500:,:]') #'[:,390:,:]'
     
     #optimize detection parameters for inj det
-    optimize_inj_detect(src, threshold = 10, filter_kernel = (5,5,5))
+    optimize_inj_detect(src, threshold =9, filter_kernel = (5,5,5))
 
     #run
     #suggestion: save_individual=True,
     inputlist = [
-        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg01_inj',
-        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg02_inj',
-        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg03',
-        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg04',
-        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg05',
-        '/jukebox/wang/pisano/tracing_output/retro_4x/20180418_rbdg06_inj',
-        #'/jukebox/wang/pisano/tracing_output/antero_4x/20180418_rbdg07'
+        '/home/wanglab/LightSheetTransfer/tp/20200930_17_32_58_hsv_36hr_7/Ex_642_Em_2/downsized_for_atlas.tif',
+        '/home/wanglab/LightSheetTransfer/tp/20201001_10_57_49_hsv_36h_6/Ex_642_Em_2/downsized_for_atlas.tif',
+        '/home/wanglab/LightSheetTransfer/tp/20201001_17_13_35_hsv_28h_2/Ex_642_Em_2/downsized_for_atlas.tif',
+        '/home/wanglab/LightSheetTransfer/tp/20201001_15_39_26_hsv_28h_4/Ex_642_Em_2/downsized_for_atlas.tif',
+        '/home/wanglab/LightSheetTransfer/tp/PRV_50hr-019/Ex_642_Em_2/downsized_for_atlas.tif',
+        '/home/wanglab/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_PRV/natneuroreviews_tompisano_PRV_36hr-015/imaging_request_1/output/processing_request_1/resolution_4x/Ex_642_Em_2/downsized_for_atlas.tif',
+        '/home/wanglab/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_PRV/natneuroreviews_tompisano_PRV_28hr-011/imaging_request_1/output/processing_request_1/resolution_4x/Ex_642_Em_2/downsized_for_atlas.tif',
+        '/home/wanglab/wang/pisano/tracing_output/bl6_ts/20150804_tp_bl6_ts04/20150804_tp_bl6_ts04_555_z3um_70msec_3hfds_resized_ch00_resampledforelastix.tif',
+        '/home/wanglab/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_CTB/natneuroreviews_tompisano_CTB-001/imaging_request_1/output/processing_request_1/resolution_4x/Ex_561_Em_1/downsized_for_atlas.tif',
+        '/home/wanglab/LightSheetData/lightserv/jverpeut/natneuroreviews_tompisano_CTB/natneuroreviews_tompisano_CTB-002/imaging_request_1/output/processing_request_1/resolution_4x/Ex_561_Em_1/downsized_for_atlas.tif'
         ]
     
     kwargs = {'inputlist': inputlist,
@@ -50,13 +53,13 @@ if __name__ == '__main__':
           'injectionscale': 45000, 
           'imagescale': 2,
           'reorientation': ('2','0','1'),
-          'crop': '[:,600:,:]', #limits injection site search to cerebellum
-          'dst': '/home/wanglab/Downloads/test',
+          'crop': '[:,500:,:]', #limits injection site search to cerebellum
+          'dst': '/home/wanglab/Desktop/inj',
           'save_individual': True, 
           'colormap': 'plasma', 
           'atlas': '/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif',
           'annotation': '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif',
-          'id_table': '/jukebox/wang/zahra/lightsheet_copy/supp_files/ls_id_table_w_voxelcounts.xlsx'#if using allen for registration, need to specify allen id table - path defaults to PMA id tables
+          'id_table': '/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx'#if using allen for registration, need to specify allen id table - path defaults to PMA id tables
         }
     
     df = pool_injections_inversetransform(**kwargs)
@@ -123,11 +126,9 @@ def pool_injections_inversetransform(**kwargs):
     id_table = pd.read_excel(id_table)
     
     for i in range(len(inputlist)): #to iteratre through brains
-        pth = inputlist[i] #path of each processed brain
-        dct = load_kwargs(inputlist[i]) #load kwargs of brain as dct
-        outdr = dct['outputdirectory'] #set output directory of processed brain
-        inj_vol = [xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0] #set injection channel volume
-        im = tifffile.imread(inj_vol.resampled_for_elastix_vol) #load inj_vol as numpy array
+        outdr = dst
+        
+        im = tifffile.imread(inputlist[i]) #load inj_vol as numpy array
         if kwargs['crop']: im = eval('im{}'.format(kwargs['crop']))#; print im.shape
         
         print('  loading:\n     {}'.format(pth))
@@ -151,78 +152,22 @@ def pool_injections_inversetransform(**kwargs):
         nz = np.nonzero(array)
         nonzeros.append(zip(*nz)) #<-for pooled image 
 
-        #name paths in elastix inverse transform folder in outdr
-        svlc = os.path.join(outdr, 'elastix_inverse_transform') 
-        svlc = os.path.join(svlc, '{}_{}'.format(inj_vol.ch_type, inj_vol.brainname))
-        atlas2reg2sig = os.path.join(svlc, inj_vol.resampled_for_elastix_vol[inj_vol.resampled_for_elastix_vol.rfind('/')+1:-4]+'_atlas2reg2sig') #if injection inverse transform ran
-        posttransformix = os.path.join(atlas2reg2sig, 'posttransformix')
-        #find post transformed points file path
-        points_file = os.path.join(posttransformix, 'outputpoints.txt') 
-        
-        if os.path.exists(points_file): #if transformed points exist
-            print('Inverse transform exists. Points file found. \n')
-            tdf = transformed_pnts_to_atlas(points_file, ann, ch_type = 'injch', point_or_index = None, id_table_pth = id_table, **dct) #map to whichever atlas you registered to atlas
-            if i == 0: 
-                df = tdf.copy()
-                countcol = 'count' if 'count' in df.columns else 'cell_count'
-                df.drop([countcol], axis=1, inplace=True)
-            df[os.path.basename(pth)] = tdf[countcol]
-
-        else:
-            print('Points file not found. Running elastix inverse transform... \n')
-            transformfile = make_inverse_transform([xx for xx in dct['volumes'] if xx.ch_type == 'injch'][0], cores = 6, **dct)                 
-            #apply resizing point transform
-            txtflnm = point_transform_due_to_resizing(array, chtype = 'injch', **dct)    
-            #run transformix on points
-            points_file = point_transformix(txtflnm, transformfile)
-            #map transformed points to atlas
-            tdf = transformed_pnts_to_atlas(points_file, ann, ch_type = 'injch', point_or_index = None, id_table_pth = id_table, **dct) #map to whichever atlas you registered to atlas
-            if i == 0: 
-                df = tdf.copy()
-                countcol = 'count' if 'count' in df.columns else 'cell_count'
-                df.drop([countcol], axis=1, inplace=True)
-            df[os.path.basename(pth)] = tdf[countcol
+        transformfile = transformfiles[i]
+        #apply resizing point transform
+        txtflnm = point_transform_due_to_resizing(array, chtype = 'injch', **dct)    
+        #run transformix on points
+        points_file = point_transformix(txtflnm, transformfile)
+        #map transformed points to atlas
+        tdf = transformed_pnts_to_atlas(points_file, ann, ch_type = 'injch', point_or_index = None, id_table_pth = id_table, **dct) #map to whichever atlas you registered to atlas
+        if i == 0: 
+            df = tdf.copy()
+            countcol = 'count' if 'count' in df.columns else 'cell_count'
+            df.drop([countcol], axis=1, inplace=True)
+        df[os.path.basename(pth)] = tdf[countcol
          
     #cell counts to csv                           
     df.to_csv(os.path.join(dst,'voxel_counts.csv'))
     print('\n\nCSV file of cell counts, saved as {}\n\n\n'.format(os.path.join(dst,'voxel_counts.csv')))                
-                
-    #condense nonzero pixels
-    nzs = [str(x) for xx in nonzeros for x in xx] #this list has duplicates if two brains had the same voxel w label
-    c = Counter(nzs)
-    arr = np.zeros(im.shape)
-    print('Collecting nonzero pixels for pooled image...')
-    tick = 0
-    #generating pooled array where voxel value = total number of brains with that voxel as positive
-    for k, v in c.iteritems():
-        k = [int(xx) for xx in k.replace('(','').replace(')','').split(',')]
-        arr[k[0], k[1], k[2]] = int(v)
-        tick+=1
-        if tick % 50000 == 0: print('   {}'.format(tick))
-        
-    #load atlas and generate final figure
-    print('Generating final figure...')      
-    atlas = tifffile.imread(kwargs['atlas']) #reads atlas
-    print('Zooming in atlas...') #necessary to have a representative heat map as these segmentations are done from the resized volume, diff dimensions than atlas
-    zoomed_atlas = zoom(atlas, 1.3) #zooms atlas; different than original analyze_injection.py
-    sites = fix_orientation(arr, axes=axes)
-    
-    #cropping
-    if kwargs['crop']: zoomed_atlas = eval('zoomed_atlas{}'.format(kwargs['crop']))
-    zoomed_atlas = fix_orientation(zoomed_atlas, axes=axes)
-    
-    my_cmap = eval('plt.cm.{}(np.arange(plt.cm.RdBu.N))'.format(cmap))
-    my_cmap[:1,:4] = 0.0  
-    my_cmap = mpl.colors.ListedColormap(my_cmap)
-    my_cmap.set_under('w')
-    plt.figure()
-    plt.imshow(np.max(zoomed_atlas, axis=0), cmap='gray')
-    plt.imshow(np.max(sites, axis=0), alpha=0.99, cmap=my_cmap); plt.colorbar(); plt.axis('off')
-    dpi = int(kwargs['dpi']) if 'dpi' in kwargs else 300
-    plt.savefig(os.path.join(dst,'heatmap.pdf'), dpi=dpi, transparent=True);
-    plt.close()
-    
-    print('Saved as {}'.format(os.path.join(dst,'heatmap.pdf')))  
         
     return df
     

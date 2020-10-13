@@ -75,6 +75,12 @@ df=df.drop(columns=[0])
 df=df.round(2)
 df.to_csv(os.path.join(os.path.dirname(pth),"short_tp_density_cellsmm3.csv"))
 
+#calculate ratios of hsv
+dfhsv = df[df.index.str.startswith("HSV")]
+dfctb = df[df.index.str.startswith("CTB")]
+dfhsv["ratio DCN/Dorsal column"] = dfhsv["Deep cerebellar nuclei"]/dfhsv["Dorsal column nuclei"]
+dfhsv["ratio DCN/BPN+NRTP"] = dfhsv["Deep cerebellar nuclei"]/dfhsv["BPN+NRTP"]
+dfhsv["ratio DCN/Vestibular nuclei"] = dfhsv["Deep cerebellar nuclei"]/dfhsv["Vestibular nuclei"]
 
 # ratio_dcn_dorcol = np.array(list(dcn.values()))/np.array(list(dorcol.values()))
 # ratio_dcn_pons = np.array(list(dcn.values()))/np.array(list(pons.values()))
