@@ -18,8 +18,8 @@ from tools.analysis.network_analysis import make_structure_objects
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
-mpl.rcParams["xtick.major.size"] = 6
-mpl.rcParams["ytick.major.size"] = 6
+mpl.rcParams["xtick.major.size"] = 4
+mpl.rcParams["ytick.major.size"] = 4
 #set paths, variables, etc.
 dst = "/jukebox/wang/zahra/tracing_projects/prv/"
 fig_dst = "/home/wanglab/Desktop"
@@ -126,7 +126,7 @@ primary_lob_n = np.array([len(np.where(primary_pool == i)[0]) for i in range(max
 
 #make structures
 df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=pma_ann_pth)
+# structures = make_structure_objects(df_pth, remove_childless_structures_not_repsented_in_ABA = True, ann_pth=pma_ann_pth)
 
 #%%
 
@@ -458,6 +458,7 @@ layer_counts = np.array([layer1, layer23, layer4, layer5, layer6a, layer6b])
 layers_counts_mean = np.array([np.mean(layer, axis = 1) for layer in layer_counts])
 
 layer_vol = np.array([vollayer1, vollayer23, vollayer4, vollayer5, vollayer6a, vollayer6b])
+layer56_vol = np.array([vollayer5, vollayer6a, vollayer6b]).sum(axis=0)
 layers_density = np.nan_to_num(np.array([np.array([xx/(layer_vol[l,i]*(scale_factor**3)) 
                                      for i, xx in enumerate(layer)]) 
                            for l,layer in enumerate(layer_counts)]).T)
@@ -665,20 +666,18 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 ax = axes[0]
 show = np.fliplr(sort_inj).T
 
-vmin = 0
+vmin = 0.01
 vmax = 0.8
-cmap = plt.cm.Reds 
+cmap = copy.copy(plt.cm.Reds)
 cmap.set_over('darkred')
+cmap.set_under('white')
 #colormap
-bounds = np.linspace(vmin,vmax,4)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, format="%d", 
-                  shrink=0.9, aspect=5)
-cb.set_label("Cell counts", fontsize="x-small", labelpad=3)
+cb = plt.colorbar(pc, ax=ax, shrink=0.9, aspect=5)
+cb.set_label("Inj", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
-cb.ax.set_visible(False)
+cb.ax.set_visible(True)
 ax.set_yticks(np.arange(len(ak_pool))+.5)
 ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
 
@@ -687,7 +686,7 @@ show = np.fliplr(sort_pcounts).T
 
 vmin = 0
 vmax = maxpcount
-cmap = plt.cm.Blues
+cmap = copy.copy(plt.cm.Blues)
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 #colormap
@@ -695,8 +694,7 @@ bounds = np.linspace(vmin,vmax,(int((vmax-vmin)/5)+1))
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, norm=norm, spacing="proportional", ticks=bounds, boundaries=bounds, 
-                  format="%0.1f", shrink=0.3, aspect=10)
+cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.3, aspect=10)
 cb.set_label("% of total neocortical counts", fontsize="x-small", labelpad=3)
 cb.ax.tick_params(labelsize="x-small")
 cb.ax.set_visible(True)
@@ -711,7 +709,6 @@ ax.yaxis.set_label_coords(label_coordsy, label_coordsx)
 ax.set_xticks(np.arange(len(sort_brains))+.5)
 lbls = np.asarray(sort_brains)
 ax.set_xticklabels(sort_brains, rotation=30, fontsize=brain_lbl_size, ha="right")
-
 
 plt.savefig(os.path.join(fig_dst, "prv_pcounts_nc.pdf"), bbox_inches = "tight")
 
@@ -997,48 +994,14 @@ plt.savefig(os.path.join(fig_dst, "prv_density_sssm_areas.jpg"), bbox_inches = "
 #%%
 #glm?
 #VARIABLES FOR GLM           
-#POOL NC REGIONS!!
-
 pcounts = np.array([xx/sum(xx) for xx in layer56.T])*100
-
-pcounts_pool = np.asarray([[xx[0]+xx[1]+xx[2]+xx[4], xx[3], xx[6], xx[5]+xx[7], 
-                                          xx[8]+xx[9], xx[10], xx[12], xx[11], 
-                                          xx[13]+xx[14], xx[15]+xx[16]] for xx in pcounts])
-
-layer56_vol_pool = np.asarray([layer56_vol[0]+layer56_vol[1]+layer56_vol[2]+layer56_vol[4], layer56_vol[3], layer56_vol[6], layer56_vol[5]+layer56_vol[7], 
-                                          layer56_vol[8]+layer56_vol[9], layer56_vol[10], layer56_vol[12], layer56_vol[11], 
-                                          layer56_vol[13]+layer56_vol[14], layer56_vol[15]+layer56_vol[16]])
-
-#can fix this later
-sois_pool = np.asarray([sois[0]+sois[1]+sois[2]+sois[4], sois[3], sois[6], sois[5]+sois[7], 
-                                          sois[8]+sois[9], sois[10], sois[12], sois[11], 
-                                          sois[13]+sois[14], sois[15]+sois[16]])
-#sort pcount groups by region size
-sois_pool = sois_pool[np.argsort(layer56_vol_pool)]
-pcounts_pool = pcounts_pool.T[np.argsort(layer56_vol_pool)].T
-
-regions = np.array(['F Pole',
-                   'P Par',
-                   'Pr, EcR', 'Gust, Visc',
-                   'Insula',
-                   'Temp, Aud', 'RS',
-                   'VIS',
-                   'IL, PrL,\nAC, Orb',
-                   'SM, SS'])[1:] #remove f pole since 0 counts onyl
-    
 
 frac_of_inj_pool_norm = np.array([xx/sum(xx) for xx in frac_of_inj_pool])    
 
 X = frac_of_inj_pool_norm
-Y = pcounts_pool[:,1:]    
-#try without pooled NC regions
-# mask = [ True,  True,  True,  False,  True,  True,  True,  True,  True,
-#         True,  True,  True,  True,  True,  True,  True,  True] #remove f pole since 0 counts only
-# pcounts = pcounts.T[mask][np.argsort(layer56_vol[mask])].T
-# regions = np.array(["IL", "PrL", "AC", "Orb", "Gust", "Insula", "Visc", "SM", "SS", "RS", "P Par", "VIS", 
-#                     "Temp", "Aud", "EcR", "Pr"]) 
-# regions = regions[np.argsort(layer56_vol[mask])]
-# Y = pcounts
+#remove frontal pole because it has zeros
+Y = pcounts[:,:-1]
+regions = sois[:-1]
 #%%
 
 ##  glm
@@ -1051,53 +1014,45 @@ fit = []
 fit_shuf = []
 
 for itera in range(1000):
-    if itera%100 == 0: print(itera)
-    if itera == 0:
-        shuffle = False
-        inj = X.copy()
-    else:
-        shuffle = True
-        mat_shuf.append([])
-        p_shuf.append([])
-        fit_shuf.append([])
-        inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
-    for count, region in zip(Y.T, regions):
-        inj_ = inj[~np.isnan(count)]
-        count = count[~np.isnan(count)]
-
-        # intercept:
-        inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
-        
-        glm = sm.GLM(count, inj_, family=sm.families.Poisson())
-        res = glm.fit()
-        
-        coef = res.params[:-1]
-        se = res.bse[:-1]
-        pvals = res.pvalues[:-1] 
-
-        val = coef/se
-
-        if not shuffle:
-            c_mat.append(coef)
-            mat.append(val)
-            pmat.append(pvals)
-            fit.append(res.fittedvalues)
+    try:
+        if itera%100 == 0: print(itera)
+        if itera == 0:
+            shuffle = False
+            inj = X.copy()
+        else:
+            shuffle = True
+            mat_shuf.append([])
+            p_shuf.append([])
+            fit_shuf.append([])
+            inj = X[np.random.choice(np.arange(len(inj)), replace=False, size=len(inj)),:]
+        for count, region in zip(Y.T, regions):
+            inj_ = inj[~np.isnan(count)]
+            count = count[~np.isnan(count)]
+    
+            # intercept:
+            inj_ = np.concatenate([inj_, np.ones(inj_.shape[0])[:,None]*1], axis=1)
             
-        elif shuffle:
-            mat_shuf[-1].append(val)
-            p_shuf[-1].append(pvals)
-            fit_shuf[-1].append(res.fittedvalues)
-        # inspect residuals
-        """
-        if not shuffle:
-            plt.clf()
-            plt.scatter(res.fittedvalues, res.resid)
-            plt.hlines(0, res.fittedvalues.min(), res.fittedvalues.max())
-            plt.title(region)
-            plt.xlabel("Fit-vals")
-            plt.ylabel("Residuals")
-            plt.savefig(os.path.join(dst, "resid_inspection-{}.png").format(region))
-        """
+            glm = sm.GLM(count, inj_, family=sm.families.Poisson())
+            res = glm.fit()
+            
+            coef = res.params[:-1]
+            se = res.bse[:-1]
+            pvals = res.pvalues[:-1] 
+    
+            val = coef/se
+    
+            if not shuffle:
+                c_mat.append(coef)
+                mat.append(val)
+                pmat.append(pvals)
+                fit.append(res.fittedvalues)
+                
+            elif shuffle:
+                mat_shuf[-1].append(val)
+                p_shuf[-1].append(pvals)
+                fit_shuf[-1].append(res.fittedvalues)
+    except Exception as e:
+        print(e)
         
 c_mat = np.array(c_mat)
 mat = np.array(mat) # region x inj
@@ -1110,57 +1065,52 @@ fit_shuf = np.array(fit_shuf)
 #%%
 
 ## display
-fig,ax = plt.subplots(figsize=(3,6))
-
-# map 1: weights
-show = mat
-
+fig,ax = plt.subplots(figsize=(3,5))
+# map: weights
+show = np.flipud(mat) 
 # SET COLORMAP
 vmin = 0
 vmax = 4
-cmap = plt.cm.Blues
+cmap = copy.copy(plt.cm.Blues)
 cmap.set_over(cmap(1.0))
 annotation = False
-
 #colormap
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.3, aspect=10)
+cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.3, aspect=10)
 cb.set_label("Model weight / SE", fontsize="small", labelpad=5)
 cb.ax.tick_params(labelsize="small")
 cb.ax.set_visible(True)
-
 # exact value annotations
 if annotation:
     for ri,row in enumerate(show):
         for ci,col in enumerate(row):
             if col > 5:
+                
                 ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="white", ha="center", va="center", fontsize="small")
             else:
                 ax.text(ci+.5, ri+.5, "{:0.1f}".format(col), color="k", ha="center", va="center", fontsize="small")
-
 # signif
-sig = pmat < .05#/np.size(pmat)
-p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*10)
+#only get positive significance??             
+pmat_pos = np.where(mat > 0, pmat, pmat*np.inf)
+sig = np.flipud(pmat_pos) < .05#/np.size(pmat)
+p_shuf_pos = np.where(mat_shuf < 0, p_shuf, p_shuf*np.inf)
 null = (p_shuf_pos < .05).sum(axis=(1,2))
 nullmean = null.mean()
 nullstd = null.std()
 for y,x in np.argwhere(sig):
     pass
     ax.text(x+0.5, y+0.4, "*", fontsize=12, horizontalalignment='center', verticalalignment='center',
-            color = "k", transform=ax.transData)
+            color = "w", transform=ax.transData)
 ax.text(.5, 1.06, "*: p<0.05\n{:0.1f} ($\pm$ {:0.1f}) *'s are expected by chance if no real effect exists".format(nullmean, nullstd), ha="center", va="center", fontsize="x-small", transform=ax.transAxes)
 
 # aesthetics
 ax.set_xticks(np.arange(len(ak_pool))+.5)
 ax.set_xticklabels(ak_pool, rotation="vertical", fontsize=10)
-
 # yticks
 ax.set_yticks(np.arange(len(regions))+.5)
-ax.set_yticklabels(regions, fontsize=10)
-ax.tick_params(length=6)
-
-plt.savefig(os.path.join(fig_dst, "prv_nc_glm_contra_pma.pdf"), bbox_inches = "tight")
-
+ax.set_yticklabels(np.flipud(regions), fontsize=10)
+#save
+plt.savefig(os.path.join(fig_dst, "prv_pcount_glm_contra_pma.pdf"), bbox_inches = "tight")
 #%%
 
 #import matplotlib.ticker as ticker
