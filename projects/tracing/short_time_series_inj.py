@@ -106,11 +106,11 @@ if __name__ == "__main__":
       "injectionscale": 45000, 
       "imagescale": 2,
       "crop": "[:,450:,:]",
-      "dst": "/home/wanglab/Desktop/short_time_series_inj",
+      "dst": "/jukebox/wang/zahra/tracing_projects/mapping_paper/revision_images/short_timepoint_counts/short_time_series_inj",
       "save_individual": True, 
       "save_tif": True,
       "colormap": "plasma", 
-      "atlas": "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif",
+      "atlas": "//LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif",
       "annotation": "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_16bit.tif",
       "id_table": "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts_16bit.xlsx"
     }
@@ -173,4 +173,7 @@ if __name__ == "__main__":
     df=pd.DataFrame(density)
     df.index=brains
     df.columns=["density,cells/mm3"]
-    df.to_csv("/jukebox/wang/zahra/tracing_projects/mapping_paper/revision_images/short_timepoint_counts/injection_density.csv")
+    df["volume(mm3)"]=counts*(scale**3)
+    df["voxels"]=counts
+    df=df.round(4)
+    df.to_csv("/jukebox/wang/zahra/tracing_projects/mapping_paper/revision_images/short_timepoint_counts/injection.csv")
