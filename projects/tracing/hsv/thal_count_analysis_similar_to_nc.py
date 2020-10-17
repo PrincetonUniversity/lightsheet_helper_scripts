@@ -189,7 +189,7 @@ sort_inj = np.array(list(itertools.chain.from_iterable(sort_inj)))
 show = np.fliplr(sort_inj).T
 
 #colormap settings
-cmap = plt.cm.Reds 
+cmap = copy.copy(plt.cm.Reds)
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
@@ -197,7 +197,7 @@ vmax = 0.8
 
 #colormap
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
+cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.8)#
 cb.set_label("Injection % coverage of region", fontsize="small", labelpad=5)
 cb.ax.tick_params(labelsize="small")
 cb.ax.set_visible(True) #TP

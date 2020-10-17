@@ -6,9 +6,7 @@ Created on Mon Jan  7 11:16:03 2019
 @author: wanglab
 """
 
-import os
-
-import numpy as np, pandas as pd, xlrd, tifffile 
+import os, numpy as np, pandas as pd, xlrd, tifffile 
 
 def labelPoints(points, labeledImage, level = None, collapse = None):
    """ borrowed/modified/cleaned up from Clearmap """
@@ -125,7 +123,7 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
             table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             
-            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities_60um_edge_80um_vntric_erosion.csv"))
+            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities_Allen_20201016.csv"))
                 
             #Without weigths (pure cell number):
             ids, counts = countPointsInRegions(points, labeledImage = ann, intensities = None)
@@ -142,7 +140,7 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
             table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             
-            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_60um_edge_80um_vntric_erosion.csv"))
+            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_Allen_20201016.csv"))
                 
             print ("\n Analysis Completed\n") 
         else:
@@ -156,16 +154,26 @@ if __name__ == "__main__":
     #inputs
     
     #LUT
-    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_edge_80um_vent_erosion.tif"
-    ann_lut = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-
-    pth = "/jukebox/wang/Jess/lightsheet_output/pretreatadult/forebrain/processed"
-    brains = os.listdir(pth)
-            # ["an0_mcherrydymaze", "an10_mcherrydymaze",
-            #  "an11_mcherrydymaze", "an12_mcherrydymaze", "an13_mcherrydymaze",
-            #  "an14_mcherrydymaze", "an1_mcherrydymaze", "an2_mcherrydymaze",
-            #  "an3_mcherrydymaze", "an4_mcherrydymaze", "an6_mcherrydymaze",
-            #  "an7_mcherrydymaze", "an8_mcherrydymaze", "an9_mcherrydymaze"]
-    
+    ann = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.tif"
+    ann_lut = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+    #first and reimaged brains
+    brains = ["/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk06",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_tp02",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files_reim/201701_tp01",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files_reim/201701_tpbe",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files_reim/201701_tp07",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files_reim/201701_tpal",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_tp06",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk01",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_tp08",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk05",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk07",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk03",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_tp09",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk11",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk02",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk04",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk08",
+ "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk10"]
     for src in brains:
         make_table_of_transformed_cells(os.path.join(pth, src), ann, ann_lut)

@@ -21,7 +21,7 @@ cuneate=711
 gracile=1039
 excuneate=903
 #init empty dict to save the counts
-dcn1 = {};dcn2={};dcn3={}
+dcn={}
 dorcol = {}
 cun={};gr={};excun={}
 vn = {}
@@ -85,29 +85,32 @@ df=df.drop(columns=[0])
 
 #concantenate dorsal column nuclei into one column
 df=pd.DataFrame()
-df["counts"]=list(itertools.chain.from_iterable([dcn.values(),
-             vn.values(),pons.values(),cun.values(),gr.values(),excun.values()]))
+df["counts"]=list(itertools.chain.from_iterable([dcn.values(),pons.values(),cun.values(),gr.values(),excun.values()]))
+df["density"]=list(itertools.chain.from_iterable([dcn_d.values(),pons_d.values(),cun_d.values(),gr_d.values(),excun_d.values()]))
 df["brain"]=list(itertools.chain.from_iterable([dcn.keys(),
-             vn.keys(),pons.keys(),cun.keys(),gr.keys(),excun.keys()]))
+             pons.keys(),cun.keys(),gr.keys(),excun.keys()]))
 df["structure"]=list(itertools.chain.from_iterable([["cerebellar nuclei"]*len(dcn.values()),
-                ["vestibular nuclei"]*len(vn.values()),["pons"]*len(pons.values()),
-                ["dorsal column"]*len(gr.values()),
-                ["dorsal column"]*len(cun.values()),["dorsal column"]*len(excun.values())]))
+                ["pons"]*len(dcn.values()),
+                ["cuneate"]*len(gr.values()),
+                ["gracile"]*len(cun.values()),["external cuneate"]*len(excun.values())]))
 #ratios
+lst=["cuneate","gracile","external cuneate"]
 #only for hsv
 dfhsv=df[df.brain.str.match("HSV")]
 dfprv=df[df.brain.str.match("PRV")]
-hsvdcn_to_dorcol=np.median(dfhsv[dfhsv.structure=="dorsal column"]["counts"].values)/np.median(dfhsv[dfhsv.structure=="cerebellar nuclei"]["counts"].values)
+hsvdcn_to_dorcol=np.median(dfhsv[dfhsv.structure.isin(lst)]["density"].values)/np.median(dfhsv[dfhsv.structure=="cerebellar nuclei"]["density"].values)
 #sem
-sigma=np.std(dfhsv[dfhsv.structure=="dorsal column"]["counts"].values)
-n=len(dfhsv[dfhsv.structure=="dorsal column"]["counts"].values)
-dorcol_sigma_med=1.253*sigma/np.sqrt(n)
-sigma=np.std(dfhsv[dfhsv.structure=="cerebellar nuclei"]["counts"].values)
-n=len(dfhsv[dfhsv.structure=="cerebellar nuclei"]["counts"].values)
-dcn_sigma_med=1.253*sigma/np.sqrt(n)
+from scipy.stats import median_abs_deviation as mad
+sigma=mad(dfhsv[dfhsv.structure.isin(lst)]["density"].values)
+n=5#degrees of freedom same as # brains
+dorcol_sigma_med=(sigma/0.6745)/np.sqrt(n)
+sigma=mad(dfhsv[dfhsv.structure=="cerebellar nuclei"]["density"].values)
+n=5
+dcn_sigma_med=(sigma/0.6745)/np.sqrt(n)
+
 #ratio
 sem_hsvdcn_to_dorcol=dorcol_sigma_med/dcn_sigma_med
-
+#%%
 
 df=pd.DataFrame.from_dict(dcn_d,orient="index")
 df["Deep cerebellar nuclei"] = df[0]

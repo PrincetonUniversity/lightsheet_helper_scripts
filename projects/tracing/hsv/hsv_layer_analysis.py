@@ -249,16 +249,16 @@ show = np.flipud(n)
 
 cmap = copy.copy(plt.cm.Blues)
 cmap.set_over(cmap(1.0))
-cmap.set_under("white")
+cmap.set_under(cmap(0))
 vmin = 1
 vmax = 40
 
 #colormap
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, format="%d", shrink=0.4)#
-cb.set_label("Mean % neurons\nper region", fontsize="small", labelpad=5)
-cb.ax.tick_params(labelsize="small")
-cb.ax.set_visible(True)
+norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
+pc = ax.pcolor(show, cmap=cmap, norm=norm)
+cb = plt.colorbar(pc,ax=ax,format="%d", shrink=0.5)#
+cb.set_label("Mean % neurons\nper region", fontsize="small")
+
 ax.set_yticks(np.arange(len(sois))+.5)
 ax.set_yticklabels(np.flipud(sois), fontsize="small")
 
@@ -267,7 +267,6 @@ ax.set_xticks(np.arange(len(ylbls))+.5)
 ax.set_xticklabels(ylbls)
 
 plt.savefig(os.path.join(dst, "hsv_nc_layers_pcount_normalized.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "hsv_nc_layers_pcount_normalized.jpg"), bbox_inches = "tight")
 #%%
 
 #make blue layer heatmap
@@ -294,8 +293,6 @@ ax.set_xticks(np.arange(len(ylbls))+.5)
 ax.set_xticklabels(ylbls)
 
 plt.savefig(os.path.join(dst, "hsv_nc_layers_density.pdf"), bbox_inches = "tight")
-plt.savefig(os.path.join(dst, "hsv_nc_layers_density.jpg"), bbox_inches = "tight")
-
 #%%
 #now show only counts
 #make blue layer heatmap

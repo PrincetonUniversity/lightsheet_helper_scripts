@@ -114,6 +114,12 @@ sois = np.array(sois)[np.argsort(vol)]
 pcounts = pcounts.T[np.argsort(vol)].T
 density_l56 = density_l56.T[np.argsort(vol)].T
 
+#save out density for cfos comparisons
+df=pd.DataFrame(density_l56)
+df.index=brains
+df.columns=sois
+df=df.round(2)
+df.to_csv("/home/wanglab/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/2020_mapping_paper/hsv_density_contraNC_only_pooled_PMA_20201016.csv")
 #%%
 #sort inj fractions by primary lob
 sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
