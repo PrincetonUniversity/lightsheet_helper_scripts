@@ -5,7 +5,56 @@ Created on Fri Oct 16 15:45:34 2020
 
 @author: wanglab
 """
-import os, numpy as np, pandas as pd, scipy, itertools, sys,json
+import os, numpy as np, pandas as pd, scipy, itertools, sys,json,tifffile
+
+def generate_data_frame(conditions, lst, pth, flnm):
+    """ 
+    used to make a pooled csv file of all cell counts in an experiment
+    inputs:
+        conditions: zip of file names + condition
+        lst: list of file names run through analysis
+        pth: path to save csv output
+    """
+    #generate data frame
+    bglst=[]
+    for fl in lst:
+        #extract out info
+        nm = os.path.basename(os.path.dirname(fl))
+        #make dataframe
+        df = pd.read_csv(fl)[1:] #remove previous headers
+        print(nm, df.shape)
+        df = df.replace(np.nan, "", regex=True)
+        df["Brain"] = nm
+        df["Condition"] = conditions[nm]
+        bglst.append(df)
+    
+    df = pd.concat(bglst)
+    df["counts"] = df["counts"].apply(int)
+    #export
+    df.drop(columns = ["Unnamed: 0"]).to_csv(pth, index = None)
+    return pth
+
+def generate_percent_counts_and_density_per_region(src, csv_pth, scale = 0.025):
+    """ generates another column in the dataframe that is just # counts / total counts in brain and density per region"""    
+    #read csv
+    df = pd.read_csv(csv_pth)
+    #get all brain names
+    brains = np.unique(df.Brain.values)
+    #save total counts in dict
+    total_counts = {}
+    percents = {}
+    #for each brain, get total counts
+    for brain in brains:
+        total_counts[brain] = df[df.Brain == brain].counts.sum(0)    
+    percents = [df[df.Brain == brain].counts.apply(lambda x: (x/total_counts[brain])*100).astype("float64") for brain in brains]
+    #concantenate together
+    df_percent = pd.concat(percents)
+    df["percent"] = df_percent
+    df["density"] = df[df.voxels_in_structure > 0].apply(lambda x:x.counts/(float(x.voxels_in_structure*(scale**3))), 1)
+    #export
+    df.to_csv(pth,index=None)
+    
+    return os.path.join(pth)
 
 src="/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/2020_mapping_paper"
 brains = ["/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk01",
@@ -41,69 +90,8 @@ df_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_c
 ann_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.tif"
 ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
-def generate_data_frame(conditions, lst, pth, flnm):
-    """ 
-    used to make a pooled csv file of all cell counts in an experiment
-    inputs:
-        conditions: zip of file names + condition
-        lst: list of file names run through analysis
-        pth: path to save csv output
-    """
-    #generate data frame
-    bglst=[]
-    for fl in lst:
-        #extract out info
-        nm = os.path.basename(os.path.dirname(fl))
-        #make dataframe
-        df = pd.read_csv(fl)[1:] #remove previous headers
-        print(nm, df.shape)
-        df = df.replace(np.nan, "", regex=True)
-        df["Brain"] = nm
-        df["Condition"] = conditions[nm]
-        bglst.append(df)
-    
-    df = pd.concat(bglst)
-    df["counts"] = df["counts"].apply(int)
-
-    df.drop(columns = ["Unnamed: 0"]).to_csv(pth, index = None)
-    
-    return pth
-
 #run
 csv_pth = generate_data_frame(conditions, lst, pth, "Annotated_counts_Allen_20201016")
-
-def generate_percent_counts_and_density_per_region(src, csv_pth):
-    """ generates another column in the dataframe that is just # counts / total counts in brain and density per region"""    
-    #read csv
-    df = pd.read_csv(csv_pth)
-    
-    #set resolution of atlas
-    scale = 0.025 ##mm/voxel
-    
-    #get all brain names
-    brains = np.unique(df.Brain.values)
-    
-    #save total counts in dict
-    total_counts = {}
-    percents = {}
-    #for each brain, get total counts
-    for brain in brains:
-        total_counts[brain] = df[df.Brain == brain].counts.sum(0)    
-           
-    percents = [df[df.Brain == brain].counts.apply(lambda x: (x/total_counts[brain])*100).astype("float64") for brain in brains]
-    
-    #concantenate together
-    df_percent = pd.concat(percents)
-    
-    df["percent"] = df_percent
-    df["density"] = df[df.voxels_in_structure > 0].apply(lambda x:x.counts/(float(x.voxels_in_structure*(scale**3))), 1)
-    
-    #export
-    df.to_csv(pth,index=None)
-    
-    return os.path.join(pth)
-
-#run
 percent_density_csv_pth = generate_percent_counts_and_density_per_region(src, csv_pth)
 
 #%%
@@ -183,7 +171,7 @@ df.index=nms
 df.columns=sois
 df["condition"]=cond
 df=df.round(2)
-df.to_csv(os.path.join(src,"cfos_density_NC_only_pooled_Allen_20201016.csv"))
+# df.to_csv(os.path.join(src,"cfos_density_NC_only_pooled_Allen_20201016.csv"))
 
 #save out counts
 df=pd.DataFrame(counts_per_struct)
@@ -191,7 +179,7 @@ df.index=nms
 df.columns=sois
 df["condition"]=cond
 df=df.round(2)
-df.to_csv(os.path.join(src,"cfos_cell_counts_NC_only_pooled_Allen_20201016.csv"))
+# df.to_csv(os.path.join(src,"cfos_cell_counts_NC_only_pooled_Allen_20201016.csv"))
 
 #transform cells to PMA and re-run analysis
 from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister
@@ -199,9 +187,10 @@ from tools.registration.register import change_transform_parameter_initial_trans
 from tools.registration.transform_list_of_points import create_text_file_for_elastix, modify_transform_files
 from tools.registration.transform_list_of_points import point_transformix, unpack_pnts
 
-transformfiles = ["/jukebox/wang/zahra/aba_to_pma/TransformParameters.0.txt",
-                  "/jukebox/wang/zahra/aba_to_pma/TransformParameters.1.txt"]
-atl_dst="/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/aba_to_pma_transformed_cells"
+transformfiles = ["/jukebox/wang/zahra/pma_to_aba/TransformParameters.0.txt",
+                  "/jukebox/wang/zahra/pma_to_aba/TransformParameters.1.txt"]
+atl_dst="/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/pma_to_aba_transformed_cells"
+if not os.path.exists(atl_dst): os.mkdir(atl_dst)
 #collect 
 for br in brains:
     arr = np.load(os.path.join(br,"clearmap_cluster_output/cells_transformed_to_Atlas.npy"))
@@ -291,9 +280,13 @@ df=df.round(2)
 df.to_csv(os.path.join(src,"cfos_density_NC_only_pooled_PMA_20201016.csv"))
 
 #mapping to check
-cells=np.load("/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/aba_to_pma_transformed_cells/201701_mk08/posttransformed_zyx_voxels.npy")
-ann=tifffile.imread(ann_pth)
-cellmap=np.zeros(ann.shape)
+cells=np.load("/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/pma_to_aba_transformed_cells/201701_mk08/posttransformed_zyx_voxels.npy")
+atl=tifffile.imread("/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif")
+cellmap=np.zeros(atl.shape)
 for cell in cells.astype(int):
-    cellmap[cell[0],cell[1],cell[2]]=1
-tifffile.imsave("/home/wanglab/Desktop/test.tif",cellmap.astype("uint8"))
+    try:
+        cellmap[cell[0]-1:cell[0]+1,cell[1]-1:cell[1]+1,cell[2]-1:cell[2]+1]=65000
+    except:
+        print(cell)
+rbg = np.stack([atl.astype("uint16"), cellmap.astype("uint16"), np.zeros_like(atl)], -1)
+tifffile.imsave("/home/wanglab/Desktop/test.tif",rbg)
