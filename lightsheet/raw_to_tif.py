@@ -16,11 +16,11 @@ def convert(pth):
     im = f.reshape((rows, cols)) #notice row, column format
     fd.close()
     tif.imsave(pth[:-3]+"tif",im.astype("uint16"))
-    
+    os.remove(pth)
     print("\n"+pth[:-3]+"tif")
     return
         
-src = "/jukebox/LightSheetTransfer/tp/20200813_14_35_22_20170419_db_bl6_cri_rpv_53h_ventral_up/Ex_642_Em_2"
+src = "/jukebox/LightSheetTransfer/brody/20201015_15_58_53_E142/Ex_642_Em_2"
 for fld in os.listdir(src):
     print(fld)
     fld = os.path.join(src, fld)

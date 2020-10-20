@@ -14,4 +14,8 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
+#make stitched/storage directory
+mkdir "$2"
+echo "Made storage directory in:" "$2"
+
 terastitcher --merge --projin="$1"/xml_placetiles.xml --volout="$2" --imout_depth=16 --resolutions=0
