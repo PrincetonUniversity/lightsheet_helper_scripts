@@ -10,6 +10,7 @@
 
 module load anacondapy/5.3.1
 module load elastix/4.8
+#python environment - optional
 source activate lightsheet
 
 echo "In the directory: `pwd` "
