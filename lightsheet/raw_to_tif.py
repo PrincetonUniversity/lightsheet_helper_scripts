@@ -19,7 +19,7 @@ def convert(pth):
     if os.path.exists(pth): os.remove(pth)
     return
         
-src = "/jukebox/LightSheetTransfer/brody/20201015_11_44_23_E153/Ex_642_Em_2"
+src = "/jukebox/LightSheetData/rat-brody/processed/202010_tracing/raw_data/20201019_11_32_01_E144/Ex_642_Em_2"
 for fld in os.listdir(src):
     print(fld)
     fld = os.path.join(src, fld)

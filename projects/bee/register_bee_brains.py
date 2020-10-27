@@ -7,14 +7,86 @@ Created on Tue Sep  1 10:14:22 2020
 """
 
 import os, sys
-sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
-from tools.registration.register import elastix_command_line_call, transformix_command_line_call
+from subprocess import check_output
+
+def sp_call(call):
+    print(check_output(call, shell=True))
+    return
+
+def elastix_command_line_call(fx, mv, out, parameters, fx_mask=False):
+    """Wrapper Function to call elastix using the commandline, this can be time consuming
+    
+    Inputs
+    -------------------
+    fx = fixed path (usually Atlas for "normal" noninverse transforms)
+    mv = moving path (usually volume to register for "normal" noninverse transforms)
+    out = folder to save file
+    parameters = list of paths to parameter files IN ORDER THEY SHOULD BE APPLIED
+    fx_mask= (optional) mask path if desired
+    
+    Outputs
+    --------------
+    ElastixResultFile = ".tif" or ".mhd" result file
+    TransformParameterFile = file storing transform parameters
+    
+    """
+    e_params=["elastix", "-f", fx, "-m", mv, "-out", out]
+    if fx_mask: e_params=["elastix", "-f", fx, "-m", mv, "-fMask", fx_mask, "-out", out]
+    
+    ###adding elastix parameter files to command line call
+    for x in range(len(parameters)):
+        e_params.append("-p")
+        e_params.append(parameters[x])
+    print("Elastix Command:\n{}\n...".format(e_params))    
+    
+    #set paths
+    TransformParameterFile = os.path.join(out, "TransformParameters.{}.txt".format((len(parameters)-1)))
+    ElastixResultFile = os.path.join(out, "result.{}.tif".format((len(parameters)-1)))
+    
+    #run elastix: 
+    try:                
+        print ("Running Elastix, this can take some time....\n")
+        sp.call(e_params)#sp_call(e_params)#
+        writer(out,"Past Elastix Commandline Call")
+    except RuntimeError as e:
+        writer(out,"\n***RUNTIME ERROR***: {} Elastix has failed. Most likely the two images are too dissimiliar.\n".format(e.message))
+        pass      
+    if os.path.exists(ElastixResultFile) == True:    
+        writer(out,"Elastix Registration Successfully Completed\n")
+    #check to see if it was MHD instead
+    elif os.path.exists(os.path.join(out, "result.{}.mhd".format((len(parameters)-1)))) == True:    
+        ElastixResultFile = os.path.join(out, "result.{}.mhd".format((len(parameters)-1)))
+        writer(out,"Elastix Registration Successfully Completed\n")
+    else:
+        writer(out, "\n***ERROR***Cannot find elastix result file\n: {}".format(ElastixResultFile))
+        return
+        
+    return ElastixResultFile, TransformParameterFile
+
+def transformix_command_line_call(src, dst, transformfile):
+    """Wrapper Function to call transformix using the commandline, this can be time consuming
+    
+    Inputs
+    -------------------
+    src = volume path for transformation
+    dst = folder to save file
+    transformfile = final transform file from elastix registration
+    
+    """
+    
+    print ("Running transformix, this can take some time....\n")
+    #sp.call(["transformix", "-in", src, "-out", dst, "-tp", transformfile])
+    call = "transformix -in {} -out {} -tp {}".format(src, dst, transformfile)
+    print(check_output(call, shell=True))
+    print("Past transformix command line Call")      
+            
+    return
 
 if __name__ == "__main__":
-
+    #run
     print(os.environ["SLURM_ARRAY_TASK_ID"])
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
-    
+    #set paths
     src = "/jukebox/LightSheetData/kocher-bee/volume_analysis/volumes_downsized_to_template"
     dst = "/jukebox/LightSheetData/kocher-bee/volume_analysis/"
     #brains
@@ -31,7 +103,7 @@ if __name__ == "__main__":
     fx = fxs[jobid]
     ##template brain
     mv = os.path.join(dst,"template/Bombus45_2.575umstep_rotate_croppedZ.tif")
-    
+    #output dir
     out = os.path.join(dst,"template_to_brain")
     out = os.path.join(out, os.path.basename(fx)[:-4]+"_elastix")
     print(out)
@@ -62,13 +134,3 @@ if __name__ == "__main__":
     dst = out
     #run
     transformix_command_line_call(ann, dst, transform)
-
-
-    #test
-    # fx = os.path.join(src,"IsoYellow_2.575.tif")
-    # mv = os.path.join(src,"Grp16_2.575.tif")
-    # out = "/home/wanglab/Desktop/beetest"
-    # if not os.path.exists(out): os.mkdir(out)
-    # param_fld = os.path.join(src,"parameter_files")
-    # params = [os.path.join(param_fld, xx) for xx in os.listdir(param_fld)]
-    # e_out, transformfiles = elastix_command_line_call(fx, mv, out, params)

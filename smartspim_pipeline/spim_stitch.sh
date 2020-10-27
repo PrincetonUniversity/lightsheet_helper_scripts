@@ -10,13 +10,14 @@ echo "In the directory: `pwd` "
 echo "As the user: `whoami` "
 echo "on host: `hostname` "
 
+#specifications
 cat /proc/$$/status | grep Cpus_allowed_list
 cat /proc/meminfo
 
 module load anacondapy/5.3.1
 . activate lightsheet
 
-echo "Experiment name:" "$1"
+echo "Experiment name / TeraStitcher folder hierarchy:" "$1"
 echo "Storage directory:" "$2"
 
 #import
@@ -36,7 +37,7 @@ OUT3=$(sbatch --dependency=afterok:${OUT2##* } ts_smartspim_merge.sh "$1" "$2")
 echo $OUT3
 
 #functionality
-#go to smartspim pipeline folder and type smartspim_stitch.sh [path to terstitcher folder hierarchy] [destination of stitc$
+#go to smartspim_pipeline folder and type sbatch spim_stitch.sh [path to terstitcher folder hierarchy] [destination of stitched directory]
 
 
 
