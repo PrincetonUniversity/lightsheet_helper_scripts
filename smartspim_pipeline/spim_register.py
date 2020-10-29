@@ -10,25 +10,28 @@ import sys,os
 sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
 from tools.registration.register import elastix_command_line_call
 
-#takes 4 command line arguments max
+#takes 6 command line arguments max
 print(sys.argv)
 stepid = int(sys.argv[1])
-src = str(os.path.dirname(sys.argv[2])) #folder to stitched images
-reg = str(os.path.basename(sys.argv[3])) #folder fo registration channel, e.g. Ex_488_Em_0
+src = str(sys.argv[2]) #folder to main image folder
+reg = str(sys.argv[3]) #folder fo registration channel, e.g. Ex_488_Em_0
 try:
     cell = str(sys.argv[4]) #folder for cell channel e.g. Ex_642_Em_2
 except:
     cell = False
-
-param_fld = "/jukebox/wang/zahra/python/BrainPipe/parameterfolder" #change if using rat
-#registration vol to atlas
-# cell = True #no separate cell/registration volume
-# src = "/jukebox/LightSheetTransfer/tp/20200701_12_55_28_20170207_db_bl6_crii_rpv_01/"
-
+try:
+    param_fld = str(sys.argv[5]) #folder to parameter files 
+except:
+    param_fld = "/jukebox/wang/zahra/python/BrainPipe/parameterfolder" #change if using rat
+try:
+    atl = str(sys.argv[6])
+except:
+    atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif" #defaults to pma
+    
 if stepid == 0:
     mv = os.path.join(src, reg, "downsized_for_atlas.tif")
     print("\nPath to downsized vol for registration to atlas: %s" % mv)
-    fx = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+    fx = atl
     print("\nPath to atlas: %s" % fx)
     out = os.path.join(os.path.dirname(src), "elastix")
     if not os.path.exists(out): os.mkdir(out)
@@ -54,7 +57,7 @@ elif stepid == 1:
     #atlas to registration vol
     #inverse transform
     fx = os.path.join(src, reg, "downsized_for_atlas.tif")
-    mv = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+    mv = atl
     print("\nPath to downsized vol for inverse registration to atlas: %s" % fx)
     print("\nPath to atlas: %s" % mv)
     out = os.path.join(src, "elastix_inverse_transform")

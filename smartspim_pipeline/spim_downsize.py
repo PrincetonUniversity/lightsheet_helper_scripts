@@ -29,7 +29,7 @@ if __name__ == "__main__":
     
     #takes 1 command line args
     print(sys.argv)
-    src=str(sys.argv[1])
+    src=str(sys.argv[1]) #folder to main image folder
     pth = fast_scandir(src)[-1] #gets to the end of directory tree
     print("\nPath to stitched images: %s\n" % pth)
     #path to store downsized images
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     p.starmap(resize_helper, iterlst)
     p.terminate()
     
-    #now downsample to 140% of allen atlas
+    #now downsample to 140% of pma atlas
     imgs = [os.path.join(dst, xx) for xx in os.listdir(dst) if "tif" in xx]; imgs.sort()
     z = len(imgs)
     y,x = sitk.GetArrayFromImage(sitk.ReadImage(imgs[0])).shape
