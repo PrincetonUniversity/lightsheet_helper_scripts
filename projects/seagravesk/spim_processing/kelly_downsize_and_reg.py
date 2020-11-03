@@ -40,7 +40,11 @@ if __name__ == "__main__":
     jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
     #select brain to run
     brain = brains[jobid]
-    pth = fast_scandir(os.path.join(brain,ch,"stitched"))[-1]
+    #use corrected images if available
+    try:
+        pth = fast_scandir(os.path.join(brain,ch,"corrected"))[-1]
+    except:
+        pth = fast_scandir(os.path.join(brain,ch,"stitched"))[-1]
     print("\npath to stitched images: %s\n" % pth)
     #path to store downsized images
     dst = os.path.join(brain, ch, "downsized")
@@ -76,7 +80,6 @@ if __name__ == "__main__":
     shutil.rmtree(dst)
     #run registration of 790 channel to old reg channel volume
     print("\n**********running registration...**********\n\n")
-    param_fld = "/jukebox/wang/zahra/python/BrainPipe/parameterfolder" #change if using rat
     fx = os.path.join(os.path.dirname(dst), "%s_downsized_for_atlas.tif" % ch)
     volsrc = "/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration"
     brnm = os.path.basename(brain)[18:31] #remove date and name tag
@@ -87,8 +90,10 @@ if __name__ == "__main__":
     shutil.copy(mv, os.path.join(os.path.dirname(dst), "reg_downsized_for_atlas.tif"))
     print("\npath to downsized vol for inverse registration to reg channel: %s" % fx)
     print("\npath to reg channel: %s" % mv)
-    out = os.path.join(src, "elastix_inverse_transform")
+    out = os.path.join(brain, "elastix_inverse_transform")
     if not os.path.exists(out): os.mkdir(out)
+    #set params
+    param_fld = "/jukebox/LightSheetData/wang-mouse/seagravesk/20200810_13_10_58_f37080_mouse2_20171015_slow_focus/parameters" #change if using rat
     params = [os.path.join(param_fld, xx) for xx in os.listdir(param_fld)]
     #run
     e_out, transformfiles = elastix_command_line_call(fx, mv, out, params)

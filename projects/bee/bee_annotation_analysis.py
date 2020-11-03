@@ -12,7 +12,7 @@ if __name__ == "__main__":
     
     #read transformed file
     src = "/jukebox/LightSheetData/kocher-bee/volume_analysis/template_to_brain"
-    trsfmpths = [os.path.join(src,xx,"result.tif") for xx in os.listdir(src)]
+    trsfmpths = [os.path.join(src,xx,"result.tif") for xx in os.listdir(src) if os.path.exists(os.path.join(src,xx,"result.tif"))==True]
     annpth = "/jukebox/LightSheetData/kocher-bee/volume_analysis/template/Bombus45_2.575umstep_segment_croppedZ.tif"
     ann = tifffile.imread(annpth)
     #make dataframe to store values

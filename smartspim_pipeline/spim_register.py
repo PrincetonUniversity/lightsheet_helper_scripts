@@ -20,9 +20,10 @@ try:
 except:
     cell = False
 try:
-    param_fld = str(sys.argv[5]) #folder to parameter files 
-except:
+    species = str(sys.argv[5]) #species to know for registration parameters
     param_fld = "/jukebox/wang/zahra/python/BrainPipe/parameterfolder" #change if using rat
+except:
+    
 try:
     atl = str(sys.argv[6])
 except:

@@ -8,10 +8,8 @@ Created on Tue Sep  1 10:14:22 2020
 
 import os, sys
 from subprocess import check_output
+import subprocess as sp
 
-def sp_call(call):
-    print(check_output(call, shell=True))
-    return
 
 def elastix_command_line_call(fx, mv, out, parameters, fx_mask=False):
     """Wrapper Function to call elastix using the commandline, this can be time consuming
@@ -45,20 +43,20 @@ def elastix_command_line_call(fx, mv, out, parameters, fx_mask=False):
     
     #run elastix: 
     try:                
-        print ("Running Elastix, this can take some time....\n")
+        print("Running Elastix, this can take some time....\n")
         sp.call(e_params)#sp_call(e_params)#
-        writer(out,"Past Elastix Commandline Call")
+        print(out,"Past Elastix Commandline Call")
     except RuntimeError as e:
-        writer(out,"\n***RUNTIME ERROR***: {} Elastix has failed. Most likely the two images are too dissimiliar.\n".format(e.message))
+        print(out,"\n***RUNTIME ERROR***: {} Elastix has failed. Most likely the two images are too dissimiliar.\n".format(e.message))
         pass      
     if os.path.exists(ElastixResultFile) == True:    
-        writer(out,"Elastix Registration Successfully Completed\n")
+        print(out,"Elastix Registration Successfully Completed\n")
     #check to see if it was MHD instead
     elif os.path.exists(os.path.join(out, "result.{}.mhd".format((len(parameters)-1)))) == True:    
         ElastixResultFile = os.path.join(out, "result.{}.mhd".format((len(parameters)-1)))
-        writer(out,"Elastix Registration Successfully Completed\n")
+        print(out,"Elastix Registration Successfully Completed\n")
     else:
-        writer(out, "\n***ERROR***Cannot find elastix result file\n: {}".format(ElastixResultFile))
+        print(out, "\n***ERROR***Cannot find elastix result file\n: {}".format(ElastixResultFile))
         return
         
     return ElastixResultFile, TransformParameterFile
@@ -90,13 +88,22 @@ if __name__ == "__main__":
     src = "/jukebox/LightSheetData/kocher-bee/volume_analysis/volumes_downsized_to_template"
     dst = "/jukebox/LightSheetData/kocher-bee/volume_analysis/"
     #brains
-    brs = ["RetB09_2.575.tif",
-             "GrpC19_2.575.tif",
-             "IsoC05_2.575umstep.tif",
-             "isoc08_2.575umstep.tif",
-             "yellowiso_2.575umstep.tif",
-             "IsoC04_2.575.tif",
-             "yellowiso2_2_2.575umstep.tif"]
+    brs = ["D07ret_2.575.tif", "C40iso_2.575.tif", "D18grp_2.575.tif",
+       "C09ret_2.575.tif", "A01iso_2.575step.tif", "D47ret_2.575.tif",
+       "C18ret_2.575.tif", "C30iso_2.575.tif", "B04ret_2.575.tif",
+       "C03grp_2.575step.tif", "D05iso_2.575.tif", "D16grp_2.575.tif",
+       "B02ret_2.575.tif", "D14grp_2.575.tif", "C28iso_2.576.tif",
+       "D21grp_2.575.d2.tif", "D08ret_2.575.tif", "C07iso_2.575.tif",
+       "C19ret_2.575.tif", "C37grp_2.575.tif", "C04grp_2.575.tif",
+       "D42ret_2.575.tif", "C16ret_2.575.tif", "B01ret_2.575step.tif",
+       "D12grp_2.575.tif", "B03ret_2.575.tif", "C08iso_2.575.tif",
+       "B07iso_2.575.tif", "C11ret_2.575.tif", "C25grp_2.575.tif",
+       "C13ret_2.575.tif", "D01grp_2.575.tif", "D24iso_2.575.tif",
+       "D04grp_2.575.tif", "C05grp_2.575.tif", "D41ret_2.575.tif",
+       "C12ret_2.575.tif", "B08iso_2.575.tif", "C15ret_2.575.tif",
+       "D17grp_2.575.tif", "D40ret_2.575.tif", "C14ret_2.575.tif",
+       "D27grp_2.575.tif", "B12iso_2.575.tif", "C33grp_2.575.tif",
+       "B11iso_2.575.tif", "C29iso_2.575.tif", "B05ret_2.575.tif"]
     #'fixed' imagess
     fxs = [os.path.join(src,xx) for xx in brs]
     #array job

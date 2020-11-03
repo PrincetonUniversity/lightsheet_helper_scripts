@@ -83,13 +83,13 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
     #first, check if cells where transformed properly
     #TRANSFORMED cell dataframe
     try:
-        points = np.load(os.path.join(src, "clearmap_cluster_output/cells_transformed_to_Atlas.npy"))
-        raw = np.load(os.path.join(src, "clearmap_cluster_output/cells.npy"))
+        points = np.load(os.path.join(src, "ClearMapClusterOutput/cells_transformed_to_Atlas.npy"))
+        raw = np.load(os.path.join(src, "ClearMapClusterOutput/cells.npy"))
         
         print(points.shape, raw.shape)
         
         if points.shape == raw.shape:
-            intensities = np.load(os.path.join(src, "clearmap_cluster_output/intensities.npy"))
+            intensities = np.load(os.path.join(src, "ClearMapClusterOutput/intensities.npy"))
             
             #open LUT excel sheet
             wb = xlrd.open_workbook(ann_lut)
@@ -123,7 +123,7 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
             table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             
-            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities_Allen_20201016.csv"))
+            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_intensities_60um_edge_80um_vent_erosion.csv"))
                 
             #Without weigths (pure cell number):
             ids, counts = countPointsInRegions(points, labeledImage = ann, intensities = None)
@@ -140,7 +140,7 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
             table["parent_acronym"] = [id2parentacr[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             table["voxels_in_structure"] = [id2voxcount[i_d].value for i_d in ids[1:] if i_d in id2name.keys()]
             
-            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_Allen_20201016.csv"))
+            pd.DataFrame.from_dict(table, orient = "columns").to_csv(os.path.join(src, "Annotated_counts_60um_edge_80um_vent_erosion.csv"))
                 
             print ("\n Analysis Completed\n") 
         else:
@@ -152,28 +152,11 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
 if __name__ == "__main__":
     #goal is to transform cooridnates, voxelize based on number of cells and overlay with reigstered cell signal channel...
     #inputs
-    
+    src = "/jukebox/wang/Jess/lightsheet_output/202010_cfos/processed"
     #LUT
-    ann = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_forDVscans.tif"
-    ann_lut = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
-    #first and reimaged brains
-    brains = ["/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk06",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_tp02",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files_reim/201701_tp01",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files_reim/201701_tpbe",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files_reim/201701_tp07",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files_reim/201701_tpal",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_tp06",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk01",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_tp08",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk05",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk07",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk03",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_tp09",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk11",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk02",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk04",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk08",
- "/jukebox/wang/pisano/tracing_output/cfos/201701_cfos/clearmap_analysis/bkgd5_cell105_v2_analysis/clearmap_cluster_files/201701_mk10"]
-    for src in brains:
-        make_table_of_transformed_cells(os.path.join(pth, src), ann, ann_lut)
+    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_edge_80um_vent_erosion.tif"
+    ann_lut = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+    #list of brains
+    brains = [os.path.join(src,xx) for xx in os.listdir(src)]
+    for br in brains:
+        make_table_of_transformed_cells(br, ann, ann_lut)

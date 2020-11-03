@@ -17,7 +17,7 @@ templ = tifffile.imread(templpth)
 zt,yt,xt = templ.shape
 
 src = "/home/wanglab/LightSheetData/kocher-bee/volume_analysis/experimental_brains"
-brs = [os.path.join(src,xx) for xx in os.listdir(src)] #for all brains in the folder
+brs = [os.path.join(src,xx) for xx in os.listdir(src) if "tif" in xx] #for all brains in the folder
 
 for br in brs:
     print(br)
