@@ -1,0 +1,16 @@
+"","201810_adultacutePC_ymaze_cfos","201904_ymaze_cfos","201908_tpham_ymaze_cfos","202002_cfos","ymaze_learning"
+"saline_injection_only",0,0,0,4,0
+"acquisition_day1",0,0,0,0,10
+"acquisition_day2",0,0,0,0,10
+"CNO_control_no_reversal",0,8,0,0,0
+"CNO_control_reversal",0,10,7,5,0
+"cno_injection_only",0,0,0,4,0
+"CNOnCrusILT",0,0,8,10,0
+"CNOnCrusIRT",0,0,9,10,0
+"crusI_bilateral_reversal",7,0,0,0,0
+"habituation",0,0,0,0,10
+"homecage_control",0,5,0,0,0
+"lobVI_noreversal",0,0,0,10,0
+"lobVI_reversal",6,10,0,0,0
+"vector_control_reversal",6,0,0,0,0
+"Vehicleonly",0,0,0,9,0
