@@ -1,0 +1,1330 @@
+0 root
+	 1 Basic cell groups and regions
+		 2 Brain stem
+			 3 Midbrain
+				 4 Midbrain, motor related
+					 5 Oculomotor nucleus
+					 5 Medial terminal nucleus of the accessory optic tract
+					 5 Lateral terminal nucleus of the accessory optic tract
+					 5 Dorsal terminal nucleus of the accessory optic tract
+					 5 Trochlear nucleus
+					 5 Midbrain reticular nucleus
+						 6 Midbrain reticular nucleus, magnocellular part
+						 6 Midbrain reticular nucleus, magnocellular part, general
+						 6 Midbrain reticular nucleus, parvicellular part
+					 5 Red nucleus
+					 5 Anterior tegmental nucleus
+					 5 Midbrain reticular nucleus, retrorubral area
+					 5 Superior colliculus, motor related
+						 6 Superior colliculus, motor related, intermediate gray layer
+							 7 Superior colliculus, motor related, intermediate gray layer, sublayer a
+							 7 Superior colliculus, motor related, intermediate gray layer, sublayer b
+							 7 Superior colliculus, motor related, intermediate gray layer, sublayer c
+						 6 Superior colliculus, motor related, intermediate white layer
+						 6 Superior colliculus, motor related, deep gray layer
+						 6 Superior colliculus, motor related, deep white layer
+					 5 Substantia nigra, reticular part
+					 5 Substantia nigra, lateral part
+					 5 Cuneiform nucleus
+					 5 Ventral tegmental area
+					 5 Ventral tegmental nucleus
+					 5 Periaqueductal gray
+						 6 Precommissural nucleus
+						 6 Interstitial nucleus of Cajal
+						 6 Nucleus of Darkschewitsch
+						 6 Supraoculomotor periaqueductal gray
+					 5 Edinger-Westphal nucleus
+					 5 Pretectal region
+						 6 Anterior pretectal nucleus
+						 6 Medial pretectal area
+						 6 Nucleus of the optic tract
+						 6 Nucleus of the posterior commissure
+						 6 Olivary pretectal nucleus
+						 6 Posterior pretectal nucleus
+						 6 Retroparafascicular nucleus
+					 5 Intercollicular nucleus
+					 5 Medial accesory oculomotor nucleus
+					 5 Paratrochlear nucleus
+					 5 Paranigral nucleus
+				 4 Midbrain, sensory related
+					 5 Inferior colliculus
+						 6 Inferior colliculus, central nucleus
+						 6 Inferior colliculus, dorsal nucleus
+						 6 Inferior colliculus, external nucleus
+					 5 Nucleus sagulum
+					 5 Superior colliculus, sensory related
+						 6 Superior colliculus, zonal layer
+						 6 Superior colliculus, superficial gray layer
+						 6 Superior colliculus, optic layer
+					 5 Midbrain trigeminal nucleus
+					 5 Nucleus of the brachium of the inferior colliculus
+					 5 Parabigeminal nucleus
+					 5 Subcommissural organ
+				 4 Midbrain, behavioral state related
+					 5 Midbrain raphe nuclei
+						 6 Interfascicular nucleus raphe
+						 6 Interpeduncular nucleus
+							 7 Interpeduncular nucleus, rostral
+							 7 Interpeduncular nucleus, caudal
+							 7 Interpeduncular nucleus, apical
+							 7 Interpeduncular nucleus, lateral
+							 7 Interpeduncular nucleus, intermediate
+							 7 Interpeduncular nucleus, dorsomedial
+							 7 Interpeduncular nucleus, dorsolateral
+							 7 Interpeduncular nucleus, rostrolateral
+						 6 Rostral linear nucleus raphe
+						 6 Central linear nucleus raphe
+						 6 Dorsal nucleus raphe
+					 5 Substantia nigra, compact part
+					 5 Pedunculopontine nucleus
+			 3 Hindbrain
+				 4 Medulla
+					 5 Medulla, motor related
+						 6 Interstitial nucleus of the vestibular nerve
+						 6 Inferior olivary complex
+						 6 Inferior salivatory nucleus
+						 6 Nucleus ambiguus
+							 7 Nucleus ambiguus, ventral division
+							 7 Nucleus ambiguus, dorsal division
+						 6 Intermediate reticular nucleus
+						 6 Perihypoglossal nuclei
+							 7 Nucleus intercalatus
+							 7 Nucleus prepositus
+							 7 Nucleus of Roller
+						 6 Linear nucleus of the medulla
+						 6 Lateral reticular nucleus
+							 7 Lateral reticular nucleus, magnocellular part
+							 7 Lateral reticular nucleus, parvicellular part
+						 6 Magnocellular reticular nucleus
+						 6 Infracerebellar nucleus
+						 6 Medullary reticular nucleus
+							 7 Medullary reticular nucleus, dorsal part
+							 7 Medullary reticular nucleus, ventral part
+						 6 Accessory abducens nucleus
+						 6 Accessory facial motor nucleus
+						 6 Efferent vestibular nucleus
+						 6 Abducens nucleus
+						 6 Facial motor nucleus
+						 6 Vestibular nuclei
+							 7 Medial vestibular nucleus
+							 7 Lateral vestibular nucleus
+							 7 Superior vestibular nucleus
+							 7 Spinal vestibular nucleus
+						 6 Nucleus x
+						 6 Hypoglossal nucleus
+						 6 Nucleus y
+						 6 Dorsal motor nucleus of the vagus nerve
+						 6 Parvicellular reticular nucleus
+						 6 Parasolitary nucleus
+						 6 Efferent cochlear group
+						 6 Paragigantocellular reticular nucleus
+							 7 Paragigantocellular reticular nucleus, dorsal part
+							 7 Paragigantocellular reticular nucleus, lateral part
+						 6 Paramedian reticular nucleus
+						 6 Gigantocellular reticular nucleus
+						 6 Parapyramidal nucleus
+							 7 Parapyramidal nucleus, deep part
+							 7 Parapyramidal nucleus, superficial part
+					 5 Medulla, behavioral state related
+						 6 Nucleus raphe magnus
+						 6 Nucleus raphe obscurus
+						 6 Nucleus raphe pallidus
+					 5 Medulla, sensory related
+						 6 Area postrema
+						 6 Spinal nucleus of the trigeminal, caudal part
+						 6 Spinal nucleus of the trigeminal, interpolar part
+						 6 Spinal nucleus of the trigeminal, oral part
+							 7 Spinal nucleus of the trigeminal, oral part, rostral dorsomedial part
+							 7 Spinal nucleus of the trigeminal, oral part, middle dorsomedial part, dorsal zone
+							 7 Spinal nucleus of the trigeminal, oral part, middle dorsomedial part, ventral zone
+							 7 Spinal nucleus of the trigeminal, oral part, ventrolateral part
+							 7 Spinal nucleus of the trigeminal, oral part, caudal dorsomedial part
+						 6 Cochlear nuclei
+							 7 Dorsal cochlear nucleus
+							 7 Ventral cochlear nucleus
+							 7 Granular lamina of the cochlear nuclei
+							 7 Cochlear nucleus, subpedunclular granular region
+						 6 Nucleus of the trapezoid body
+						 6 Nucleus of the solitary tract
+							 7 Nucleus of the solitary tract, central part
+							 7 Nucleus of the solitary tract, commissural part
+							 7 Nucleus of the solitary tract, gelatinous part
+							 7 Nucleus of the solitary tract, lateral part
+							 7 Nucleus of the solitary tract, medial part
+						 6 Dorsal column nuclei
+							 7 Cuneate nucleus
+							 7 Gracile nucleus
+						 6 Nucleus z
+						 6 External cuneate nucleus
+						 6 Paratrigeminal nucleus
+				 4 Pons
+					 5 Pons, motor related
+						 6 Barrington's nucleus
+						 6 Lateral tegmental nucleus
+						 6 Supragenual nucleus
+						 6 Superior salivatory nucleus
+						 6 Supratrigeminal nucleus
+						 6 Pontine reticular nucleus, ventral part
+						 6 Tegmental reticular nucleus
+						 6 Motor nucleus of trigeminal
+						 6 Dorsal tegmental nucleus
+						 6 Pontine central gray
+						 6 Pontine gray
+						 6 Pontine reticular nucleus, caudal part
+						 6 Posterodorsal tegmental nucleus
+						 6 Peritrigeminal zone
+						 6 Accessory trigeminal nucleus
+						 6 Parvicellular motor 5 nucleus
+						 6 Intertrigeminal nucleus
+					 5 Pons, behavioral state related
+						 6 Pontine reticular nucleus
+						 6 Locus ceruleus
+						 6 Laterodorsal tegmental nucleus
+						 6 Nucleus raphe pontis
+						 6 Subceruleus nucleus
+						 6 Sublaterodorsal nucleus
+						 6 Nucleus incertus
+						 6 Superior central nucleus raphe
+							 7 Superior central nucleus raphe, medial part
+							 7 Superior central nucleus raphe, lateral part
+					 5 Pons, sensory related
+						 6 Principal sensory nucleus of the trigeminal
+						 6 Superior olivary complex
+							 7 Superior olivary complex, medial part
+							 7 Superior olivary complex, lateral part
+							 7 Superior olivary complex, periolivary region
+						 6 Nucleus of the lateral lemniscus
+							 7 Nucleus of the lateral lemniscus, dorsal part
+							 7 Nucleus of the lateral lemniscus, horizontal part
+							 7 Nucleus of the lateral lemniscus, ventral part
+						 6 Parabrachial nucleus
+							 7 Koelliker-Fuse subnucleus
+							 7 Parabrachial nucleus, lateral division
+								 8 Parabrachial nucleus, lateral division, central lateral part
+								 8 Parabrachial nucleus, lateral division, dorsal lateral part
+								 8 Parabrachial nucleus, lateral division, external lateral part
+								 8 Parabrachial nucleus, lateral division, superior lateral part
+								 8 Parabrachial nucleus, lateral division, ventral lateral part
+							 7 Parabrachial nucleus, medial division
+								 8 Parabrachial nucleus, medial division, external medial part
+								 8 Parabrachial nucleus, medial division, medial medial part
+								 8 Parabrachial nucleus, medial division, ventral medial part
+			 3 Interbrain
+				 4 Thalamus
+					 5 Thalamus, polymodal association cortex related
+						 6 Intralaminar nuclei of the dorsal thalamus
+							 7 Rhomboid nucleus
+							 7 Central lateral nucleus of the thalamus
+							 7 Central medial nucleus of the thalamus
+							 7 Paracentral nucleus
+							 7 Parafascicular nucleus
+							 7 Posterior intralaminar thalamic nucleus
+						 6 Lateral group of the dorsal thalamus
+							 7 Lateral posterior nucleus of the thalamus
+							 7 Suprageniculate nucleus
+							 7 Posterior complex of the thalamus
+							 7 Posterior limiting nucleus of the thalamus
+							 7 Ethmoid nucleus of the thalamus
+							 7 Retroethmoid nucleus
+						 6 Anterior group of the dorsal thalamus
+							 7 Anterodorsal nucleus
+							 7 Anteromedial nucleus
+								 8 Anteromedial nucleus, dorsal part
+								 8 Anteromedial nucleus, ventral part
+							 7 Lateral dorsal nucleus of thalamus
+							 7 Anteroventral nucleus of thalamus
+							 7 Interanterodorsal nucleus of the thalamus
+							 7 Interanteromedial nucleus of the thalamus
+						 6 Reticular nucleus of the thalamus
+						 6 Medial group of the dorsal thalamus
+							 7 Intermediodorsal nucleus of the thalamus
+							 7 Mediodorsal nucleus of thalamus
+								 8 Mediodorsal nucleus of the thalamus, central part
+								 8 Mediodorsal nucleus of the thalamus, lateral part
+								 8 Mediodorsal nucleus of the thalamus, medial part
+							 7 Submedial nucleus of the thalamus
+							 7 Perireunensis nucleus
+						 6 Midline group of the dorsal thalamus
+							 7 Parataenial nucleus
+							 7 Paraventricular nucleus of the thalamus
+							 7 Nucleus of reuniens
+							 7 Xiphoid thalamic nucleus
+						 6 Epithalamus
+							 7 Lateral habenula
+							 7 Medial habenula
+							 7 Pineal body
+						 6 Geniculate group, ventral thalamus
+							 7 Intergeniculate leaflet of the lateral geniculate complex
+							 7 Ventral part of the lateral geniculate complex
+								 8 Ventral part of the lateral geniculate complex, lateral zone
+								 8 Ventral part of the lateral geniculate complex, medial zone
+							 7 Subgeniculate nucleus
+							 7 Intermediate geniculate nucleus
+					 5 Thalamus, sensory-motor cortex related
+						 6 Subparafascicular nucleus
+							 7 Subparafascicular nucleus, magnocellular part
+							 7 Subparafascicular nucleus, parvicellular part
+						 6 Subparafascicular area
+						 6 Ventral group of the dorsal thalamus
+							 7 Ventral anterior-lateral complex of the thalamus
+							 7 Ventral medial nucleus of the thalamus
+							 7 Ventral posterior complex of the thalamus
+								 8 Ventral posterolateral nucleus of the thalamus
+								 8 Ventral posterolateral nucleus of the thalamus, parvicellular part
+								 8 Ventral posteromedial nucleus of the thalamus
+								 8 Ventral posteromedial nucleus of the thalamus, parvicellular part
+							 7 Posterior triangular thalamic nucleus
+						 6 Geniculate group, dorsal thalamus
+							 7 Dorsal part of the lateral geniculate complex
+								 8 Dorsal part of the lateral geniculate complex, shell
+								 8 Dorsal part of the lateral geniculate complex, core
+								 8 Dorsal part of the lateral geniculate complex, ipsilateral zone
+							 7 Medial geniculate complex
+								 8 Medial geniculate complex, dorsal part
+								 8 Medial geniculate complex, ventral part
+								 8 Medial geniculate complex, medial part
+						 6 Peripeduncular nucleus
+				 4 Hypothalamus
+					 5 Periventricular region
+						 6 Anterodorsal preoptic nucleus
+						 6 Anterior hypothalamic area
+						 6 Periventricular hypothalamic nucleus, posterior part
+						 6 Periventricular hypothalamic nucleus, preoptic part
+						 6 Anteroventral preoptic nucleus
+						 6 Anteroventral periventricular nucleus
+						 6 Suprachiasmatic nucleus
+						 6 Subfornical organ
+						 6 Subparaventricular zone
+						 6 Median preoptic nucleus
+						 6 Medial preoptic area
+						 6 Ventrolateral preoptic nucleus
+						 6 Vascular organ of the lamina terminalis
+						 6 Dorsomedial nucleus of the hypothalamus
+							 7 Dorsomedial nucleus of the hypothalamus, anterior part
+							 7 Dorsomedial nucleus of the hypothalamus, posterior part
+							 7 Dorsomedial nucleus of the hypothalamus, ventral part
+						 6 Posterodorsal preoptic nucleus
+						 6 Parastrial nucleus
+						 6 Suprachiasmatic preoptic nucleus
+						 6 Ventromedial preoptic nucleus
+					 5 Periventricular zone
+						 6 Periventricular hypothalamic nucleus, anterior part
+						 6 Paraventricular hypothalamic nucleus
+							 7 Paraventricular hypothalamic nucleus, magnocellular division
+								 8 Paraventricular hypothalamic nucleus, magnocellular division, anterior magnocellular part
+								 8 Paraventricular hypothalamic nucleus, magnocellular division, medial magnocellular part
+								 8 Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part
+									 9 Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part, lateral zone
+									 9 Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part, medial zone
+							 7 Paraventricular hypothalamic nucleus, parvicellular division
+								 8 Paraventricular hypothalamic nucleus, parvicellular division, anterior parvicellular part
+								 8 Paraventricular hypothalamic nucleus, parvicellular division, medial parvicellular part, dorsal zone
+								 8 Paraventricular hypothalamic nucleus, parvicellular division, periventricular part
+						 6 Periventricular hypothalamic nucleus, intermediate part
+						 6 Arcuate hypothalamic nucleus
+						 6 Accessory supraoptic group
+							 7 Nucleus circularis
+						 6 Supraoptic nucleus
+					 5 Hypothalamic lateral zone
+						 6 Retrochiasmatic area
+						 6 Lateral hypothalamic area
+						 6 Lateral preoptic area
+						 6 Preparasubthalamic nucleus
+						 6 Parasubthalamic nucleus
+						 6 Subthalamic nucleus
+						 6 Tuberal nucleus
+						 6 Zona incerta
+							 7 Dopaminergic A13 group
+							 7 Fields of Forel
+						 6 Perifornical nucleus
+					 5 Hypothalamic medial zone
+						 6 Paraventricular hypothalamic nucleus, descending division
+							 7 Paraventricular hypothalamic nucleus, descending division, dorsal parvicellular part
+							 7 Paraventricular hypothalamic nucleus, descending division, forniceal part
+							 7 Paraventricular hypothalamic nucleus, descending division, lateral parvicellular part
+							 7 Paraventricular hypothalamic nucleus, descending division, medial parvicellular part, ventral zone
+						 6 Anterior hypothalamic nucleus
+							 7 Anterior hypothalamic nucleus, anterior part
+							 7 Anterior hypothalamic nucleus, central part
+							 7 Anterior hypothalamic nucleus, dorsal part
+							 7 Anterior hypothalamic nucleus, posterior part
+						 6 Mammillary body
+							 7 Lateral mammillary nucleus
+							 7 Medial mammillary nucleus
+								 8 Medial mammillary nucleus, median part
+								 8 Medial mammillary nucleus, lateral part
+								 8 Medial mammillary nucleus, medial part
+								 8 Medial mammillary nucleus, posterior part
+								 8 Medial mammillary nucleus, dorsal part
+							 7 Supramammillary nucleus
+								 8 Supramammillary nucleus, lateral part
+								 8 Supramammillary nucleus, medial part
+							 7 Tuberomammillary nucleus
+								 8 Tuberomammillary nucleus, ventral part
+								 8 Tuberomammillary nucleus, dorsal part
+						 6 Medial preoptic nucleus
+							 7 Medial preoptic nucleus, central part
+							 7 Medial preoptic nucleus, lateral part
+							 7 Medial preoptic nucleus, medial part
+						 6 Ventromedial hypothalamic nucleus
+							 7 Ventromedial hypothalamic nucleus, anterior part
+							 7 Ventromedial hypothalamic nucleus, central part
+							 7 Ventromedial hypothalamic nucleus, dorsomedial part
+							 7 Ventromedial hypothalamic nucleus, ventrolateral part
+						 6 Posterior hypothalamic nucleus
+						 6 Dorsal premammillary nucleus
+						 6 Ventral premammillary nucleus
+					 5 Median eminence
+		 2 Cerebellum
+			 3 Cerebellar nuclei
+				 4 Interposed nucleus
+				 4 Dentate nucleus
+				 4 Fastigial nucleus
+				 4 Vestibulocerebellar nucleus
+			 3 Cerebellar cortex
+				 4 Vermal regions
+					 5 Lingula (I)
+						 6 Lingula (I), granular layer
+						 6 Lingula (I), Purkinje layer
+						 6 Lingula (I), molecular layer
+					 5 Central lobule
+						 6 Lobule II
+							 7 Lobule II, granular layer
+							 7 Lobule II, Purkinje layer
+							 7 Lobule II, molecular layer
+						 6 Lobule III
+							 7 Lobule III, granular layer
+							 7 Lobule III, Purkinje layer
+							 7 Lobule III, molecular layer
+					 5 Culmen
+						 6 Lobule IV
+							 7 Lobule IV, granular layer
+							 7 Lobule IV, Purkinje layer
+							 7 Lobule IV, molecular layer
+						 6 Lobule V
+							 7 Lobule V, granular layer
+							 7 Lobule V, Purkinje layer
+							 7 Lobule V, molecular layer
+						 6 Lobules IV-V
+							 7 Lobules IV-V, Purkinje layer
+							 7 Lobules IV-V, molecular layer
+					 5 Folium-tuber vermis (VII)
+						 6 Folium-tuber vermis (VII), granular layer
+						 6 Folium-tuber vermis (VII), Purkinje layer
+						 6 Folium-tuber vermis (VII), molecular layer
+					 5 Pyramus (VIII)
+						 6 Pyramus (VIII), granular layer
+						 6 Pyramus (VIII), Purkinje layer
+						 6 Pyramus (VIII), molecular layer
+					 5 Uvula (IX)
+						 6 Uvula (IX), granular layer
+						 6 Uvula (IX), Purkinje layer
+						 6 Uvula (IX), molecular layer
+					 5 Nodulus (X)
+						 6 Nodulus (X), granular layer
+						 6 Nodulus (X), Purkinje layer
+						 6 Nodulus (X), molecular layer
+					 5 Declive (VI)
+						 6 Declive (VI), subdivision A
+							 7 Declive (VI), granular layer
+							 7 Declive (VI), Purkinje layer
+							 7 Declive (VI), molecular layer
+						 6 Declive (VI), subdivision B
+				 4 Hemispheric regions
+					 5 Simplex lobule
+						 6 Simplex lobule, granular layer
+						 6 Simplex lobule, Purkinje layer
+						 6 Simplex lobule, molecular layer
+					 5 Ansiform lobule
+						 6 Crus 1
+							 7 Crus 1, granular layer
+							 7 Crus 1, Purkinje layer
+							 7 Crus 1, molecular layer
+						 6 Crus 2
+							 7 Crus 2, granular layer
+							 7 Crus 2, Purkinje layer
+							 7 Crus 2, molecular layer
+					 5 Paramedian lobule
+						 6 Paramedian lobule, granular layer
+						 6 Paramedian lobule, Purkinje layer
+						 6 Paramedian lobule, molecular layer
+					 5 Copula pyramidis
+						 6 Copula pyramidis, granular layer
+						 6 Copula pyramidis, Purkinje layer
+						 6 Copula pyramidis, molecular layer
+					 5 Paraflocculus
+						 6 Paraflocculus, granular layer
+						 6 Paraflocculus, Purkinje layer
+						 6 Paraflocculus, molecular layer
+					 5 Flocculus
+						 6 Flocculus, granular layer
+						 6 Flocculus, Purkinje layer
+						 6 Flocculus, molecular layer
+				 4 Cerebellar cortex, granular layer
+				 4 Cerebellar cortex, molecular layer
+				 4 Cerebellar cortex, Purkinje layer
+		 2 Cerebrum
+			 3 Cerebral nuclei
+				 4 Striatum
+					 5 Lateral septal complex
+						 6 Lateral septal nucleus
+							 7 Lateral septal nucleus, caudal (caudodorsal) part
+							 7 Lateral septal nucleus, rostral (rostroventral) part
+							 7 Lateral septal nucleus, ventral part
+						 6 Septofimbrial nucleus
+						 6 Septohippocampal nucleus
+					 5 Striatum-like amygdalar nuclei
+						 6 Anterior amygdalar area
+						 6 Bed nucleus of the accessory olfactory tract
+						 6 Medial amygdalar nucleus
+							 7 Medial amygdalar nucleus, anterodorsal part
+							 7 Medial amygdalar nucleus, anteroventral part
+							 7 Medial amygdalar nucleus, posterodorsal part
+								 8 Medial amygdalar nucleus, posterodorsal part, sublayer a
+								 8 Medial amygdalar nucleus, posterodorsal part, sublayer b
+								 8 Medial amygdalar nucleus, posterodorsal part, sublayer c
+							 7 Medial amygdalar nucleus, posteroventral part
+						 6 Central amygdalar nucleus
+							 7 Central amygdalar nucleus, capsular part
+							 7 Central amygdalar nucleus, lateral part
+							 7 Central amygdalar nucleus, medial part
+						 6 Intercalated amygdalar nucleus
+					 5 Striatum dorsal region
+						 6 Caudoputamen
+					 5 Striatum ventral region
+						 6 Nucleus accumbens
+						 6 Olfactory tubercle
+							 7 Olfactory tubercle, layers 1-3
+							 7 Olfactory tubercle, molecular layer
+							 7 Olfactory tubercle, pyramidal layer
+							 7 Olfactory tubercle, polymorph layer
+							 7 Islands of Calleja
+							 7 Major island of Calleja
+						 6 Fundus of striatum
+						 6 Lateral strip of striatum
+				 4 Pallidum
+					 5 Pallidum, caudal region
+						 6 Bed nucleus of the anterior commissure
+						 6 Bed nuclei of the stria terminalis
+							 7 Bed nuclei of the stria terminalis, anterior division
+								 8 Bed nuclei of the stria terminalis, anterior division, anteromedial area
+								 8 Bed nuclei of the stria terminalis, anterior division, dorsomedial nucleus
+								 8 Bed nuclei of the stria terminalis, anterior division, fusiform nucleus
+								 8 Bed nuclei of the stria terminalis, anterior division, magnocellular nucleus
+								 8 Bed nuclei of the stria terminalis, anterior division, ventral nucleus
+								 8 Bed nuclei of the stria terminalis, anterior division, anterolateral area
+								 8 Bed nuclei of the stria terminalis, anterior division, juxtacapsular nucleus
+								 8 Bed nuclei of the stria terminalis, anterior division, oval nucleus
+								 8 Bed nuclei of the stria terminalis, anterior division, rhomboid nucleus
+							 7 Bed nuclei of the stria terminalis, posterior division
+								 8 Bed nuclei of the stria terminalis, posterior division, dorsal nucleus
+								 8 Bed nuclei of the stria terminalis, posterior division, principal nucleus
+								 8 Bed nuclei of the stria terminalis, posterior division, interfascicular nucleus
+								 8 Bed nuclei of the stria terminalis, posterior division, transverse nucleus
+								 8 Bed nuclei of the stria terminalis, posterior division, strial extension
+					 5 Pallidum, dorsal region
+						 6 Globus pallidus, external segment
+						 6 Globus pallidus, internal segment
+					 5 Pallidum, medial region
+						 6 Triangular nucleus of septum
+						 6 Medial septal complex
+							 7 Medial septal nucleus
+							 7 Diagonal band nucleus
+					 5 Pallidum, ventral region
+						 6 Magnocellular nucleus
+						 6 Substantia innominata
+			 3 Cerebral cortex
+				 4 Cortical plate
+					 5 Isocortex
+						 6 Posterior parietal association areas
+							 7 Posterior parietal association areas, layer 2/3
+							 7 Posterior parietal association areas, layer 6a
+							 7 Posterior parietal association areas, layer 6b
+							 7 Rostrolateral visual area
+								 8 Rostrolateral area, layer 2/3
+								 8 Rostrolateral area, layer 1
+								 8 Rostrolateral area, layer 4
+								 8 Rostrolateral area, layer 5
+								 8 Rostrolateral area, layer 6a
+								 8 Rostrolateral area, layer 6b
+							 7 Posterior parietal association areas, layer 1
+							 7 Posterior parietal association areas, layer 4
+							 7 Posterior parietal association areas, layer 5
+							 7 Anterior area
+								 8 Anterior area, layer 1
+								 8 Anterior area, layer 2/3
+								 8 Anterior area, layer 4
+								 8 Anterior area, layer 5
+								 8 Anterior area, layer 6a
+								 8 Anterior area, layer 6b
+						 6 Anterior cingulate area
+							 7 Anterior cingulate area, dorsal part
+								 8 Anterior cingulate area, dorsal part, layer 2/3
+								 8 Anterior cingulate area, dorsal part, layer 6a
+								 8 Anterior cingulate area, dorsal part, layer 6b
+								 8 Anterior cingulate area, dorsal part, layer 1
+								 8 Anterior cingulate area, dorsal part, layer 5
+							 7 Anterior cingulate area, ventral part
+								 8 Anterior cingulate area, ventral part, layer 2/3
+								 8 Anterior cingulate area, ventral part, layer 1
+								 8 Anterior cingulate area, ventral part, layer 5
+								 8 Anterior cingulate area, ventral part, 6a
+								 8 Anterior cingulate area, ventral part, 6b
+							 7 Anterior cingulate area, layer 6a
+							 7 Anterior cingulate area, layer 6b
+							 7 Anterior cingulate area, layer 1
+							 7 Anterior cingulate area, layer 5
+							 7 Anterior cingulate area, layer 2/3
+						 6 Infralimbic area
+							 7 Infralimbic area, layer 2/3
+							 7 Infralimbic area, layer 1
+							 7 Infralimbic area, layer 2
+							 7 Infralimbic area, layer 5
+							 7 Infralimbic area, layer 6a
+							 7 Infralimbic area, layer 6b
+						 6 Agranular insular area
+							 7 Agranular insular area, dorsal part
+								 8 Agranular insular area, dorsal part, layer 2/3
+								 8 Agranular insular area, dorsal part, layer 6a
+								 8 Agranular insular area, dorsal part, layer 6b
+								 8 Agranular insular area, dorsal part, layer 1
+								 8 Agranular insular area, dorsal part, layer 5
+							 7 Agranular insular area, posterior part
+								 8 Agranular insular area, posterior part, layer 1
+								 8 Agranular insular area, posterior part, layer 2/3
+								 8 Agranular insular area, posterior part, layer 6a
+								 8 Agranular insular area, posterior part, layer 5
+								 8 Agranular insular area, posterior part, layer 6b
+							 7 Agranular insular area, ventral part
+								 8 Agranular insular area, ventral part, layer 6a
+								 8 Agranular insular area, ventral part, layer 2/3
+								 8 Agranular insular area, ventral part, layer 6b
+								 8 Agranular insular area, ventral part, layer 1
+								 8 Agranular insular area, ventral part, layer 5
+						 6 Frontal pole, cerebral cortex
+							 7 Frontal pole, layer 1
+							 7 Frontal pole, layer 2/3
+							 7 Frontal pole, layer 5
+							 7 Frontal pole, layer 6b
+							 7 Frontal pole, layer 6a
+						 6 Auditory areas
+							 7 Primary auditory area
+								 8 Primary auditory area, layer 2/3
+								 8 Primary auditory area, layer 1
+								 8 Primary auditory area, layer 4
+								 8 Primary auditory area, layer 5
+								 8 Primary auditory area, layer 6a
+								 8 Primary auditory area, layer 6b
+							 7 Dorsal auditory area
+								 8 Dorsal auditory area, layer 6a
+								 8 Dorsal auditory area, layer 6b
+								 8 Dorsal auditory area, layer 5
+								 8 Dorsal auditory area, layer 1
+								 8 Dorsal auditory area, layer 2/3
+								 8 Dorsal auditory area, layer 4
+								 8 Laterolateral anterior visual area
+									 9 Laterolateral anterior visual area, layer 1
+									 9 Laterolateral anterior visual area, layer 2/3
+									 9 Laterolateral anterior visual area, layer 4
+									 9 Laterolateral anterior visual area,layer 5
+									 9 Laterolateral anterior visual area, layer 6a
+									 9 Laterolateral anterior visual area, layer 6b
+							 7 Ventral auditory area
+								 8 Ventral auditory area, layer 6a
+								 8 Ventral auditory area, layer 6b
+								 8 Ventral auditory area, layer 2/3
+								 8 Ventral auditory area, layer 1
+								 8 Ventral auditory area, layer 4
+								 8 Ventral auditory area, layer 5
+							 7 Posterior auditory area
+								 8 Posterior auditory area, layer 6a
+								 8 Posterior auditory area, layer 6b
+								 8 Posterior auditory area, layer 2/3
+								 8 Posterior auditory area, layer 1
+								 8 Posterior auditory area, layer 4
+								 8 Posterior auditory area, layer 5
+						 6 Retrosplenial area
+							 7 Retrosplenial area, dorsal part
+								 8 Retrosplenial area, dorsal part, layer 6a
+								 8 Retrosplenial area, dorsal part, layer 6b
+								 8 Retrosplenial area, dorsal part, layer 2/3
+								 8 Retrosplenial area, dorsal part, layer 1
+								 8 Retrosplenial area, dorsal part, layer 4
+								 8 Retrosplenial area, dorsal part, layer 5
+							 7 Retrosplenial area, ventral part
+								 8 Retrosplenial area, ventral part, layer 2/3
+								 8 Retrosplenial area, ventral part, layer 1
+								 8 Retrosplenial area, ventral part, layer 6a
+								 8 Retrosplenial area, ventral part, layer 2
+								 8 Retrosplenial area, ventral part, layer 6b
+								 8 Retrosplenial area, ventral part, layer 5
+							 7 Retrosplenial area, lateral agranular part
+								 8 Retrosplenial area, lateral agranular part, layer 6b
+								 8 Retrosplenial area, lateral agranular part, layer 1
+								 8 Retrosplenial area, lateral agranular part, layer 5
+								 8 Retrosplenial area, lateral agranular part, layer 6a
+								 8 Retrosplenial area, lateral agranular part, layer 2/3
+								 8 Mediomedial anterior visual area
+									 9 Mediomedial anterior visual area, layer 1
+									 9 Mediomedial anterior visual area, layer 2/3
+									 9 Mediomedial anterior visual area, layer 4
+									 9 Mediomedial anterior visual area,layer 5
+									 9 Mediomedial anterior visual area, layer 6a
+									 9 Mediomedial anterior visual area, layer 6b
+								 8 Mediomedial posterior visual area
+									 9 Mediomedial posterior visual area, layer 1
+									 9 Mediomedial posterior visual area, layer 2/3
+									 9 Mediomedial posterior visual area, layer 4
+									 9 Mediomedial posterior visual area,layer 5
+									 9 Mediomedial posterior visual area, layer 6a
+									 9 Mediomedial posterior visual area, layer 6b
+								 8 Medial visual area
+									 9 Medial visual area, layer 1
+									 9 Medial visual area, layer 2/3
+									 9 Medial visual area, layer 4
+									 9 Medial visual area,layer 5
+									 9 Medial visual area, layer 6a
+									 9 Medial visual area, layer 6b
+						 6 Somatosensory areas
+							 7 Primary somatosensory area
+								 8 Primary somatosensory area, barrel field
+									 9 Primary somatosensory area, barrel field, layer 2/3
+									 9 Primary somatosensory area, barrel field, layer 1
+									 9 Primary somatosensory area, barrel field, layer 6a
+									 9 Primary somatosensory area, barrel field, layer 4
+									 9 Primary somatosensory area, barrel field, layer 6b
+									 9 Primary somatosensory area, barrel field, layer 5
+									 9 Rostrolateral lateral visual area
+										 10 Rostrolateral lateral visual area, layer 1
+										 10 Rostrolateral lateral visual area, layer 2/3
+										 10 Rostrolateral lateral visual area, layer 4
+										 10 Rostrolateral lateral visual area,layer 5
+										 10 Rostrolateral lateral visual area, layer 6a
+										 10 Rostrolateral lateral visual area, layer 6b
+								 8 Primary somatosensory area, lower limb
+									 9 Primary somatosensory area, lower limb, layer 2/3
+									 9 Primary somatosensory area, lower limb, layer 6a
+									 9 Primary somatosensory area, lower limb, layer 6b
+									 9 Primary somatosensory area, lower limb, layer 1
+									 9 Primary somatosensory area, lower limb, layer 4
+									 9 Primary somatosensory area, lower limb, layer 5
+								 8 Primary somatosensory area, mouth
+									 9 Primary somatosensory area, mouth, layer 6b
+									 9 Primary somatosensory area, mouth, layer 2/3
+									 9 Primary somatosensory area, mouth, layer 1
+									 9 Primary somatosensory area, mouth, layer 4
+									 9 Primary somatosensory area, mouth, layer 5
+									 9 Primary somatosensory area, mouth, layer 6a
+								 8 Primary somatosensory area, layer 2/3
+								 8 Primary somatosensory area, nose
+									 9 Primary somatosensory area, nose, layer 1
+									 9 Primary somatosensory area, nose, layer 4
+									 9 Primary somatosensory area, nose, layer 5
+									 9 Primary somatosensory area, nose, layer 2/3
+									 9 Primary somatosensory area, nose, layer 6a
+									 9 Primary somatosensory area, nose, layer 6b
+								 8 Primary somatosensory area, trunk
+									 9 Primary somatosensory area, trunk, layer 6a
+									 9 Primary somatosensory area, trunk, layer 6b
+									 9 Primary somatosensory area, trunk, layer 2/3
+									 9 Primary somatosensory area, trunk, layer 1
+									 9 Primary somatosensory area, trunk, layer 4
+									 9 Primary somatosensory area, trunk, layer 5
+								 8 Primary somatosensory area, upper limb
+									 9 Primary somatosensory area, upper limb, layer 1
+									 9 Primary somatosensory area, upper limb, layer 4
+									 9 Primary somatosensory area, upper limb, layer 5
+									 9 Primary somatosensory area, upper limb, layer 2/3
+									 9 Primary somatosensory area, upper limb, layer 6a
+									 9 Primary somatosensory area, upper limb, layer 6b
+								 8 Primary somatosensory area, layer 6a
+								 8 Primary somatosensory area, layer 6b
+								 8 Primary somatosensory area, layer 1
+								 8 Primary somatosensory area, layer 4
+								 8 Primary somatosensory area, layer 5
+								 8 Primary somatosensory area, unassigned
+									 9 Primary somatosensory area, unassigned, layer 1
+									 9 Primary somatosensory area, unassigned, layer 1,2,3
+									 9 Primary somatosensory area, unassigned, layer 2/3
+									 9 Primary somatosensory area, unassigned, layer 4
+									 9 Primary somatosensory area, unassigned, layer 5
+									 9 Primary somatosensory area, unassigned, layer 6a
+									 9 Primary somatosensory area, unassigned, layer 4,5,6
+									 9 Primary somatosensory area, unassigned, layer 6b
+							 7 Supplemental somatosensory area
+								 8 Supplemental somatosensory area, layer 2/3
+								 8 Supplemental somatosensory area, layer 6a
+								 8 Supplemental somatosensory area, layer 1
+								 8 Supplemental somatosensory area, layer 6b
+								 8 Supplemental somatosensory area, layer 4
+								 8 Supplemental somatosensory area, layer 5
+							 7 Somatosensory areas, layer 1
+							 7 Somatosensory areas, layer 2/3
+							 7 Somatosensory areas, layer 4
+							 7 Somatosensory areas, layer 5
+							 7 Somatosensory areas, layer 6a
+							 7 Somatosensory areas, layer 6b
+						 6 Somatomotor areas
+							 7 Somatomotor areas, Layer 1
+							 7 Somatomotor areas, Layer 2/3
+							 7 Somatomotor areas, Layer 5
+							 7 Somatomotor areas, Layer 6a
+							 7 Somatomotor areas, Layer 6b
+							 7 Primary motor area
+								 8 Primary motor area, Layer 1
+								 8 Primary motor area, Layer 5
+								 8 Primary motor area, Layer 6a
+								 8 Primary motor area, Layer 6b
+								 8 Primary motor area, Layer 2/3
+							 7 Secondary motor area
+								 8 Secondary motor area, layer 1
+								 8 Secondary motor area, layer 5
+								 8 Secondary motor area, layer 2/3
+								 8 Secondary motor area, layer 6a
+								 8 Secondary motor area, layer 6b
+						 6 Temporal association areas
+							 7 Temporal association areas, layer 1
+							 7 Temporal association areas, layer 4
+							 7 Temporal association areas, layer 5
+							 7 Temporal association areas, layer 6a
+							 7 Temporal association areas, layer 6b
+							 7 Temporal association areas, layer 2/3
+						 6 Visual areas
+							 7 Primary visual area
+								 8 Primary visual area, layer 6a
+								 8 Primary visual area, layer 6b
+								 8 Primary visual area, layer 1
+								 8 Primary visual area, layer 4
+								 8 Primary visual area, layer 5
+								 8 Primary visual area, layer 2/3
+							 7 Anteromedial visual area
+								 8 Anteromedial visual area, layer 1
+								 8 Anteromedial visual area, layer 4
+								 8 Anteromedial visual area, layer 5
+								 8 Anteromedial visual area, layer 6b
+								 8 Anteromedial visual area, layer 6a
+								 8 Anteromedial visual area, layer 2/3
+							 7 Anterolateral visual area
+								 8 Anterolateral visual area, layer 5
+								 8 Anterolateral visual area, layer 6a
+								 8 Anterolateral visual area, layer 6b
+								 8 Anterolateral visual area, layer 2/3
+								 8 Anterolateral visual area, layer 1
+								 8 Anterolateral visual area, layer 4
+							 7 Lateral visual area
+								 8 Lateral visual area, layer 6a
+								 8 Lateral visual area, layer 6b
+								 8 Lateral visual area, layer 1
+								 8 Lateral visual area, layer 4
+								 8 Lateral visual area, layer 5
+								 8 Lateral visual area, layer 2/3
+							 7 Posterolateral visual area
+								 8 Posterolateral visual area, layer 2/3
+								 8 Posterolateral visual area, layer 6a
+								 8 Posterolateral visual area, layer 6b
+								 8 Posterolateral visual area, layer 1
+								 8 Posterolateral visual area, layer 4
+								 8 Posterolateral visual area, layer 5
+							 7 Visual areas, layer 6a
+							 7 Visual areas, layer 6b
+							 7 posteromedial visual area
+								 8 posteromedial visual area, layer 2/3
+								 8 posteromedial visual area, layer 6a
+								 8 posteromedial visual area, layer 6b
+								 8 posteromedial visual area, layer 4
+								 8 posteromedial visual area, layer 5
+								 8 posteromedial visual area, layer 1
+							 7 Visual areas, layer 2/3
+							 7 Visual areas, layer 1
+							 7 Visual areas, layer 4
+							 7 Visual areas, layer 5
+							 7 Laterointermediate area
+								 8 Laterointermediate area, layer 1
+								 8 Laterointermediate area, layer 2/3
+								 8 Laterointermediate area, layer 4
+								 8 Laterointermediate area, layer 5
+								 8 Laterointermediate area, layer 6a
+								 8 Laterointermediate area, layer 6b
+							 7 Postrhinal area
+								 8 Postrhinal area, layer 1
+								 8 Postrhinal area, layer 2/3
+								 8 Postrhinal area, layer 4
+								 8 Postrhinal area, layer 6a
+								 8 Postrhinal area, layer 6b
+								 8 Postrhinal area, layer 5
+						 6 Visceral area
+							 7 Visceral area, layer 6b
+							 7 Visceral area, layer 6a
+							 7 Visceral area, layer 1
+							 7 Visceral area, layer 4
+							 7 Visceral area, layer 5
+							 7 Visceral area, layer 2/3
+						 6 Orbital area
+							 7 Orbital area, layer 1
+							 7 Orbital area, layer 5
+							 7 Orbital area, layer 6a
+							 7 Orbital area, layer 2/3
+							 7 Orbital area, layer 6b
+							 7 Orbital area, lateral part
+								 8 Orbital area, lateral part, layer 2/3
+								 8 Orbital area, lateral part, layer 6a
+								 8 Orbital area, lateral part, layer 1
+								 8 Orbital area, lateral part, layer 6b
+								 8 Orbital area, lateral part, layer 5
+							 7 Orbital area, medial part
+								 8 Orbital area, medial part, layer 1
+								 8 Orbital area, medial part, layer 2
+								 8 Orbital area, medial part, layer 2/3
+								 8 Orbital area, medial part, layer 5
+								 8 Orbital area, medial part, layer 6a
+								 8 Orbital area, medial part, layer 6b
+							 7 Orbital area, ventral part
+							 7 Orbital area, ventrolateral part
+								 8 Orbital area, ventrolateral part, layer 2/3
+								 8 Orbital area, ventrolateral part, layer 6a
+								 8 Orbital area, ventrolateral part, layer 6b
+								 8 Orbital area, ventrolateral part, layer 1
+								 8 Orbital area, ventrolateral part, layer 5
+						 6 Ectorhinal area
+							 7 Ectorhinal area/Layer 2/3
+							 7 Ectorhinal area/Layer 1
+							 7 Ectorhinal area/Layer 6a
+							 7 Ectorhinal area/Layer 5
+							 7 Ectorhinal area/Layer 6b
+						 6 Perirhinal area
+							 7 Perirhinal area, layer 6a
+							 7 Perirhinal area, layer 6b
+							 7 Perirhinal area, layer 1
+							 7 Perirhinal area, layer 5
+							 7 Perirhinal area, layer 2/3
+						 6 Prelimbic area
+							 7 Prelimbic area, layer 6a
+							 7 Prelimbic area, layer 6b
+							 7 Prelimbic area, layer 1
+							 7 Prelimbic area, layer 2
+							 7 Prelimbic area, layer 2/3
+							 7 Prelimbic area, layer 5
+						 6 Gustatory areas
+							 7 Gustatory areas, layer 1
+							 7 Gustatory areas, layer 4
+							 7 Gustatory areas, layer 2/3
+							 7 Gustatory areas, layer 5
+							 7 Gustatory areas, layer 6a
+							 7 Gustatory areas, layer 6b
+					 5 Olfactory areas
+						 6 Accessory olfactory bulb
+							 7 Accessory olfactory bulb, glomerular layer
+							 7 Accessory olfactory bulb, granular layer
+							 7 Accessory olfactory bulb, mitral layer
+						 6 Anterior olfactory nucleus
+							 7 Anterior olfactory nucleus, layer 1
+							 7 Anterior olfactory nucleus, dorsal part
+							 7 Anterior olfactory nucleus, layer 2
+							 7 Anterior olfactory nucleus, external part
+							 7 Anterior olfactory nucleus, lateral part
+							 7 Anterior olfactory nucleus, medial part
+							 7 Anterior olfactory nucleus, posteroventral part
+						 6 Main olfactory bulb
+							 7 Main olfactory bulb, glomerular layer
+							 7 Main olfactory bulb, granule layer
+							 7 Main olfactory bulb, inner plexiform layer
+							 7 Main olfactory bulb, mitral layer
+							 7 Main olfactory bulb, outer plexiform layer
+						 6 Postpiriform transition area
+							 7 Postpiriform transition area, layers 1-3
+							 7 Postpiriform transition area, layers 1
+							 7 Postpiriform transition area, layers 2
+							 7 Postpiriform transition area, layers 3
+						 6 Taenia tecta
+							 7 Taenia tecta, dorsal part
+								 8 Taenia tecta, dorsal part, layers 1-4
+								 8 Taenia tecta, dorsal part, layer 1
+								 8 Taenia tecta, dorsal part, layer 2
+								 8 Taenia tecta, dorsal part, layer 3
+								 8 Taenia tecta, dorsal part, layer 4
+							 7 Taenia tecta, ventral part
+								 8 Taenia tecta, ventral part, layers 1-3
+								 8 Taenia tecta, ventral part, layer 1
+								 8 Taenia tecta, ventral part, layer 2
+								 8 Taenia tecta, ventral part, layer 3
+						 6 Nucleus of the lateral olfactory tract
+							 7 Nucleus of the lateral olfactory tract, molecular layer
+							 7 Nucleus of the lateral olfactory tract, pyramidal layer
+							 7 Nucleus of the lateral olfactory tract, layers 1-3
+							 7 Nucleus of the lateral olfactory tract, layer 3
+						 6 Cortical amygdalar area
+							 7 Cortical amygdalar area, anterior part
+								 8 Cortical amygdalar area, anterior part, layer 1
+								 8 Cortical amygdalar area, anterior part, layer 2
+								 8 Cortical amygdalar area, anterior part, layer 3
+							 7 Cortical amygdalar area, posterior part
+								 8 Cortical amygdalar area, posterior part, lateral zone
+									 9 Cortical amygdalar area, posterior part, lateral zone, layer 1
+									 9 Cortical amygdalar area, posterior part, lateral zone, layer 2
+									 9 Cortical amygdalar area, posterior part, lateral zone, layer 3
+									 9 Cortical amygdalar area, posterior part, lateral zone, layers 1-3
+									 9 Cortical amygdalar area, posterior part, lateral zone, layers 1-2
+								 8 Cortical amygdalar area, posterior part, medial zone
+									 9 Cortical amygdalar area, posterior part, medial zone, layer 1
+									 9 Cortical amygdalar area, posterior part, medial zone, layer 2
+									 9 Cortical amygdalar area, posterior part, medial zone, layer 3
+									 9 Cortical amygdalar area, posterior part, medial zone, layers 1-3
+									 9 Cortical amygdalar area, posterior part, medial zone, layers 1-2
+						 6 Piriform-amygdalar area
+							 7 Piriform-amygdalar area, layers 1-3
+							 7 Piriform-amygdalar area, molecular layer
+							 7 Piriform-amygdalar area, pyramidal layer
+							 7 Piriform-amygdalar area, polymorph layer
+						 6 Dorsal peduncular area
+							 7 Dorsal peduncular area, layer 6a
+							 7 Dorsal peduncular area, layer 2/3
+							 7 Dorsal peduncular area, layer 1
+							 7 Dorsal peduncular area, layer 2
+							 7 Dorsal peduncular area, layer 5
+						 6 Piriform area
+							 7 Piriform area, layers 1-3
+							 7 Piriform area, molecular layer
+							 7 Piriform area, pyramidal layer
+							 7 Piriform area, polymorph layer
+					 5 Hippocampal formation
+						 6 Retrohippocampal region
+							 7 Subiculum
+								 8 Subiculum, dorsal part
+									 9 Subiculum, dorsal part, molecular layer
+									 9 Subiculum, dorsal part, stratum radiatum
+									 9 Subiculum, dorsal part, pyramidal layer
+								 8 Subiculum, ventral part
+									 9 Subiculum, ventral part, molecular layer
+									 9 Subiculum, ventral part, stratum radiatum
+									 9 Subiculum, ventral part, pyramidal layer
+							 7 Parasubiculum
+								 8 Parasubiculum, layer 1
+								 8 Parasubiculum, layer 2
+								 8 Parasubiculum, layer 3
+							 7 Entorhinal area
+								 8 Entorhinal area, lateral part
+									 9 Entorhinal area, lateral part, layer 2
+									 9 Entorhinal area, lateral part, layer 6a
+									 9 Entorhinal area, lateral part, layer 3
+									 9 Entorhinal area, lateral part, layer 6b
+									 9 Entorhinal area, lateral part, layer 4
+									 9 Entorhinal area, lateral part, layer 5
+									 9 Entorhinal area, lateral part, layer 4/5
+									 9 Entorhinal area, lateral part, layer 5/6
+									 9 Entorhinal area, lateral part, layer 2a
+									 9 Entorhinal area, lateral part, layer 2b
+									 9 Entorhinal area, lateral part, layer 2/3
+									 9 Entorhinal area, lateral part, layer 1
+								 8 Entorhinal area, medial part, dorsal zone
+									 9 Entorhinal area, medial part, dorsal zone, layer 2a
+									 9 Entorhinal area, medial part, dorsal zone, layer 2b
+									 9 Entorhinal area, medial part, dorsal zone, layer 1
+									 9 Entorhinal area, medial part, dorsal zone, layer 2
+									 9 Entorhinal area, medial part, dorsal zone, layer 5/6
+									 9 Entorhinal area, medial part, dorsal zone, layer 3
+									 9 Entorhinal area, medial part, dorsal zone, layer 4
+									 9 Entorhinal area, medial part, dorsal zone, layer 5
+									 9 Entorhinal area, medial part, dorsal zone, layer 6
+								 8 Entorhinal area, medial part, ventral zone
+									 9 Entorhinal area, medial part, ventral zone, layer 1
+									 9 Entorhinal area, medial part, ventral zone, layer 2
+									 9 Entorhinal area, medial part, ventral zone, layer 3
+									 9 Entorhinal area, medial part, ventral zone, layer 4
+									 9 Entorhinal area, medial part, ventral zone, layer 5/6
+							 7 Postsubiculum
+								 8 Postsubiculum, layer 1
+								 8 Postsubiculum, layer 2
+								 8 Postsubiculum, layer 3
+							 7 Presubiculum
+								 8 Presubiculum, layer 1
+								 8 Presubiculum, layer 2
+								 8 Presubiculum, layer 3
+							 7 Prosubiculum
+								 8 Prosubiculum, dorsal part
+									 9 Prosubiculum, dorsal part, molecular layer
+									 9 Prosubiculum, dorsal part, pyramidal layer
+									 9 Prosubiculum, dorsal part, stratum radiatum
+								 8 Prosubiculum, ventral part
+									 9 Prosubiculum, ventral part, molecular layer
+									 9 Prosubiculum, ventral part, pyramidal layer
+									 9 Prosubiculum, ventral part, stratum radiatum
+							 7 Area prostriata
+							 7 Hippocampo-amygdalar transition area
+						 6 Hippocampal region
+							 7 Induseum griseum
+							 7 Ammon's horn
+								 8 Field CA1
+									 9 Field CA1, stratum lacunosum-moleculare
+									 9 Field CA1, stratum oriens
+									 9 Field CA1, pyramidal layer
+									 9 Field CA1, stratum radiatum
+								 8 Field CA2
+									 9 Field CA2, stratum lacunosum-moleculare
+									 9 Field CA2, stratum oriens
+									 9 Field CA2, pyramidal layer
+									 9 Field CA2, stratum radiatum
+								 8 Field CA3
+									 9 Field CA3, stratum lacunosum-moleculare
+									 9 Field CA3, stratum lucidum
+									 9 Field CA3, stratum oriens
+									 9 Field CA3, pyramidal layer
+									 9 Field CA3, stratum radiatum
+							 7 Dentate gyrus
+								 8 Dentate gyrus, granule cell layer
+								 8 Dentate gyrus crest
+									 9 Dentate gyrus crest, molecular layer
+									 9 Dentate gyrus crest, polymorph layer
+									 9 Dentate gyrus crest, granule cell layer
+								 8 Dentate gyrus lateral blade
+									 9 Dentate gyrus lateral blade, molecular layer
+									 9 Dentate gyrus lateral blade, polymorph layer
+									 9 Dentate gyrus lateral blade, granule cell layer
+								 8 Dentate gyrus medial blade
+									 9 Dentate gyrus medial blade, molecular layer
+									 9 Dentate gyrus medial blade, polymorph layer
+									 9 Dentate gyrus medial blade, granule cell layer
+								 8 Dentate gyrus, subgranular zone
+								 8 Dentate gyrus, molecular layer
+								 8 Dentate gyrus, polymorph layer
+							 7 Fasciola cinerea
+				 4 Cortical subplate
+					 5 Layer 6b, isocortex
+					 5 Lateral amygdalar nucleus
+					 5 Basolateral amygdalar nucleus
+						 6 Basolateral amygdalar nucleus, anterior part
+						 6 Basolateral amygdalar nucleus, posterior part
+						 6 Basolateral amygdalar nucleus, ventral part
+					 5 Basomedial amygdalar nucleus
+						 6 Basomedial amygdalar nucleus, anterior part
+						 6 Basomedial amygdalar nucleus, posterior part
+					 5 Claustrum
+					 5 Posterior amygdalar nucleus
+					 5 Endopiriform nucleus
+						 6 Endopiriform nucleus, dorsal part
+						 6 Endopiriform nucleus, ventral part
+	 1 ventricular systems
+		 2 lateral ventricle
+			 3 rhinocele
+			 3 subependymal zone
+			 3 choroid plexus
+			 3 choroid fissure
+		 2 interventricular foramen
+		 2 third ventricle
+		 2 cerebral aqueduct
+		 2 fourth ventricle
+			 3 lateral recess
+		 2 central canal, spinal cord/medulla
+	 1 fiber tracts
+		 2 cerebellum related fiber tracts
+			 3 arbor vitae
+			 3 cerebellar commissure
+			 3 cerebellar peduncles
+				 4 middle cerebellar peduncle
+				 4 superior cerebelar peduncles
+					 5 superior cerebellar peduncle decussation
+						 6 spinocerebellar tract
+					 5 uncinate fascicle
+					 5 ventral spinocerebellar tract
+				 4 trigeminocerebellar tract
+				 4 inferior cerebellar peduncle
+					 5 bulbocerebellar tract
+						 6 olivocerebellar tract
+						 6 reticulocerebellar tract
+					 5 cuneocerebellar tract
+					 5 dorsal spinocerebellar tract
+					 5 juxtarestiform body
+		 2 cranial nerves
+			 3 abducens nerve
+			 3 accessory spinal nerve
+			 3 dorsal roots
+				 4 cervicothalamic tract
+					 5 dorsal column
+						 6 cuneate fascicle
+						 6 gracile fascicle
+						 6 internal arcuate fibers
+					 5 dorsal commissure of the spinal cord
+					 5 dorsolateral fascicle
+					 5 fasciculus proprius
+					 5 medial lemniscus
+					 5 ventral commissure of the spinal cord
+			 3 facial nerve
+				 4 genu of the facial nerve
+				 4 intermediate nerve
+			 3 glossopharyngeal nerve
+			 3 hypoglossal nerve
+			 3 oculomotor nerve
+				 4 medial longitudinal fascicle
+				 4 posterior commissure
+			 3 olfactory nerve
+				 4 lateral olfactory tract, general
+					 5 accessory olfactory tract
+					 5 dorsal limb
+					 5 lateral olfactory tract, body
+				 4 anterior commissure, olfactory limb
+				 4 olfactory nerve layer of main olfactory bulb
+			 3 optic nerve
+				 4 optic chiasm
+				 4 optic tract
+				 4 superior colliculus commissure
+				 4 tectothalamic pathway
+				 4 accessory optic tract
+				 4 brachium of the superior colliculus
+			 3 spinothalamic tract
+				 4 lateral spinothalamic tract
+				 4 spinocervical tract
+				 4 spinohypothalamic pathway
+				 4 spino-olivary pathway
+				 4 spinoreticular pathway
+				 4 spinotectal pathway
+				 4 spinotelenchephalic pathway
+					 5 hypothalamohypophysial tract
+				 4 spinovestibular pathway
+				 4 ventral spinothalamic tract
+			 3 terminal nerve
+			 3 trigeminal nerve
+				 4 motor root of the trigeminal nerve
+				 4 sensory root of the trigeminal nerve
+					 5 midbrain tract of the trigeminal nerve
+					 5 spinal tract of the trigeminal nerve
+			 3 trochlear nerve
+				 4 trochlear nerve decussation
+			 3 vagus nerve
+				 4 solitary tract
+			 3 ventral roots
+			 3 vestibulocochlear nerve
+				 4 vestibular nerve
+				 4 cochlear nerve
+					 5 brachium of the inferior colliculus
+					 5 dorsal acoustic stria
+					 5 inferior colliculus commissure
+					 5 intermediate acoustic stria
+					 5 lateral lemniscus
+					 5 trapezoid body
+				 4 efferent cochleovestibular bundle
+			 3 vomeronasal nerve
+		 2 lateral forebrain bundle system
+			 3 corpus callosum
+				 4 corpus callosum, anterior forceps
+					 5 external capsule
+				 4 corpus callosum, extreme capsule
+				 4 corpus callosum, posterior forceps
+				 4 corpus callosum, rostrum
+				 4 corpus callosum, splenium
+				 4 genu of corpus callosum
+				 4 corpus callosum, body
+			 3 corticospinal tract
+				 4 internal capsule
+				 4 pyramid
+				 4 pyramidal decussation
+				 4 cerebal peduncle
+				 4 corticobulbar tract
+				 4 corticopontine tract
+				 4 corticorubral tract
+				 4 corticospinal tract, crossed
+				 4 corticospinal tract, uncrossed
+				 4 corticotectal tract
+			 3 thalamus related
+				 4 internal medullary lamina of the thalamus
+				 4 middle thalamic commissure
+				 4 thalamic peduncles
+				 4 external medullary lamina of the thalamus
+				 4 optic radiation
+				 4 auditory radiation
+		 2 medial forebrain bundle system
+			 3 cerebrum related
+				 4 longitudinal association bundle
+				 4 stria terminalis
+					 5 commissural branch of stria terminalis
+				 4 amygdalar capsule
+				 4 ansa peduncularis
+				 4 anterior commissure, temporal limb
+				 4 cingulum bundle
+				 4 fornix system
+					 5 alveus
+					 5 angular path
+					 5 dorsal fornix
+					 5 fimbria
+					 5 hippocampal commissures
+						 6 dorsal hippocampal commissure
+						 6 ventral hippocampal commissure
+					 5 perforant path
+					 5 postcommissural fornix
+						 6 medial corticohypothalamic tract
+						 6 columns of the fornix
+					 5 precommissural fornix, general
+						 6 precommissural fornix diagonal band
+			 3 hypothalamus related
+				 4 mammillary related
+					 5 mammillary peduncle
+					 5 mammillotegmental tract
+					 5 mammillothalamic tract
+					 5 principal mammillary tract
+				 4 medial forebrain bundle
+				 4 midbrain related
+					 5 dorsal longitudinal fascicle
+					 5 dorsal tegmental tract
+				 4 periventricular bundle of the hypothalamus
+				 4 premammillary commissure
+				 4 preoptic commissure
+				 4 propriohypothalamic pathways
+					 5 propriohypothalamic pathways, dorsal
+					 5 propriohypothalamic pathways, lateral
+					 5 propriohypothalamic pathways, medial
+					 5 propriohypothalamic pathways, ventral
+				 4 supramammillary decussation
+				 4 supraoptic commissures
+					 5 supraoptic commissures, anterior
+					 5 supraoptic commissures, dorsal
+					 5 supraoptic commissures, ventral
+				 4 ventrolateral hypothalamic tract
+				 4 dorsal thalamus related
+					 5 periventricular bundle of the thalamus
+				 4 epithalamus related
+					 5 fasciculus retroflexus
+					 5 habenular commissure
+					 5 pineal stalk
+					 5 stria medullaris
+		 2 extrapyramidal fiber systems
+			 3 central tegmental bundle
+			 3 cerebral nuclei related
+				 4 nigrostriatal tract
+				 4 nigrothalamic fibers
+				 4 pallidotegmental fascicle
+				 4 pallidothalamic pathway
+				 4 striatonigral pathway
+				 4 subthalamic fascicle
+			 3 retriculospinal tract
+				 4 retriculospinal tract, lateral part
+				 4 retriculospinal tract, medial part
+			 3 rubrospinal tract
+				 4 rubroreticular tract
+				 4 ventral tegmental decussation
+			 3 tectospinal pathway
+				 4 crossed tectospinal pathway
+				 4 direct tectospinal pathway
+				 4 doral tegmental decussation
+			 3 vestibulospinal pathway
+		 2 supra-callosal cerebral white matter
+	 1 grooves
+		 2 Interpeduncular fossa
+		 2 grooves of the cerebral cortex
+			 3 endorhinal groove
+			 3 hippocampal fissure
+			 3 rhinal fissure
+			 3 rhinal incisure
+		 2 grooves of the cerebellar cortex
+			 3 secondary fissure
+			 3 posterolateral fissure
+			 3 nodular fissure
+			 3 simplex fissure
+			 3 intercrural fissure
+			 3 ansoparamedian fissure
+			 3 intraparafloccular fissure
+			 3 paramedian sulcus
+			 3 parafloccular sulcus
+			 3 precentral fissure
+			 3 preculminate fissure
+			 3 primary fissure
+			 3 posterior superior fissure
+			 3 prepyramidal fissure
+	 1 retina
