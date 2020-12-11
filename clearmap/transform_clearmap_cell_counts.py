@@ -83,13 +83,13 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
     #first, check if cells where transformed properly
     #TRANSFORMED cell dataframe
     try:
-        points = np.load(os.path.join(src, "ClearMapClusterOutput/cells_transformed_to_Atlas.npy"))
-        raw = np.load(os.path.join(src, "ClearMapClusterOutput/cells.npy"))
+        points = np.load(os.path.join(src, "clearmap_cluster_output/cells_transformed_to_Atlas.npy")) #ClearMapClusterOutput
+        raw = np.load(os.path.join(src, "clearmap_cluster_output/cells.npy"))
         
         print(points.shape, raw.shape)
         
         if points.shape == raw.shape:
-            intensities = np.load(os.path.join(src, "ClearMapClusterOutput/intensities.npy"))
+            intensities = np.load(os.path.join(src, "clearmap_cluster_output/intensities.npy"))
             
             #open LUT excel sheet
             wb = xlrd.open_workbook(ann_lut)
@@ -152,7 +152,7 @@ def make_table_of_transformed_cells(src, ann, ann_lut):
 if __name__ == "__main__":
     #goal is to transform cooridnates, voxelize based on number of cells and overlay with reigstered cell signal channel...
     #inputs
-    src = "/jukebox/wang/Jess/lightsheet_output/202010_cfos/processed"
+    src = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/processed"
     #LUT
     ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso_60um_edge_80um_vent_erosion.tif"
     ann_lut = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"

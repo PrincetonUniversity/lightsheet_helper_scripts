@@ -6,7 +6,7 @@ Created on Wed Feb 20 12:43:10 2019
 @author: wanglab
 """
 
-from skimage.external import tifffile as tif
+import tifffile as tif
 from skimage.morphology import ball
 from scipy.ndimage.interpolation import zoom
 import matplotlib.pyplot as plt, numpy as np, cv2, os, pandas as pd
@@ -143,7 +143,11 @@ class Sagittal():
         cell_map = np.asarray([cv2.dilate(cell_map[i], selem, iterations = 1) for i in range(cell_map.shape[0])])
         
         #resampling cells
-        resizef = (1/1.6, 1/9.81, 1/9.81) #in z,y,x, depends on resampling, maybe better not to be hardcoded; always resampled this way in ClearMap
+        self.saggitaldims = self.saggital.shape #saggital
+        self.horizontaldims = (self.saggital.shape[2],self.saggital.shape[1],self.saggital.shape[0])
+        resizef = (self.horizontaldims[0]/self.fullszdims[0], 
+                   self.horizontaldims[1]/self.fullszdims[1], 
+                   self.horizontaldims[2]/self.fullszdims[2]) #in z,y,x, depends on resampling
         print("resizing by factors (z,y,x): {}\n this can take some time...\n".format(resizef))
         resz_cell_map = zoom(cell_map, resizef, order = 1) #right now only linear interpolation
         print("horizontal resampled cell map shape: {}\n".format(resz_cell_map.shape))
@@ -166,28 +170,29 @@ class Sagittal():
             merged = np.stack([self.horizontal, resz_cell_map, np.zeros_like(self.horizontal)], -1)
             tif.imsave(os.path.join(self.dst, "{}_points_merged.tif".format(os.path.basename(os.path.dirname(os.path.dirname(self.src))))), merged)
             
-        #compiles into multiple pdfs
-        pdf_pages = PdfPages(os.path.join(self.dst, "{}_cell_overlay_horizontal.pdf".format(os.path.basename(os.path.dirname(os.path.dirname(self.src)))))) 
-        
-        #set chunk size 
-        chunk = 30
-        slice = 200
-        for n in range(6):
-            #open figure
-            plt.figure(figsize=(8.27, 11.69))
-            a = np.max(self.horizontal[slice-chunk:slice, :, :]*30, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
-            b = np.max(resz_cell_map[slice-chunk:slice, :, :]*3,axis = 0)
-            plt.imshow(a, "gist_yarg")
-            plt.imshow(b, cmap, alpha = alpha)
-            plt.axis("off")
-            plt.title("z = {}".format(slice), color="m", fontsize = 10)
+        if save: 
+            #compiles into multiple pdfs
+            pdf_pages = PdfPages(os.path.join(self.dst, "{}_cell_overlay_horizontal.pdf".format(os.path.basename(os.path.dirname(os.path.dirname(self.src)))))) 
             
-            #done with the page
-            if save: pdf_pages.savefig(dpi = 300, bbox_inches = 'tight')
-            plt.close()
-            slice += chunk
-           
-        if save: pdf_pages.close()
+            #set chunk size 
+            chunk = 30
+            slice = 200
+            for n in range(6):
+                #open figure
+                plt.figure(figsize=(8.27, 11.69))
+                a = np.max(self.horizontal[slice-chunk:slice, :, :]*30, axis = 0) #the * factor is something you have to test and see what looks good, coudl be a variable
+                b = np.max(resz_cell_map[slice-chunk:slice, :, :]*3,axis = 0)
+                plt.imshow(a, "gist_yarg")
+                plt.imshow(b, cmap, alpha = alpha)
+                plt.axis("off")
+                plt.title("z = {}".format(slice), color="m", fontsize = 10)
+                
+                #done with the page
+                if save: pdf_pages.savefig(dpi = 300, bbox_inches = 'tight')
+                plt.close()
+                slice += chunk
+               
+            pdf_pages.close()
         
         print("done!\n*********************************************************************")
     
@@ -195,19 +200,20 @@ class Sagittal():
 #%%
 if __name__ == "__main__":
     #grabbing sagittal volume
-    dst = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing/qc"
+    dst = "/jukebox/wang/Jess/lightsheet_output/202010_cfos/qc"
     if not os.path.exists(dst): os.mkdir(dst)
 
-    pth = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing/clearmap"
+    pth = "/jukebox/wang/Jess/lightsheet_output/202010_cfos/processed"
     # flds = os.listdir(pth)
     
     # for fld in flds:
-    fld = "z265"
-    src = os.path.join(pth, fld+"/clearmap_cluster_output/cfos_resampled.tif")
-    cells = os.path.join(pth, fld+"/clearmap_cluster_output/cells.npy")
-    if os.path.exists(cells):
-        sagittal = Sagittal(src, dst, cells)
-        sagittal.makeClearMapCellOverlayHorizontalSections(volume = False, save = True)
-
-
-        
+    flds = os.listdir(pth)
+    for fld in flds:
+        src = os.path.join(pth, fld, "ClearMapClusterOutput", "cfos_resampled.tif")
+        cells = os.path.join(pth, fld, "ClearMapClusterOutput", "cells.npy")
+        if os.path.exists(cells):
+            sagittal = Sagittal(src, dst, cells)
+            sagittal.makeClearMapCellOverlayHorizontalSections(volume = True, save = False)
+    
+    
+            

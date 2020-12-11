@@ -61,6 +61,7 @@ def generate_percent_counts_and_density_per_region(src, csv_pth):
     
     return os.path.join(src, "cell_counts.csv")
 
+#%%
 if __name__ == "__main__":
     
     #init source paths
@@ -85,7 +86,6 @@ if __name__ == "__main__":
     df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
     ann_pth = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_iso.tif"
     atl_pth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
-    curated_structures = "/jukebox/wang/Jess/lightsheet_output/201904_ymaze_cfos/structures.csv"
     
     #run
     csv_pth = generate_data_frame(conditions, lst, pth, "Annotated_counts_60um_edge_80um_vent_erosion")

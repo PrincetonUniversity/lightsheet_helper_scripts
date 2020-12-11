@@ -30,7 +30,10 @@ if __name__ == "__main__":
     #takes 1 command line args
     print(sys.argv)
     src=str(sys.argv[1]) #folder to main image folder
-    pth = fast_scandir(src)[-1] #gets to the end of directory tree
+    try:
+        pth = fast_scandir(src)[-1] #gets to the end of directory tree
+    except:
+        pth = src #if images already in first directory
     print("\nPath to stitched images: %s\n" % pth)
     #path to store downsized images
     dst = os.path.join(os.path.dirname(src), "downsized")
