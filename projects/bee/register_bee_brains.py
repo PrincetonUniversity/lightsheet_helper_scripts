@@ -88,22 +88,9 @@ if __name__ == "__main__":
     src = "/jukebox/LightSheetData/kocher-bee/volume_analysis/volumes_downsized_to_template"
     dst = "/jukebox/LightSheetData/kocher-bee/volume_analysis/"
     #brains
-    brs = ["D07ret_2.575.tif", "C40iso_2.575.tif", "D18grp_2.575.tif",
-       "C09ret_2.575.tif", "A01iso_2.575step.tif", "D47ret_2.575.tif",
-       "C18ret_2.575.tif", "C30iso_2.575.tif", "B04ret_2.575.tif",
-       "C03grp_2.575step.tif", "D05iso_2.575.tif", "D16grp_2.575.tif",
-       "B02ret_2.575.tif", "D14grp_2.575.tif", "C28iso_2.576.tif",
-       "D21grp_2.575.d2.tif", "D08ret_2.575.tif", "C07iso_2.575.tif",
-       "C19ret_2.575.tif", "C37grp_2.575.tif", "C04grp_2.575.tif",
-       "D42ret_2.575.tif", "C16ret_2.575.tif", "B01ret_2.575step.tif",
-       "D12grp_2.575.tif", "B03ret_2.575.tif", "C08iso_2.575.tif",
-       "B07iso_2.575.tif", "C11ret_2.575.tif", "C25grp_2.575.tif",
-       "C13ret_2.575.tif", "D01grp_2.575.tif", "D24iso_2.575.tif",
-       "D04grp_2.575.tif", "C05grp_2.575.tif", "D41ret_2.575.tif",
-       "C12ret_2.575.tif", "B08iso_2.575.tif", "C15ret_2.575.tif",
-       "D17grp_2.575.tif", "D40ret_2.575.tif", "C14ret_2.575.tif",
-       "D27grp_2.575.tif", "B12iso_2.575.tif", "C33grp_2.575.tif",
-       "B11iso_2.575.tif", "C29iso_2.575.tif", "B05ret_2.575.tif"]
+    brs = ["C36grp_2.575.tif", "C31grp_2.575.tif", "C21grp_2.575.tif", "D30iso_2.575.tif",
+           "C32grp_2.575.tif", "C24grp_2.575.tif", "C35grp_2.575.tif", "D13grp_2.575.tif",
+           "D29grp_2.575.tif", "C20grp_2.575.tif"]
     #'fixed' imagess
     fxs = [os.path.join(src,xx) for xx in brs]
     #array job
