@@ -34,6 +34,12 @@ ${brain}/rawdata/resolution_3.6x/raw_atlas/transformed_annotations/single_tifs
 ```
 where `${brain}` is the path you provide in `run_transform_pipeline.sh`. You need to make sure the rawdata/resolution_3.6x folders exist before you run this.
 
+You should now be ready to run the code:
+
+`./run_transform_pipeline.sh`
+
+This bash script submits the sbatch script: `slurm_scripts/transform.sh`, which calls the python script: `transform_annotations_to_fullsize_cfos.py` 
+
 ## What actually happens in this script
 
 Basically this script just reverses the steps of registration. The *extremely* confusing part is that in actuality it reverses the steps of inverse registration. To make the distinction between regular registration and inverse registration consider the regular registration of a raw cell channel volume to atlas space. In that scenario we perform these steps:
