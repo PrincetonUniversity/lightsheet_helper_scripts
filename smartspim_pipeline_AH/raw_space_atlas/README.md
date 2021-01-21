@@ -38,7 +38,7 @@ You should now be ready to run the code:
 
 `./run_transform_pipeline.sh`
 
-This bash script submits the sbatch script: `slurm_scripts/transform.sh`, which calls the python script: `transform_annotations_to_fullsize_cfos.py` 
+This bash script submits the sbatch script: `slurm_scripts/transform.sh`, which calls the python script: `transform_annotations_to_fullsize_cfos.py`
 
 ## What actually happens in this script
 
@@ -92,3 +92,6 @@ This loops through over all zplanes of this reoriented, but still downsized in x
 ```
 ${brain}/rawdata/resolution_3.6x/raw_atlas/transformed_annotations/single_tifs
 ```
+
+## Something to note
+The raw atlas that this script creates is actually aligned to the raw registration channel. However, we often want to show the raw cell channel and the cell annotations with the atlas overlaid. Shouldn't there be an additional transformation between reg ch -> cell ch after the intitial transformation between atlas -> reg ch? Yes, technically there should be. However, the reg channel and cell channel are often essentially already aligned due to how we image the same volume at multiple wavelengths simultaneously. As a result, you won't notice much of a difference if you add in this extra transformation in almost all cases. If it is NOT the case that cell channel and registration channel were imaged at the same resolution together, then this additional step needs to be run. All that is needed in that case is an extra call to transformix using the correct `TransformParameters.*.txt` file after the initial transformix call. 
