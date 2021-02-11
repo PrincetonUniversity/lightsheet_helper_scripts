@@ -1,0 +1,1962 @@
+digraph {
+	node [shape=box]
+	root [fillcolor=yellow style=filled]
+	root -> "Basic cell groups and regions"
+	"Basic cell groups and regions" -> "Brain stem"
+	"Brain stem" -> Midbrain
+	Midbrain [fillcolor=yellow style=filled]
+	Midbrain -> "Midbrain, motor related"
+	"Midbrain, motor related" -> "Oculomotor nucleus"
+	"Oculomotor nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Medial terminal nucleus of the accessory optic tract"
+	"Medial terminal nucleus of the accessory optic tract" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Lateral terminal nucleus of the accessory optic tract"
+	"Lateral terminal nucleus of the accessory optic tract" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Dorsal terminal nucleus of the accessory optic tract"
+	"Dorsal terminal nucleus of the accessory optic tract" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Trochlear nucleus"
+	"Trochlear nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Midbrain reticular nucleus"
+	"Midbrain reticular nucleus" [fillcolor=yellow style=filled]
+	"Midbrain reticular nucleus" -> "Midbrain reticular nucleus, magnocellular part"
+	"Midbrain reticular nucleus" -> "Midbrain reticular nucleus, magnocellular part, general"
+	"Midbrain reticular nucleus" -> "Midbrain reticular nucleus, parvicellular part"
+	"Midbrain, motor related" -> "Red nucleus"
+	"Red nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Anterior tegmental nucleus"
+	"Anterior tegmental nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Midbrain reticular nucleus, retrorubral area"
+	"Midbrain reticular nucleus, retrorubral area" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Superior colliculus, motor related"
+	"Superior colliculus, motor related" -> "Superior colliculus, motor related, intermediate gray layer"
+	"Superior colliculus, motor related, intermediate gray layer" [fillcolor=yellow style=filled]
+	"Superior colliculus, motor related, intermediate gray layer" -> "Superior colliculus, motor related, intermediate gray layer, sublayer a"
+	"Superior colliculus, motor related, intermediate gray layer, sublayer a" [fillcolor=yellow style=filled]
+	"Superior colliculus, motor related, intermediate gray layer" -> "Superior colliculus, motor related, intermediate gray layer, sublayer b"
+	"Superior colliculus, motor related, intermediate gray layer, sublayer b" [fillcolor=yellow style=filled]
+	"Superior colliculus, motor related, intermediate gray layer" -> "Superior colliculus, motor related, intermediate gray layer, sublayer c"
+	"Superior colliculus, motor related" -> "Superior colliculus, motor related, intermediate white layer"
+	"Superior colliculus, motor related, intermediate white layer" [fillcolor=yellow style=filled]
+	"Superior colliculus, motor related" -> "Superior colliculus, motor related, deep gray layer"
+	"Superior colliculus, motor related, deep gray layer" [fillcolor=yellow style=filled]
+	"Superior colliculus, motor related" -> "Superior colliculus, motor related, deep white layer"
+	"Superior colliculus, motor related, deep white layer" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Substantia nigra, reticular part"
+	"Substantia nigra, reticular part" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Substantia nigra, lateral part"
+	"Midbrain, motor related" -> "Cuneiform nucleus"
+	"Cuneiform nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Ventral tegmental area"
+	"Ventral tegmental area" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Ventral tegmental nucleus"
+	"Ventral tegmental nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Periaqueductal gray"
+	"Periaqueductal gray" [fillcolor=yellow style=filled]
+	"Periaqueductal gray" -> "Precommissural nucleus"
+	"Precommissural nucleus" [fillcolor=yellow style=filled]
+	"Periaqueductal gray" -> "Interstitial nucleus of Cajal"
+	"Interstitial nucleus of Cajal" [fillcolor=yellow style=filled]
+	"Periaqueductal gray" -> "Nucleus of Darkschewitsch"
+	"Nucleus of Darkschewitsch" [fillcolor=yellow style=filled]
+	"Periaqueductal gray" -> "Supraoculomotor periaqueductal gray"
+	"Supraoculomotor periaqueductal gray" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Edinger-Westphal nucleus"
+	"Edinger-Westphal nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Pretectal region"
+	"Pretectal region" -> "Anterior pretectal nucleus"
+	"Anterior pretectal nucleus" [fillcolor=yellow style=filled]
+	"Pretectal region" -> "Medial pretectal area"
+	"Medial pretectal area" [fillcolor=yellow style=filled]
+	"Pretectal region" -> "Nucleus of the optic tract"
+	"Nucleus of the optic tract" [fillcolor=yellow style=filled]
+	"Pretectal region" -> "Nucleus of the posterior commissure"
+	"Nucleus of the posterior commissure" [fillcolor=yellow style=filled]
+	"Pretectal region" -> "Olivary pretectal nucleus"
+	"Olivary pretectal nucleus" [fillcolor=yellow style=filled]
+	"Pretectal region" -> "Posterior pretectal nucleus"
+	"Posterior pretectal nucleus" [fillcolor=yellow style=filled]
+	"Pretectal region" -> "Retroparafascicular nucleus"
+	"Midbrain, motor related" -> "Intercollicular nucleus"
+	"Midbrain, motor related" -> "Medial accesory oculomotor nucleus"
+	"Midbrain, motor related" -> "Paratrochlear nucleus"
+	"Paratrochlear nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, motor related" -> "Paranigral nucleus"
+	Midbrain -> "Midbrain, sensory related"
+	"Midbrain, sensory related" -> "Inferior colliculus"
+	"Inferior colliculus" [fillcolor=yellow style=filled]
+	"Inferior colliculus" -> "Inferior colliculus, central nucleus"
+	"Inferior colliculus, central nucleus" [fillcolor=yellow style=filled]
+	"Inferior colliculus" -> "Inferior colliculus, dorsal nucleus"
+	"Inferior colliculus, dorsal nucleus" [fillcolor=yellow style=filled]
+	"Inferior colliculus" -> "Inferior colliculus, external nucleus"
+	"Inferior colliculus, external nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, sensory related" -> "Nucleus sagulum"
+	"Nucleus sagulum" [fillcolor=yellow style=filled]
+	"Midbrain, sensory related" -> "Superior colliculus, sensory related"
+	"Superior colliculus, sensory related" -> "Superior colliculus, zonal layer"
+	"Superior colliculus, zonal layer" [fillcolor=yellow style=filled]
+	"Superior colliculus, sensory related" -> "Superior colliculus, superficial gray layer"
+	"Superior colliculus, superficial gray layer" [fillcolor=yellow style=filled]
+	"Superior colliculus, sensory related" -> "Superior colliculus, optic layer"
+	"Superior colliculus, optic layer" [fillcolor=yellow style=filled]
+	"Midbrain, sensory related" -> "Midbrain trigeminal nucleus"
+	"Midbrain trigeminal nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, sensory related" -> "Nucleus of the brachium of the inferior colliculus"
+	"Nucleus of the brachium of the inferior colliculus" [fillcolor=yellow style=filled]
+	"Midbrain, sensory related" -> "Parabigeminal nucleus"
+	"Parabigeminal nucleus" [fillcolor=yellow style=filled]
+	"Midbrain, sensory related" -> "Subcommissural organ"
+	"Subcommissural organ" [fillcolor=yellow style=filled]
+	Midbrain -> "Midbrain, behavioral state related"
+	"Midbrain, behavioral state related" -> "Midbrain raphe nuclei"
+	"Midbrain raphe nuclei" -> "Interfascicular nucleus raphe"
+	"Interfascicular nucleus raphe" [fillcolor=yellow style=filled]
+	"Midbrain raphe nuclei" -> "Interpeduncular nucleus"
+	"Interpeduncular nucleus" [fillcolor=yellow style=filled]
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, rostral"
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, caudal"
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, apical"
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, lateral"
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, intermediate"
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, dorsomedial"
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, dorsolateral"
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, rostrolateral"
+	"Midbrain raphe nuclei" -> "Rostral linear nucleus raphe"
+	"Rostral linear nucleus raphe" [fillcolor=yellow style=filled]
+	"Midbrain raphe nuclei" -> "Central linear nucleus raphe"
+	"Central linear nucleus raphe" [fillcolor=yellow style=filled]
+	"Midbrain raphe nuclei" -> "Dorsal nucleus raphe"
+	"Dorsal nucleus raphe" [fillcolor=yellow style=filled]
+	"Midbrain, behavioral state related" -> "Substantia nigra, compact part"
+	"Substantia nigra, compact part" [fillcolor=yellow style=filled]
+	"Midbrain, behavioral state related" -> "Pedunculopontine nucleus"
+	"Pedunculopontine nucleus" [fillcolor=yellow style=filled]
+	"Brain stem" -> Hindbrain
+	Hindbrain -> Medulla
+	Medulla [fillcolor=yellow style=filled]
+	Medulla -> "Medulla, motor related"
+	"Medulla, motor related" -> "Interstitial nucleus of the vestibular nerve"
+	"Medulla, motor related" -> "Inferior olivary complex"
+	"Inferior olivary complex" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Inferior salivatory nucleus"
+	"Inferior salivatory nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Nucleus ambiguus"
+	"Nucleus ambiguus" -> "Nucleus ambiguus, ventral division"
+	"Nucleus ambiguus, ventral division" [fillcolor=yellow style=filled]
+	"Nucleus ambiguus" -> "Nucleus ambiguus, dorsal division"
+	"Nucleus ambiguus, dorsal division" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Intermediate reticular nucleus"
+	"Intermediate reticular nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Perihypoglossal nuclei"
+	"Perihypoglossal nuclei" -> "Nucleus intercalatus"
+	"Perihypoglossal nuclei" -> "Nucleus prepositus"
+	"Nucleus prepositus" [fillcolor=yellow style=filled]
+	"Perihypoglossal nuclei" -> "Nucleus of Roller"
+	"Nucleus of Roller" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Linear nucleus of the medulla"
+	"Linear nucleus of the medulla" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Lateral reticular nucleus"
+	"Lateral reticular nucleus" -> "Lateral reticular nucleus, magnocellular part"
+	"Lateral reticular nucleus, magnocellular part" [fillcolor=yellow style=filled]
+	"Lateral reticular nucleus" -> "Lateral reticular nucleus, parvicellular part"
+	"Lateral reticular nucleus, parvicellular part" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Magnocellular reticular nucleus"
+	"Magnocellular reticular nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Infracerebellar nucleus"
+	"Infracerebellar nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Medullary reticular nucleus"
+	"Medullary reticular nucleus" -> "Medullary reticular nucleus, dorsal part"
+	"Medullary reticular nucleus, dorsal part" [fillcolor=yellow style=filled]
+	"Medullary reticular nucleus" -> "Medullary reticular nucleus, ventral part"
+	"Medullary reticular nucleus, ventral part" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Accessory abducens nucleus"
+	"Medulla, motor related" -> "Accessory facial motor nucleus"
+	"Accessory facial motor nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Efferent vestibular nucleus"
+	"Medulla, motor related" -> "Abducens nucleus"
+	"Abducens nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Facial motor nucleus"
+	"Facial motor nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Vestibular nuclei"
+	"Vestibular nuclei" -> "Medial vestibular nucleus"
+	"Medial vestibular nucleus" [fillcolor=yellow style=filled]
+	"Vestibular nuclei" -> "Lateral vestibular nucleus"
+	"Lateral vestibular nucleus" [fillcolor=yellow style=filled]
+	"Vestibular nuclei" -> "Superior vestibular nucleus"
+	"Superior vestibular nucleus" [fillcolor=yellow style=filled]
+	"Vestibular nuclei" -> "Spinal vestibular nucleus"
+	"Spinal vestibular nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Nucleus x"
+	"Nucleus x" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Hypoglossal nucleus"
+	"Hypoglossal nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Nucleus y"
+	"Nucleus y" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Dorsal motor nucleus of the vagus nerve"
+	"Dorsal motor nucleus of the vagus nerve" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Parvicellular reticular nucleus"
+	"Parvicellular reticular nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Parasolitary nucleus"
+	"Parasolitary nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Efferent cochlear group"
+	"Medulla, motor related" -> "Paragigantocellular reticular nucleus"
+	"Paragigantocellular reticular nucleus" -> "Paragigantocellular reticular nucleus, dorsal part"
+	"Paragigantocellular reticular nucleus, dorsal part" [fillcolor=yellow style=filled]
+	"Paragigantocellular reticular nucleus" -> "Paragigantocellular reticular nucleus, lateral part"
+	"Paragigantocellular reticular nucleus, lateral part" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Paramedian reticular nucleus"
+	"Medulla, motor related" -> "Gigantocellular reticular nucleus"
+	"Gigantocellular reticular nucleus" [fillcolor=yellow style=filled]
+	"Medulla, motor related" -> "Parapyramidal nucleus"
+	"Parapyramidal nucleus" [fillcolor=yellow style=filled]
+	"Parapyramidal nucleus" -> "Parapyramidal nucleus, deep part"
+	"Parapyramidal nucleus" -> "Parapyramidal nucleus, superficial part"
+	Medulla -> "Medulla, behavioral state related"
+	"Medulla, behavioral state related" -> "Nucleus raphe magnus"
+	"Nucleus raphe magnus" [fillcolor=yellow style=filled]
+	"Medulla, behavioral state related" -> "Nucleus raphe obscurus"
+	"Nucleus raphe obscurus" [fillcolor=yellow style=filled]
+	"Medulla, behavioral state related" -> "Nucleus raphe pallidus"
+	"Nucleus raphe pallidus" [fillcolor=yellow style=filled]
+	Medulla -> "Medulla, sensory related"
+	"Medulla, sensory related" -> "Area postrema"
+	"Area postrema" [fillcolor=yellow style=filled]
+	"Medulla, sensory related" -> "Spinal nucleus of the trigeminal, caudal part"
+	"Spinal nucleus of the trigeminal, caudal part" [fillcolor=yellow style=filled]
+	"Medulla, sensory related" -> "Spinal nucleus of the trigeminal, interpolar part"
+	"Spinal nucleus of the trigeminal, interpolar part" [fillcolor=yellow style=filled]
+	"Medulla, sensory related" -> "Spinal nucleus of the trigeminal, oral part"
+	"Spinal nucleus of the trigeminal, oral part" [fillcolor=yellow style=filled]
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, rostral dorsomedial part"
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, middle dorsomedial part, dorsal zone"
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, middle dorsomedial part, ventral zone"
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, ventrolateral part"
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, caudal dorsomedial part"
+	"Medulla, sensory related" -> "Cochlear nuclei"
+	"Cochlear nuclei" -> "Dorsal cochlear nucleus"
+	"Dorsal cochlear nucleus" [fillcolor=yellow style=filled]
+	"Cochlear nuclei" -> "Ventral cochlear nucleus"
+	"Ventral cochlear nucleus" [fillcolor=yellow style=filled]
+	"Cochlear nuclei" -> "Granular lamina of the cochlear nuclei"
+	"Cochlear nuclei" -> "Cochlear nucleus, subpedunclular granular region"
+	"Medulla, sensory related" -> "Nucleus of the trapezoid body"
+	"Nucleus of the trapezoid body" [fillcolor=yellow style=filled]
+	"Medulla, sensory related" -> "Nucleus of the solitary tract"
+	"Nucleus of the solitary tract" [fillcolor=yellow style=filled]
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, central part"
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, commissural part"
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, gelatinous part"
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, lateral part"
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, medial part"
+	"Medulla, sensory related" -> "Dorsal column nuclei"
+	"Dorsal column nuclei" -> "Cuneate nucleus"
+	"Cuneate nucleus" [fillcolor=yellow style=filled]
+	"Dorsal column nuclei" -> "Gracile nucleus"
+	"Gracile nucleus" [fillcolor=yellow style=filled]
+	"Medulla, sensory related" -> "Nucleus z"
+	"Medulla, sensory related" -> "External cuneate nucleus"
+	"External cuneate nucleus" [fillcolor=yellow style=filled]
+	"Medulla, sensory related" -> "Paratrigeminal nucleus"
+	"Paratrigeminal nucleus" [fillcolor=yellow style=filled]
+	Hindbrain -> Pons
+	Pons [fillcolor=yellow style=filled]
+	Pons -> "Pons, motor related"
+	"Pons, motor related" -> "Barrington's nucleus"
+	"Barrington's nucleus" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Lateral tegmental nucleus"
+	"Pons, motor related" -> "Supragenual nucleus"
+	"Supragenual nucleus" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Superior salivatory nucleus"
+	"Pons, motor related" -> "Supratrigeminal nucleus"
+	"Supratrigeminal nucleus" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Pontine reticular nucleus, ventral part"
+	"Pons, motor related" -> "Tegmental reticular nucleus"
+	"Tegmental reticular nucleus" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Motor nucleus of trigeminal"
+	"Motor nucleus of trigeminal" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Dorsal tegmental nucleus"
+	"Dorsal tegmental nucleus" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Pontine central gray"
+	"Pontine central gray" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Pontine gray"
+	"Pontine gray" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Pontine reticular nucleus, caudal part"
+	"Pontine reticular nucleus, caudal part" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Posterodorsal tegmental nucleus"
+	"Posterodorsal tegmental nucleus" [fillcolor=yellow style=filled]
+	"Pons, motor related" -> "Peritrigeminal zone"
+	"Pons, motor related" -> "Accessory trigeminal nucleus"
+	"Pons, motor related" -> "Parvicellular motor 5 nucleus"
+	"Pons, motor related" -> "Intertrigeminal nucleus"
+	Pons -> "Pons, behavioral state related"
+	"Pons, behavioral state related" -> "Pontine reticular nucleus"
+	"Pontine reticular nucleus" [fillcolor=yellow style=filled]
+	"Pons, behavioral state related" -> "Locus ceruleus"
+	"Locus ceruleus" [fillcolor=yellow style=filled]
+	"Pons, behavioral state related" -> "Laterodorsal tegmental nucleus"
+	"Laterodorsal tegmental nucleus" [fillcolor=yellow style=filled]
+	"Pons, behavioral state related" -> "Nucleus raphe pontis"
+	"Nucleus raphe pontis" [fillcolor=yellow style=filled]
+	"Pons, behavioral state related" -> "Subceruleus nucleus"
+	"Subceruleus nucleus" [fillcolor=yellow style=filled]
+	"Pons, behavioral state related" -> "Sublaterodorsal nucleus"
+	"Sublaterodorsal nucleus" [fillcolor=yellow style=filled]
+	"Pons, behavioral state related" -> "Nucleus incertus"
+	"Nucleus incertus" [fillcolor=yellow style=filled]
+	"Pons, behavioral state related" -> "Superior central nucleus raphe"
+	"Superior central nucleus raphe" [fillcolor=yellow style=filled]
+	"Superior central nucleus raphe" -> "Superior central nucleus raphe, medial part"
+	"Superior central nucleus raphe" -> "Superior central nucleus raphe, lateral part"
+	Pons -> "Pons, sensory related"
+	"Pons, sensory related" -> "Principal sensory nucleus of the trigeminal"
+	"Principal sensory nucleus of the trigeminal" [fillcolor=yellow style=filled]
+	"Pons, sensory related" -> "Superior olivary complex"
+	"Superior olivary complex" -> "Superior olivary complex, medial part"
+	"Superior olivary complex, medial part" [fillcolor=yellow style=filled]
+	"Superior olivary complex" -> "Superior olivary complex, lateral part"
+	"Superior olivary complex, lateral part" [fillcolor=yellow style=filled]
+	"Superior olivary complex" -> "Superior olivary complex, periolivary region"
+	"Superior olivary complex, periolivary region" [fillcolor=yellow style=filled]
+	"Pons, sensory related" -> "Nucleus of the lateral lemniscus"
+	"Nucleus of the lateral lemniscus" [fillcolor=yellow style=filled]
+	"Nucleus of the lateral lemniscus" -> "Nucleus of the lateral lemniscus, dorsal part"
+	"Nucleus of the lateral lemniscus" -> "Nucleus of the lateral lemniscus, horizontal part"
+	"Nucleus of the lateral lemniscus" -> "Nucleus of the lateral lemniscus, ventral part"
+	"Pons, sensory related" -> "Parabrachial nucleus"
+	"Parabrachial nucleus" [fillcolor=yellow style=filled]
+	"Parabrachial nucleus" -> "Koelliker-Fuse subnucleus"
+	"Koelliker-Fuse subnucleus" [fillcolor=yellow style=filled]
+	"Parabrachial nucleus" -> "Parabrachial nucleus, lateral division"
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, central lateral part"
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, dorsal lateral part"
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, external lateral part"
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, superior lateral part"
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, ventral lateral part"
+	"Parabrachial nucleus" -> "Parabrachial nucleus, medial division"
+	"Parabrachial nucleus, medial division" -> "Parabrachial nucleus, medial division, external medial part"
+	"Parabrachial nucleus, medial division" -> "Parabrachial nucleus, medial division, medial medial part"
+	"Parabrachial nucleus, medial division" -> "Parabrachial nucleus, medial division, ventral medial part"
+	"Brain stem" -> Interbrain
+	Interbrain -> Thalamus
+	Thalamus [fillcolor=yellow style=filled]
+	Thalamus -> "Thalamus, polymodal association cortex related"
+	"Thalamus, polymodal association cortex related" -> "Intralaminar nuclei of the dorsal thalamus"
+	"Intralaminar nuclei of the dorsal thalamus" -> "Rhomboid nucleus"
+	"Rhomboid nucleus" [fillcolor=yellow style=filled]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Central lateral nucleus of the thalamus"
+	"Central lateral nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Central medial nucleus of the thalamus"
+	"Central medial nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Paracentral nucleus"
+	"Paracentral nucleus" [fillcolor=yellow style=filled]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Parafascicular nucleus"
+	"Parafascicular nucleus" [fillcolor=yellow style=filled]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Posterior intralaminar thalamic nucleus"
+	"Thalamus, polymodal association cortex related" -> "Lateral group of the dorsal thalamus"
+	"Lateral group of the dorsal thalamus" -> "Lateral posterior nucleus of the thalamus"
+	"Lateral posterior nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Lateral group of the dorsal thalamus" -> "Suprageniculate nucleus"
+	"Suprageniculate nucleus" [fillcolor=yellow style=filled]
+	"Lateral group of the dorsal thalamus" -> "Posterior complex of the thalamus"
+	"Posterior complex of the thalamus" [fillcolor=yellow style=filled]
+	"Lateral group of the dorsal thalamus" -> "Posterior limiting nucleus of the thalamus"
+	"Posterior limiting nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Lateral group of the dorsal thalamus" -> "Ethmoid nucleus of the thalamus"
+	"Lateral group of the dorsal thalamus" -> "Retroethmoid nucleus"
+	"Thalamus, polymodal association cortex related" -> "Anterior group of the dorsal thalamus"
+	"Anterior group of the dorsal thalamus" -> "Anterodorsal nucleus"
+	"Anterodorsal nucleus" [fillcolor=yellow style=filled]
+	"Anterior group of the dorsal thalamus" -> "Anteromedial nucleus"
+	"Anteromedial nucleus" -> "Anteromedial nucleus, dorsal part"
+	"Anteromedial nucleus, dorsal part" [fillcolor=yellow style=filled]
+	"Anteromedial nucleus" -> "Anteromedial nucleus, ventral part"
+	"Anteromedial nucleus, ventral part" [fillcolor=yellow style=filled]
+	"Anterior group of the dorsal thalamus" -> "Lateral dorsal nucleus of thalamus"
+	"Lateral dorsal nucleus of thalamus" [fillcolor=yellow style=filled]
+	"Anterior group of the dorsal thalamus" -> "Anteroventral nucleus of thalamus"
+	"Anteroventral nucleus of thalamus" [fillcolor=yellow style=filled]
+	"Anterior group of the dorsal thalamus" -> "Interanterodorsal nucleus of the thalamus"
+	"Interanterodorsal nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Anterior group of the dorsal thalamus" -> "Interanteromedial nucleus of the thalamus"
+	"Interanteromedial nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Thalamus, polymodal association cortex related" -> "Reticular nucleus of the thalamus"
+	"Reticular nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Thalamus, polymodal association cortex related" -> "Medial group of the dorsal thalamus"
+	"Medial group of the dorsal thalamus" -> "Intermediodorsal nucleus of the thalamus"
+	"Intermediodorsal nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Medial group of the dorsal thalamus" -> "Mediodorsal nucleus of thalamus"
+	"Mediodorsal nucleus of thalamus" [fillcolor=yellow style=filled]
+	"Mediodorsal nucleus of thalamus" -> "Mediodorsal nucleus of the thalamus, central part"
+	"Mediodorsal nucleus of thalamus" -> "Mediodorsal nucleus of the thalamus, lateral part"
+	"Mediodorsal nucleus of thalamus" -> "Mediodorsal nucleus of the thalamus, medial part"
+	"Medial group of the dorsal thalamus" -> "Submedial nucleus of the thalamus"
+	"Submedial nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Medial group of the dorsal thalamus" -> "Perireunensis nucleus"
+	"Perireunensis nucleus" [fillcolor=yellow style=filled]
+	"Thalamus, polymodal association cortex related" -> "Midline group of the dorsal thalamus"
+	"Midline group of the dorsal thalamus" -> "Parataenial nucleus"
+	"Parataenial nucleus" [fillcolor=yellow style=filled]
+	"Midline group of the dorsal thalamus" -> "Paraventricular nucleus of the thalamus"
+	"Paraventricular nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Midline group of the dorsal thalamus" -> "Nucleus of reuniens"
+	"Nucleus of reuniens" [fillcolor=yellow style=filled]
+	"Midline group of the dorsal thalamus" -> "Xiphoid thalamic nucleus"
+	"Thalamus, polymodal association cortex related" -> Epithalamus
+	Epithalamus -> "Lateral habenula"
+	"Lateral habenula" [fillcolor=yellow style=filled]
+	Epithalamus -> "Medial habenula"
+	"Medial habenula" [fillcolor=yellow style=filled]
+	Epithalamus -> "Pineal body"
+	"Thalamus, polymodal association cortex related" -> "Geniculate group, ventral thalamus"
+	"Geniculate group, ventral thalamus" -> "Intergeniculate leaflet of the lateral geniculate complex"
+	"Intergeniculate leaflet of the lateral geniculate complex" [fillcolor=yellow style=filled]
+	"Geniculate group, ventral thalamus" -> "Ventral part of the lateral geniculate complex"
+	"Ventral part of the lateral geniculate complex" [fillcolor=yellow style=filled]
+	"Ventral part of the lateral geniculate complex" -> "Ventral part of the lateral geniculate complex, lateral zone"
+	"Ventral part of the lateral geniculate complex" -> "Ventral part of the lateral geniculate complex, medial zone"
+	"Geniculate group, ventral thalamus" -> "Subgeniculate nucleus"
+	"Subgeniculate nucleus" [fillcolor=yellow style=filled]
+	"Geniculate group, ventral thalamus" -> "Intermediate geniculate nucleus"
+	Thalamus -> "Thalamus, sensory-motor cortex related"
+	"Thalamus, sensory-motor cortex related" -> "Subparafascicular nucleus"
+	"Subparafascicular nucleus" -> "Subparafascicular nucleus, magnocellular part"
+	"Subparafascicular nucleus, magnocellular part" [fillcolor=yellow style=filled]
+	"Subparafascicular nucleus" -> "Subparafascicular nucleus, parvicellular part"
+	"Subparafascicular nucleus, parvicellular part" [fillcolor=yellow style=filled]
+	"Thalamus, sensory-motor cortex related" -> "Subparafascicular area"
+	"Subparafascicular area" [fillcolor=yellow style=filled]
+	"Thalamus, sensory-motor cortex related" -> "Ventral group of the dorsal thalamus"
+	"Ventral group of the dorsal thalamus" -> "Ventral anterior-lateral complex of the thalamus"
+	"Ventral anterior-lateral complex of the thalamus" [fillcolor=yellow style=filled]
+	"Ventral group of the dorsal thalamus" -> "Ventral medial nucleus of the thalamus"
+	"Ventral medial nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Ventral group of the dorsal thalamus" -> "Ventral posterior complex of the thalamus"
+	"Ventral posterior complex of the thalamus" -> "Ventral posterolateral nucleus of the thalamus"
+	"Ventral posterolateral nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Ventral posterior complex of the thalamus" -> "Ventral posterolateral nucleus of the thalamus, parvicellular part"
+	"Ventral posterolateral nucleus of the thalamus, parvicellular part" [fillcolor=yellow style=filled]
+	"Ventral posterior complex of the thalamus" -> "Ventral posteromedial nucleus of the thalamus"
+	"Ventral posteromedial nucleus of the thalamus" [fillcolor=yellow style=filled]
+	"Ventral posterior complex of the thalamus" -> "Ventral posteromedial nucleus of the thalamus, parvicellular part"
+	"Ventral posteromedial nucleus of the thalamus, parvicellular part" [fillcolor=yellow style=filled]
+	"Ventral group of the dorsal thalamus" -> "Posterior triangular thalamic nucleus"
+	"Posterior triangular thalamic nucleus" [fillcolor=yellow style=filled]
+	"Thalamus, sensory-motor cortex related" -> "Geniculate group, dorsal thalamus"
+	"Geniculate group, dorsal thalamus" -> "Dorsal part of the lateral geniculate complex"
+	"Dorsal part of the lateral geniculate complex" [fillcolor=yellow style=filled]
+	"Dorsal part of the lateral geniculate complex" -> "Dorsal part of the lateral geniculate complex, shell"
+	"Dorsal part of the lateral geniculate complex, shell" [fillcolor=yellow style=filled]
+	"Dorsal part of the lateral geniculate complex" -> "Dorsal part of the lateral geniculate complex, core"
+	"Dorsal part of the lateral geniculate complex" -> "Dorsal part of the lateral geniculate complex, ipsilateral zone"
+	"Geniculate group, dorsal thalamus" -> "Medial geniculate complex"
+	"Medial geniculate complex" [fillcolor=yellow style=filled]
+	"Medial geniculate complex" -> "Medial geniculate complex, dorsal part"
+	"Medial geniculate complex, dorsal part" [fillcolor=yellow style=filled]
+	"Medial geniculate complex" -> "Medial geniculate complex, ventral part"
+	"Medial geniculate complex, ventral part" [fillcolor=yellow style=filled]
+	"Medial geniculate complex" -> "Medial geniculate complex, medial part"
+	"Medial geniculate complex, medial part" [fillcolor=yellow style=filled]
+	"Thalamus, sensory-motor cortex related" -> "Peripeduncular nucleus"
+	"Peripeduncular nucleus" [fillcolor=yellow style=filled]
+	Interbrain -> Hypothalamus
+	Hypothalamus [fillcolor=yellow style=filled]
+	Hypothalamus -> "Periventricular region"
+	"Periventricular region" -> "Anterodorsal preoptic nucleus"
+	"Anterodorsal preoptic nucleus" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Anterior hypothalamic area"
+	"Periventricular region" -> "Periventricular hypothalamic nucleus, posterior part"
+	"Periventricular hypothalamic nucleus, posterior part" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Periventricular hypothalamic nucleus, preoptic part"
+	"Periventricular hypothalamic nucleus, preoptic part" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Anteroventral preoptic nucleus"
+	"Anteroventral preoptic nucleus" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Anteroventral periventricular nucleus"
+	"Anteroventral periventricular nucleus" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Suprachiasmatic nucleus"
+	"Suprachiasmatic nucleus" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Subfornical organ"
+	"Subfornical organ" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Subparaventricular zone"
+	"Subparaventricular zone" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Median preoptic nucleus"
+	"Median preoptic nucleus" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Medial preoptic area"
+	"Medial preoptic area" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Ventrolateral preoptic nucleus"
+	"Ventrolateral preoptic nucleus" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Vascular organ of the lamina terminalis"
+	"Vascular organ of the lamina terminalis" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Dorsomedial nucleus of the hypothalamus"
+	"Dorsomedial nucleus of the hypothalamus" [fillcolor=yellow style=filled]
+	"Dorsomedial nucleus of the hypothalamus" -> "Dorsomedial nucleus of the hypothalamus, anterior part"
+	"Dorsomedial nucleus of the hypothalamus" -> "Dorsomedial nucleus of the hypothalamus, posterior part"
+	"Dorsomedial nucleus of the hypothalamus" -> "Dorsomedial nucleus of the hypothalamus, ventral part"
+	"Periventricular region" -> "Posterodorsal preoptic nucleus"
+	"Posterodorsal preoptic nucleus" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Parastrial nucleus"
+	"Parastrial nucleus" [fillcolor=yellow style=filled]
+	"Periventricular region" -> "Suprachiasmatic preoptic nucleus"
+	"Periventricular region" -> "Ventromedial preoptic nucleus"
+	Hypothalamus -> "Periventricular zone"
+	"Periventricular zone" -> "Periventricular hypothalamic nucleus, anterior part"
+	"Periventricular hypothalamic nucleus, anterior part" [fillcolor=yellow style=filled]
+	"Periventricular zone" -> "Paraventricular hypothalamic nucleus"
+	"Paraventricular hypothalamic nucleus" [fillcolor=yellow style=filled]
+	"Paraventricular hypothalamic nucleus" -> "Paraventricular hypothalamic nucleus, magnocellular division"
+	"Paraventricular hypothalamic nucleus, magnocellular division" -> "Paraventricular hypothalamic nucleus, magnocellular division, anterior magnocellular part"
+	"Paraventricular hypothalamic nucleus, magnocellular division" -> "Paraventricular hypothalamic nucleus, magnocellular division, medial magnocellular part"
+	"Paraventricular hypothalamic nucleus, magnocellular division" -> "Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part"
+	"Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part" -> "Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part, lateral zone"
+	"Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part" -> "Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part, medial zone"
+	"Paraventricular hypothalamic nucleus" -> "Paraventricular hypothalamic nucleus, parvicellular division"
+	"Paraventricular hypothalamic nucleus, parvicellular division" -> "Paraventricular hypothalamic nucleus, parvicellular division, anterior parvicellular part"
+	"Paraventricular hypothalamic nucleus, parvicellular division" -> "Paraventricular hypothalamic nucleus, parvicellular division, medial parvicellular part, dorsal zone"
+	"Paraventricular hypothalamic nucleus, parvicellular division" -> "Paraventricular hypothalamic nucleus, parvicellular division, periventricular part"
+	"Periventricular zone" -> "Periventricular hypothalamic nucleus, intermediate part"
+	"Periventricular hypothalamic nucleus, intermediate part" [fillcolor=yellow style=filled]
+	"Periventricular zone" -> "Arcuate hypothalamic nucleus"
+	"Arcuate hypothalamic nucleus" [fillcolor=yellow style=filled]
+	"Periventricular zone" -> "Accessory supraoptic group"
+	"Accessory supraoptic group" [fillcolor=yellow style=filled]
+	"Accessory supraoptic group" -> "Nucleus circularis"
+	"Periventricular zone" -> "Supraoptic nucleus"
+	"Supraoptic nucleus" [fillcolor=yellow style=filled]
+	Hypothalamus -> "Hypothalamic lateral zone"
+	"Hypothalamic lateral zone" -> "Retrochiasmatic area"
+	"Retrochiasmatic area" [fillcolor=yellow style=filled]
+	"Hypothalamic lateral zone" -> "Lateral hypothalamic area"
+	"Lateral hypothalamic area" [fillcolor=yellow style=filled]
+	"Hypothalamic lateral zone" -> "Lateral preoptic area"
+	"Lateral preoptic area" [fillcolor=yellow style=filled]
+	"Hypothalamic lateral zone" -> "Preparasubthalamic nucleus"
+	"Preparasubthalamic nucleus" [fillcolor=yellow style=filled]
+	"Hypothalamic lateral zone" -> "Parasubthalamic nucleus"
+	"Parasubthalamic nucleus" [fillcolor=yellow style=filled]
+	"Hypothalamic lateral zone" -> "Subthalamic nucleus"
+	"Subthalamic nucleus" [fillcolor=yellow style=filled]
+	"Hypothalamic lateral zone" -> "Tuberal nucleus"
+	"Tuberal nucleus" [fillcolor=yellow style=filled]
+	"Hypothalamic lateral zone" -> "Zona incerta"
+	"Zona incerta" [fillcolor=yellow style=filled]
+	"Zona incerta" -> "Dopaminergic A13 group"
+	"Zona incerta" -> "Fields of Forel"
+	"Fields of Forel" [fillcolor=yellow style=filled]
+	"Hypothalamic lateral zone" -> "Perifornical nucleus"
+	Hypothalamus -> "Hypothalamic medial zone"
+	"Hypothalamic medial zone" -> "Paraventricular hypothalamic nucleus, descending division"
+	"Paraventricular hypothalamic nucleus, descending division" [fillcolor=yellow style=filled]
+	"Paraventricular hypothalamic nucleus, descending division" -> "Paraventricular hypothalamic nucleus, descending division, dorsal parvicellular part"
+	"Paraventricular hypothalamic nucleus, descending division" -> "Paraventricular hypothalamic nucleus, descending division, forniceal part"
+	"Paraventricular hypothalamic nucleus, descending division" -> "Paraventricular hypothalamic nucleus, descending division, lateral parvicellular part"
+	"Paraventricular hypothalamic nucleus, descending division" -> "Paraventricular hypothalamic nucleus, descending division, medial parvicellular part, ventral zone"
+	"Hypothalamic medial zone" -> "Anterior hypothalamic nucleus"
+	"Anterior hypothalamic nucleus" [fillcolor=yellow style=filled]
+	"Anterior hypothalamic nucleus" -> "Anterior hypothalamic nucleus, anterior part"
+	"Anterior hypothalamic nucleus" -> "Anterior hypothalamic nucleus, central part"
+	"Anterior hypothalamic nucleus" -> "Anterior hypothalamic nucleus, dorsal part"
+	"Anterior hypothalamic nucleus" -> "Anterior hypothalamic nucleus, posterior part"
+	"Hypothalamic medial zone" -> "Mammillary body"
+	"Mammillary body" -> "Lateral mammillary nucleus"
+	"Lateral mammillary nucleus" [fillcolor=yellow style=filled]
+	"Mammillary body" -> "Medial mammillary nucleus"
+	"Medial mammillary nucleus" [fillcolor=yellow style=filled]
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, median part"
+	"Medial mammillary nucleus, median part" [fillcolor=yellow style=filled]
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, lateral part"
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, medial part"
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, posterior part"
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, dorsal part"
+	"Mammillary body" -> "Supramammillary nucleus"
+	"Supramammillary nucleus" [fillcolor=yellow style=filled]
+	"Supramammillary nucleus" -> "Supramammillary nucleus, lateral part"
+	"Supramammillary nucleus" -> "Supramammillary nucleus, medial part"
+	"Mammillary body" -> "Tuberomammillary nucleus"
+	"Tuberomammillary nucleus" -> "Tuberomammillary nucleus, ventral part"
+	"Tuberomammillary nucleus, ventral part" [fillcolor=yellow style=filled]
+	"Tuberomammillary nucleus" -> "Tuberomammillary nucleus, dorsal part"
+	"Tuberomammillary nucleus, dorsal part" [fillcolor=yellow style=filled]
+	"Hypothalamic medial zone" -> "Medial preoptic nucleus"
+	"Medial preoptic nucleus" [fillcolor=yellow style=filled]
+	"Medial preoptic nucleus" -> "Medial preoptic nucleus, central part"
+	"Medial preoptic nucleus" -> "Medial preoptic nucleus, lateral part"
+	"Medial preoptic nucleus" -> "Medial preoptic nucleus, medial part"
+	"Hypothalamic medial zone" -> "Ventromedial hypothalamic nucleus"
+	"Ventromedial hypothalamic nucleus" [fillcolor=yellow style=filled]
+	"Ventromedial hypothalamic nucleus" -> "Ventromedial hypothalamic nucleus, anterior part"
+	"Ventromedial hypothalamic nucleus" -> "Ventromedial hypothalamic nucleus, central part"
+	"Ventromedial hypothalamic nucleus" -> "Ventromedial hypothalamic nucleus, dorsomedial part"
+	"Ventromedial hypothalamic nucleus" -> "Ventromedial hypothalamic nucleus, ventrolateral part"
+	"Hypothalamic medial zone" -> "Posterior hypothalamic nucleus"
+	"Posterior hypothalamic nucleus" [fillcolor=yellow style=filled]
+	"Hypothalamic medial zone" -> "Dorsal premammillary nucleus"
+	"Dorsal premammillary nucleus" [fillcolor=yellow style=filled]
+	"Hypothalamic medial zone" -> "Ventral premammillary nucleus"
+	"Ventral premammillary nucleus" [fillcolor=yellow style=filled]
+	Hypothalamus -> "Median eminence"
+	"Median eminence" [fillcolor=yellow style=filled]
+	"Basic cell groups and regions" -> Cerebellum
+	Cerebellum [fillcolor=yellow style=filled]
+	Cerebellum -> "Cerebellar nuclei"
+	"Cerebellar nuclei" -> "Interposed nucleus"
+	"Interposed nucleus" [fillcolor=yellow style=filled]
+	"Cerebellar nuclei" -> "Dentate nucleus"
+	"Dentate nucleus" [fillcolor=yellow style=filled]
+	"Cerebellar nuclei" -> "Fastigial nucleus"
+	"Fastigial nucleus" [fillcolor=yellow style=filled]
+	"Cerebellar nuclei" -> "Vestibulocerebellar nucleus"
+	"Vestibulocerebellar nucleus" [fillcolor=yellow style=filled]
+	Cerebellum -> "Cerebellar cortex"
+	"Cerebellar cortex" -> "Vermal regions"
+	"Vermal regions" -> "Lingula (I)"
+	"Lingula (I)" [fillcolor=yellow style=filled]
+	"Lingula (I)" -> "Lingula (I), granular layer"
+	"Lingula (I)" -> "Lingula (I), Purkinje layer"
+	"Lingula (I)" -> "Lingula (I), molecular layer"
+	"Vermal regions" -> "Central lobule"
+	"Central lobule" -> "Lobule II"
+	"Lobule II" [fillcolor=yellow style=filled]
+	"Lobule II" -> "Lobule II, granular layer"
+	"Lobule II" -> "Lobule II, Purkinje layer"
+	"Lobule II" -> "Lobule II, molecular layer"
+	"Central lobule" -> "Lobule III"
+	"Lobule III" [fillcolor=yellow style=filled]
+	"Lobule III" -> "Lobule III, granular layer"
+	"Lobule III" -> "Lobule III, Purkinje layer"
+	"Lobule III" -> "Lobule III, molecular layer"
+	"Vermal regions" -> Culmen
+	Culmen -> "Lobule IV"
+	"Lobule IV" -> "Lobule IV, granular layer"
+	"Lobule IV" -> "Lobule IV, Purkinje layer"
+	"Lobule IV" -> "Lobule IV, molecular layer"
+	Culmen -> "Lobule V"
+	"Lobule V" -> "Lobule V, granular layer"
+	"Lobule V" -> "Lobule V, Purkinje layer"
+	"Lobule V" -> "Lobule V, molecular layer"
+	Culmen -> "Lobules IV-V"
+	"Lobules IV-V" [fillcolor=yellow style=filled]
+	"Lobules IV-V" -> "Lobules IV-V, Purkinje layer"
+	"Lobules IV-V" -> "Lobules IV-V, molecular layer"
+	"Vermal regions" -> "Folium-tuber vermis (VII)"
+	"Folium-tuber vermis (VII)" [fillcolor=yellow style=filled]
+	"Folium-tuber vermis (VII)" -> "Folium-tuber vermis (VII), granular layer"
+	"Folium-tuber vermis (VII)" -> "Folium-tuber vermis (VII), Purkinje layer"
+	"Folium-tuber vermis (VII)" -> "Folium-tuber vermis (VII), molecular layer"
+	"Vermal regions" -> "Pyramus (VIII)"
+	"Pyramus (VIII)" [fillcolor=yellow style=filled]
+	"Pyramus (VIII)" -> "Pyramus (VIII), granular layer"
+	"Pyramus (VIII)" -> "Pyramus (VIII), Purkinje layer"
+	"Pyramus (VIII)" -> "Pyramus (VIII), molecular layer"
+	"Vermal regions" -> "Uvula (IX)"
+	"Uvula (IX)" [fillcolor=yellow style=filled]
+	"Uvula (IX)" -> "Uvula (IX), granular layer"
+	"Uvula (IX)" -> "Uvula (IX), Purkinje layer"
+	"Uvula (IX)" -> "Uvula (IX), molecular layer"
+	"Vermal regions" -> "Nodulus (X)"
+	"Nodulus (X)" [fillcolor=yellow style=filled]
+	"Nodulus (X)" -> "Nodulus (X), granular layer"
+	"Nodulus (X)" -> "Nodulus (X), Purkinje layer"
+	"Nodulus (X)" -> "Nodulus (X), molecular layer"
+	"Vermal regions" -> "Declive (VI)"
+	"Declive (VI)" -> "Declive (VI), subdivision A"
+	"Declive (VI), subdivision A" [fillcolor=yellow style=filled]
+	"Declive (VI), subdivision A" -> "Declive (VI), granular layer"
+	"Declive (VI), subdivision A" -> "Declive (VI), Purkinje layer"
+	"Declive (VI), subdivision A" -> "Declive (VI), molecular layer"
+	"Declive (VI)" -> "Declive (VI), subdivision B"
+	"Declive (VI), subdivision B" [fillcolor=yellow style=filled]
+	"Cerebellar cortex" -> "Hemispheric regions"
+	"Hemispheric regions" -> "Simplex lobule"
+	"Simplex lobule" [fillcolor=yellow style=filled]
+	"Simplex lobule" -> "Simplex lobule, granular layer"
+	"Simplex lobule" -> "Simplex lobule, Purkinje layer"
+	"Simplex lobule" -> "Simplex lobule, molecular layer"
+	"Hemispheric regions" -> "Ansiform lobule"
+	"Ansiform lobule" -> "Crus 1"
+	"Crus 1" [fillcolor=yellow style=filled]
+	"Crus 1" -> "Crus 1, granular layer"
+	"Crus 1" -> "Crus 1, Purkinje layer"
+	"Crus 1" -> "Crus 1, molecular layer"
+	"Ansiform lobule" -> "Crus 2"
+	"Crus 2" [fillcolor=yellow style=filled]
+	"Crus 2" -> "Crus 2, granular layer"
+	"Crus 2" -> "Crus 2, Purkinje layer"
+	"Crus 2" -> "Crus 2, molecular layer"
+	"Hemispheric regions" -> "Paramedian lobule"
+	"Paramedian lobule" [fillcolor=yellow style=filled]
+	"Paramedian lobule" -> "Paramedian lobule, granular layer"
+	"Paramedian lobule" -> "Paramedian lobule, Purkinje layer"
+	"Paramedian lobule" -> "Paramedian lobule, molecular layer"
+	"Hemispheric regions" -> "Copula pyramidis"
+	"Copula pyramidis" [fillcolor=yellow style=filled]
+	"Copula pyramidis" -> "Copula pyramidis, granular layer"
+	"Copula pyramidis" -> "Copula pyramidis, Purkinje layer"
+	"Copula pyramidis" -> "Copula pyramidis, molecular layer"
+	"Hemispheric regions" -> Paraflocculus
+	Paraflocculus [fillcolor=yellow style=filled]
+	Paraflocculus -> "Paraflocculus, granular layer"
+	Paraflocculus -> "Paraflocculus, Purkinje layer"
+	Paraflocculus -> "Paraflocculus, molecular layer"
+	"Hemispheric regions" -> Flocculus
+	Flocculus [fillcolor=yellow style=filled]
+	Flocculus -> "Flocculus, granular layer"
+	Flocculus -> "Flocculus, Purkinje layer"
+	Flocculus -> "Flocculus, molecular layer"
+	"Cerebellar cortex" -> "Cerebellar cortex, granular layer"
+	"Cerebellar cortex" -> "Cerebellar cortex, molecular layer"
+	"Cerebellar cortex" -> "Cerebellar cortex, Purkinje layer"
+	"Basic cell groups and regions" -> Cerebrum
+	Cerebrum -> "Cerebral nuclei"
+	"Cerebral nuclei" -> Striatum
+	Striatum [fillcolor=yellow style=filled]
+	Striatum -> "Lateral septal complex"
+	"Lateral septal complex" -> "Lateral septal nucleus"
+	"Lateral septal nucleus" -> "Lateral septal nucleus, caudal (caudodorsal) part"
+	"Lateral septal nucleus, caudal (caudodorsal) part" [fillcolor=yellow style=filled]
+	"Lateral septal nucleus" -> "Lateral septal nucleus, rostral (rostroventral) part"
+	"Lateral septal nucleus, rostral (rostroventral) part" [fillcolor=yellow style=filled]
+	"Lateral septal nucleus" -> "Lateral septal nucleus, ventral part"
+	"Lateral septal nucleus, ventral part" [fillcolor=yellow style=filled]
+	"Lateral septal complex" -> "Septofimbrial nucleus"
+	"Septofimbrial nucleus" [fillcolor=yellow style=filled]
+	"Lateral septal complex" -> "Septohippocampal nucleus"
+	"Septohippocampal nucleus" [fillcolor=yellow style=filled]
+	Striatum -> "Striatum-like amygdalar nuclei"
+	"Striatum-like amygdalar nuclei" [fillcolor=yellow style=filled]
+	"Striatum-like amygdalar nuclei" -> "Anterior amygdalar area"
+	"Anterior amygdalar area" [fillcolor=yellow style=filled]
+	"Striatum-like amygdalar nuclei" -> "Bed nucleus of the accessory olfactory tract"
+	"Bed nucleus of the accessory olfactory tract" [fillcolor=yellow style=filled]
+	"Striatum-like amygdalar nuclei" -> "Medial amygdalar nucleus"
+	"Medial amygdalar nucleus" [fillcolor=yellow style=filled]
+	"Medial amygdalar nucleus" -> "Medial amygdalar nucleus, anterodorsal part"
+	"Medial amygdalar nucleus" -> "Medial amygdalar nucleus, anteroventral part"
+	"Medial amygdalar nucleus" -> "Medial amygdalar nucleus, posterodorsal part"
+	"Medial amygdalar nucleus, posterodorsal part" -> "Medial amygdalar nucleus, posterodorsal part, sublayer a"
+	"Medial amygdalar nucleus, posterodorsal part" -> "Medial amygdalar nucleus, posterodorsal part, sublayer b"
+	"Medial amygdalar nucleus, posterodorsal part" -> "Medial amygdalar nucleus, posterodorsal part, sublayer c"
+	"Medial amygdalar nucleus" -> "Medial amygdalar nucleus, posteroventral part"
+	"Striatum-like amygdalar nuclei" -> "Central amygdalar nucleus"
+	"Central amygdalar nucleus" -> "Central amygdalar nucleus, capsular part"
+	"Central amygdalar nucleus, capsular part" [fillcolor=yellow style=filled]
+	"Central amygdalar nucleus" -> "Central amygdalar nucleus, lateral part"
+	"Central amygdalar nucleus, lateral part" [fillcolor=yellow style=filled]
+	"Central amygdalar nucleus" -> "Central amygdalar nucleus, medial part"
+	"Central amygdalar nucleus, medial part" [fillcolor=yellow style=filled]
+	"Striatum-like amygdalar nuclei" -> "Intercalated amygdalar nucleus"
+	"Intercalated amygdalar nucleus" [fillcolor=yellow style=filled]
+	Striatum -> "Striatum dorsal region"
+	"Striatum dorsal region" -> Caudoputamen
+	Caudoputamen [fillcolor=yellow style=filled]
+	Striatum -> "Striatum ventral region"
+	"Striatum ventral region" -> "Nucleus accumbens"
+	"Nucleus accumbens" [fillcolor=yellow style=filled]
+	"Striatum ventral region" -> "Olfactory tubercle"
+	"Olfactory tubercle" [fillcolor=yellow style=filled]
+	"Olfactory tubercle" -> "Olfactory tubercle, layers 1-3"
+	"Olfactory tubercle" -> "Olfactory tubercle, molecular layer"
+	"Olfactory tubercle" -> "Olfactory tubercle, pyramidal layer"
+	"Olfactory tubercle" -> "Olfactory tubercle, polymorph layer"
+	"Olfactory tubercle" -> "Islands of Calleja"
+	"Olfactory tubercle" -> "Major island of Calleja"
+	"Striatum ventral region" -> "Fundus of striatum"
+	"Fundus of striatum" [fillcolor=yellow style=filled]
+	"Striatum ventral region" -> "Lateral strip of striatum"
+	"Cerebral nuclei" -> Pallidum
+	Pallidum [fillcolor=yellow style=filled]
+	Pallidum -> "Pallidum, caudal region"
+	"Pallidum, caudal region" -> "Bed nucleus of the anterior commissure"
+	"Bed nucleus of the anterior commissure" [fillcolor=yellow style=filled]
+	"Pallidum, caudal region" -> "Bed nuclei of the stria terminalis"
+	"Bed nuclei of the stria terminalis" [fillcolor=yellow style=filled]
+	"Bed nuclei of the stria terminalis" -> "Bed nuclei of the stria terminalis, anterior division"
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, anteromedial area"
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, dorsomedial nucleus"
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, fusiform nucleus"
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, magnocellular nucleus"
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, ventral nucleus"
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, anterolateral area"
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, juxtacapsular nucleus"
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, oval nucleus"
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, rhomboid nucleus"
+	"Bed nuclei of the stria terminalis" -> "Bed nuclei of the stria terminalis, posterior division"
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, dorsal nucleus"
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, principal nucleus"
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, interfascicular nucleus"
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, transverse nucleus"
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, strial extension"
+	Pallidum -> "Pallidum, dorsal region"
+	"Pallidum, dorsal region" -> "Globus pallidus, external segment"
+	"Globus pallidus, external segment" [fillcolor=yellow style=filled]
+	"Pallidum, dorsal region" -> "Globus pallidus, internal segment"
+	"Globus pallidus, internal segment" [fillcolor=yellow style=filled]
+	Pallidum -> "Pallidum, medial region"
+	"Pallidum, medial region" -> "Triangular nucleus of septum"
+	"Triangular nucleus of septum" [fillcolor=yellow style=filled]
+	"Pallidum, medial region" -> "Medial septal complex"
+	"Medial septal complex" -> "Medial septal nucleus"
+	"Medial septal nucleus" [fillcolor=yellow style=filled]
+	"Medial septal complex" -> "Diagonal band nucleus"
+	"Diagonal band nucleus" [fillcolor=yellow style=filled]
+	Pallidum -> "Pallidum, ventral region"
+	"Pallidum, ventral region" -> "Magnocellular nucleus"
+	"Magnocellular nucleus" [fillcolor=yellow style=filled]
+	"Pallidum, ventral region" -> "Substantia innominata"
+	"Substantia innominata" [fillcolor=yellow style=filled]
+	Cerebrum -> "Cerebral cortex"
+	"Cerebral cortex" -> "Cortical plate"
+	"Cortical plate" -> Isocortex
+	Isocortex -> "Posterior parietal association areas"
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 2/3"
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 6a"
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 6b"
+	"Posterior parietal association areas" -> "Rostrolateral visual area"
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 2/3"
+	"Rostrolateral area, layer 2/3" [fillcolor=yellow style=filled]
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 1"
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 4"
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 5"
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 6a"
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 6b"
+	"Rostrolateral area, layer 6b" [fillcolor=yellow style=filled]
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 1"
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 4"
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 5"
+	"Posterior parietal association areas" -> "Anterior area"
+	"Anterior area" -> "Anterior area, layer 1"
+	"Anterior area" -> "Anterior area, layer 2/3"
+	"Anterior area" -> "Anterior area, layer 4"
+	"Anterior area" -> "Anterior area, layer 5"
+	"Anterior area" -> "Anterior area, layer 6a"
+	"Anterior area" -> "Anterior area, layer 6b"
+	Isocortex -> "Anterior cingulate area"
+	"Anterior cingulate area" -> "Anterior cingulate area, dorsal part"
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 2/3"
+	"Anterior cingulate area, dorsal part, layer 2/3" [fillcolor=yellow style=filled]
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 6a"
+	"Anterior cingulate area, dorsal part, layer 6a" [fillcolor=yellow style=filled]
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 6b"
+	"Anterior cingulate area, dorsal part, layer 6b" [fillcolor=yellow style=filled]
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 1"
+	"Anterior cingulate area, dorsal part, layer 1" [fillcolor=yellow style=filled]
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 5"
+	"Anterior cingulate area, dorsal part, layer 5" [fillcolor=yellow style=filled]
+	"Anterior cingulate area" -> "Anterior cingulate area, ventral part"
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, layer 2/3"
+	"Anterior cingulate area, ventral part, layer 2/3" [fillcolor=yellow style=filled]
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, layer 1"
+	"Anterior cingulate area, ventral part, layer 1" [fillcolor=yellow style=filled]
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, layer 5"
+	"Anterior cingulate area, ventral part, layer 5" [fillcolor=yellow style=filled]
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, 6a"
+	"Anterior cingulate area, ventral part, 6a" [fillcolor=yellow style=filled]
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, 6b"
+	"Anterior cingulate area, ventral part, 6b" [fillcolor=yellow style=filled]
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 6a"
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 6b"
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 1"
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 5"
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 2/3"
+	Isocortex -> "Infralimbic area"
+	"Infralimbic area" -> "Infralimbic area, layer 2/3"
+	"Infralimbic area, layer 2/3" [fillcolor=yellow style=filled]
+	"Infralimbic area" -> "Infralimbic area, layer 1"
+	"Infralimbic area, layer 1" [fillcolor=yellow style=filled]
+	"Infralimbic area" -> "Infralimbic area, layer 2"
+	"Infralimbic area" -> "Infralimbic area, layer 5"
+	"Infralimbic area, layer 5" [fillcolor=yellow style=filled]
+	"Infralimbic area" -> "Infralimbic area, layer 6a"
+	"Infralimbic area, layer 6a" [fillcolor=yellow style=filled]
+	"Infralimbic area" -> "Infralimbic area, layer 6b"
+	"Infralimbic area, layer 6b" [fillcolor=yellow style=filled]
+	Isocortex -> "Agranular insular area"
+	"Agranular insular area" -> "Agranular insular area, dorsal part"
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 2/3"
+	"Agranular insular area, dorsal part, layer 2/3" [fillcolor=yellow style=filled]
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 6a"
+	"Agranular insular area, dorsal part, layer 6a" [fillcolor=yellow style=filled]
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 6b"
+	"Agranular insular area, dorsal part, layer 6b" [fillcolor=yellow style=filled]
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 1"
+	"Agranular insular area, dorsal part, layer 1" [fillcolor=yellow style=filled]
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 5"
+	"Agranular insular area, dorsal part, layer 5" [fillcolor=yellow style=filled]
+	"Agranular insular area" -> "Agranular insular area, posterior part"
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 1"
+	"Agranular insular area, posterior part, layer 1" [fillcolor=yellow style=filled]
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 2/3"
+	"Agranular insular area, posterior part, layer 2/3" [fillcolor=yellow style=filled]
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 6a"
+	"Agranular insular area, posterior part, layer 6a" [fillcolor=yellow style=filled]
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 5"
+	"Agranular insular area, posterior part, layer 5" [fillcolor=yellow style=filled]
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 6b"
+	"Agranular insular area, posterior part, layer 6b" [fillcolor=yellow style=filled]
+	"Agranular insular area" -> "Agranular insular area, ventral part"
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 6a"
+	"Agranular insular area, ventral part, layer 6a" [fillcolor=yellow style=filled]
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 2/3"
+	"Agranular insular area, ventral part, layer 2/3" [fillcolor=yellow style=filled]
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 6b"
+	"Agranular insular area, ventral part, layer 6b" [fillcolor=yellow style=filled]
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 1"
+	"Agranular insular area, ventral part, layer 1" [fillcolor=yellow style=filled]
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 5"
+	"Agranular insular area, ventral part, layer 5" [fillcolor=yellow style=filled]
+	Isocortex -> "Frontal pole, cerebral cortex"
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 1"
+	"Frontal pole, layer 1" [fillcolor=yellow style=filled]
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 2/3"
+	"Frontal pole, layer 2/3" [fillcolor=yellow style=filled]
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 5"
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 6b"
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 6a"
+	"Frontal pole, layer 6a" [fillcolor=yellow style=filled]
+	Isocortex -> "Auditory areas"
+	"Auditory areas" -> "Primary auditory area"
+	"Primary auditory area" -> "Primary auditory area, layer 2/3"
+	"Primary auditory area, layer 2/3" [fillcolor=yellow style=filled]
+	"Primary auditory area" -> "Primary auditory area, layer 1"
+	"Primary auditory area, layer 1" [fillcolor=yellow style=filled]
+	"Primary auditory area" -> "Primary auditory area, layer 4"
+	"Primary auditory area, layer 4" [fillcolor=yellow style=filled]
+	"Primary auditory area" -> "Primary auditory area, layer 5"
+	"Primary auditory area, layer 5" [fillcolor=yellow style=filled]
+	"Primary auditory area" -> "Primary auditory area, layer 6a"
+	"Primary auditory area, layer 6a" [fillcolor=yellow style=filled]
+	"Primary auditory area" -> "Primary auditory area, layer 6b"
+	"Primary auditory area, layer 6b" [fillcolor=yellow style=filled]
+	"Auditory areas" -> "Dorsal auditory area"
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 6a"
+	"Dorsal auditory area, layer 6a" [fillcolor=yellow style=filled]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 6b"
+	"Dorsal auditory area, layer 6b" [fillcolor=yellow style=filled]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 5"
+	"Dorsal auditory area, layer 5" [fillcolor=yellow style=filled]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 1"
+	"Dorsal auditory area, layer 1" [fillcolor=yellow style=filled]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 2/3"
+	"Dorsal auditory area, layer 2/3" [fillcolor=yellow style=filled]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 4"
+	"Dorsal auditory area, layer 4" [fillcolor=yellow style=filled]
+	"Dorsal auditory area" -> "Laterolateral anterior visual area"
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 1"
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 2/3"
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 4"
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area,layer 5"
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 6a"
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 6b"
+	"Auditory areas" -> "Ventral auditory area"
+	"Ventral auditory area" -> "Ventral auditory area, layer 6a"
+	"Ventral auditory area, layer 6a" [fillcolor=yellow style=filled]
+	"Ventral auditory area" -> "Ventral auditory area, layer 6b"
+	"Ventral auditory area, layer 6b" [fillcolor=yellow style=filled]
+	"Ventral auditory area" -> "Ventral auditory area, layer 2/3"
+	"Ventral auditory area, layer 2/3" [fillcolor=yellow style=filled]
+	"Ventral auditory area" -> "Ventral auditory area, layer 1"
+	"Ventral auditory area, layer 1" [fillcolor=yellow style=filled]
+	"Ventral auditory area" -> "Ventral auditory area, layer 4"
+	"Ventral auditory area, layer 4" [fillcolor=yellow style=filled]
+	"Ventral auditory area" -> "Ventral auditory area, layer 5"
+	"Ventral auditory area, layer 5" [fillcolor=yellow style=filled]
+	"Auditory areas" -> "Posterior auditory area"
+	"Posterior auditory area" -> "Posterior auditory area, layer 6a"
+	"Posterior auditory area, layer 6a" [fillcolor=yellow style=filled]
+	"Posterior auditory area" -> "Posterior auditory area, layer 6b"
+	"Posterior auditory area, layer 6b" [fillcolor=yellow style=filled]
+	"Posterior auditory area" -> "Posterior auditory area, layer 2/3"
+	"Posterior auditory area, layer 2/3" [fillcolor=yellow style=filled]
+	"Posterior auditory area" -> "Posterior auditory area, layer 1"
+	"Posterior auditory area, layer 1" [fillcolor=yellow style=filled]
+	"Posterior auditory area" -> "Posterior auditory area, layer 4"
+	"Posterior auditory area, layer 4" [fillcolor=yellow style=filled]
+	"Posterior auditory area" -> "Posterior auditory area, layer 5"
+	"Posterior auditory area, layer 5" [fillcolor=yellow style=filled]
+	Isocortex -> "Retrosplenial area"
+	"Retrosplenial area" -> "Retrosplenial area, dorsal part"
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 6a"
+	"Retrosplenial area, dorsal part, layer 6a" [fillcolor=yellow style=filled]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 6b"
+	"Retrosplenial area, dorsal part, layer 6b" [fillcolor=yellow style=filled]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 2/3"
+	"Retrosplenial area, dorsal part, layer 2/3" [fillcolor=yellow style=filled]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 1"
+	"Retrosplenial area, dorsal part, layer 1" [fillcolor=yellow style=filled]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 4"
+	"Retrosplenial area, dorsal part, layer 4" [fillcolor=yellow style=filled]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 5"
+	"Retrosplenial area, dorsal part, layer 5" [fillcolor=yellow style=filled]
+	"Retrosplenial area" -> "Retrosplenial area, ventral part"
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 2/3"
+	"Retrosplenial area, ventral part, layer 2/3" [fillcolor=yellow style=filled]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 1"
+	"Retrosplenial area, ventral part, layer 1" [fillcolor=yellow style=filled]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 6a"
+	"Retrosplenial area, ventral part, layer 6a" [fillcolor=yellow style=filled]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 2"
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 6b"
+	"Retrosplenial area, ventral part, layer 6b" [fillcolor=yellow style=filled]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 5"
+	"Retrosplenial area, ventral part, layer 5" [fillcolor=yellow style=filled]
+	"Retrosplenial area" -> "Retrosplenial area, lateral agranular part"
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 6b"
+	"Retrosplenial area, lateral agranular part, layer 6b" [fillcolor=yellow style=filled]
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 1"
+	"Retrosplenial area, lateral agranular part, layer 1" [fillcolor=yellow style=filled]
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 5"
+	"Retrosplenial area, lateral agranular part, layer 5" [fillcolor=yellow style=filled]
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 6a"
+	"Retrosplenial area, lateral agranular part, layer 6a" [fillcolor=yellow style=filled]
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 2/3"
+	"Retrosplenial area, lateral agranular part, layer 2/3" [fillcolor=yellow style=filled]
+	"Retrosplenial area, lateral agranular part" -> "Mediomedial anterior visual area"
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 1"
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 2/3"
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 4"
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area,layer 5"
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 6a"
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 6b"
+	"Retrosplenial area, lateral agranular part" -> "Mediomedial posterior visual area"
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 1"
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 2/3"
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 4"
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area,layer 5"
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 6a"
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 6b"
+	"Retrosplenial area, lateral agranular part" -> "Medial visual area"
+	"Medial visual area" -> "Medial visual area, layer 1"
+	"Medial visual area" -> "Medial visual area, layer 2/3"
+	"Medial visual area" -> "Medial visual area, layer 4"
+	"Medial visual area" -> "Medial visual area,layer 5"
+	"Medial visual area" -> "Medial visual area, layer 6a"
+	"Medial visual area" -> "Medial visual area, layer 6b"
+	Isocortex -> "Somatosensory areas"
+	"Somatosensory areas" -> "Primary somatosensory area"
+	"Primary somatosensory area" -> "Primary somatosensory area, barrel field"
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 2/3"
+	"Primary somatosensory area, barrel field, layer 2/3" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 1"
+	"Primary somatosensory area, barrel field, layer 1" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 6a"
+	"Primary somatosensory area, barrel field, layer 6a" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 4"
+	"Primary somatosensory area, barrel field, layer 4" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 6b"
+	"Primary somatosensory area, barrel field, layer 6b" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 5"
+	"Primary somatosensory area, barrel field, layer 5" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, barrel field" -> "Rostrolateral lateral visual area"
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 1"
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 2/3"
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 4"
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area,layer 5"
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 6a"
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 6b"
+	"Primary somatosensory area" -> "Primary somatosensory area, lower limb"
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 2/3"
+	"Primary somatosensory area, lower limb, layer 2/3" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 6a"
+	"Primary somatosensory area, lower limb, layer 6a" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 6b"
+	"Primary somatosensory area, lower limb, layer 6b" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 1"
+	"Primary somatosensory area, lower limb, layer 1" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 4"
+	"Primary somatosensory area, lower limb, layer 4" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 5"
+	"Primary somatosensory area, lower limb, layer 5" [fillcolor=yellow style=filled]
+	"Primary somatosensory area" -> "Primary somatosensory area, mouth"
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 6b"
+	"Primary somatosensory area, mouth, layer 6b" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 2/3"
+	"Primary somatosensory area, mouth, layer 2/3" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 1"
+	"Primary somatosensory area, mouth, layer 1" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 4"
+	"Primary somatosensory area, mouth, layer 4" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 5"
+	"Primary somatosensory area, mouth, layer 5" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 6a"
+	"Primary somatosensory area, mouth, layer 6a" [fillcolor=yellow style=filled]
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 2/3"
+	"Primary somatosensory area" -> "Primary somatosensory area, nose"
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 1"
+	"Primary somatosensory area, nose, layer 1" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 4"
+	"Primary somatosensory area, nose, layer 4" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 5"
+	"Primary somatosensory area, nose, layer 5" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 2/3"
+	"Primary somatosensory area, nose, layer 2/3" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 6a"
+	"Primary somatosensory area, nose, layer 6a" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 6b"
+	"Primary somatosensory area, nose, layer 6b" [fillcolor=yellow style=filled]
+	"Primary somatosensory area" -> "Primary somatosensory area, trunk"
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 6a"
+	"Primary somatosensory area, trunk, layer 6a" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 6b"
+	"Primary somatosensory area, trunk, layer 6b" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 2/3"
+	"Primary somatosensory area, trunk, layer 2/3" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 1"
+	"Primary somatosensory area, trunk, layer 1" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 4"
+	"Primary somatosensory area, trunk, layer 4" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 5"
+	"Primary somatosensory area, trunk, layer 5" [fillcolor=yellow style=filled]
+	"Primary somatosensory area" -> "Primary somatosensory area, upper limb"
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 1"
+	"Primary somatosensory area, upper limb, layer 1" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 4"
+	"Primary somatosensory area, upper limb, layer 4" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 5"
+	"Primary somatosensory area, upper limb, layer 5" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 2/3"
+	"Primary somatosensory area, upper limb, layer 2/3" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 6a"
+	"Primary somatosensory area, upper limb, layer 6a" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 6b"
+	"Primary somatosensory area, upper limb, layer 6b" [fillcolor=yellow style=filled]
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 6a"
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 6b"
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 1"
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 4"
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 5"
+	"Primary somatosensory area" -> "Primary somatosensory area, unassigned"
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 1"
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 1,2,3"
+	"Primary somatosensory area, unassigned, layer 1,2,3" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 2/3"
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 4"
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 5"
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 6a"
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 4,5,6"
+	"Primary somatosensory area, unassigned, layer 4,5,6" [fillcolor=yellow style=filled]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 6b"
+	"Somatosensory areas" -> "Supplemental somatosensory area"
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 2/3"
+	"Supplemental somatosensory area, layer 2/3" [fillcolor=yellow style=filled]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 6a"
+	"Supplemental somatosensory area, layer 6a" [fillcolor=yellow style=filled]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 1"
+	"Supplemental somatosensory area, layer 1" [fillcolor=yellow style=filled]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 6b"
+	"Supplemental somatosensory area, layer 6b" [fillcolor=yellow style=filled]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 4"
+	"Supplemental somatosensory area, layer 4" [fillcolor=yellow style=filled]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 5"
+	"Supplemental somatosensory area, layer 5" [fillcolor=yellow style=filled]
+	"Somatosensory areas" -> "Somatosensory areas, layer 1"
+	"Somatosensory areas" -> "Somatosensory areas, layer 2/3"
+	"Somatosensory areas" -> "Somatosensory areas, layer 4"
+	"Somatosensory areas" -> "Somatosensory areas, layer 5"
+	"Somatosensory areas" -> "Somatosensory areas, layer 6a"
+	"Somatosensory areas" -> "Somatosensory areas, layer 6b"
+	Isocortex -> "Somatomotor areas"
+	"Somatomotor areas" -> "Somatomotor areas, Layer 1"
+	"Somatomotor areas" -> "Somatomotor areas, Layer 2/3"
+	"Somatomotor areas" -> "Somatomotor areas, Layer 5"
+	"Somatomotor areas" -> "Somatomotor areas, Layer 6a"
+	"Somatomotor areas" -> "Somatomotor areas, Layer 6b"
+	"Somatomotor areas" -> "Primary motor area"
+	"Primary motor area" -> "Primary motor area, Layer 1"
+	"Primary motor area, Layer 1" [fillcolor=yellow style=filled]
+	"Primary motor area" -> "Primary motor area, Layer 5"
+	"Primary motor area, Layer 5" [fillcolor=yellow style=filled]
+	"Primary motor area" -> "Primary motor area, Layer 6a"
+	"Primary motor area, Layer 6a" [fillcolor=yellow style=filled]
+	"Primary motor area" -> "Primary motor area, Layer 6b"
+	"Primary motor area, Layer 6b" [fillcolor=yellow style=filled]
+	"Primary motor area" -> "Primary motor area, Layer 2/3"
+	"Primary motor area, Layer 2/3" [fillcolor=yellow style=filled]
+	"Somatomotor areas" -> "Secondary motor area"
+	"Secondary motor area" -> "Secondary motor area, layer 1"
+	"Secondary motor area, layer 1" [fillcolor=yellow style=filled]
+	"Secondary motor area" -> "Secondary motor area, layer 5"
+	"Secondary motor area, layer 5" [fillcolor=yellow style=filled]
+	"Secondary motor area" -> "Secondary motor area, layer 2/3"
+	"Secondary motor area, layer 2/3" [fillcolor=yellow style=filled]
+	"Secondary motor area" -> "Secondary motor area, layer 6a"
+	"Secondary motor area, layer 6a" [fillcolor=yellow style=filled]
+	"Secondary motor area" -> "Secondary motor area, layer 6b"
+	"Secondary motor area, layer 6b" [fillcolor=yellow style=filled]
+	Isocortex -> "Temporal association areas"
+	"Temporal association areas" -> "Temporal association areas, layer 1"
+	"Temporal association areas, layer 1" [fillcolor=yellow style=filled]
+	"Temporal association areas" -> "Temporal association areas, layer 4"
+	"Temporal association areas, layer 4" [fillcolor=yellow style=filled]
+	"Temporal association areas" -> "Temporal association areas, layer 5"
+	"Temporal association areas, layer 5" [fillcolor=yellow style=filled]
+	"Temporal association areas" -> "Temporal association areas, layer 6a"
+	"Temporal association areas, layer 6a" [fillcolor=yellow style=filled]
+	"Temporal association areas" -> "Temporal association areas, layer 6b"
+	"Temporal association areas, layer 6b" [fillcolor=yellow style=filled]
+	"Temporal association areas" -> "Temporal association areas, layer 2/3"
+	"Temporal association areas, layer 2/3" [fillcolor=yellow style=filled]
+	Isocortex -> "Visual areas"
+	"Visual areas" [fillcolor=yellow style=filled]
+	"Visual areas" -> "Primary visual area"
+	"Primary visual area" -> "Primary visual area, layer 6a"
+	"Primary visual area, layer 6a" [fillcolor=yellow style=filled]
+	"Primary visual area" -> "Primary visual area, layer 6b"
+	"Primary visual area, layer 6b" [fillcolor=yellow style=filled]
+	"Primary visual area" -> "Primary visual area, layer 1"
+	"Primary visual area, layer 1" [fillcolor=yellow style=filled]
+	"Primary visual area" -> "Primary visual area, layer 4"
+	"Primary visual area, layer 4" [fillcolor=yellow style=filled]
+	"Primary visual area" -> "Primary visual area, layer 5"
+	"Primary visual area, layer 5" [fillcolor=yellow style=filled]
+	"Primary visual area" -> "Primary visual area, layer 2/3"
+	"Primary visual area, layer 2/3" [fillcolor=yellow style=filled]
+	"Visual areas" -> "Anteromedial visual area"
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 1"
+	"Anteromedial visual area, layer 1" [fillcolor=yellow style=filled]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 4"
+	"Anteromedial visual area, layer 4" [fillcolor=yellow style=filled]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 5"
+	"Anteromedial visual area, layer 5" [fillcolor=yellow style=filled]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 6b"
+	"Anteromedial visual area, layer 6b" [fillcolor=yellow style=filled]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 6a"
+	"Anteromedial visual area, layer 6a" [fillcolor=yellow style=filled]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 2/3"
+	"Anteromedial visual area, layer 2/3" [fillcolor=yellow style=filled]
+	"Visual areas" -> "Anterolateral visual area"
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 5"
+	"Anterolateral visual area, layer 5" [fillcolor=yellow style=filled]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 6a"
+	"Anterolateral visual area, layer 6a" [fillcolor=yellow style=filled]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 6b"
+	"Anterolateral visual area, layer 6b" [fillcolor=yellow style=filled]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 2/3"
+	"Anterolateral visual area, layer 2/3" [fillcolor=yellow style=filled]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 1"
+	"Anterolateral visual area, layer 1" [fillcolor=yellow style=filled]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 4"
+	"Anterolateral visual area, layer 4" [fillcolor=yellow style=filled]
+	"Visual areas" -> "Lateral visual area"
+	"Lateral visual area" -> "Lateral visual area, layer 6a"
+	"Lateral visual area, layer 6a" [fillcolor=yellow style=filled]
+	"Lateral visual area" -> "Lateral visual area, layer 6b"
+	"Lateral visual area, layer 6b" [fillcolor=yellow style=filled]
+	"Lateral visual area" -> "Lateral visual area, layer 1"
+	"Lateral visual area, layer 1" [fillcolor=yellow style=filled]
+	"Lateral visual area" -> "Lateral visual area, layer 4"
+	"Lateral visual area, layer 4" [fillcolor=yellow style=filled]
+	"Lateral visual area" -> "Lateral visual area, layer 5"
+	"Lateral visual area, layer 5" [fillcolor=yellow style=filled]
+	"Lateral visual area" -> "Lateral visual area, layer 2/3"
+	"Lateral visual area, layer 2/3" [fillcolor=yellow style=filled]
+	"Visual areas" -> "Posterolateral visual area"
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 2/3"
+	"Posterolateral visual area, layer 2/3" [fillcolor=yellow style=filled]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 6a"
+	"Posterolateral visual area, layer 6a" [fillcolor=yellow style=filled]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 6b"
+	"Posterolateral visual area, layer 6b" [fillcolor=yellow style=filled]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 1"
+	"Posterolateral visual area, layer 1" [fillcolor=yellow style=filled]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 4"
+	"Posterolateral visual area, layer 4" [fillcolor=yellow style=filled]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 5"
+	"Posterolateral visual area, layer 5" [fillcolor=yellow style=filled]
+	"Visual areas" -> "Visual areas, layer 6a"
+	"Visual areas" -> "Visual areas, layer 6b"
+	"Visual areas" -> "posteromedial visual area"
+	"posteromedial visual area" -> "posteromedial visual area, layer 2/3"
+	"posteromedial visual area, layer 2/3" [fillcolor=yellow style=filled]
+	"posteromedial visual area" -> "posteromedial visual area, layer 6a"
+	"posteromedial visual area, layer 6a" [fillcolor=yellow style=filled]
+	"posteromedial visual area" -> "posteromedial visual area, layer 6b"
+	"posteromedial visual area, layer 6b" [fillcolor=yellow style=filled]
+	"posteromedial visual area" -> "posteromedial visual area, layer 4"
+	"posteromedial visual area, layer 4" [fillcolor=yellow style=filled]
+	"posteromedial visual area" -> "posteromedial visual area, layer 5"
+	"posteromedial visual area, layer 5" [fillcolor=yellow style=filled]
+	"posteromedial visual area" -> "posteromedial visual area, layer 1"
+	"posteromedial visual area, layer 1" [fillcolor=yellow style=filled]
+	"Visual areas" -> "Visual areas, layer 2/3"
+	"Visual areas" -> "Visual areas, layer 1"
+	"Visual areas" -> "Visual areas, layer 4"
+	"Visual areas" -> "Visual areas, layer 5"
+	"Visual areas" -> "Laterointermediate area"
+	"Laterointermediate area" -> "Laterointermediate area, layer 1"
+	"Laterointermediate area" -> "Laterointermediate area, layer 2/3"
+	"Laterointermediate area" -> "Laterointermediate area, layer 4"
+	"Laterointermediate area" -> "Laterointermediate area, layer 5"
+	"Laterointermediate area" -> "Laterointermediate area, layer 6a"
+	"Laterointermediate area" -> "Laterointermediate area, layer 6b"
+	"Visual areas" -> "Postrhinal area"
+	"Postrhinal area" -> "Postrhinal area, layer 1"
+	"Postrhinal area" -> "Postrhinal area, layer 2/3"
+	"Postrhinal area" -> "Postrhinal area, layer 4"
+	"Postrhinal area" -> "Postrhinal area, layer 6a"
+	"Postrhinal area" -> "Postrhinal area, layer 6b"
+	"Postrhinal area" -> "Postrhinal area, layer 5"
+	"Postrhinal area, layer 5" [fillcolor=yellow style=filled]
+	Isocortex -> "Visceral area"
+	"Visceral area" -> "Visceral area, layer 6b"
+	"Visceral area, layer 6b" [fillcolor=yellow style=filled]
+	"Visceral area" -> "Visceral area, layer 6a"
+	"Visceral area, layer 6a" [fillcolor=yellow style=filled]
+	"Visceral area" -> "Visceral area, layer 1"
+	"Visceral area, layer 1" [fillcolor=yellow style=filled]
+	"Visceral area" -> "Visceral area, layer 4"
+	"Visceral area, layer 4" [fillcolor=yellow style=filled]
+	"Visceral area" -> "Visceral area, layer 5"
+	"Visceral area, layer 5" [fillcolor=yellow style=filled]
+	"Visceral area" -> "Visceral area, layer 2/3"
+	"Visceral area, layer 2/3" [fillcolor=yellow style=filled]
+	Isocortex -> "Orbital area"
+	"Orbital area" -> "Orbital area, layer 1"
+	"Orbital area" -> "Orbital area, layer 5"
+	"Orbital area" -> "Orbital area, layer 6a"
+	"Orbital area" -> "Orbital area, layer 2/3"
+	"Orbital area" -> "Orbital area, layer 6b"
+	"Orbital area" -> "Orbital area, lateral part"
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 2/3"
+	"Orbital area, lateral part, layer 2/3" [fillcolor=yellow style=filled]
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 6a"
+	"Orbital area, lateral part, layer 6a" [fillcolor=yellow style=filled]
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 1"
+	"Orbital area, lateral part, layer 1" [fillcolor=yellow style=filled]
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 6b"
+	"Orbital area, lateral part, layer 6b" [fillcolor=yellow style=filled]
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 5"
+	"Orbital area, lateral part, layer 5" [fillcolor=yellow style=filled]
+	"Orbital area" -> "Orbital area, medial part"
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 1"
+	"Orbital area, medial part, layer 1" [fillcolor=yellow style=filled]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 2"
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 2/3"
+	"Orbital area, medial part, layer 2/3" [fillcolor=yellow style=filled]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 5"
+	"Orbital area, medial part, layer 5" [fillcolor=yellow style=filled]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 6a"
+	"Orbital area, medial part, layer 6a" [fillcolor=yellow style=filled]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 6b"
+	"Orbital area" -> "Orbital area, ventral part"
+	"Orbital area" -> "Orbital area, ventrolateral part"
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 2/3"
+	"Orbital area, ventrolateral part, layer 2/3" [fillcolor=yellow style=filled]
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 6a"
+	"Orbital area, ventrolateral part, layer 6a" [fillcolor=yellow style=filled]
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 6b"
+	"Orbital area, ventrolateral part, layer 6b" [fillcolor=yellow style=filled]
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 1"
+	"Orbital area, ventrolateral part, layer 1" [fillcolor=yellow style=filled]
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 5"
+	"Orbital area, ventrolateral part, layer 5" [fillcolor=yellow style=filled]
+	Isocortex -> "Ectorhinal area"
+	"Ectorhinal area" -> "Ectorhinal area/Layer 2/3"
+	"Ectorhinal area/Layer 2/3" [fillcolor=yellow style=filled]
+	"Ectorhinal area" -> "Ectorhinal area/Layer 1"
+	"Ectorhinal area/Layer 1" [fillcolor=yellow style=filled]
+	"Ectorhinal area" -> "Ectorhinal area/Layer 6a"
+	"Ectorhinal area/Layer 6a" [fillcolor=yellow style=filled]
+	"Ectorhinal area" -> "Ectorhinal area/Layer 5"
+	"Ectorhinal area/Layer 5" [fillcolor=yellow style=filled]
+	"Ectorhinal area" -> "Ectorhinal area/Layer 6b"
+	"Ectorhinal area/Layer 6b" [fillcolor=yellow style=filled]
+	Isocortex -> "Perirhinal area"
+	"Perirhinal area" -> "Perirhinal area, layer 6a"
+	"Perirhinal area, layer 6a" [fillcolor=yellow style=filled]
+	"Perirhinal area" -> "Perirhinal area, layer 6b"
+	"Perirhinal area, layer 6b" [fillcolor=yellow style=filled]
+	"Perirhinal area" -> "Perirhinal area, layer 1"
+	"Perirhinal area, layer 1" [fillcolor=yellow style=filled]
+	"Perirhinal area" -> "Perirhinal area, layer 5"
+	"Perirhinal area, layer 5" [fillcolor=yellow style=filled]
+	"Perirhinal area" -> "Perirhinal area, layer 2/3"
+	"Perirhinal area, layer 2/3" [fillcolor=yellow style=filled]
+	Isocortex -> "Prelimbic area"
+	"Prelimbic area" -> "Prelimbic area, layer 6a"
+	"Prelimbic area, layer 6a" [fillcolor=yellow style=filled]
+	"Prelimbic area" -> "Prelimbic area, layer 6b"
+	"Prelimbic area, layer 6b" [fillcolor=yellow style=filled]
+	"Prelimbic area" -> "Prelimbic area, layer 1"
+	"Prelimbic area, layer 1" [fillcolor=yellow style=filled]
+	"Prelimbic area" -> "Prelimbic area, layer 2"
+	"Prelimbic area" -> "Prelimbic area, layer 2/3"
+	"Prelimbic area, layer 2/3" [fillcolor=yellow style=filled]
+	"Prelimbic area" -> "Prelimbic area, layer 5"
+	"Prelimbic area, layer 5" [fillcolor=yellow style=filled]
+	Isocortex -> "Gustatory areas"
+	"Gustatory areas" -> "Gustatory areas, layer 1"
+	"Gustatory areas, layer 1" [fillcolor=yellow style=filled]
+	"Gustatory areas" -> "Gustatory areas, layer 4"
+	"Gustatory areas, layer 4" [fillcolor=yellow style=filled]
+	"Gustatory areas" -> "Gustatory areas, layer 2/3"
+	"Gustatory areas, layer 2/3" [fillcolor=yellow style=filled]
+	"Gustatory areas" -> "Gustatory areas, layer 5"
+	"Gustatory areas, layer 5" [fillcolor=yellow style=filled]
+	"Gustatory areas" -> "Gustatory areas, layer 6a"
+	"Gustatory areas, layer 6a" [fillcolor=yellow style=filled]
+	"Gustatory areas" -> "Gustatory areas, layer 6b"
+	"Gustatory areas, layer 6b" [fillcolor=yellow style=filled]
+	"Cortical plate" -> "Olfactory areas"
+	"Olfactory areas" [fillcolor=yellow style=filled]
+	"Olfactory areas" -> "Accessory olfactory bulb"
+	"Accessory olfactory bulb" -> "Accessory olfactory bulb, glomerular layer"
+	"Accessory olfactory bulb, glomerular layer" [fillcolor=yellow style=filled]
+	"Accessory olfactory bulb" -> "Accessory olfactory bulb, granular layer"
+	"Accessory olfactory bulb, granular layer" [fillcolor=yellow style=filled]
+	"Accessory olfactory bulb" -> "Accessory olfactory bulb, mitral layer"
+	"Accessory olfactory bulb, mitral layer" [fillcolor=yellow style=filled]
+	"Olfactory areas" -> "Anterior olfactory nucleus"
+	"Anterior olfactory nucleus" [fillcolor=yellow style=filled]
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, layer 1"
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, dorsal part"
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, layer 2"
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, external part"
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, lateral part"
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, medial part"
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, posteroventral part"
+	"Olfactory areas" -> "Main olfactory bulb"
+	"Main olfactory bulb" [fillcolor=yellow style=filled]
+	"Main olfactory bulb" -> "Main olfactory bulb, glomerular layer"
+	"Main olfactory bulb" -> "Main olfactory bulb, granule layer"
+	"Main olfactory bulb" -> "Main olfactory bulb, inner plexiform layer"
+	"Main olfactory bulb" -> "Main olfactory bulb, mitral layer"
+	"Main olfactory bulb" -> "Main olfactory bulb, outer plexiform layer"
+	"Olfactory areas" -> "Postpiriform transition area"
+	"Postpiriform transition area" [fillcolor=yellow style=filled]
+	"Postpiriform transition area" -> "Postpiriform transition area, layers 1-3"
+	"Postpiriform transition area" -> "Postpiriform transition area, layers 1"
+	"Postpiriform transition area" -> "Postpiriform transition area, layers 2"
+	"Postpiriform transition area" -> "Postpiriform transition area, layers 3"
+	"Olfactory areas" -> "Taenia tecta"
+	"Taenia tecta" [fillcolor=yellow style=filled]
+	"Taenia tecta" -> "Taenia tecta, dorsal part"
+	"Taenia tecta, dorsal part" [fillcolor=yellow style=filled]
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layers 1-4"
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layer 1"
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layer 2"
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layer 3"
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layer 4"
+	"Taenia tecta" -> "Taenia tecta, ventral part"
+	"Taenia tecta, ventral part" [fillcolor=yellow style=filled]
+	"Taenia tecta, ventral part" -> "Taenia tecta, ventral part, layers 1-3"
+	"Taenia tecta, ventral part" -> "Taenia tecta, ventral part, layer 1"
+	"Taenia tecta, ventral part" -> "Taenia tecta, ventral part, layer 2"
+	"Taenia tecta, ventral part" -> "Taenia tecta, ventral part, layer 3"
+	"Olfactory areas" -> "Nucleus of the lateral olfactory tract"
+	"Nucleus of the lateral olfactory tract" -> "Nucleus of the lateral olfactory tract, molecular layer"
+	"Nucleus of the lateral olfactory tract, molecular layer" [fillcolor=yellow style=filled]
+	"Nucleus of the lateral olfactory tract" -> "Nucleus of the lateral olfactory tract, pyramidal layer"
+	"Nucleus of the lateral olfactory tract, pyramidal layer" [fillcolor=yellow style=filled]
+	"Nucleus of the lateral olfactory tract" -> "Nucleus of the lateral olfactory tract, layers 1-3"
+	"Nucleus of the lateral olfactory tract" -> "Nucleus of the lateral olfactory tract, layer 3"
+	"Nucleus of the lateral olfactory tract, layer 3" [fillcolor=yellow style=filled]
+	"Olfactory areas" -> "Cortical amygdalar area"
+	"Cortical amygdalar area" -> "Cortical amygdalar area, anterior part"
+	"Cortical amygdalar area, anterior part" [fillcolor=yellow style=filled]
+	"Cortical amygdalar area, anterior part" -> "Cortical amygdalar area, anterior part, layer 1"
+	"Cortical amygdalar area, anterior part" -> "Cortical amygdalar area, anterior part, layer 2"
+	"Cortical amygdalar area, anterior part" -> "Cortical amygdalar area, anterior part, layer 3"
+	"Cortical amygdalar area" -> "Cortical amygdalar area, posterior part"
+	"Cortical amygdalar area, posterior part" [fillcolor=yellow style=filled]
+	"Cortical amygdalar area, posterior part" -> "Cortical amygdalar area, posterior part, lateral zone"
+	"Cortical amygdalar area, posterior part, lateral zone" [fillcolor=yellow style=filled]
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layer 1"
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layer 2"
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layer 3"
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layers 1-3"
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layers 1-2"
+	"Cortical amygdalar area, posterior part" -> "Cortical amygdalar area, posterior part, medial zone"
+	"Cortical amygdalar area, posterior part, medial zone" [fillcolor=yellow style=filled]
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layer 1"
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layer 2"
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layer 3"
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layers 1-3"
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layers 1-2"
+	"Olfactory areas" -> "Piriform-amygdalar area"
+	"Piriform-amygdalar area" [fillcolor=yellow style=filled]
+	"Piriform-amygdalar area" -> "Piriform-amygdalar area, layers 1-3"
+	"Piriform-amygdalar area" -> "Piriform-amygdalar area, molecular layer"
+	"Piriform-amygdalar area" -> "Piriform-amygdalar area, pyramidal layer"
+	"Piriform-amygdalar area" -> "Piriform-amygdalar area, polymorph layer"
+	"Olfactory areas" -> "Dorsal peduncular area"
+	"Dorsal peduncular area" [fillcolor=yellow style=filled]
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 6a"
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 2/3"
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 1"
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 2"
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 5"
+	"Olfactory areas" -> "Piriform area"
+	"Piriform area" [fillcolor=yellow style=filled]
+	"Piriform area" -> "Piriform area, layers 1-3"
+	"Piriform area" -> "Piriform area, molecular layer"
+	"Piriform area" -> "Piriform area, pyramidal layer"
+	"Piriform area" -> "Piriform area, polymorph layer"
+	"Cortical plate" -> "Hippocampal formation"
+	"Hippocampal formation" [fillcolor=yellow style=filled]
+	"Hippocampal formation" -> "Retrohippocampal region"
+	"Retrohippocampal region" -> Subiculum
+	Subiculum [fillcolor=yellow style=filled]
+	Subiculum -> "Subiculum, dorsal part"
+	"Subiculum, dorsal part" -> "Subiculum, dorsal part, molecular layer"
+	"Subiculum, dorsal part" -> "Subiculum, dorsal part, stratum radiatum"
+	"Subiculum, dorsal part" -> "Subiculum, dorsal part, pyramidal layer"
+	Subiculum -> "Subiculum, ventral part"
+	"Subiculum, ventral part" -> "Subiculum, ventral part, molecular layer"
+	"Subiculum, ventral part" -> "Subiculum, ventral part, stratum radiatum"
+	"Subiculum, ventral part" -> "Subiculum, ventral part, pyramidal layer"
+	"Retrohippocampal region" -> Parasubiculum
+	Parasubiculum [fillcolor=yellow style=filled]
+	Parasubiculum -> "Parasubiculum, layer 1"
+	Parasubiculum -> "Parasubiculum, layer 2"
+	Parasubiculum -> "Parasubiculum, layer 3"
+	"Retrohippocampal region" -> "Entorhinal area"
+	"Entorhinal area" -> "Entorhinal area, lateral part"
+	"Entorhinal area, lateral part" [fillcolor=yellow style=filled]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 2"
+	"Entorhinal area, lateral part, layer 2" [fillcolor=yellow style=filled]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 6a"
+	"Entorhinal area, lateral part, layer 6a" [fillcolor=yellow style=filled]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 3"
+	"Entorhinal area, lateral part, layer 3" [fillcolor=yellow style=filled]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 6b"
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 4"
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 5"
+	"Entorhinal area, lateral part, layer 5" [fillcolor=yellow style=filled]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 4/5"
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 5/6"
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 2a"
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 2b"
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 2/3"
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 1"
+	"Entorhinal area, lateral part, layer 1" [fillcolor=yellow style=filled]
+	"Entorhinal area" -> "Entorhinal area, medial part, dorsal zone"
+	"Entorhinal area, medial part, dorsal zone" [fillcolor=yellow style=filled]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 2a"
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 2b"
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 1"
+	"Entorhinal area, medial part, dorsal zone, layer 1" [fillcolor=yellow style=filled]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 2"
+	"Entorhinal area, medial part, dorsal zone, layer 2" [fillcolor=yellow style=filled]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 5/6"
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 3"
+	"Entorhinal area, medial part, dorsal zone, layer 3" [fillcolor=yellow style=filled]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 4"
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 5"
+	"Entorhinal area, medial part, dorsal zone, layer 5" [fillcolor=yellow style=filled]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 6"
+	"Entorhinal area, medial part, dorsal zone, layer 6" [fillcolor=yellow style=filled]
+	"Entorhinal area" -> "Entorhinal area, medial part, ventral zone"
+	"Entorhinal area, medial part, ventral zone" [fillcolor=yellow style=filled]
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 1"
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 2"
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 3"
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 4"
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 5/6"
+	"Retrohippocampal region" -> Postsubiculum
+	Postsubiculum [fillcolor=yellow style=filled]
+	Postsubiculum -> "Postsubiculum, layer 1"
+	Postsubiculum -> "Postsubiculum, layer 2"
+	Postsubiculum -> "Postsubiculum, layer 3"
+	"Retrohippocampal region" -> Presubiculum
+	Presubiculum [fillcolor=yellow style=filled]
+	Presubiculum -> "Presubiculum, layer 1"
+	Presubiculum -> "Presubiculum, layer 2"
+	Presubiculum -> "Presubiculum, layer 3"
+	"Retrohippocampal region" -> Prosubiculum
+	Prosubiculum -> "Prosubiculum, dorsal part"
+	"Prosubiculum, dorsal part" -> "Prosubiculum, dorsal part, molecular layer"
+	"Prosubiculum, dorsal part" -> "Prosubiculum, dorsal part, pyramidal layer"
+	"Prosubiculum, dorsal part" -> "Prosubiculum, dorsal part, stratum radiatum"
+	Prosubiculum -> "Prosubiculum, ventral part"
+	"Prosubiculum, ventral part" -> "Prosubiculum, ventral part, molecular layer"
+	"Prosubiculum, ventral part, molecular layer" [fillcolor=yellow style=filled]
+	"Prosubiculum, ventral part" -> "Prosubiculum, ventral part, pyramidal layer"
+	"Prosubiculum, ventral part" -> "Prosubiculum, ventral part, stratum radiatum"
+	"Retrohippocampal region" -> "Area prostriata"
+	"Retrohippocampal region" -> "Hippocampo-amygdalar transition area"
+	"Hippocampal formation" -> "Hippocampal region"
+	"Hippocampal region" -> "Induseum griseum"
+	"Induseum griseum" [fillcolor=yellow style=filled]
+	"Hippocampal region" -> "Ammon's horn"
+	"Ammon's horn" -> "Field CA1"
+	"Field CA1" [fillcolor=yellow style=filled]
+	"Field CA1" -> "Field CA1, stratum lacunosum-moleculare"
+	"Field CA1" -> "Field CA1, stratum oriens"
+	"Field CA1" -> "Field CA1, pyramidal layer"
+	"Field CA1" -> "Field CA1, stratum radiatum"
+	"Ammon's horn" -> "Field CA2"
+	"Field CA2" [fillcolor=yellow style=filled]
+	"Field CA2" -> "Field CA2, stratum lacunosum-moleculare"
+	"Field CA2" -> "Field CA2, stratum oriens"
+	"Field CA2" -> "Field CA2, pyramidal layer"
+	"Field CA2" -> "Field CA2, stratum radiatum"
+	"Ammon's horn" -> "Field CA3"
+	"Field CA3" [fillcolor=yellow style=filled]
+	"Field CA3" -> "Field CA3, stratum lacunosum-moleculare"
+	"Field CA3" -> "Field CA3, stratum lucidum"
+	"Field CA3" -> "Field CA3, stratum oriens"
+	"Field CA3" -> "Field CA3, pyramidal layer"
+	"Field CA3" -> "Field CA3, stratum radiatum"
+	"Hippocampal region" -> "Dentate gyrus"
+	"Dentate gyrus" -> "Dentate gyrus, granule cell layer"
+	"Dentate gyrus, granule cell layer" [fillcolor=yellow style=filled]
+	"Dentate gyrus" -> "Dentate gyrus crest"
+	"Dentate gyrus crest" -> "Dentate gyrus crest, molecular layer"
+	"Dentate gyrus crest" -> "Dentate gyrus crest, polymorph layer"
+	"Dentate gyrus crest" -> "Dentate gyrus crest, granule cell layer"
+	"Dentate gyrus" -> "Dentate gyrus lateral blade"
+	"Dentate gyrus lateral blade" -> "Dentate gyrus lateral blade, molecular layer"
+	"Dentate gyrus lateral blade" -> "Dentate gyrus lateral blade, polymorph layer"
+	"Dentate gyrus lateral blade" -> "Dentate gyrus lateral blade, granule cell layer"
+	"Dentate gyrus" -> "Dentate gyrus medial blade"
+	"Dentate gyrus medial blade" -> "Dentate gyrus medial blade, molecular layer"
+	"Dentate gyrus medial blade" -> "Dentate gyrus medial blade, polymorph layer"
+	"Dentate gyrus medial blade" -> "Dentate gyrus medial blade, granule cell layer"
+	"Dentate gyrus" -> "Dentate gyrus, subgranular zone"
+	"Dentate gyrus" -> "Dentate gyrus, molecular layer"
+	"Dentate gyrus, molecular layer" [fillcolor=yellow style=filled]
+	"Dentate gyrus" -> "Dentate gyrus, polymorph layer"
+	"Dentate gyrus, polymorph layer" [fillcolor=yellow style=filled]
+	"Hippocampal region" -> "Fasciola cinerea"
+	"Fasciola cinerea" [fillcolor=yellow style=filled]
+	"Cerebral cortex" -> "Cortical subplate"
+	"Cortical subplate" [fillcolor=yellow style=filled]
+	"Cortical subplate" -> "Layer 6b, isocortex"
+	"Cortical subplate" -> "Lateral amygdalar nucleus"
+	"Lateral amygdalar nucleus" [fillcolor=yellow style=filled]
+	"Cortical subplate" -> "Basolateral amygdalar nucleus"
+	"Basolateral amygdalar nucleus" -> "Basolateral amygdalar nucleus, anterior part"
+	"Basolateral amygdalar nucleus, anterior part" [fillcolor=yellow style=filled]
+	"Basolateral amygdalar nucleus" -> "Basolateral amygdalar nucleus, posterior part"
+	"Basolateral amygdalar nucleus, posterior part" [fillcolor=yellow style=filled]
+	"Basolateral amygdalar nucleus" -> "Basolateral amygdalar nucleus, ventral part"
+	"Basolateral amygdalar nucleus, ventral part" [fillcolor=yellow style=filled]
+	"Cortical subplate" -> "Basomedial amygdalar nucleus"
+	"Basomedial amygdalar nucleus" [fillcolor=yellow style=filled]
+	"Basomedial amygdalar nucleus" -> "Basomedial amygdalar nucleus, anterior part"
+	"Basomedial amygdalar nucleus, anterior part" [fillcolor=yellow style=filled]
+	"Basomedial amygdalar nucleus" -> "Basomedial amygdalar nucleus, posterior part"
+	"Basomedial amygdalar nucleus, posterior part" [fillcolor=yellow style=filled]
+	"Cortical subplate" -> Claustrum
+	Claustrum [fillcolor=yellow style=filled]
+	"Cortical subplate" -> "Posterior amygdalar nucleus"
+	"Posterior amygdalar nucleus" [fillcolor=yellow style=filled]
+	"Cortical subplate" -> "Endopiriform nucleus"
+	"Endopiriform nucleus" -> "Endopiriform nucleus, dorsal part"
+	"Endopiriform nucleus, dorsal part" [fillcolor=yellow style=filled]
+	"Endopiriform nucleus" -> "Endopiriform nucleus, ventral part"
+	"Endopiriform nucleus, ventral part" [fillcolor=yellow style=filled]
+	root -> "ventricular systems"
+	"ventricular systems" [fillcolor=yellow style=filled]
+	"ventricular systems" -> "lateral ventricle"
+	"lateral ventricle" [fillcolor=yellow style=filled]
+	"lateral ventricle" -> rhinocele
+	"lateral ventricle" -> "subependymal zone"
+	"subependymal zone" [fillcolor=yellow style=filled]
+	"lateral ventricle" -> "choroid plexus"
+	"choroid plexus" [fillcolor=yellow style=filled]
+	"lateral ventricle" -> "choroid fissure"
+	"ventricular systems" -> "interventricular foramen"
+	"ventricular systems" -> "third ventricle"
+	"third ventricle" [fillcolor=yellow style=filled]
+	"ventricular systems" -> "cerebral aqueduct"
+	"cerebral aqueduct" [fillcolor=yellow style=filled]
+	"ventricular systems" -> "fourth ventricle"
+	"fourth ventricle" [fillcolor=yellow style=filled]
+	"fourth ventricle" -> "lateral recess"
+	"lateral recess" [fillcolor=yellow style=filled]
+	"ventricular systems" -> "central canal, spinal cord/medulla"
+	"central canal, spinal cord/medulla" [fillcolor=yellow style=filled]
+	root -> "fiber tracts"
+	"fiber tracts" [fillcolor=yellow style=filled]
+	"fiber tracts" -> "cerebellum related fiber tracts"
+	"cerebellum related fiber tracts" -> "arbor vitae"
+	"arbor vitae" [fillcolor=yellow style=filled]
+	"cerebellum related fiber tracts" -> "cerebellar commissure"
+	"cerebellar commissure" [fillcolor=yellow style=filled]
+	"cerebellum related fiber tracts" -> "cerebellar peduncles"
+	"cerebellar peduncles" -> "middle cerebellar peduncle"
+	"middle cerebellar peduncle" [fillcolor=yellow style=filled]
+	"cerebellar peduncles" -> "superior cerebelar peduncles"
+	"superior cerebelar peduncles" [fillcolor=yellow style=filled]
+	"superior cerebelar peduncles" -> "superior cerebellar peduncle decussation"
+	"superior cerebellar peduncle decussation" [fillcolor=yellow style=filled]
+	"superior cerebellar peduncle decussation" -> "spinocerebellar tract"
+	"superior cerebelar peduncles" -> "uncinate fascicle"
+	"uncinate fascicle" [fillcolor=yellow style=filled]
+	"superior cerebelar peduncles" -> "ventral spinocerebellar tract"
+	"ventral spinocerebellar tract" [fillcolor=yellow style=filled]
+	"cerebellar peduncles" -> "trigeminocerebellar tract"
+	"cerebellar peduncles" -> "inferior cerebellar peduncle"
+	"inferior cerebellar peduncle" [fillcolor=yellow style=filled]
+	"inferior cerebellar peduncle" -> "bulbocerebellar tract"
+	"bulbocerebellar tract" -> "olivocerebellar tract"
+	"bulbocerebellar tract" -> "reticulocerebellar tract"
+	"inferior cerebellar peduncle" -> "cuneocerebellar tract"
+	"inferior cerebellar peduncle" -> "dorsal spinocerebellar tract"
+	"dorsal spinocerebellar tract" [fillcolor=yellow style=filled]
+	"inferior cerebellar peduncle" -> "juxtarestiform body"
+	"fiber tracts" -> "cranial nerves"
+	"cranial nerves" -> "abducens nerve"
+	"cranial nerves" -> "accessory spinal nerve"
+	"cranial nerves" -> "dorsal roots"
+	"dorsal roots" -> "cervicothalamic tract"
+	"cervicothalamic tract" -> "dorsal column"
+	"dorsal column" -> "cuneate fascicle"
+	"cuneate fascicle" [fillcolor=yellow style=filled]
+	"dorsal column" -> "gracile fascicle"
+	"gracile fascicle" [fillcolor=yellow style=filled]
+	"dorsal column" -> "internal arcuate fibers"
+	"cervicothalamic tract" -> "dorsal commissure of the spinal cord"
+	"cervicothalamic tract" -> "dorsolateral fascicle"
+	"cervicothalamic tract" -> "fasciculus proprius"
+	"cervicothalamic tract" -> "medial lemniscus"
+	"medial lemniscus" [fillcolor=yellow style=filled]
+	"cervicothalamic tract" -> "ventral commissure of the spinal cord"
+	"cranial nerves" -> "facial nerve"
+	"facial nerve" [fillcolor=yellow style=filled]
+	"facial nerve" -> "genu of the facial nerve"
+	"genu of the facial nerve" [fillcolor=yellow style=filled]
+	"facial nerve" -> "intermediate nerve"
+	"cranial nerves" -> "glossopharyngeal nerve"
+	"cranial nerves" -> "hypoglossal nerve"
+	"cranial nerves" -> "oculomotor nerve"
+	"oculomotor nerve" [fillcolor=yellow style=filled]
+	"oculomotor nerve" -> "medial longitudinal fascicle"
+	"medial longitudinal fascicle" [fillcolor=yellow style=filled]
+	"oculomotor nerve" -> "posterior commissure"
+	"posterior commissure" [fillcolor=yellow style=filled]
+	"cranial nerves" -> "olfactory nerve"
+	"olfactory nerve" -> "lateral olfactory tract, general"
+	"lateral olfactory tract, general" -> "accessory olfactory tract"
+	"lateral olfactory tract, general" -> "dorsal limb"
+	"dorsal limb" [fillcolor=yellow style=filled]
+	"lateral olfactory tract, general" -> "lateral olfactory tract, body"
+	"lateral olfactory tract, body" [fillcolor=yellow style=filled]
+	"olfactory nerve" -> "anterior commissure, olfactory limb"
+	"anterior commissure, olfactory limb" [fillcolor=yellow style=filled]
+	"olfactory nerve" -> "olfactory nerve layer of main olfactory bulb"
+	"olfactory nerve layer of main olfactory bulb" [fillcolor=yellow style=filled]
+	"cranial nerves" -> "optic nerve"
+	"optic nerve" [fillcolor=yellow style=filled]
+	"optic nerve" -> "optic chiasm"
+	"optic chiasm" [fillcolor=yellow style=filled]
+	"optic nerve" -> "optic tract"
+	"optic tract" [fillcolor=yellow style=filled]
+	"optic nerve" -> "superior colliculus commissure"
+	"superior colliculus commissure" [fillcolor=yellow style=filled]
+	"optic nerve" -> "tectothalamic pathway"
+	"optic nerve" -> "accessory optic tract"
+	"optic nerve" -> "brachium of the superior colliculus"
+	"brachium of the superior colliculus" [fillcolor=yellow style=filled]
+	"cranial nerves" -> "spinothalamic tract"
+	"spinothalamic tract" -> "lateral spinothalamic tract"
+	"spinothalamic tract" -> "spinocervical tract"
+	"spinothalamic tract" -> "spinohypothalamic pathway"
+	"spinothalamic tract" -> "spino-olivary pathway"
+	"spinothalamic tract" -> "spinoreticular pathway"
+	"spinothalamic tract" -> "spinotectal pathway"
+	"spinothalamic tract" -> "spinotelenchephalic pathway"
+	"spinotelenchephalic pathway" -> "hypothalamohypophysial tract"
+	"spinothalamic tract" -> "spinovestibular pathway"
+	"spinothalamic tract" -> "ventral spinothalamic tract"
+	"cranial nerves" -> "terminal nerve"
+	"cranial nerves" -> "trigeminal nerve"
+	"trigeminal nerve" -> "motor root of the trigeminal nerve"
+	"motor root of the trigeminal nerve" [fillcolor=yellow style=filled]
+	"trigeminal nerve" -> "sensory root of the trigeminal nerve"
+	"sensory root of the trigeminal nerve" [fillcolor=yellow style=filled]
+	"sensory root of the trigeminal nerve" -> "midbrain tract of the trigeminal nerve"
+	"sensory root of the trigeminal nerve" -> "spinal tract of the trigeminal nerve"
+	"spinal tract of the trigeminal nerve" [fillcolor=yellow style=filled]
+	"cranial nerves" -> "trochlear nerve"
+	"trochlear nerve" [fillcolor=yellow style=filled]
+	"trochlear nerve" -> "trochlear nerve decussation"
+	"cranial nerves" -> "vagus nerve"
+	"vagus nerve" -> "solitary tract"
+	"solitary tract" [fillcolor=yellow style=filled]
+	"cranial nerves" -> "ventral roots"
+	"cranial nerves" -> "vestibulocochlear nerve"
+	"vestibulocochlear nerve" -> "vestibular nerve"
+	"vestibular nerve" [fillcolor=yellow style=filled]
+	"vestibulocochlear nerve" -> "cochlear nerve"
+	"cochlear nerve" -> "brachium of the inferior colliculus"
+	"brachium of the inferior colliculus" [fillcolor=yellow style=filled]
+	"cochlear nerve" -> "dorsal acoustic stria"
+	"dorsal acoustic stria" [fillcolor=yellow style=filled]
+	"cochlear nerve" -> "inferior colliculus commissure"
+	"inferior colliculus commissure" [fillcolor=yellow style=filled]
+	"cochlear nerve" -> "intermediate acoustic stria"
+	"cochlear nerve" -> "lateral lemniscus"
+	"lateral lemniscus" [fillcolor=yellow style=filled]
+	"cochlear nerve" -> "trapezoid body"
+	"trapezoid body" [fillcolor=yellow style=filled]
+	"vestibulocochlear nerve" -> "efferent cochleovestibular bundle"
+	"cranial nerves" -> "vomeronasal nerve"
+	"vomeronasal nerve" [fillcolor=yellow style=filled]
+	"fiber tracts" -> "lateral forebrain bundle system"
+	"lateral forebrain bundle system" -> "corpus callosum"
+	"corpus callosum" [fillcolor=yellow style=filled]
+	"corpus callosum" -> "corpus callosum, anterior forceps"
+	"corpus callosum, anterior forceps" [fillcolor=yellow style=filled]
+	"corpus callosum, anterior forceps" -> "external capsule"
+	"external capsule" [fillcolor=yellow style=filled]
+	"corpus callosum" -> "corpus callosum, extreme capsule"
+	"corpus callosum, extreme capsule" [fillcolor=yellow style=filled]
+	"corpus callosum" -> "corpus callosum, posterior forceps"
+	"corpus callosum, posterior forceps" [fillcolor=yellow style=filled]
+	"corpus callosum" -> "corpus callosum, rostrum"
+	"corpus callosum" -> "corpus callosum, splenium"
+	"corpus callosum, splenium" [fillcolor=yellow style=filled]
+	"corpus callosum" -> "genu of corpus callosum"
+	"genu of corpus callosum" [fillcolor=yellow style=filled]
+	"corpus callosum" -> "corpus callosum, body"
+	"lateral forebrain bundle system" -> "corticospinal tract"
+	"corticospinal tract" [fillcolor=yellow style=filled]
+	"corticospinal tract" -> "internal capsule"
+	"internal capsule" [fillcolor=yellow style=filled]
+	"corticospinal tract" -> pyramid
+	pyramid [fillcolor=yellow style=filled]
+	"corticospinal tract" -> "pyramidal decussation"
+	"pyramidal decussation" [fillcolor=yellow style=filled]
+	"corticospinal tract" -> "cerebal peduncle"
+	"cerebal peduncle" [fillcolor=yellow style=filled]
+	"corticospinal tract" -> "corticobulbar tract"
+	"corticospinal tract" -> "corticopontine tract"
+	"corticospinal tract" -> "corticorubral tract"
+	"corticospinal tract" -> "corticospinal tract, crossed"
+	"corticospinal tract" -> "corticospinal tract, uncrossed"
+	"corticospinal tract" -> "corticotectal tract"
+	"lateral forebrain bundle system" -> "thalamus related"
+	"thalamus related" -> "internal medullary lamina of the thalamus"
+	"thalamus related" -> "middle thalamic commissure"
+	"thalamus related" -> "thalamic peduncles"
+	"thalamus related" -> "external medullary lamina of the thalamus"
+	"external medullary lamina of the thalamus" [fillcolor=yellow style=filled]
+	"thalamus related" -> "optic radiation"
+	"thalamus related" -> "auditory radiation"
+	"fiber tracts" -> "medial forebrain bundle system"
+	"medial forebrain bundle system" -> "cerebrum related"
+	"cerebrum related" -> "longitudinal association bundle"
+	"cerebrum related" -> "stria terminalis"
+	"stria terminalis" [fillcolor=yellow style=filled]
+	"stria terminalis" -> "commissural branch of stria terminalis"
+	"commissural branch of stria terminalis" [fillcolor=yellow style=filled]
+	"cerebrum related" -> "amygdalar capsule"
+	"amygdalar capsule" [fillcolor=yellow style=filled]
+	"cerebrum related" -> "ansa peduncularis"
+	"cerebrum related" -> "anterior commissure, temporal limb"
+	"anterior commissure, temporal limb" [fillcolor=yellow style=filled]
+	"cerebrum related" -> "cingulum bundle"
+	"cingulum bundle" [fillcolor=yellow style=filled]
+	"cerebrum related" -> "fornix system"
+	"fornix system" -> alveus
+	alveus [fillcolor=yellow style=filled]
+	"fornix system" -> "angular path"
+	"fornix system" -> "dorsal fornix"
+	"dorsal fornix" [fillcolor=yellow style=filled]
+	"fornix system" -> fimbria
+	fimbria [fillcolor=yellow style=filled]
+	"fornix system" -> "hippocampal commissures"
+	"hippocampal commissures" -> "dorsal hippocampal commissure"
+	"dorsal hippocampal commissure" [fillcolor=yellow style=filled]
+	"hippocampal commissures" -> "ventral hippocampal commissure"
+	"ventral hippocampal commissure" [fillcolor=yellow style=filled]
+	"fornix system" -> "perforant path"
+	"fornix system" -> "postcommissural fornix"
+	"postcommissural fornix" -> "medial corticohypothalamic tract"
+	"medial corticohypothalamic tract" [fillcolor=yellow style=filled]
+	"postcommissural fornix" -> "columns of the fornix"
+	"columns of the fornix" [fillcolor=yellow style=filled]
+	"fornix system" -> "precommissural fornix, general"
+	"precommissural fornix, general" -> "precommissural fornix diagonal band"
+	"medial forebrain bundle system" -> "hypothalamus related"
+	"hypothalamus related" -> "mammillary related"
+	"mammillary related" -> "mammillary peduncle"
+	"mammillary peduncle" [fillcolor=yellow style=filled]
+	"mammillary related" -> "mammillotegmental tract"
+	"mammillotegmental tract" [fillcolor=yellow style=filled]
+	"mammillary related" -> "mammillothalamic tract"
+	"mammillothalamic tract" [fillcolor=yellow style=filled]
+	"mammillary related" -> "principal mammillary tract"
+	"principal mammillary tract" [fillcolor=yellow style=filled]
+	"hypothalamus related" -> "medial forebrain bundle"
+	"medial forebrain bundle" [fillcolor=yellow style=filled]
+	"hypothalamus related" -> "midbrain related"
+	"midbrain related" -> "dorsal longitudinal fascicle"
+	"midbrain related" -> "dorsal tegmental tract"
+	"hypothalamus related" -> "periventricular bundle of the hypothalamus"
+	"hypothalamus related" -> "premammillary commissure"
+	"hypothalamus related" -> "preoptic commissure"
+	"hypothalamus related" -> "propriohypothalamic pathways"
+	"propriohypothalamic pathways" -> "propriohypothalamic pathways, dorsal"
+	"propriohypothalamic pathways" -> "propriohypothalamic pathways, lateral"
+	"propriohypothalamic pathways" -> "propriohypothalamic pathways, medial"
+	"propriohypothalamic pathways" -> "propriohypothalamic pathways, ventral"
+	"hypothalamus related" -> "supramammillary decussation"
+	"hypothalamus related" -> "supraoptic commissures"
+	"supraoptic commissures" [fillcolor=yellow style=filled]
+	"supraoptic commissures" -> "supraoptic commissures, anterior"
+	"supraoptic commissures" -> "supraoptic commissures, dorsal"
+	"supraoptic commissures" -> "supraoptic commissures, ventral"
+	"hypothalamus related" -> "ventrolateral hypothalamic tract"
+	"hypothalamus related" -> "dorsal thalamus related"
+	"dorsal thalamus related" -> "periventricular bundle of the thalamus"
+	"hypothalamus related" -> "epithalamus related"
+	"epithalamus related" -> "fasciculus retroflexus"
+	"fasciculus retroflexus" [fillcolor=yellow style=filled]
+	"epithalamus related" -> "habenular commissure"
+	"habenular commissure" [fillcolor=yellow style=filled]
+	"epithalamus related" -> "pineal stalk"
+	"epithalamus related" -> "stria medullaris"
+	"stria medullaris" [fillcolor=yellow style=filled]
+	"fiber tracts" -> "extrapyramidal fiber systems"
+	"extrapyramidal fiber systems" -> "central tegmental bundle"
+	"extrapyramidal fiber systems" -> "cerebral nuclei related"
+	"cerebral nuclei related" -> "nigrostriatal tract"
+	"nigrostriatal tract" [fillcolor=yellow style=filled]
+	"cerebral nuclei related" -> "nigrothalamic fibers"
+	"cerebral nuclei related" -> "pallidotegmental fascicle"
+	"cerebral nuclei related" -> "pallidothalamic pathway"
+	"cerebral nuclei related" -> "striatonigral pathway"
+	"cerebral nuclei related" -> "subthalamic fascicle"
+	"extrapyramidal fiber systems" -> "retriculospinal tract"
+	"retriculospinal tract" -> "retriculospinal tract, lateral part"
+	"retriculospinal tract" -> "retriculospinal tract, medial part"
+	"extrapyramidal fiber systems" -> "rubrospinal tract"
+	"rubrospinal tract" [fillcolor=yellow style=filled]
+	"rubrospinal tract" -> "rubroreticular tract"
+	"rubrospinal tract" -> "ventral tegmental decussation"
+	"ventral tegmental decussation" [fillcolor=yellow style=filled]
+	"extrapyramidal fiber systems" -> "tectospinal pathway"
+	"tectospinal pathway" -> "crossed tectospinal pathway"
+	"crossed tectospinal pathway" [fillcolor=yellow style=filled]
+	"tectospinal pathway" -> "direct tectospinal pathway"
+	"direct tectospinal pathway" [fillcolor=yellow style=filled]
+	"tectospinal pathway" -> "doral tegmental decussation"
+	"doral tegmental decussation" [fillcolor=yellow style=filled]
+	"extrapyramidal fiber systems" -> "vestibulospinal pathway"
+	"fiber tracts" -> "supra-callosal cerebral white matter"
+	root -> grooves
+	grooves -> "Interpeduncular fossa"
+	grooves -> "grooves of the cerebral cortex"
+	"grooves of the cerebral cortex" -> "endorhinal groove"
+	"grooves of the cerebral cortex" -> "hippocampal fissure"
+	"grooves of the cerebral cortex" -> "rhinal fissure"
+	"grooves of the cerebral cortex" -> "rhinal incisure"
+	grooves -> "grooves of the cerebellar cortex"
+	"grooves of the cerebellar cortex" -> "secondary fissure"
+	"grooves of the cerebellar cortex" -> "posterolateral fissure"
+	"grooves of the cerebellar cortex" -> "nodular fissure"
+	"grooves of the cerebellar cortex" -> "simplex fissure"
+	"grooves of the cerebellar cortex" -> "intercrural fissure"
+	"grooves of the cerebellar cortex" -> "ansoparamedian fissure"
+	"grooves of the cerebellar cortex" -> "intraparafloccular fissure"
+	"grooves of the cerebellar cortex" -> "paramedian sulcus"
+	"grooves of the cerebellar cortex" -> "parafloccular sulcus"
+	"grooves of the cerebellar cortex" -> "precentral fissure"
+	"grooves of the cerebellar cortex" -> "preculminate fissure"
+	"grooves of the cerebellar cortex" -> "primary fissure"
+	"grooves of the cerebellar cortex" -> "posterior superior fissure"
+	"grooves of the cerebellar cortex" -> "prepyramidal fissure"
+	root -> retina
+	rankdir=LR
+}
