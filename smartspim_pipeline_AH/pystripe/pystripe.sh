@@ -2,7 +2,7 @@
 #
 #SBATCH -p all                # partition (queue)
 #SBATCH -c 8                 # number of cores
-#SBATCH -t 250                 # number of minutes 
+#SBATCH -t 150                 # number of minutes 
 #SBATCH -o logs/spim_pystripe_%j.out        # STDOUT #add _%a to see each array job
 #SBATCH -e logs/spim_pystripe_%j.err        # STDERR #add _%a to see each array job
 #SBATCH --contiguous #used to try and get cpu mem to be contigous
