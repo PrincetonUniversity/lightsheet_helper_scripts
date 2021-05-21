@@ -9,7 +9,7 @@ Created on Mon Jul 29 09:17:20 2019
 import numpy as np, pandas as pd, os, matplotlib.pyplot as plt, pickle as pckl, matplotlib as mpl
 import json, statsmodels.api as sm, itertools
 from tools.registration.register import transformed_pnts_to_allen_helper_func, count_structure_lister
-from skimage.external import tifffile
+import tifffile
 from scipy.ndimage.measurements import center_of_mass
 
 mpl.rcParams['pdf.fonttype'] = 42

@@ -1,0 +1,2661 @@
+digraph {
+	root [label="None: 1"]
+	root -> "Basic cell groups and regions"
+	"Basic cell groups and regions" [label="grey: 2"]
+	"Basic cell groups and regions" -> "Brain stem"
+	"Brain stem" [label="BS: 3"]
+	"Brain stem" -> Midbrain
+	Midbrain [label="MB: 4"]
+	Midbrain -> "Midbrain, motor related"
+	"Midbrain, motor related" [label="MBmot: 5"]
+	"Midbrain, motor related" -> "Oculomotor nucleus"
+	"Oculomotor nucleus" [label="III: 6"]
+	"Midbrain, motor related" -> "Medial terminal nucleus of the accessory optic tract"
+	"Medial terminal nucleus of the accessory optic tract" [label="MT: 7"]
+	"Midbrain, motor related" -> "Lateral terminal nucleus of the accessory optic tract"
+	"Lateral terminal nucleus of the accessory optic tract" [label="LT: 8"]
+	"Midbrain, motor related" -> "Dorsal terminal nucleus of the accessory optic tract"
+	"Dorsal terminal nucleus of the accessory optic tract" [label="DT: 9"]
+	"Midbrain, motor related" -> "Trochlear nucleus"
+	"Trochlear nucleus" [label="IV: 10"]
+	"Midbrain, motor related" -> "Midbrain reticular nucleus"
+	"Midbrain reticular nucleus" [label="MRN: 11"]
+	"Midbrain reticular nucleus" -> "Midbrain reticular nucleus, magnocellular part"
+	"Midbrain reticular nucleus, magnocellular part" [label="MRNm: 12"]
+	"Midbrain reticular nucleus" -> "Midbrain reticular nucleus, magnocellular part, general"
+	"Midbrain reticular nucleus, magnocellular part, general" [label="MRNmg: 13"]
+	"Midbrain reticular nucleus" -> "Midbrain reticular nucleus, parvicellular part"
+	"Midbrain reticular nucleus, parvicellular part" [label="MRNp: 14"]
+	"Midbrain, motor related" -> "Red nucleus"
+	"Red nucleus" [label="RN: 15"]
+	"Midbrain, motor related" -> "Anterior tegmental nucleus"
+	"Anterior tegmental nucleus" [label="AT: 16"]
+	"Midbrain, motor related" -> "Midbrain reticular nucleus, retrorubral area"
+	"Midbrain reticular nucleus, retrorubral area" [label="RR: 17"]
+	"Midbrain, motor related" -> "Superior colliculus, motor related"
+	"Superior colliculus, motor related" [label="SCm: 18"]
+	"Superior colliculus, motor related" -> "Superior colliculus, motor related, intermediate gray layer"
+	"Superior colliculus, motor related, intermediate gray layer" [label="SCig: 19"]
+	"Superior colliculus, motor related, intermediate gray layer" -> "Superior colliculus, motor related, intermediate gray layer, sublayer a"
+	"Superior colliculus, motor related, intermediate gray layer, sublayer a" [label="SCig-a: 20"]
+	"Superior colliculus, motor related, intermediate gray layer" -> "Superior colliculus, motor related, intermediate gray layer, sublayer b"
+	"Superior colliculus, motor related, intermediate gray layer, sublayer b" [label="SCig-b: 21"]
+	"Superior colliculus, motor related, intermediate gray layer" -> "Superior colliculus, motor related, intermediate gray layer, sublayer c"
+	"Superior colliculus, motor related, intermediate gray layer, sublayer c" [label="SCig-c: 22"]
+	"Superior colliculus, motor related" -> "Superior colliculus, motor related, intermediate white layer"
+	"Superior colliculus, motor related, intermediate white layer" [label="SCiw: 23"]
+	"Superior colliculus, motor related" -> "Superior colliculus, motor related, deep gray layer"
+	"Superior colliculus, motor related, deep gray layer" [label="SCdg: 24"]
+	"Superior colliculus, motor related" -> "Superior colliculus, motor related, deep white layer"
+	"Superior colliculus, motor related, deep white layer" [label="SCdw: 25"]
+	"Midbrain, motor related" -> "Substantia nigra, reticular part"
+	"Substantia nigra, reticular part" [label="SNr: 26"]
+	"Midbrain, motor related" -> "Substantia nigra, lateral part"
+	"Substantia nigra, lateral part" [label="SNl: 27"]
+	"Midbrain, motor related" -> "Cuneiform nucleus"
+	"Cuneiform nucleus" [label="CUN: 28"]
+	"Midbrain, motor related" -> "Ventral tegmental area"
+	"Ventral tegmental area" [label="VTA: 29"]
+	"Midbrain, motor related" -> "Ventral tegmental nucleus"
+	"Ventral tegmental nucleus" [label="VTN: 30"]
+	"Midbrain, motor related" -> "Periaqueductal gray"
+	"Periaqueductal gray" [label="PAG: 31"]
+	"Periaqueductal gray" -> "Precommissural nucleus"
+	"Precommissural nucleus" [label="PRC: 32"]
+	"Periaqueductal gray" -> "Interstitial nucleus of Cajal"
+	"Interstitial nucleus of Cajal" [label="INC: 33"]
+	"Periaqueductal gray" -> "Nucleus of Darkschewitsch"
+	"Nucleus of Darkschewitsch" [label="ND: 34"]
+	"Periaqueductal gray" -> "Supraoculomotor periaqueductal gray"
+	"Supraoculomotor periaqueductal gray" [label="Su3: 35"]
+	"Midbrain, motor related" -> "Edinger-Westphal nucleus"
+	"Edinger-Westphal nucleus" [label="EW: 36"]
+	"Midbrain, motor related" -> "Pretectal region"
+	"Pretectal region" [label="PRT: 37"]
+	"Pretectal region" -> "Anterior pretectal nucleus"
+	"Anterior pretectal nucleus" [label="APN: 38"]
+	"Pretectal region" -> "Medial pretectal area"
+	"Medial pretectal area" [label="MPT: 39"]
+	"Pretectal region" -> "Nucleus of the optic tract"
+	"Nucleus of the optic tract" [label="NOT: 40"]
+	"Pretectal region" -> "Nucleus of the posterior commissure"
+	"Nucleus of the posterior commissure" [label="NPC: 41"]
+	"Pretectal region" -> "Olivary pretectal nucleus"
+	"Olivary pretectal nucleus" [label="OP: 42"]
+	"Pretectal region" -> "Posterior pretectal nucleus"
+	"Posterior pretectal nucleus" [label="PPT: 43"]
+	"Pretectal region" -> "Retroparafascicular nucleus"
+	"Retroparafascicular nucleus" [label="RPF: 44"]
+	"Midbrain, motor related" -> "Intercollicular nucleus"
+	"Intercollicular nucleus" [label="InCo: 45"]
+	"Midbrain, motor related" -> "Medial accesory oculomotor nucleus"
+	"Medial accesory oculomotor nucleus" [label="MA3: 46"]
+	"Midbrain, motor related" -> "Paratrochlear nucleus"
+	"Paratrochlear nucleus" [label="Pa4: 47"]
+	"Midbrain, motor related" -> "Paranigral nucleus"
+	"Paranigral nucleus" [label="PN: 48"]
+	Midbrain -> "Midbrain, sensory related"
+	"Midbrain, sensory related" [label="MBsen: 49"]
+	"Midbrain, sensory related" -> "Inferior colliculus"
+	"Inferior colliculus" [label="IC: 50"]
+	"Inferior colliculus" -> "Inferior colliculus, central nucleus"
+	"Inferior colliculus, central nucleus" [label="ICc: 51"]
+	"Inferior colliculus" -> "Inferior colliculus, dorsal nucleus"
+	"Inferior colliculus, dorsal nucleus" [label="ICd: 52"]
+	"Inferior colliculus" -> "Inferior colliculus, external nucleus"
+	"Inferior colliculus, external nucleus" [label="ICe: 53"]
+	"Midbrain, sensory related" -> "Nucleus sagulum"
+	"Nucleus sagulum" [label="SAG: 54"]
+	"Midbrain, sensory related" -> "Superior colliculus, sensory related"
+	"Superior colliculus, sensory related" [label="SCs: 55"]
+	"Superior colliculus, sensory related" -> "Superior colliculus, zonal layer"
+	"Superior colliculus, zonal layer" [label="SCzo: 56"]
+	"Superior colliculus, sensory related" -> "Superior colliculus, superficial gray layer"
+	"Superior colliculus, superficial gray layer" [label="SCsg: 57"]
+	"Superior colliculus, sensory related" -> "Superior colliculus, optic layer"
+	"Superior colliculus, optic layer" [label="SCop: 58"]
+	"Midbrain, sensory related" -> "Midbrain trigeminal nucleus"
+	"Midbrain trigeminal nucleus" [label="MEV: 59"]
+	"Midbrain, sensory related" -> "Nucleus of the brachium of the inferior colliculus"
+	"Nucleus of the brachium of the inferior colliculus" [label="NB: 60"]
+	"Midbrain, sensory related" -> "Parabigeminal nucleus"
+	"Parabigeminal nucleus" [label="PBG: 61"]
+	"Midbrain, sensory related" -> "Subcommissural organ"
+	"Subcommissural organ" [label="SCO: 62"]
+	Midbrain -> "Midbrain, behavioral state related"
+	"Midbrain, behavioral state related" [label="MBsta: 63"]
+	"Midbrain, behavioral state related" -> "Midbrain raphe nuclei"
+	"Midbrain raphe nuclei" [label="RAmb: 64"]
+	"Midbrain raphe nuclei" -> "Interfascicular nucleus raphe"
+	"Interfascicular nucleus raphe" [label="IF: 65"]
+	"Midbrain raphe nuclei" -> "Interpeduncular nucleus"
+	"Interpeduncular nucleus" [label="IPN: 66"]
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, rostral"
+	"Interpeduncular nucleus, rostral" [label="IPR: 67"]
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, caudal"
+	"Interpeduncular nucleus, caudal" [label="IPC: 68"]
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, apical"
+	"Interpeduncular nucleus, apical" [label="IPA: 69"]
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, lateral"
+	"Interpeduncular nucleus, lateral" [label="IPL: 70"]
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, intermediate"
+	"Interpeduncular nucleus, intermediate" [label="IPI: 71"]
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, dorsomedial"
+	"Interpeduncular nucleus, dorsomedial" [label="IPDM: 72"]
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, dorsolateral"
+	"Interpeduncular nucleus, dorsolateral" [label="IPDL: 73"]
+	"Interpeduncular nucleus" -> "Interpeduncular nucleus, rostrolateral"
+	"Interpeduncular nucleus, rostrolateral" [label="IPRL: 74"]
+	"Midbrain raphe nuclei" -> "Rostral linear nucleus raphe"
+	"Rostral linear nucleus raphe" [label="RL: 75"]
+	"Midbrain raphe nuclei" -> "Central linear nucleus raphe"
+	"Central linear nucleus raphe" [label="CLI: 76"]
+	"Midbrain raphe nuclei" -> "Dorsal nucleus raphe"
+	"Dorsal nucleus raphe" [label="DR: 77"]
+	"Midbrain, behavioral state related" -> "Substantia nigra, compact part"
+	"Substantia nigra, compact part" [label="SNc: 78"]
+	"Midbrain, behavioral state related" -> "Pedunculopontine nucleus"
+	"Pedunculopontine nucleus" [label="PPN: 79"]
+	"Brain stem" -> Hindbrain
+	Hindbrain [label="HB: 80"]
+	Hindbrain -> Medulla
+	Medulla [label="MY: 81"]
+	Medulla -> "Medulla, motor related"
+	"Medulla, motor related" [label="MY-mot: 82"]
+	"Medulla, motor related" -> "Interstitial nucleus of the vestibular nerve"
+	"Interstitial nucleus of the vestibular nerve" [label="INV: 83"]
+	"Medulla, motor related" -> "Inferior olivary complex"
+	"Inferior olivary complex" [label="IO: 84"]
+	"Medulla, motor related" -> "Inferior salivatory nucleus"
+	"Inferior salivatory nucleus" [label="ISN: 85"]
+	"Medulla, motor related" -> "Nucleus ambiguus"
+	"Nucleus ambiguus" [label="AMB: 86"]
+	"Nucleus ambiguus" -> "Nucleus ambiguus, ventral division"
+	"Nucleus ambiguus, ventral division" [label="AMBv: 87"]
+	"Nucleus ambiguus" -> "Nucleus ambiguus, dorsal division"
+	"Nucleus ambiguus, dorsal division" [label="AMBd: 88"]
+	"Medulla, motor related" -> "Intermediate reticular nucleus"
+	"Intermediate reticular nucleus" [label="IRN: 89"]
+	"Medulla, motor related" -> "Perihypoglossal nuclei"
+	"Perihypoglossal nuclei" [label="PHY: 90"]
+	"Perihypoglossal nuclei" -> "Nucleus intercalatus"
+	"Nucleus intercalatus" [label="NIS: 91"]
+	"Perihypoglossal nuclei" -> "Nucleus prepositus"
+	"Nucleus prepositus" [label="PRP: 92"]
+	"Perihypoglossal nuclei" -> "Nucleus of Roller"
+	"Nucleus of Roller" [label="NR: 93"]
+	"Medulla, motor related" -> "Linear nucleus of the medulla"
+	"Linear nucleus of the medulla" [label="LIN: 94"]
+	"Medulla, motor related" -> "Lateral reticular nucleus"
+	"Lateral reticular nucleus" [label="LRN: 95"]
+	"Lateral reticular nucleus" -> "Lateral reticular nucleus, magnocellular part"
+	"Lateral reticular nucleus, magnocellular part" [label="LRNm: 96"]
+	"Lateral reticular nucleus" -> "Lateral reticular nucleus, parvicellular part"
+	"Lateral reticular nucleus, parvicellular part" [label="LRNp: 97"]
+	"Medulla, motor related" -> "Magnocellular reticular nucleus"
+	"Magnocellular reticular nucleus" [label="MARN: 98"]
+	"Medulla, motor related" -> "Infracerebellar nucleus"
+	"Infracerebellar nucleus" [label="ICB: 99"]
+	"Medulla, motor related" -> "Medullary reticular nucleus"
+	"Medullary reticular nucleus" [label="MDRN: 100"]
+	"Medullary reticular nucleus" -> "Medullary reticular nucleus, dorsal part"
+	"Medullary reticular nucleus, dorsal part" [label="MDRNd: 101"]
+	"Medullary reticular nucleus" -> "Medullary reticular nucleus, ventral part"
+	"Medullary reticular nucleus, ventral part" [label="MDRNv: 102"]
+	"Medulla, motor related" -> "Accessory abducens nucleus"
+	"Accessory abducens nucleus" [label="ACVI: 103"]
+	"Medulla, motor related" -> "Accessory facial motor nucleus"
+	"Accessory facial motor nucleus" [label="ACVII: 104"]
+	"Medulla, motor related" -> "Efferent vestibular nucleus"
+	"Efferent vestibular nucleus" [label="EV: 105"]
+	"Medulla, motor related" -> "Abducens nucleus"
+	"Abducens nucleus" [label="VI: 106"]
+	"Medulla, motor related" -> "Facial motor nucleus"
+	"Facial motor nucleus" [label="VII: 107"]
+	"Medulla, motor related" -> "Vestibular nuclei"
+	"Vestibular nuclei" [label="VNC: 108"]
+	"Vestibular nuclei" -> "Medial vestibular nucleus"
+	"Medial vestibular nucleus" [label="MV: 109"]
+	"Vestibular nuclei" -> "Lateral vestibular nucleus"
+	"Lateral vestibular nucleus" [label="LAV: 110"]
+	"Vestibular nuclei" -> "Superior vestibular nucleus"
+	"Superior vestibular nucleus" [label="SUV: 111"]
+	"Vestibular nuclei" -> "Spinal vestibular nucleus"
+	"Spinal vestibular nucleus" [label="SPIV: 112"]
+	"Medulla, motor related" -> "Nucleus x"
+	"Nucleus x" [label="x: 113"]
+	"Medulla, motor related" -> "Hypoglossal nucleus"
+	"Hypoglossal nucleus" [label="XII: 114"]
+	"Medulla, motor related" -> "Nucleus y"
+	"Nucleus y" [label="y: 115"]
+	"Medulla, motor related" -> "Dorsal motor nucleus of the vagus nerve"
+	"Dorsal motor nucleus of the vagus nerve" [label="DMX: 116"]
+	"Medulla, motor related" -> "Parvicellular reticular nucleus"
+	"Parvicellular reticular nucleus" [label="PARN: 117"]
+	"Medulla, motor related" -> "Parasolitary nucleus"
+	"Parasolitary nucleus" [label="PAS: 118"]
+	"Medulla, motor related" -> "Efferent cochlear group"
+	"Efferent cochlear group" [label="ECO: 119"]
+	"Medulla, motor related" -> "Paragigantocellular reticular nucleus"
+	"Paragigantocellular reticular nucleus" [label="PGRN: 120"]
+	"Paragigantocellular reticular nucleus" -> "Paragigantocellular reticular nucleus, dorsal part"
+	"Paragigantocellular reticular nucleus, dorsal part" [label="PGRNd: 121"]
+	"Paragigantocellular reticular nucleus" -> "Paragigantocellular reticular nucleus, lateral part"
+	"Paragigantocellular reticular nucleus, lateral part" [label="PGRNl: 122"]
+	"Medulla, motor related" -> "Paramedian reticular nucleus"
+	"Paramedian reticular nucleus" [label="PMR: 123"]
+	"Medulla, motor related" -> "Gigantocellular reticular nucleus"
+	"Gigantocellular reticular nucleus" [label="GRN: 124"]
+	"Medulla, motor related" -> "Parapyramidal nucleus"
+	"Parapyramidal nucleus" [label="PPY: 125"]
+	"Parapyramidal nucleus" -> "Parapyramidal nucleus, deep part"
+	"Parapyramidal nucleus, deep part" [label="PPYd: 126"]
+	"Parapyramidal nucleus" -> "Parapyramidal nucleus, superficial part"
+	"Parapyramidal nucleus, superficial part" [label="PPYs: 127"]
+	Medulla -> "Medulla, behavioral state related"
+	"Medulla, behavioral state related" [label="MY-sat: 128"]
+	"Medulla, behavioral state related" -> "Nucleus raphe magnus"
+	"Nucleus raphe magnus" [label="RM: 129"]
+	"Medulla, behavioral state related" -> "Nucleus raphe obscurus"
+	"Nucleus raphe obscurus" [label="RO: 130"]
+	"Medulla, behavioral state related" -> "Nucleus raphe pallidus"
+	"Nucleus raphe pallidus" [label="RPA: 131"]
+	Medulla -> "Medulla, sensory related"
+	"Medulla, sensory related" [label="MY-sen: 132"]
+	"Medulla, sensory related" -> "Area postrema"
+	"Area postrema" [label="AP: 133"]
+	"Medulla, sensory related" -> "Spinal nucleus of the trigeminal, caudal part"
+	"Spinal nucleus of the trigeminal, caudal part" [label="SPVC: 134"]
+	"Medulla, sensory related" -> "Spinal nucleus of the trigeminal, interpolar part"
+	"Spinal nucleus of the trigeminal, interpolar part" [label="SPVI: 135"]
+	"Medulla, sensory related" -> "Spinal nucleus of the trigeminal, oral part"
+	"Spinal nucleus of the trigeminal, oral part" [label="SPVO: 136"]
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, rostral dorsomedial part"
+	"Spinal nucleus of the trigeminal, oral part, rostral dorsomedial part" [label="SPVOrdm: 137"]
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, middle dorsomedial part, dorsal zone"
+	"Spinal nucleus of the trigeminal, oral part, middle dorsomedial part, dorsal zone" [label="SPVOmdmd: 138"]
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, middle dorsomedial part, ventral zone"
+	"Spinal nucleus of the trigeminal, oral part, middle dorsomedial part, ventral zone" [label="SPVOmdmv: 139"]
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, ventrolateral part"
+	"Spinal nucleus of the trigeminal, oral part, ventrolateral part" [label="SPVOvl: 140"]
+	"Spinal nucleus of the trigeminal, oral part" -> "Spinal nucleus of the trigeminal, oral part, caudal dorsomedial part"
+	"Spinal nucleus of the trigeminal, oral part, caudal dorsomedial part" [label="SPVOcdm: 141"]
+	"Medulla, sensory related" -> "Cochlear nuclei"
+	"Cochlear nuclei" [label="CN: 142"]
+	"Cochlear nuclei" -> "Dorsal cochlear nucleus"
+	"Dorsal cochlear nucleus" [label="DCO: 143"]
+	"Cochlear nuclei" -> "Ventral cochlear nucleus"
+	"Ventral cochlear nucleus" [label="VCO: 144"]
+	"Cochlear nuclei" -> "Granular lamina of the cochlear nuclei"
+	"Granular lamina of the cochlear nuclei" [label="CNlam: 145"]
+	"Cochlear nuclei" -> "Cochlear nucleus, subpedunclular granular region"
+	"Cochlear nucleus, subpedunclular granular region" [label="CNspg: 146"]
+	"Medulla, sensory related" -> "Nucleus of the trapezoid body"
+	"Nucleus of the trapezoid body" [label="NTB: 147"]
+	"Medulla, sensory related" -> "Nucleus of the solitary tract"
+	"Nucleus of the solitary tract" [label="NTS: 148"]
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, central part"
+	"Nucleus of the solitary tract, central part" [label="NTSce: 149"]
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, commissural part"
+	"Nucleus of the solitary tract, commissural part" [label="NTSco: 150"]
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, gelatinous part"
+	"Nucleus of the solitary tract, gelatinous part" [label="NTSge: 151"]
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, lateral part"
+	"Nucleus of the solitary tract, lateral part" [label="NTSl: 152"]
+	"Nucleus of the solitary tract" -> "Nucleus of the solitary tract, medial part"
+	"Nucleus of the solitary tract, medial part" [label="NTSm: 153"]
+	"Medulla, sensory related" -> "Dorsal column nuclei"
+	"Dorsal column nuclei" [label="DCN: 154"]
+	"Dorsal column nuclei" -> "Cuneate nucleus"
+	"Cuneate nucleus" [label="CU: 155"]
+	"Dorsal column nuclei" -> "Gracile nucleus"
+	"Gracile nucleus" [label="GR: 156"]
+	"Medulla, sensory related" -> "Nucleus z"
+	"Nucleus z" [label="z: 157"]
+	"Medulla, sensory related" -> "External cuneate nucleus"
+	"External cuneate nucleus" [label="ECU: 158"]
+	"Medulla, sensory related" -> "Paratrigeminal nucleus"
+	"Paratrigeminal nucleus" [label="Pa5: 159"]
+	Hindbrain -> Pons
+	Pons [label="P: 160"]
+	Pons -> "Pons, motor related"
+	"Pons, motor related" [label="P-mot: 161"]
+	"Pons, motor related" -> "Barrington's nucleus"
+	"Barrington's nucleus" [label="B: 162"]
+	"Pons, motor related" -> "Lateral tegmental nucleus"
+	"Lateral tegmental nucleus" [label="LTN: 163"]
+	"Pons, motor related" -> "Supragenual nucleus"
+	"Supragenual nucleus" [label="SG: 164"]
+	"Pons, motor related" -> "Superior salivatory nucleus"
+	"Superior salivatory nucleus" [label="SSN: 165"]
+	"Pons, motor related" -> "Supratrigeminal nucleus"
+	"Supratrigeminal nucleus" [label="SUT: 166"]
+	"Pons, motor related" -> "Pontine reticular nucleus, ventral part"
+	"Pontine reticular nucleus, ventral part" [label="PRNv: 167"]
+	"Pons, motor related" -> "Tegmental reticular nucleus"
+	"Tegmental reticular nucleus" [label="TRN: 168"]
+	"Pons, motor related" -> "Motor nucleus of trigeminal"
+	"Motor nucleus of trigeminal" [label="V: 169"]
+	"Pons, motor related" -> "Dorsal tegmental nucleus"
+	"Dorsal tegmental nucleus" [label="DTN: 170"]
+	"Pons, motor related" -> "Pontine central gray"
+	"Pontine central gray" [label="PCG: 171"]
+	"Pons, motor related" -> "Pontine gray"
+	"Pontine gray" [label="PG: 172"]
+	"Pons, motor related" -> "Pontine reticular nucleus, caudal part"
+	"Pontine reticular nucleus, caudal part" [label="PRNc: 173"]
+	"Pons, motor related" -> "Posterodorsal tegmental nucleus"
+	"Posterodorsal tegmental nucleus" [label="PDTg: 174"]
+	"Pons, motor related" -> "Peritrigeminal zone"
+	"Peritrigeminal zone" [label="P5: 175"]
+	"Pons, motor related" -> "Accessory trigeminal nucleus"
+	"Accessory trigeminal nucleus" [label="Acs5: 176"]
+	"Pons, motor related" -> "Parvicellular motor 5 nucleus"
+	"Parvicellular motor 5 nucleus" [label="PC5: 177"]
+	"Pons, motor related" -> "Intertrigeminal nucleus"
+	"Intertrigeminal nucleus" [label="I5: 178"]
+	Pons -> "Pons, behavioral state related"
+	"Pons, behavioral state related" [label="P-sat: 179"]
+	"Pons, behavioral state related" -> "Pontine reticular nucleus"
+	"Pontine reticular nucleus" [label="PRNr: 180"]
+	"Pons, behavioral state related" -> "Locus ceruleus"
+	"Locus ceruleus" [label="LC: 181"]
+	"Pons, behavioral state related" -> "Laterodorsal tegmental nucleus"
+	"Laterodorsal tegmental nucleus" [label="LDT: 182"]
+	"Pons, behavioral state related" -> "Nucleus raphe pontis"
+	"Nucleus raphe pontis" [label="RPO: 183"]
+	"Pons, behavioral state related" -> "Subceruleus nucleus"
+	"Subceruleus nucleus" [label="SLC: 184"]
+	"Pons, behavioral state related" -> "Sublaterodorsal nucleus"
+	"Sublaterodorsal nucleus" [label="SLD: 185"]
+	"Pons, behavioral state related" -> "Nucleus incertus"
+	"Nucleus incertus" [label="NI: 186"]
+	"Pons, behavioral state related" -> "Superior central nucleus raphe"
+	"Superior central nucleus raphe" [label="CS: 187"]
+	"Superior central nucleus raphe" -> "Superior central nucleus raphe, medial part"
+	"Superior central nucleus raphe, medial part" [label="CSm: 188"]
+	"Superior central nucleus raphe" -> "Superior central nucleus raphe, lateral part"
+	"Superior central nucleus raphe, lateral part" [label="CSl: 189"]
+	Pons -> "Pons, sensory related"
+	"Pons, sensory related" [label="P-sen: 190"]
+	"Pons, sensory related" -> "Principal sensory nucleus of the trigeminal"
+	"Principal sensory nucleus of the trigeminal" [label="PSV: 191"]
+	"Pons, sensory related" -> "Superior olivary complex"
+	"Superior olivary complex" [label="SOC: 192"]
+	"Superior olivary complex" -> "Superior olivary complex, medial part"
+	"Superior olivary complex, medial part" [label="SOCm: 193"]
+	"Superior olivary complex" -> "Superior olivary complex, lateral part"
+	"Superior olivary complex, lateral part" [label="SOCl: 194"]
+	"Superior olivary complex" -> "Superior olivary complex, periolivary region"
+	"Superior olivary complex, periolivary region" [label="POR: 195"]
+	"Pons, sensory related" -> "Nucleus of the lateral lemniscus"
+	"Nucleus of the lateral lemniscus" [label="NLL: 196"]
+	"Nucleus of the lateral lemniscus" -> "Nucleus of the lateral lemniscus, dorsal part"
+	"Nucleus of the lateral lemniscus, dorsal part" [label="NLLd: 197"]
+	"Nucleus of the lateral lemniscus" -> "Nucleus of the lateral lemniscus, horizontal part"
+	"Nucleus of the lateral lemniscus, horizontal part" [label="NLLh: 198"]
+	"Nucleus of the lateral lemniscus" -> "Nucleus of the lateral lemniscus, ventral part"
+	"Nucleus of the lateral lemniscus, ventral part" [label="NLLv: 199"]
+	"Pons, sensory related" -> "Parabrachial nucleus"
+	"Parabrachial nucleus" [label="PB: 200"]
+	"Parabrachial nucleus" -> "Koelliker-Fuse subnucleus"
+	"Koelliker-Fuse subnucleus" [label="KF: 201"]
+	"Parabrachial nucleus" -> "Parabrachial nucleus, lateral division"
+	"Parabrachial nucleus, lateral division" [label="PBl: 202"]
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, central lateral part"
+	"Parabrachial nucleus, lateral division, central lateral part" [label="PBlc: 203"]
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, dorsal lateral part"
+	"Parabrachial nucleus, lateral division, dorsal lateral part" [label="PBld: 204"]
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, external lateral part"
+	"Parabrachial nucleus, lateral division, external lateral part" [label="PBle: 205"]
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, superior lateral part"
+	"Parabrachial nucleus, lateral division, superior lateral part" [label="PBls: 206"]
+	"Parabrachial nucleus, lateral division" -> "Parabrachial nucleus, lateral division, ventral lateral part"
+	"Parabrachial nucleus, lateral division, ventral lateral part" [label="PBlv: 207"]
+	"Parabrachial nucleus" -> "Parabrachial nucleus, medial division"
+	"Parabrachial nucleus, medial division" [label="PBm: 208"]
+	"Parabrachial nucleus, medial division" -> "Parabrachial nucleus, medial division, external medial part"
+	"Parabrachial nucleus, medial division, external medial part" [label="PBme: 209"]
+	"Parabrachial nucleus, medial division" -> "Parabrachial nucleus, medial division, medial medial part"
+	"Parabrachial nucleus, medial division, medial medial part" [label="PBmm: 210"]
+	"Parabrachial nucleus, medial division" -> "Parabrachial nucleus, medial division, ventral medial part"
+	"Parabrachial nucleus, medial division, ventral medial part" [label="PBmv: 211"]
+	"Brain stem" -> Interbrain
+	Interbrain [label="IB: 212"]
+	Interbrain -> Thalamus
+	Thalamus [label="TH: 213"]
+	Thalamus -> "Thalamus, polymodal association cortex related"
+	"Thalamus, polymodal association cortex related" [label="DORpm: 214"]
+	"Thalamus, polymodal association cortex related" -> "Intralaminar nuclei of the dorsal thalamus"
+	"Intralaminar nuclei of the dorsal thalamus" [label="ILM: 215"]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Rhomboid nucleus"
+	"Rhomboid nucleus" [label="RH: 216"]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Central lateral nucleus of the thalamus"
+	"Central lateral nucleus of the thalamus" [label="CL: 217"]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Central medial nucleus of the thalamus"
+	"Central medial nucleus of the thalamus" [label="CM: 218"]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Paracentral nucleus"
+	"Paracentral nucleus" [label="PCN: 219"]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Parafascicular nucleus"
+	"Parafascicular nucleus" [label="PF: 220"]
+	"Intralaminar nuclei of the dorsal thalamus" -> "Posterior intralaminar thalamic nucleus"
+	"Posterior intralaminar thalamic nucleus" [label="PIL: 221"]
+	"Thalamus, polymodal association cortex related" -> "Lateral group of the dorsal thalamus"
+	"Lateral group of the dorsal thalamus" [label="LAT: 222"]
+	"Lateral group of the dorsal thalamus" -> "Lateral posterior nucleus of the thalamus"
+	"Lateral posterior nucleus of the thalamus" [label="LP: 223"]
+	"Lateral group of the dorsal thalamus" -> "Suprageniculate nucleus"
+	"Suprageniculate nucleus" [label="SGN: 224"]
+	"Lateral group of the dorsal thalamus" -> "Posterior complex of the thalamus"
+	"Posterior complex of the thalamus" [label="PO: 225"]
+	"Lateral group of the dorsal thalamus" -> "Posterior limiting nucleus of the thalamus"
+	"Posterior limiting nucleus of the thalamus" [label="POL: 226"]
+	"Lateral group of the dorsal thalamus" -> "Ethmoid nucleus of the thalamus"
+	"Ethmoid nucleus of the thalamus" [label="Eth: 227"]
+	"Lateral group of the dorsal thalamus" -> "Retroethmoid nucleus"
+	"Retroethmoid nucleus" [label="REth: 228"]
+	"Thalamus, polymodal association cortex related" -> "Anterior group of the dorsal thalamus"
+	"Anterior group of the dorsal thalamus" [label="ATN: 229"]
+	"Anterior group of the dorsal thalamus" -> "Anterodorsal nucleus"
+	"Anterodorsal nucleus" [label="AD: 230"]
+	"Anterior group of the dorsal thalamus" -> "Anteromedial nucleus"
+	"Anteromedial nucleus" [label="AM: 231"]
+	"Anteromedial nucleus" -> "Anteromedial nucleus, dorsal part"
+	"Anteromedial nucleus, dorsal part" [label="AMd: 232"]
+	"Anteromedial nucleus" -> "Anteromedial nucleus, ventral part"
+	"Anteromedial nucleus, ventral part" [label="AMv: 233"]
+	"Anterior group of the dorsal thalamus" -> "Lateral dorsal nucleus of thalamus"
+	"Lateral dorsal nucleus of thalamus" [label="LD: 234"]
+	"Anterior group of the dorsal thalamus" -> "Anteroventral nucleus of thalamus"
+	"Anteroventral nucleus of thalamus" [label="AV: 235"]
+	"Anterior group of the dorsal thalamus" -> "Interanterodorsal nucleus of the thalamus"
+	"Interanterodorsal nucleus of the thalamus" [label="IAD: 236"]
+	"Anterior group of the dorsal thalamus" -> "Interanteromedial nucleus of the thalamus"
+	"Interanteromedial nucleus of the thalamus" [label="IAM: 237"]
+	"Thalamus, polymodal association cortex related" -> "Reticular nucleus of the thalamus"
+	"Reticular nucleus of the thalamus" [label="RT: 238"]
+	"Thalamus, polymodal association cortex related" -> "Medial group of the dorsal thalamus"
+	"Medial group of the dorsal thalamus" [label="MED: 239"]
+	"Medial group of the dorsal thalamus" -> "Intermediodorsal nucleus of the thalamus"
+	"Intermediodorsal nucleus of the thalamus" [label="IMD: 240"]
+	"Medial group of the dorsal thalamus" -> "Mediodorsal nucleus of thalamus"
+	"Mediodorsal nucleus of thalamus" [label="MD: 241"]
+	"Mediodorsal nucleus of thalamus" -> "Mediodorsal nucleus of the thalamus, central part"
+	"Mediodorsal nucleus of the thalamus, central part" [label="MDc: 242"]
+	"Mediodorsal nucleus of thalamus" -> "Mediodorsal nucleus of the thalamus, lateral part"
+	"Mediodorsal nucleus of the thalamus, lateral part" [label="MDl: 243"]
+	"Mediodorsal nucleus of thalamus" -> "Mediodorsal nucleus of the thalamus, medial part"
+	"Mediodorsal nucleus of the thalamus, medial part" [label="MDm: 244"]
+	"Medial group of the dorsal thalamus" -> "Submedial nucleus of the thalamus"
+	"Submedial nucleus of the thalamus" [label="SMT: 245"]
+	"Medial group of the dorsal thalamus" -> "Perireunensis nucleus"
+	"Perireunensis nucleus" [label="PR: 246"]
+	"Thalamus, polymodal association cortex related" -> "Midline group of the dorsal thalamus"
+	"Midline group of the dorsal thalamus" [label="MTN: 247"]
+	"Midline group of the dorsal thalamus" -> "Parataenial nucleus"
+	"Parataenial nucleus" [label="PT: 248"]
+	"Midline group of the dorsal thalamus" -> "Paraventricular nucleus of the thalamus"
+	"Paraventricular nucleus of the thalamus" [label="PVT: 249"]
+	"Midline group of the dorsal thalamus" -> "Nucleus of reuniens"
+	"Nucleus of reuniens" [label="RE: 250"]
+	"Midline group of the dorsal thalamus" -> "Xiphoid thalamic nucleus"
+	"Xiphoid thalamic nucleus" [label="Xi: 251"]
+	"Thalamus, polymodal association cortex related" -> Epithalamus
+	Epithalamus [label="EPI: 252"]
+	Epithalamus -> "Lateral habenula"
+	"Lateral habenula" [label="LH: 253"]
+	Epithalamus -> "Medial habenula"
+	"Medial habenula" [label="MH: 254"]
+	Epithalamus -> "Pineal body"
+	"Pineal body" [label="PIN: 255"]
+	"Thalamus, polymodal association cortex related" -> "Geniculate group, ventral thalamus"
+	"Geniculate group, ventral thalamus" [label="GENv: 256"]
+	"Geniculate group, ventral thalamus" -> "Intergeniculate leaflet of the lateral geniculate complex"
+	"Intergeniculate leaflet of the lateral geniculate complex" [label="IGL: 257"]
+	"Geniculate group, ventral thalamus" -> "Ventral part of the lateral geniculate complex"
+	"Ventral part of the lateral geniculate complex" [label="LGv: 258"]
+	"Ventral part of the lateral geniculate complex" -> "Ventral part of the lateral geniculate complex, lateral zone"
+	"Ventral part of the lateral geniculate complex, lateral zone" [label="LGvl: 259"]
+	"Ventral part of the lateral geniculate complex" -> "Ventral part of the lateral geniculate complex, medial zone"
+	"Ventral part of the lateral geniculate complex, medial zone" [label="LGvm: 260"]
+	"Geniculate group, ventral thalamus" -> "Subgeniculate nucleus"
+	"Subgeniculate nucleus" [label="SubG: 261"]
+	"Geniculate group, ventral thalamus" -> "Intermediate geniculate nucleus"
+	"Intermediate geniculate nucleus" [label="IntG: 262"]
+	Thalamus -> "Thalamus, sensory-motor cortex related"
+	"Thalamus, sensory-motor cortex related" [label="DORsm: 263"]
+	"Thalamus, sensory-motor cortex related" -> "Subparafascicular nucleus"
+	"Subparafascicular nucleus" [label="SPF: 264"]
+	"Subparafascicular nucleus" -> "Subparafascicular nucleus, magnocellular part"
+	"Subparafascicular nucleus, magnocellular part" [label="SPFm: 265"]
+	"Subparafascicular nucleus" -> "Subparafascicular nucleus, parvicellular part"
+	"Subparafascicular nucleus, parvicellular part" [label="SPFp: 266"]
+	"Thalamus, sensory-motor cortex related" -> "Subparafascicular area"
+	"Subparafascicular area" [label="SPA: 267"]
+	"Thalamus, sensory-motor cortex related" -> "Ventral group of the dorsal thalamus"
+	"Ventral group of the dorsal thalamus" [label="VENT: 268"]
+	"Ventral group of the dorsal thalamus" -> "Ventral anterior-lateral complex of the thalamus"
+	"Ventral anterior-lateral complex of the thalamus" [label="VAL: 269"]
+	"Ventral group of the dorsal thalamus" -> "Ventral medial nucleus of the thalamus"
+	"Ventral medial nucleus of the thalamus" [label="VM: 270"]
+	"Ventral group of the dorsal thalamus" -> "Ventral posterior complex of the thalamus"
+	"Ventral posterior complex of the thalamus" [label="VP: 271"]
+	"Ventral posterior complex of the thalamus" -> "Ventral posterolateral nucleus of the thalamus"
+	"Ventral posterolateral nucleus of the thalamus" [label="VPL: 272"]
+	"Ventral posterior complex of the thalamus" -> "Ventral posterolateral nucleus of the thalamus, parvicellular part"
+	"Ventral posterolateral nucleus of the thalamus, parvicellular part" [label="VPLpc: 273"]
+	"Ventral posterior complex of the thalamus" -> "Ventral posteromedial nucleus of the thalamus"
+	"Ventral posteromedial nucleus of the thalamus" [label="VPM: 274"]
+	"Ventral posterior complex of the thalamus" -> "Ventral posteromedial nucleus of the thalamus, parvicellular part"
+	"Ventral posteromedial nucleus of the thalamus, parvicellular part" [label="VPMpc: 275"]
+	"Ventral group of the dorsal thalamus" -> "Posterior triangular thalamic nucleus"
+	"Posterior triangular thalamic nucleus" [label="PoT: 276"]
+	"Thalamus, sensory-motor cortex related" -> "Geniculate group, dorsal thalamus"
+	"Geniculate group, dorsal thalamus" [label="GENd: 277"]
+	"Geniculate group, dorsal thalamus" -> "Dorsal part of the lateral geniculate complex"
+	"Dorsal part of the lateral geniculate complex" [label="LGd: 278"]
+	"Dorsal part of the lateral geniculate complex" -> "Dorsal part of the lateral geniculate complex, shell"
+	"Dorsal part of the lateral geniculate complex, shell" [label="LGd-sh: 279"]
+	"Dorsal part of the lateral geniculate complex" -> "Dorsal part of the lateral geniculate complex, core"
+	"Dorsal part of the lateral geniculate complex, core" [label="LGd-co: 280"]
+	"Dorsal part of the lateral geniculate complex" -> "Dorsal part of the lateral geniculate complex, ipsilateral zone"
+	"Dorsal part of the lateral geniculate complex, ipsilateral zone" [label="LGd-ip: 281"]
+	"Geniculate group, dorsal thalamus" -> "Medial geniculate complex"
+	"Medial geniculate complex" [label="MG: 282"]
+	"Medial geniculate complex" -> "Medial geniculate complex, dorsal part"
+	"Medial geniculate complex, dorsal part" [label="MGd: 283"]
+	"Medial geniculate complex" -> "Medial geniculate complex, ventral part"
+	"Medial geniculate complex, ventral part" [label="MGv: 284"]
+	"Medial geniculate complex" -> "Medial geniculate complex, medial part"
+	"Medial geniculate complex, medial part" [label="MGm: 285"]
+	"Thalamus, sensory-motor cortex related" -> "Peripeduncular nucleus"
+	"Peripeduncular nucleus" [label="PP: 286"]
+	Interbrain -> Hypothalamus
+	Hypothalamus [label="HY: 287"]
+	Hypothalamus -> "Periventricular region"
+	"Periventricular region" [label="PVR: 288"]
+	"Periventricular region" -> "Anterodorsal preoptic nucleus"
+	"Anterodorsal preoptic nucleus" [label="ADP: 289"]
+	"Periventricular region" -> "Anterior hypothalamic area"
+	"Anterior hypothalamic area" [label="AHA: 290"]
+	"Periventricular region" -> "Periventricular hypothalamic nucleus, posterior part"
+	"Periventricular hypothalamic nucleus, posterior part" [label="PVp: 291"]
+	"Periventricular region" -> "Periventricular hypothalamic nucleus, preoptic part"
+	"Periventricular hypothalamic nucleus, preoptic part" [label="PVpo: 292"]
+	"Periventricular region" -> "Anteroventral preoptic nucleus"
+	"Anteroventral preoptic nucleus" [label="AVP: 293"]
+	"Periventricular region" -> "Anteroventral periventricular nucleus"
+	"Anteroventral periventricular nucleus" [label="AVPV: 294"]
+	"Periventricular region" -> "Suprachiasmatic nucleus"
+	"Suprachiasmatic nucleus" [label="SCH: 295"]
+	"Periventricular region" -> "Subfornical organ"
+	"Subfornical organ" [label="SFO: 296"]
+	"Periventricular region" -> "Subparaventricular zone"
+	"Subparaventricular zone" [label="SBPV: 297"]
+	"Periventricular region" -> "Median preoptic nucleus"
+	"Median preoptic nucleus" [label="MEPO: 298"]
+	"Periventricular region" -> "Medial preoptic area"
+	"Medial preoptic area" [label="MPO: 299"]
+	"Periventricular region" -> "Ventrolateral preoptic nucleus"
+	"Ventrolateral preoptic nucleus" [label="VLPO: 300"]
+	"Periventricular region" -> "Vascular organ of the lamina terminalis"
+	"Vascular organ of the lamina terminalis" [label="OV: 301"]
+	"Periventricular region" -> "Dorsomedial nucleus of the hypothalamus"
+	"Dorsomedial nucleus of the hypothalamus" [label="DMH: 302"]
+	"Dorsomedial nucleus of the hypothalamus" -> "Dorsomedial nucleus of the hypothalamus, anterior part"
+	"Dorsomedial nucleus of the hypothalamus, anterior part" [label="DMHa: 303"]
+	"Dorsomedial nucleus of the hypothalamus" -> "Dorsomedial nucleus of the hypothalamus, posterior part"
+	"Dorsomedial nucleus of the hypothalamus, posterior part" [label="DMHp: 304"]
+	"Dorsomedial nucleus of the hypothalamus" -> "Dorsomedial nucleus of the hypothalamus, ventral part"
+	"Dorsomedial nucleus of the hypothalamus, ventral part" [label="DMHv: 305"]
+	"Periventricular region" -> "Posterodorsal preoptic nucleus"
+	"Posterodorsal preoptic nucleus" [label="PD: 306"]
+	"Periventricular region" -> "Parastrial nucleus"
+	"Parastrial nucleus" [label="PS: 307"]
+	"Periventricular region" -> "Suprachiasmatic preoptic nucleus"
+	"Suprachiasmatic preoptic nucleus" [label="PSCH: 308"]
+	"Periventricular region" -> "Ventromedial preoptic nucleus"
+	"Ventromedial preoptic nucleus" [label="VMPO: 309"]
+	Hypothalamus -> "Periventricular zone"
+	"Periventricular zone" [label="PVZ: 310"]
+	"Periventricular zone" -> "Periventricular hypothalamic nucleus, anterior part"
+	"Periventricular hypothalamic nucleus, anterior part" [label="PVa: 311"]
+	"Periventricular zone" -> "Paraventricular hypothalamic nucleus"
+	"Paraventricular hypothalamic nucleus" [label="PVH: 312"]
+	"Paraventricular hypothalamic nucleus" -> "Paraventricular hypothalamic nucleus, magnocellular division"
+	"Paraventricular hypothalamic nucleus, magnocellular division" [label="PVHm: 313"]
+	"Paraventricular hypothalamic nucleus, magnocellular division" -> "Paraventricular hypothalamic nucleus, magnocellular division, anterior magnocellular part"
+	"Paraventricular hypothalamic nucleus, magnocellular division, anterior magnocellular part" [label="PVHam: 314"]
+	"Paraventricular hypothalamic nucleus, magnocellular division" -> "Paraventricular hypothalamic nucleus, magnocellular division, medial magnocellular part"
+	"Paraventricular hypothalamic nucleus, magnocellular division, medial magnocellular part" [label="PVHmm: 315"]
+	"Paraventricular hypothalamic nucleus, magnocellular division" -> "Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part"
+	"Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part" [label="PVHpm: 316"]
+	"Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part" -> "Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part, lateral zone"
+	"Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part, lateral zone" [label="PVHpml: 317"]
+	"Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part" -> "Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part, medial zone"
+	"Paraventricular hypothalamic nucleus, magnocellular division, posterior magnocellular part, medial zone" [label="PVHpmm: 318"]
+	"Paraventricular hypothalamic nucleus" -> "Paraventricular hypothalamic nucleus, parvicellular division"
+	"Paraventricular hypothalamic nucleus, parvicellular division" [label="PVHp: 319"]
+	"Paraventricular hypothalamic nucleus, parvicellular division" -> "Paraventricular hypothalamic nucleus, parvicellular division, anterior parvicellular part"
+	"Paraventricular hypothalamic nucleus, parvicellular division, anterior parvicellular part" [label="PVHap: 320"]
+	"Paraventricular hypothalamic nucleus, parvicellular division" -> "Paraventricular hypothalamic nucleus, parvicellular division, medial parvicellular part, dorsal zone"
+	"Paraventricular hypothalamic nucleus, parvicellular division, medial parvicellular part, dorsal zone" [label="PVHmpd: 321"]
+	"Paraventricular hypothalamic nucleus, parvicellular division" -> "Paraventricular hypothalamic nucleus, parvicellular division, periventricular part"
+	"Paraventricular hypothalamic nucleus, parvicellular division, periventricular part" [label="PVHpv: 322"]
+	"Periventricular zone" -> "Periventricular hypothalamic nucleus, intermediate part"
+	"Periventricular hypothalamic nucleus, intermediate part" [label="PVi: 323"]
+	"Periventricular zone" -> "Arcuate hypothalamic nucleus"
+	"Arcuate hypothalamic nucleus" [label="ARH: 324"]
+	"Periventricular zone" -> "Accessory supraoptic group"
+	"Accessory supraoptic group" [label="ASO: 325"]
+	"Accessory supraoptic group" -> "Nucleus circularis"
+	"Nucleus circularis" [label="NC: 326"]
+	"Periventricular zone" -> "Supraoptic nucleus"
+	"Supraoptic nucleus" [label="SO: 327"]
+	Hypothalamus -> "Hypothalamic lateral zone"
+	"Hypothalamic lateral zone" [label="LZ: 328"]
+	"Hypothalamic lateral zone" -> "Retrochiasmatic area"
+	"Retrochiasmatic area" [label="RCH: 329"]
+	"Hypothalamic lateral zone" -> "Lateral hypothalamic area"
+	"Lateral hypothalamic area" [label="LHA: 330"]
+	"Hypothalamic lateral zone" -> "Lateral preoptic area"
+	"Lateral preoptic area" [label="LPO: 331"]
+	"Hypothalamic lateral zone" -> "Preparasubthalamic nucleus"
+	"Preparasubthalamic nucleus" [label="PST: 332"]
+	"Hypothalamic lateral zone" -> "Parasubthalamic nucleus"
+	"Parasubthalamic nucleus" [label="PSTN: 333"]
+	"Hypothalamic lateral zone" -> "Subthalamic nucleus"
+	"Subthalamic nucleus" [label="STN: 334"]
+	"Hypothalamic lateral zone" -> "Tuberal nucleus"
+	"Tuberal nucleus" [label="TU: 335"]
+	"Hypothalamic lateral zone" -> "Zona incerta"
+	"Zona incerta" [label="ZI: 336"]
+	"Zona incerta" -> "Dopaminergic A13 group"
+	"Dopaminergic A13 group" [label="A13: 337"]
+	"Zona incerta" -> "Fields of Forel"
+	"Fields of Forel" [label="FF: 338"]
+	"Hypothalamic lateral zone" -> "Perifornical nucleus"
+	"Perifornical nucleus" [label="PeF: 339"]
+	Hypothalamus -> "Hypothalamic medial zone"
+	"Hypothalamic medial zone" [label="MEZ: 340"]
+	"Hypothalamic medial zone" -> "Paraventricular hypothalamic nucleus, descending division"
+	"Paraventricular hypothalamic nucleus, descending division" [label="PVHd: 341"]
+	"Paraventricular hypothalamic nucleus, descending division" -> "Paraventricular hypothalamic nucleus, descending division, dorsal parvicellular part"
+	"Paraventricular hypothalamic nucleus, descending division, dorsal parvicellular part" [label="PVHdp: 342"]
+	"Paraventricular hypothalamic nucleus, descending division" -> "Paraventricular hypothalamic nucleus, descending division, forniceal part"
+	"Paraventricular hypothalamic nucleus, descending division, forniceal part" [label="PVHf: 343"]
+	"Paraventricular hypothalamic nucleus, descending division" -> "Paraventricular hypothalamic nucleus, descending division, lateral parvicellular part"
+	"Paraventricular hypothalamic nucleus, descending division, lateral parvicellular part" [label="PVHlp: 344"]
+	"Paraventricular hypothalamic nucleus, descending division" -> "Paraventricular hypothalamic nucleus, descending division, medial parvicellular part, ventral zone"
+	"Paraventricular hypothalamic nucleus, descending division, medial parvicellular part, ventral zone" [label="PVHmpv: 345"]
+	"Hypothalamic medial zone" -> "Anterior hypothalamic nucleus"
+	"Anterior hypothalamic nucleus" [label="AHN: 346"]
+	"Anterior hypothalamic nucleus" -> "Anterior hypothalamic nucleus, anterior part"
+	"Anterior hypothalamic nucleus, anterior part" [label="AHNa: 347"]
+	"Anterior hypothalamic nucleus" -> "Anterior hypothalamic nucleus, central part"
+	"Anterior hypothalamic nucleus, central part" [label="AHNc: 348"]
+	"Anterior hypothalamic nucleus" -> "Anterior hypothalamic nucleus, dorsal part"
+	"Anterior hypothalamic nucleus, dorsal part" [label="AHNd: 349"]
+	"Anterior hypothalamic nucleus" -> "Anterior hypothalamic nucleus, posterior part"
+	"Anterior hypothalamic nucleus, posterior part" [label="AHNp: 350"]
+	"Hypothalamic medial zone" -> "Mammillary body"
+	"Mammillary body" [label="MBO: 351"]
+	"Mammillary body" -> "Lateral mammillary nucleus"
+	"Lateral mammillary nucleus" [label="LM: 352"]
+	"Mammillary body" -> "Medial mammillary nucleus"
+	"Medial mammillary nucleus" [label="MM: 353"]
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, median part"
+	"Medial mammillary nucleus, median part" [label="MMme: 354"]
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, lateral part"
+	"Medial mammillary nucleus, lateral part" [label="MMl: 355"]
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, medial part"
+	"Medial mammillary nucleus, medial part" [label="MMm: 356"]
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, posterior part"
+	"Medial mammillary nucleus, posterior part" [label="MMp: 357"]
+	"Medial mammillary nucleus" -> "Medial mammillary nucleus, dorsal part"
+	"Medial mammillary nucleus, dorsal part" [label="MMd: 358"]
+	"Mammillary body" -> "Supramammillary nucleus"
+	"Supramammillary nucleus" [label="SUM: 359"]
+	"Supramammillary nucleus" -> "Supramammillary nucleus, lateral part"
+	"Supramammillary nucleus, lateral part" [label="SUMl: 360"]
+	"Supramammillary nucleus" -> "Supramammillary nucleus, medial part"
+	"Supramammillary nucleus, medial part" [label="SUMm: 361"]
+	"Mammillary body" -> "Tuberomammillary nucleus"
+	"Tuberomammillary nucleus" [label="TM: 362"]
+	"Tuberomammillary nucleus" -> "Tuberomammillary nucleus, ventral part"
+	"Tuberomammillary nucleus, ventral part" [label="TMv: 363"]
+	"Tuberomammillary nucleus" -> "Tuberomammillary nucleus, dorsal part"
+	"Tuberomammillary nucleus, dorsal part" [label="TMd: 364"]
+	"Hypothalamic medial zone" -> "Medial preoptic nucleus"
+	"Medial preoptic nucleus" [label="MPN: 365"]
+	"Medial preoptic nucleus" -> "Medial preoptic nucleus, central part"
+	"Medial preoptic nucleus, central part" [label="MPNc: 366"]
+	"Medial preoptic nucleus" -> "Medial preoptic nucleus, lateral part"
+	"Medial preoptic nucleus, lateral part" [label="MPNl: 367"]
+	"Medial preoptic nucleus" -> "Medial preoptic nucleus, medial part"
+	"Medial preoptic nucleus, medial part" [label="MPNm: 368"]
+	"Hypothalamic medial zone" -> "Ventromedial hypothalamic nucleus"
+	"Ventromedial hypothalamic nucleus" [label="VMH: 369"]
+	"Ventromedial hypothalamic nucleus" -> "Ventromedial hypothalamic nucleus, anterior part"
+	"Ventromedial hypothalamic nucleus, anterior part" [label="VMHa: 370"]
+	"Ventromedial hypothalamic nucleus" -> "Ventromedial hypothalamic nucleus, central part"
+	"Ventromedial hypothalamic nucleus, central part" [label="VMHc: 371"]
+	"Ventromedial hypothalamic nucleus" -> "Ventromedial hypothalamic nucleus, dorsomedial part"
+	"Ventromedial hypothalamic nucleus, dorsomedial part" [label="VMHdm: 372"]
+	"Ventromedial hypothalamic nucleus" -> "Ventromedial hypothalamic nucleus, ventrolateral part"
+	"Ventromedial hypothalamic nucleus, ventrolateral part" [label="VMHvl: 373"]
+	"Hypothalamic medial zone" -> "Posterior hypothalamic nucleus"
+	"Posterior hypothalamic nucleus" [label="PH: 374"]
+	"Hypothalamic medial zone" -> "Dorsal premammillary nucleus"
+	"Dorsal premammillary nucleus" [label="PMd: 375"]
+	"Hypothalamic medial zone" -> "Ventral premammillary nucleus"
+	"Ventral premammillary nucleus" [label="PMv: 376"]
+	Hypothalamus -> "Median eminence"
+	"Median eminence" [label="ME: 377"]
+	"Basic cell groups and regions" -> Cerebellum
+	Cerebellum [label="CB: 378"]
+	Cerebellum -> "Cerebellar nuclei"
+	"Cerebellar nuclei" [label="CBN: 379"]
+	"Cerebellar nuclei" -> "Interposed nucleus"
+	"Interposed nucleus" [label="IP: 380"]
+	"Cerebellar nuclei" -> "Dentate nucleus"
+	"Dentate nucleus" [label="DN: 381"]
+	"Cerebellar nuclei" -> "Fastigial nucleus"
+	"Fastigial nucleus" [label="FN: 382"]
+	"Cerebellar nuclei" -> "Vestibulocerebellar nucleus"
+	"Vestibulocerebellar nucleus" [label="VeCB: 383"]
+	Cerebellum -> "Cerebellar cortex"
+	"Cerebellar cortex" [label="CBX: 384"]
+	"Cerebellar cortex" -> "Vermal regions"
+	"Vermal regions" [label="VERM: 385"]
+	"Vermal regions" -> "Lingula (I)"
+	"Lingula (I)" [label="LING: 386"]
+	"Lingula (I)" -> "Lingula (I), granular layer"
+	"Lingula (I), granular layer" [label="LINGgr: 387"]
+	"Lingula (I)" -> "Lingula (I), Purkinje layer"
+	"Lingula (I), Purkinje layer" [label="LINGpu: 388"]
+	"Lingula (I)" -> "Lingula (I), molecular layer"
+	"Lingula (I), molecular layer" [label="LINGmo: 389"]
+	"Vermal regions" -> "Central lobule"
+	"Central lobule" [label="CENT: 390"]
+	"Central lobule" -> "Lobule II"
+	"Lobule II" [label="CENT2: 391"]
+	"Lobule II" -> "Lobule II, granular layer"
+	"Lobule II, granular layer" [label="CENT2gr: 392"]
+	"Lobule II" -> "Lobule II, Purkinje layer"
+	"Lobule II, Purkinje layer" [label="CENT2pu: 393"]
+	"Lobule II" -> "Lobule II, molecular layer"
+	"Lobule II, molecular layer" [label="CENT2mo: 394"]
+	"Central lobule" -> "Lobule III"
+	"Lobule III" [label="CENT3: 395"]
+	"Lobule III" -> "Lobule III, granular layer"
+	"Lobule III, granular layer" [label="CENT3gr: 396"]
+	"Lobule III" -> "Lobule III, Purkinje layer"
+	"Lobule III, Purkinje layer" [label="CENT3pu: 397"]
+	"Lobule III" -> "Lobule III, molecular layer"
+	"Lobule III, molecular layer" [label="CENT3mo: 398"]
+	"Vermal regions" -> Culmen
+	Culmen [label="CUL: 399"]
+	Culmen -> "Lobule IV"
+	"Lobule IV" [label="CUL4: 400"]
+	"Lobule IV" -> "Lobule IV, granular layer"
+	"Lobule IV, granular layer" [label="CUL4gr: 401"]
+	"Lobule IV" -> "Lobule IV, Purkinje layer"
+	"Lobule IV, Purkinje layer" [label="CUL4pu: 402"]
+	"Lobule IV" -> "Lobule IV, molecular layer"
+	"Lobule IV, molecular layer" [label="CUL4mo: 403"]
+	Culmen -> "Lobule V"
+	"Lobule V" [label="CUL5: 404"]
+	"Lobule V" -> "Lobule V, granular layer"
+	"Lobule V, granular layer" [label="CUL5gr: 405"]
+	"Lobule V" -> "Lobule V, Purkinje layer"
+	"Lobule V, Purkinje layer" [label="CUL5pu: 406"]
+	"Lobule V" -> "Lobule V, molecular layer"
+	"Lobule V, molecular layer" [label="CUL5mo: 407"]
+	Culmen -> "Lobules IV-V"
+	"Lobules IV-V" [label="CUL4, 5: 408"]
+	"Lobules IV-V" -> "Lobules IV-V, Purkinje layer"
+	"Lobules IV-V, Purkinje layer" [label="CUL4, 5pu: 409"]
+	"Lobules IV-V" -> "Lobules IV-V, molecular layer"
+	"Lobules IV-V, molecular layer" [label="CUL4, 5mo: 410"]
+	"Vermal regions" -> "Folium-tuber vermis (VII)"
+	"Folium-tuber vermis (VII)" [label="FOTU: 411"]
+	"Folium-tuber vermis (VII)" -> "Folium-tuber vermis (VII), granular layer"
+	"Folium-tuber vermis (VII), granular layer" [label="FOTUgr: 412"]
+	"Folium-tuber vermis (VII)" -> "Folium-tuber vermis (VII), Purkinje layer"
+	"Folium-tuber vermis (VII), Purkinje layer" [label="FOTUpu: 413"]
+	"Folium-tuber vermis (VII)" -> "Folium-tuber vermis (VII), molecular layer"
+	"Folium-tuber vermis (VII), molecular layer" [label="FOTUmo: 414"]
+	"Vermal regions" -> "Pyramus (VIII)"
+	"Pyramus (VIII)" [label="PYR: 415"]
+	"Pyramus (VIII)" -> "Pyramus (VIII), granular layer"
+	"Pyramus (VIII), granular layer" [label="PYRgr: 416"]
+	"Pyramus (VIII)" -> "Pyramus (VIII), Purkinje layer"
+	"Pyramus (VIII), Purkinje layer" [label="PYRpu: 417"]
+	"Pyramus (VIII)" -> "Pyramus (VIII), molecular layer"
+	"Pyramus (VIII), molecular layer" [label="PYRmo: 418"]
+	"Vermal regions" -> "Uvula (IX)"
+	"Uvula (IX)" [label="UVU: 419"]
+	"Uvula (IX)" -> "Uvula (IX), granular layer"
+	"Uvula (IX), granular layer" [label="UVUgr: 420"]
+	"Uvula (IX)" -> "Uvula (IX), Purkinje layer"
+	"Uvula (IX), Purkinje layer" [label="UVUpu: 421"]
+	"Uvula (IX)" -> "Uvula (IX), molecular layer"
+	"Uvula (IX), molecular layer" [label="UVUmo: 422"]
+	"Vermal regions" -> "Nodulus (X)"
+	"Nodulus (X)" [label="NOD: 423"]
+	"Nodulus (X)" -> "Nodulus (X), granular layer"
+	"Nodulus (X), granular layer" [label="NODgr: 424"]
+	"Nodulus (X)" -> "Nodulus (X), Purkinje layer"
+	"Nodulus (X), Purkinje layer" [label="NODpu: 425"]
+	"Nodulus (X)" -> "Nodulus (X), molecular layer"
+	"Nodulus (X), molecular layer" [label="NODmo: 426"]
+	"Vermal regions" -> "Declive (VI)"
+	"Declive (VI)" [label="DEC: 427"]
+	"Declive (VI)" -> "Declive (VI), subdivision A"
+	"Declive (VI), subdivision A" [label="DEC6a: 428"]
+	"Declive (VI), subdivision A" -> "Declive (VI), granular layer"
+	"Declive (VI), granular layer" [label="DECgr: 429"]
+	"Declive (VI), subdivision A" -> "Declive (VI), Purkinje layer"
+	"Declive (VI), Purkinje layer" [label="DECpu: 430"]
+	"Declive (VI), subdivision A" -> "Declive (VI), molecular layer"
+	"Declive (VI), molecular layer" [label="DECmo: 431"]
+	"Declive (VI)" -> "Declive (VI), subdivision B"
+	"Declive (VI), subdivision B" [label="DEC6b: 432"]
+	"Cerebellar cortex" -> "Hemispheric regions"
+	"Hemispheric regions" [label="HEM: 433"]
+	"Hemispheric regions" -> "Simplex lobule"
+	"Simplex lobule" [label="SIM: 434"]
+	"Simplex lobule" -> "Simplex lobule, granular layer"
+	"Simplex lobule, granular layer" [label="SIMgr: 435"]
+	"Simplex lobule" -> "Simplex lobule, Purkinje layer"
+	"Simplex lobule, Purkinje layer" [label="SIMpu: 436"]
+	"Simplex lobule" -> "Simplex lobule, molecular layer"
+	"Simplex lobule, molecular layer" [label="SIMmo: 437"]
+	"Hemispheric regions" -> "Ansiform lobule"
+	"Ansiform lobule" [label="AN: 438"]
+	"Ansiform lobule" -> "Crus 1"
+	"Crus 1" [label="ANcr1: 439"]
+	"Crus 1" -> "Crus 1, granular layer"
+	"Crus 1, granular layer" [label="ANcr1gr: 440"]
+	"Crus 1" -> "Crus 1, Purkinje layer"
+	"Crus 1, Purkinje layer" [label="ANcr1pu: 441"]
+	"Crus 1" -> "Crus 1, molecular layer"
+	"Crus 1, molecular layer" [label="ANcr1mo: 442"]
+	"Ansiform lobule" -> "Crus 2"
+	"Crus 2" [label="ANcr2: 443"]
+	"Crus 2" -> "Crus 2, granular layer"
+	"Crus 2, granular layer" [label="ANcr2gr: 444"]
+	"Crus 2" -> "Crus 2, Purkinje layer"
+	"Crus 2, Purkinje layer" [label="ANcr2pu: 445"]
+	"Crus 2" -> "Crus 2, molecular layer"
+	"Crus 2, molecular layer" [label="ANcr2mo: 446"]
+	"Hemispheric regions" -> "Paramedian lobule"
+	"Paramedian lobule" [label="PRM: 447"]
+	"Paramedian lobule" -> "Paramedian lobule, granular layer"
+	"Paramedian lobule, granular layer" [label="PRMgr: 448"]
+	"Paramedian lobule" -> "Paramedian lobule, Purkinje layer"
+	"Paramedian lobule, Purkinje layer" [label="PRMpu: 449"]
+	"Paramedian lobule" -> "Paramedian lobule, molecular layer"
+	"Paramedian lobule, molecular layer" [label="PRMmo: 450"]
+	"Hemispheric regions" -> "Copula pyramidis"
+	"Copula pyramidis" [label="COPY: 451"]
+	"Copula pyramidis" -> "Copula pyramidis, granular layer"
+	"Copula pyramidis, granular layer" [label="COPYgr: 452"]
+	"Copula pyramidis" -> "Copula pyramidis, Purkinje layer"
+	"Copula pyramidis, Purkinje layer" [label="COPYpu: 453"]
+	"Copula pyramidis" -> "Copula pyramidis, molecular layer"
+	"Copula pyramidis, molecular layer" [label="COPYmo: 454"]
+	"Hemispheric regions" -> Paraflocculus
+	Paraflocculus [label="PFL: 455"]
+	Paraflocculus -> "Paraflocculus, granular layer"
+	"Paraflocculus, granular layer" [label="PFLgr: 456"]
+	Paraflocculus -> "Paraflocculus, Purkinje layer"
+	"Paraflocculus, Purkinje layer" [label="PFLpu: 457"]
+	Paraflocculus -> "Paraflocculus, molecular layer"
+	"Paraflocculus, molecular layer" [label="PFLmo: 458"]
+	"Hemispheric regions" -> Flocculus
+	Flocculus [label="FL: 459"]
+	Flocculus -> "Flocculus, granular layer"
+	"Flocculus, granular layer" [label="FLgr: 460"]
+	Flocculus -> "Flocculus, Purkinje layer"
+	"Flocculus, Purkinje layer" [label="FLpu: 461"]
+	Flocculus -> "Flocculus, molecular layer"
+	"Flocculus, molecular layer" [label="FLmo: 462"]
+	"Cerebellar cortex" -> "Cerebellar cortex, granular layer"
+	"Cerebellar cortex, granular layer" [label="CBXgr: 463"]
+	"Cerebellar cortex" -> "Cerebellar cortex, molecular layer"
+	"Cerebellar cortex, molecular layer" [label="CBXmo: 464"]
+	"Cerebellar cortex" -> "Cerebellar cortex, Purkinje layer"
+	"Cerebellar cortex, Purkinje layer" [label="CBXpu: 465"]
+	"Basic cell groups and regions" -> Cerebrum
+	Cerebrum [label="CH: 466"]
+	Cerebrum -> "Cerebral nuclei"
+	"Cerebral nuclei" [label="CNU: 467"]
+	"Cerebral nuclei" -> Striatum
+	Striatum [label="STR: 468"]
+	Striatum -> "Lateral septal complex"
+	"Lateral septal complex" [label="LSX: 469"]
+	"Lateral septal complex" -> "Lateral septal nucleus"
+	"Lateral septal nucleus" [label="LS: 470"]
+	"Lateral septal nucleus" -> "Lateral septal nucleus, caudal (caudodorsal) part"
+	"Lateral septal nucleus, caudal (caudodorsal) part" [label="LSc: 471"]
+	"Lateral septal nucleus" -> "Lateral septal nucleus, rostral (rostroventral) part"
+	"Lateral septal nucleus, rostral (rostroventral) part" [label="LSr: 472"]
+	"Lateral septal nucleus" -> "Lateral septal nucleus, ventral part"
+	"Lateral septal nucleus, ventral part" [label="LSv: 473"]
+	"Lateral septal complex" -> "Septofimbrial nucleus"
+	"Septofimbrial nucleus" [label="SF: 474"]
+	"Lateral septal complex" -> "Septohippocampal nucleus"
+	"Septohippocampal nucleus" [label="SH: 475"]
+	Striatum -> "Striatum-like amygdalar nuclei"
+	"Striatum-like amygdalar nuclei" [label="sAMY: 476"]
+	"Striatum-like amygdalar nuclei" -> "Anterior amygdalar area"
+	"Anterior amygdalar area" [label="AAA: 477"]
+	"Striatum-like amygdalar nuclei" -> "Bed nucleus of the accessory olfactory tract"
+	"Bed nucleus of the accessory olfactory tract" [label="BA: 478"]
+	"Striatum-like amygdalar nuclei" -> "Medial amygdalar nucleus"
+	"Medial amygdalar nucleus" [label="MEA: 479"]
+	"Medial amygdalar nucleus" -> "Medial amygdalar nucleus, anterodorsal part"
+	"Medial amygdalar nucleus, anterodorsal part" [label="MEAad: 480"]
+	"Medial amygdalar nucleus" -> "Medial amygdalar nucleus, anteroventral part"
+	"Medial amygdalar nucleus, anteroventral part" [label="MEAav: 481"]
+	"Medial amygdalar nucleus" -> "Medial amygdalar nucleus, posterodorsal part"
+	"Medial amygdalar nucleus, posterodorsal part" [label="MEApd: 482"]
+	"Medial amygdalar nucleus, posterodorsal part" -> "Medial amygdalar nucleus, posterodorsal part, sublayer a"
+	"Medial amygdalar nucleus, posterodorsal part, sublayer a" [label="MEApd-a: 483"]
+	"Medial amygdalar nucleus, posterodorsal part" -> "Medial amygdalar nucleus, posterodorsal part, sublayer b"
+	"Medial amygdalar nucleus, posterodorsal part, sublayer b" [label="MEApd-b: 484"]
+	"Medial amygdalar nucleus, posterodorsal part" -> "Medial amygdalar nucleus, posterodorsal part, sublayer c"
+	"Medial amygdalar nucleus, posterodorsal part, sublayer c" [label="MEApd-c: 485"]
+	"Medial amygdalar nucleus" -> "Medial amygdalar nucleus, posteroventral part"
+	"Medial amygdalar nucleus, posteroventral part" [label="MEApv: 486"]
+	"Striatum-like amygdalar nuclei" -> "Central amygdalar nucleus"
+	"Central amygdalar nucleus" [label="CEA: 487"]
+	"Central amygdalar nucleus" -> "Central amygdalar nucleus, capsular part"
+	"Central amygdalar nucleus, capsular part" [label="CEAc: 488"]
+	"Central amygdalar nucleus" -> "Central amygdalar nucleus, lateral part"
+	"Central amygdalar nucleus, lateral part" [label="CEAl: 489"]
+	"Central amygdalar nucleus" -> "Central amygdalar nucleus, medial part"
+	"Central amygdalar nucleus, medial part" [label="CEAm: 490"]
+	"Striatum-like amygdalar nuclei" -> "Intercalated amygdalar nucleus"
+	"Intercalated amygdalar nucleus" [label="IA: 491"]
+	Striatum -> "Striatum dorsal region"
+	"Striatum dorsal region" [label="STRd: 492"]
+	"Striatum dorsal region" -> Caudoputamen
+	Caudoputamen [label="CP: 493"]
+	Striatum -> "Striatum ventral region"
+	"Striatum ventral region" [label="STRv: 494"]
+	"Striatum ventral region" -> "Nucleus accumbens"
+	"Nucleus accumbens" [label="ACB: 495"]
+	"Striatum ventral region" -> "Olfactory tubercle"
+	"Olfactory tubercle" [label="OT: 496"]
+	"Olfactory tubercle" -> "Olfactory tubercle, layers 1-3"
+	"Olfactory tubercle, layers 1-3" [label="OT1-3: 497"]
+	"Olfactory tubercle" -> "Olfactory tubercle, molecular layer"
+	"Olfactory tubercle, molecular layer" [label="OT1: 498"]
+	"Olfactory tubercle" -> "Olfactory tubercle, pyramidal layer"
+	"Olfactory tubercle, pyramidal layer" [label="OT2: 499"]
+	"Olfactory tubercle" -> "Olfactory tubercle, polymorph layer"
+	"Olfactory tubercle, polymorph layer" [label="OT3: 500"]
+	"Olfactory tubercle" -> "Islands of Calleja"
+	"Islands of Calleja" [label="isl: 501"]
+	"Olfactory tubercle" -> "Major island of Calleja"
+	"Major island of Calleja" [label="islm: 502"]
+	"Striatum ventral region" -> "Fundus of striatum"
+	"Fundus of striatum" [label="FS: 503"]
+	"Striatum ventral region" -> "Lateral strip of striatum"
+	"Lateral strip of striatum" [label="LSS: 504"]
+	"Cerebral nuclei" -> Pallidum
+	Pallidum [label="PAL: 505"]
+	Pallidum -> "Pallidum, caudal region"
+	"Pallidum, caudal region" [label="PALc: 506"]
+	"Pallidum, caudal region" -> "Bed nucleus of the anterior commissure"
+	"Bed nucleus of the anterior commissure" [label="BAC: 507"]
+	"Pallidum, caudal region" -> "Bed nuclei of the stria terminalis"
+	"Bed nuclei of the stria terminalis" [label="BST: 508"]
+	"Bed nuclei of the stria terminalis" -> "Bed nuclei of the stria terminalis, anterior division"
+	"Bed nuclei of the stria terminalis, anterior division" [label="BSTa: 509"]
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, anteromedial area"
+	"Bed nuclei of the stria terminalis, anterior division, anteromedial area" [label="BSTam: 510"]
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, dorsomedial nucleus"
+	"Bed nuclei of the stria terminalis, anterior division, dorsomedial nucleus" [label="BSTdm: 511"]
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, fusiform nucleus"
+	"Bed nuclei of the stria terminalis, anterior division, fusiform nucleus" [label="BSTfu: 512"]
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, magnocellular nucleus"
+	"Bed nuclei of the stria terminalis, anterior division, magnocellular nucleus" [label="BSTmg: 513"]
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, ventral nucleus"
+	"Bed nuclei of the stria terminalis, anterior division, ventral nucleus" [label="BSTv: 514"]
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, anterolateral area"
+	"Bed nuclei of the stria terminalis, anterior division, anterolateral area" [label="BSTal: 515"]
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, juxtacapsular nucleus"
+	"Bed nuclei of the stria terminalis, anterior division, juxtacapsular nucleus" [label="BSTju: 516"]
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, oval nucleus"
+	"Bed nuclei of the stria terminalis, anterior division, oval nucleus" [label="BSTov: 517"]
+	"Bed nuclei of the stria terminalis, anterior division" -> "Bed nuclei of the stria terminalis, anterior division, rhomboid nucleus"
+	"Bed nuclei of the stria terminalis, anterior division, rhomboid nucleus" [label="BSTrh: 518"]
+	"Bed nuclei of the stria terminalis" -> "Bed nuclei of the stria terminalis, posterior division"
+	"Bed nuclei of the stria terminalis, posterior division" [label="BSTp: 519"]
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, dorsal nucleus"
+	"Bed nuclei of the stria terminalis, posterior division, dorsal nucleus" [label="BSTd: 520"]
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, principal nucleus"
+	"Bed nuclei of the stria terminalis, posterior division, principal nucleus" [label="BSTpr: 521"]
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, interfascicular nucleus"
+	"Bed nuclei of the stria terminalis, posterior division, interfascicular nucleus" [label="BSTif: 522"]
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, transverse nucleus"
+	"Bed nuclei of the stria terminalis, posterior division, transverse nucleus" [label="BSTtr: 523"]
+	"Bed nuclei of the stria terminalis, posterior division" -> "Bed nuclei of the stria terminalis, posterior division, strial extension"
+	"Bed nuclei of the stria terminalis, posterior division, strial extension" [label="BSTse: 524"]
+	Pallidum -> "Pallidum, dorsal region"
+	"Pallidum, dorsal region" [label="PALd: 525"]
+	"Pallidum, dorsal region" -> "Globus pallidus, external segment"
+	"Globus pallidus, external segment" [label="GPe: 526"]
+	"Pallidum, dorsal region" -> "Globus pallidus, internal segment"
+	"Globus pallidus, internal segment" [label="GPi: 527"]
+	Pallidum -> "Pallidum, medial region"
+	"Pallidum, medial region" [label="PALm: 528"]
+	"Pallidum, medial region" -> "Triangular nucleus of septum"
+	"Triangular nucleus of septum" [label="TRS: 529"]
+	"Pallidum, medial region" -> "Medial septal complex"
+	"Medial septal complex" [label="MSC: 530"]
+	"Medial septal complex" -> "Medial septal nucleus"
+	"Medial septal nucleus" [label="MS: 531"]
+	"Medial septal complex" -> "Diagonal band nucleus"
+	"Diagonal band nucleus" [label="NDB: 532"]
+	Pallidum -> "Pallidum, ventral region"
+	"Pallidum, ventral region" [label="PALv: 533"]
+	"Pallidum, ventral region" -> "Magnocellular nucleus"
+	"Magnocellular nucleus" [label="MA: 534"]
+	"Pallidum, ventral region" -> "Substantia innominata"
+	"Substantia innominata" [label="SI: 535"]
+	Cerebrum -> "Cerebral cortex"
+	"Cerebral cortex" [label="CTX: 536"]
+	"Cerebral cortex" -> "Cortical plate"
+	"Cortical plate" [label="CTXpl: 537"]
+	"Cortical plate" -> Isocortex
+	Isocortex [label="Isocortex: 538"]
+	Isocortex -> "Posterior parietal association areas"
+	"Posterior parietal association areas" [label="PTLp: 539"]
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 2/3"
+	"Posterior parietal association areas, layer 2/3" [label="PTLp2/3: 540"]
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 6a"
+	"Posterior parietal association areas, layer 6a" [label="PTLp6a: 541"]
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 6b"
+	"Posterior parietal association areas, layer 6b" [label="PTLp6b: 542"]
+	"Posterior parietal association areas" -> "Rostrolateral visual area"
+	"Rostrolateral visual area" [label="VISrl: 543"]
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 2/3"
+	"Rostrolateral area, layer 2/3" [label="VISrl2/3: 544"]
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 1"
+	"Rostrolateral area, layer 1" [label="VISrl1: 545"]
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 4"
+	"Rostrolateral area, layer 4" [label="VISrl4: 546"]
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 5"
+	"Rostrolateral area, layer 5" [label="VISrl5: 547"]
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 6a"
+	"Rostrolateral area, layer 6a" [label="VISrl6a: 548"]
+	"Rostrolateral visual area" -> "Rostrolateral area, layer 6b"
+	"Rostrolateral area, layer 6b" [label="VISrl6b: 549"]
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 1"
+	"Posterior parietal association areas, layer 1" [label="PTLp1: 550"]
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 4"
+	"Posterior parietal association areas, layer 4" [label="PTLp4: 551"]
+	"Posterior parietal association areas" -> "Posterior parietal association areas, layer 5"
+	"Posterior parietal association areas, layer 5" [label="PTLp5: 552"]
+	"Posterior parietal association areas" -> "Anterior area"
+	"Anterior area" [label="VISa: 553"]
+	"Anterior area" -> "Anterior area, layer 1"
+	"Anterior area, layer 1" [label="VISa1: 554"]
+	"Anterior area" -> "Anterior area, layer 2/3"
+	"Anterior area, layer 2/3" [label="VISa2/3: 555"]
+	"Anterior area" -> "Anterior area, layer 4"
+	"Anterior area, layer 4" [label="VISa4: 556"]
+	"Anterior area" -> "Anterior area, layer 5"
+	"Anterior area, layer 5" [label="VISa5: 557"]
+	"Anterior area" -> "Anterior area, layer 6a"
+	"Anterior area, layer 6a" [label="VISa6a: 558"]
+	"Anterior area" -> "Anterior area, layer 6b"
+	"Anterior area, layer 6b" [label="VISa6b: 559"]
+	Isocortex -> "Anterior cingulate area"
+	"Anterior cingulate area" [label="ACA: 560"]
+	"Anterior cingulate area" -> "Anterior cingulate area, dorsal part"
+	"Anterior cingulate area, dorsal part" [label="ACAd: 561"]
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 2/3"
+	"Anterior cingulate area, dorsal part, layer 2/3" [label="ACAd2/3: 562"]
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 6a"
+	"Anterior cingulate area, dorsal part, layer 6a" [label="ACAd6a: 563"]
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 6b"
+	"Anterior cingulate area, dorsal part, layer 6b" [label="ACAd6b: 564"]
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 1"
+	"Anterior cingulate area, dorsal part, layer 1" [label="ACAd1: 565"]
+	"Anterior cingulate area, dorsal part" -> "Anterior cingulate area, dorsal part, layer 5"
+	"Anterior cingulate area, dorsal part, layer 5" [label="ACAd5: 566"]
+	"Anterior cingulate area" -> "Anterior cingulate area, ventral part"
+	"Anterior cingulate area, ventral part" [label="ACAv: 567"]
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, layer 2/3"
+	"Anterior cingulate area, ventral part, layer 2/3" [label="ACAv2/3: 568"]
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, layer 1"
+	"Anterior cingulate area, ventral part, layer 1" [label="ACAv1: 569"]
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, layer 5"
+	"Anterior cingulate area, ventral part, layer 5" [label="ACAv5: 570"]
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, 6a"
+	"Anterior cingulate area, ventral part, 6a" [label="ACAv6a: 571"]
+	"Anterior cingulate area, ventral part" -> "Anterior cingulate area, ventral part, 6b"
+	"Anterior cingulate area, ventral part, 6b" [label="ACAv6b: 572"]
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 6a"
+	"Anterior cingulate area, layer 6a" [label="ACA6a: 573"]
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 6b"
+	"Anterior cingulate area, layer 6b" [label="ACA6b: 574"]
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 1"
+	"Anterior cingulate area, layer 1" [label="ACA1: 575"]
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 5"
+	"Anterior cingulate area, layer 5" [label="ACA5: 576"]
+	"Anterior cingulate area" -> "Anterior cingulate area, layer 2/3"
+	"Anterior cingulate area, layer 2/3" [label="ACA2/3: 577"]
+	Isocortex -> "Infralimbic area"
+	"Infralimbic area" [label="ILA: 578"]
+	"Infralimbic area" -> "Infralimbic area, layer 2/3"
+	"Infralimbic area, layer 2/3" [label="ILA2/3: 579"]
+	"Infralimbic area" -> "Infralimbic area, layer 1"
+	"Infralimbic area, layer 1" [label="ILA1: 580"]
+	"Infralimbic area" -> "Infralimbic area, layer 2"
+	"Infralimbic area, layer 2" [label="ILA2: 581"]
+	"Infralimbic area" -> "Infralimbic area, layer 5"
+	"Infralimbic area, layer 5" [label="ILA5: 582"]
+	"Infralimbic area" -> "Infralimbic area, layer 6a"
+	"Infralimbic area, layer 6a" [label="ILA6a: 583"]
+	"Infralimbic area" -> "Infralimbic area, layer 6b"
+	"Infralimbic area, layer 6b" [label="ILA6b: 584"]
+	Isocortex -> "Agranular insular area"
+	"Agranular insular area" [label="AI: 585"]
+	"Agranular insular area" -> "Agranular insular area, dorsal part"
+	"Agranular insular area, dorsal part" [label="AId: 586"]
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 2/3"
+	"Agranular insular area, dorsal part, layer 2/3" [label="AId2/3: 587"]
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 6a"
+	"Agranular insular area, dorsal part, layer 6a" [label="AId6a: 588"]
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 6b"
+	"Agranular insular area, dorsal part, layer 6b" [label="AId6b: 589"]
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 1"
+	"Agranular insular area, dorsal part, layer 1" [label="AId1: 590"]
+	"Agranular insular area, dorsal part" -> "Agranular insular area, dorsal part, layer 5"
+	"Agranular insular area, dorsal part, layer 5" [label="AId5: 591"]
+	"Agranular insular area" -> "Agranular insular area, posterior part"
+	"Agranular insular area, posterior part" [label="AIp: 592"]
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 1"
+	"Agranular insular area, posterior part, layer 1" [label="AIp1: 593"]
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 2/3"
+	"Agranular insular area, posterior part, layer 2/3" [label="AIp2/3: 594"]
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 6a"
+	"Agranular insular area, posterior part, layer 6a" [label="AIp6a: 595"]
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 5"
+	"Agranular insular area, posterior part, layer 5" [label="AIp5: 596"]
+	"Agranular insular area, posterior part" -> "Agranular insular area, posterior part, layer 6b"
+	"Agranular insular area, posterior part, layer 6b" [label="AIp6b: 597"]
+	"Agranular insular area" -> "Agranular insular area, ventral part"
+	"Agranular insular area, ventral part" [label="AIv: 598"]
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 6a"
+	"Agranular insular area, ventral part, layer 6a" [label="AIv6a: 599"]
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 2/3"
+	"Agranular insular area, ventral part, layer 2/3" [label="AIv2/3: 600"]
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 6b"
+	"Agranular insular area, ventral part, layer 6b" [label="AIv6b: 601"]
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 1"
+	"Agranular insular area, ventral part, layer 1" [label="AIv1: 602"]
+	"Agranular insular area, ventral part" -> "Agranular insular area, ventral part, layer 5"
+	"Agranular insular area, ventral part, layer 5" [label="AIv5: 603"]
+	Isocortex -> "Frontal pole, cerebral cortex"
+	"Frontal pole, cerebral cortex" [label="FRP: 604"]
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 1"
+	"Frontal pole, layer 1" [label="FRP1: 605"]
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 2/3"
+	"Frontal pole, layer 2/3" [label="FRP2/3: 606"]
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 5"
+	"Frontal pole, layer 5" [label="FRP5: 607"]
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 6b"
+	"Frontal pole, layer 6b" [label="FRP6b: 608"]
+	"Frontal pole, cerebral cortex" -> "Frontal pole, layer 6a"
+	"Frontal pole, layer 6a" [label="FRP6a: 609"]
+	Isocortex -> "Auditory areas"
+	"Auditory areas" [label="AUD: 610"]
+	"Auditory areas" -> "Primary auditory area"
+	"Primary auditory area" [label="AUDp: 611"]
+	"Primary auditory area" -> "Primary auditory area, layer 2/3"
+	"Primary auditory area, layer 2/3" [label="AUDp2/3: 612"]
+	"Primary auditory area" -> "Primary auditory area, layer 1"
+	"Primary auditory area, layer 1" [label="AUDp1: 613"]
+	"Primary auditory area" -> "Primary auditory area, layer 4"
+	"Primary auditory area, layer 4" [label="AUDp4: 614"]
+	"Primary auditory area" -> "Primary auditory area, layer 5"
+	"Primary auditory area, layer 5" [label="AUDp5: 615"]
+	"Primary auditory area" -> "Primary auditory area, layer 6a"
+	"Primary auditory area, layer 6a" [label="AUDp6a: 616"]
+	"Primary auditory area" -> "Primary auditory area, layer 6b"
+	"Primary auditory area, layer 6b" [label="AUDp6b: 617"]
+	"Auditory areas" -> "Dorsal auditory area"
+	"Dorsal auditory area" [label="AUDd: 618"]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 6a"
+	"Dorsal auditory area, layer 6a" [label="AUDd6a: 619"]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 6b"
+	"Dorsal auditory area, layer 6b" [label="AUDd6b: 620"]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 5"
+	"Dorsal auditory area, layer 5" [label="AUDd5: 621"]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 1"
+	"Dorsal auditory area, layer 1" [label="AUDd1: 622"]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 2/3"
+	"Dorsal auditory area, layer 2/3" [label="AUDd2/3: 623"]
+	"Dorsal auditory area" -> "Dorsal auditory area, layer 4"
+	"Dorsal auditory area, layer 4" [label="AUDd4: 624"]
+	"Dorsal auditory area" -> "Laterolateral anterior visual area"
+	"Laterolateral anterior visual area" [label="VISlla: 625"]
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 1"
+	"Laterolateral anterior visual area, layer 1" [label="VISlla1: 626"]
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 2/3"
+	"Laterolateral anterior visual area, layer 2/3" [label="VISlla2/3: 627"]
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 4"
+	"Laterolateral anterior visual area, layer 4" [label="VISlla4: 628"]
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area,layer 5"
+	"Laterolateral anterior visual area,layer 5" [label="VISlla5: 629"]
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 6a"
+	"Laterolateral anterior visual area, layer 6a" [label="VISlla6a: 630"]
+	"Laterolateral anterior visual area" -> "Laterolateral anterior visual area, layer 6b"
+	"Laterolateral anterior visual area, layer 6b" [label="VISlla6b: 631"]
+	"Auditory areas" -> "Ventral auditory area"
+	"Ventral auditory area" [label="AUDv: 632"]
+	"Ventral auditory area" -> "Ventral auditory area, layer 6a"
+	"Ventral auditory area, layer 6a" [label="AUDv6a: 633"]
+	"Ventral auditory area" -> "Ventral auditory area, layer 6b"
+	"Ventral auditory area, layer 6b" [label="AUDv6b: 634"]
+	"Ventral auditory area" -> "Ventral auditory area, layer 2/3"
+	"Ventral auditory area, layer 2/3" [label="AUDv2/3: 635"]
+	"Ventral auditory area" -> "Ventral auditory area, layer 1"
+	"Ventral auditory area, layer 1" [label="AUDv1: 636"]
+	"Ventral auditory area" -> "Ventral auditory area, layer 4"
+	"Ventral auditory area, layer 4" [label="AUDv4: 637"]
+	"Ventral auditory area" -> "Ventral auditory area, layer 5"
+	"Ventral auditory area, layer 5" [label="AUDv5: 638"]
+	"Auditory areas" -> "Posterior auditory area"
+	"Posterior auditory area" [label="AUDpo: 639"]
+	"Posterior auditory area" -> "Posterior auditory area, layer 6a"
+	"Posterior auditory area, layer 6a" [label="AUDpo6a: 640"]
+	"Posterior auditory area" -> "Posterior auditory area, layer 6b"
+	"Posterior auditory area, layer 6b" [label="AUDpo6b: 641"]
+	"Posterior auditory area" -> "Posterior auditory area, layer 2/3"
+	"Posterior auditory area, layer 2/3" [label="AUDpo2/3: 642"]
+	"Posterior auditory area" -> "Posterior auditory area, layer 1"
+	"Posterior auditory area, layer 1" [label="AUDpo1: 643"]
+	"Posterior auditory area" -> "Posterior auditory area, layer 4"
+	"Posterior auditory area, layer 4" [label="AUDpo4: 644"]
+	"Posterior auditory area" -> "Posterior auditory area, layer 5"
+	"Posterior auditory area, layer 5" [label="AUDpo5: 645"]
+	Isocortex -> "Retrosplenial area"
+	"Retrosplenial area" [label="RSP: 646"]
+	"Retrosplenial area" -> "Retrosplenial area, dorsal part"
+	"Retrosplenial area, dorsal part" [label="RSPd: 647"]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 6a"
+	"Retrosplenial area, dorsal part, layer 6a" [label="RSPd6a: 648"]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 6b"
+	"Retrosplenial area, dorsal part, layer 6b" [label="RSPd6b: 649"]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 2/3"
+	"Retrosplenial area, dorsal part, layer 2/3" [label="RSPd2/3: 650"]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 1"
+	"Retrosplenial area, dorsal part, layer 1" [label="RSPd1: 651"]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 4"
+	"Retrosplenial area, dorsal part, layer 4" [label="RSPd4: 652"]
+	"Retrosplenial area, dorsal part" -> "Retrosplenial area, dorsal part, layer 5"
+	"Retrosplenial area, dorsal part, layer 5" [label="RSPd5: 653"]
+	"Retrosplenial area" -> "Retrosplenial area, ventral part"
+	"Retrosplenial area, ventral part" [label="RSPv: 654"]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 2/3"
+	"Retrosplenial area, ventral part, layer 2/3" [label="RSPv2/3: 655"]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 1"
+	"Retrosplenial area, ventral part, layer 1" [label="RSPv1: 656"]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 6a"
+	"Retrosplenial area, ventral part, layer 6a" [label="RSPv6a: 657"]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 2"
+	"Retrosplenial area, ventral part, layer 2" [label="RSPv2: 658"]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 6b"
+	"Retrosplenial area, ventral part, layer 6b" [label="RSPv6b: 659"]
+	"Retrosplenial area, ventral part" -> "Retrosplenial area, ventral part, layer 5"
+	"Retrosplenial area, ventral part, layer 5" [label="RSPv5: 660"]
+	"Retrosplenial area" -> "Retrosplenial area, lateral agranular part"
+	"Retrosplenial area, lateral agranular part" [label="RSPagl: 661"]
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 6b"
+	"Retrosplenial area, lateral agranular part, layer 6b" [label="RSPagl6b: 662"]
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 1"
+	"Retrosplenial area, lateral agranular part, layer 1" [label="RSPagl1: 663"]
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 5"
+	"Retrosplenial area, lateral agranular part, layer 5" [label="RSPagl5: 664"]
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 6a"
+	"Retrosplenial area, lateral agranular part, layer 6a" [label="RSPagl6a: 665"]
+	"Retrosplenial area, lateral agranular part" -> "Retrosplenial area, lateral agranular part, layer 2/3"
+	"Retrosplenial area, lateral agranular part, layer 2/3" [label="RSPagl2/3: 666"]
+	"Retrosplenial area, lateral agranular part" -> "Mediomedial anterior visual area"
+	"Mediomedial anterior visual area" [label="VISmma: 667"]
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 1"
+	"Mediomedial anterior visual area, layer 1" [label="VISmma1: 668"]
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 2/3"
+	"Mediomedial anterior visual area, layer 2/3" [label="VISmma2/3: 669"]
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 4"
+	"Mediomedial anterior visual area, layer 4" [label="VISmma4: 670"]
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area,layer 5"
+	"Mediomedial anterior visual area,layer 5" [label="VISmma5: 671"]
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 6a"
+	"Mediomedial anterior visual area, layer 6a" [label="VISmma6a: 672"]
+	"Mediomedial anterior visual area" -> "Mediomedial anterior visual area, layer 6b"
+	"Mediomedial anterior visual area, layer 6b" [label="VISmma6b: 673"]
+	"Retrosplenial area, lateral agranular part" -> "Mediomedial posterior visual area"
+	"Mediomedial posterior visual area" [label="VISmmp: 674"]
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 1"
+	"Mediomedial posterior visual area, layer 1" [label="VISmmp1: 675"]
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 2/3"
+	"Mediomedial posterior visual area, layer 2/3" [label="VISmmp2/3: 676"]
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 4"
+	"Mediomedial posterior visual area, layer 4" [label="VISmmp4: 677"]
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area,layer 5"
+	"Mediomedial posterior visual area,layer 5" [label="VISmmp5: 678"]
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 6a"
+	"Mediomedial posterior visual area, layer 6a" [label="VISmmp6a: 679"]
+	"Mediomedial posterior visual area" -> "Mediomedial posterior visual area, layer 6b"
+	"Mediomedial posterior visual area, layer 6b" [label="VISmmp6b: 680"]
+	"Retrosplenial area, lateral agranular part" -> "Medial visual area"
+	"Medial visual area" [label="VISm: 681"]
+	"Medial visual area" -> "Medial visual area, layer 1"
+	"Medial visual area, layer 1" [label="VISm1: 682"]
+	"Medial visual area" -> "Medial visual area, layer 2/3"
+	"Medial visual area, layer 2/3" [label="VISm2/3: 683"]
+	"Medial visual area" -> "Medial visual area, layer 4"
+	"Medial visual area, layer 4" [label="VISm4: 684"]
+	"Medial visual area" -> "Medial visual area,layer 5"
+	"Medial visual area,layer 5" [label="VISm5: 685"]
+	"Medial visual area" -> "Medial visual area, layer 6a"
+	"Medial visual area, layer 6a" [label="VISm6a: 686"]
+	"Medial visual area" -> "Medial visual area, layer 6b"
+	"Medial visual area, layer 6b" [label="VISm6b: 687"]
+	Isocortex -> "Somatosensory areas"
+	"Somatosensory areas" [label="SS: 688"]
+	"Somatosensory areas" -> "Primary somatosensory area"
+	"Primary somatosensory area" [label="SSp: 689"]
+	"Primary somatosensory area" -> "Primary somatosensory area, barrel field"
+	"Primary somatosensory area, barrel field" [label="SSp-bfd: 690"]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 2/3"
+	"Primary somatosensory area, barrel field, layer 2/3" [label="SSp-bfd2/3: 691"]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 1"
+	"Primary somatosensory area, barrel field, layer 1" [label="SSp-bfd1: 692"]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 6a"
+	"Primary somatosensory area, barrel field, layer 6a" [label="SSp-bfd6a: 693"]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 4"
+	"Primary somatosensory area, barrel field, layer 4" [label="SSp-bfd4: 694"]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 6b"
+	"Primary somatosensory area, barrel field, layer 6b" [label="SSp-bfd6b: 695"]
+	"Primary somatosensory area, barrel field" -> "Primary somatosensory area, barrel field, layer 5"
+	"Primary somatosensory area, barrel field, layer 5" [label="SSp-bfd5: 696"]
+	"Primary somatosensory area, barrel field" -> "Rostrolateral lateral visual area"
+	"Rostrolateral lateral visual area" [label="VISrll: 697"]
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 1"
+	"Rostrolateral lateral visual area, layer 1" [label="VISrll1: 698"]
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 2/3"
+	"Rostrolateral lateral visual area, layer 2/3" [label="VISrll2/3: 699"]
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 4"
+	"Rostrolateral lateral visual area, layer 4" [label="VISrll4: 700"]
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area,layer 5"
+	"Rostrolateral lateral visual area,layer 5" [label="VISrll5: 701"]
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 6a"
+	"Rostrolateral lateral visual area, layer 6a" [label="VISrll6a: 702"]
+	"Rostrolateral lateral visual area" -> "Rostrolateral lateral visual area, layer 6b"
+	"Rostrolateral lateral visual area, layer 6b" [label="VISrll6b: 703"]
+	"Primary somatosensory area" -> "Primary somatosensory area, lower limb"
+	"Primary somatosensory area, lower limb" [label="SSp-ll: 704"]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 2/3"
+	"Primary somatosensory area, lower limb, layer 2/3" [label="SSp-ll2/3: 705"]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 6a"
+	"Primary somatosensory area, lower limb, layer 6a" [label="SSp-ll6a: 706"]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 6b"
+	"Primary somatosensory area, lower limb, layer 6b" [label="SSp-ll6b: 707"]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 1"
+	"Primary somatosensory area, lower limb, layer 1" [label="SSp-ll1: 708"]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 4"
+	"Primary somatosensory area, lower limb, layer 4" [label="SSp-ll4: 709"]
+	"Primary somatosensory area, lower limb" -> "Primary somatosensory area, lower limb, layer 5"
+	"Primary somatosensory area, lower limb, layer 5" [label="SSp-ll5: 710"]
+	"Primary somatosensory area" -> "Primary somatosensory area, mouth"
+	"Primary somatosensory area, mouth" [label="SSp-m: 711"]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 6b"
+	"Primary somatosensory area, mouth, layer 6b" [label="SSp-m6b: 712"]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 2/3"
+	"Primary somatosensory area, mouth, layer 2/3" [label="SSp-m2/3: 713"]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 1"
+	"Primary somatosensory area, mouth, layer 1" [label="SSp-m1: 714"]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 4"
+	"Primary somatosensory area, mouth, layer 4" [label="SSp-m4: 715"]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 5"
+	"Primary somatosensory area, mouth, layer 5" [label="SSp-m5: 716"]
+	"Primary somatosensory area, mouth" -> "Primary somatosensory area, mouth, layer 6a"
+	"Primary somatosensory area, mouth, layer 6a" [label="SSp-m6a: 717"]
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 2/3"
+	"Primary somatosensory area, layer 2/3" [label="SSp2/3: 718"]
+	"Primary somatosensory area" -> "Primary somatosensory area, nose"
+	"Primary somatosensory area, nose" [label="SSp-n: 719"]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 1"
+	"Primary somatosensory area, nose, layer 1" [label="SSp-n1: 720"]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 4"
+	"Primary somatosensory area, nose, layer 4" [label="SSp-n4: 721"]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 5"
+	"Primary somatosensory area, nose, layer 5" [label="SSp-n5: 722"]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 2/3"
+	"Primary somatosensory area, nose, layer 2/3" [label="SSp-n2/3: 723"]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 6a"
+	"Primary somatosensory area, nose, layer 6a" [label="SSp-n6a: 724"]
+	"Primary somatosensory area, nose" -> "Primary somatosensory area, nose, layer 6b"
+	"Primary somatosensory area, nose, layer 6b" [label="SSp-n6b: 725"]
+	"Primary somatosensory area" -> "Primary somatosensory area, trunk"
+	"Primary somatosensory area, trunk" [label="SSp-tr: 726"]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 6a"
+	"Primary somatosensory area, trunk, layer 6a" [label="SSp-tr6a: 727"]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 6b"
+	"Primary somatosensory area, trunk, layer 6b" [label="SSp-tr6b: 728"]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 2/3"
+	"Primary somatosensory area, trunk, layer 2/3" [label="SSp-tr2/3: 729"]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 1"
+	"Primary somatosensory area, trunk, layer 1" [label="SSp-tr1: 730"]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 4"
+	"Primary somatosensory area, trunk, layer 4" [label="SSp-tr4: 731"]
+	"Primary somatosensory area, trunk" -> "Primary somatosensory area, trunk, layer 5"
+	"Primary somatosensory area, trunk, layer 5" [label="SSp-tr5: 732"]
+	"Primary somatosensory area" -> "Primary somatosensory area, upper limb"
+	"Primary somatosensory area, upper limb" [label="SSp-ul: 733"]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 1"
+	"Primary somatosensory area, upper limb, layer 1" [label="SSp-ul1: 734"]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 4"
+	"Primary somatosensory area, upper limb, layer 4" [label="SSp-ul4: 735"]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 5"
+	"Primary somatosensory area, upper limb, layer 5" [label="SSp-ul5: 736"]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 2/3"
+	"Primary somatosensory area, upper limb, layer 2/3" [label="SSp-ul2/3: 737"]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 6a"
+	"Primary somatosensory area, upper limb, layer 6a" [label="SSp-ul6a: 738"]
+	"Primary somatosensory area, upper limb" -> "Primary somatosensory area, upper limb, layer 6b"
+	"Primary somatosensory area, upper limb, layer 6b" [label="SSp-ul6b: 739"]
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 6a"
+	"Primary somatosensory area, layer 6a" [label="SSp6a: 740"]
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 6b"
+	"Primary somatosensory area, layer 6b" [label="SSp6b: 741"]
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 1"
+	"Primary somatosensory area, layer 1" [label="SSp1: 742"]
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 4"
+	"Primary somatosensory area, layer 4" [label="SSp4: 743"]
+	"Primary somatosensory area" -> "Primary somatosensory area, layer 5"
+	"Primary somatosensory area, layer 5" [label="SSp5: 744"]
+	"Primary somatosensory area" -> "Primary somatosensory area, unassigned"
+	"Primary somatosensory area, unassigned" [label="SSp-un: 745"]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 1"
+	"Primary somatosensory area, unassigned, layer 1" [label="SSp-un1: 746"]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 1,2,3"
+	"Primary somatosensory area, unassigned, layer 1,2,3" [label="SSp-un1: 747"]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 2/3"
+	"Primary somatosensory area, unassigned, layer 2/3" [label="SSp-un2/3: 748"]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 4"
+	"Primary somatosensory area, unassigned, layer 4" [label="SSp-un4: 749"]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 5"
+	"Primary somatosensory area, unassigned, layer 5" [label="SSp-un5: 750"]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 6a"
+	"Primary somatosensory area, unassigned, layer 6a" [label="SSp-un6a: 751"]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 4,5,6"
+	"Primary somatosensory area, unassigned, layer 4,5,6" [label="SSp-un4: 752"]
+	"Primary somatosensory area, unassigned" -> "Primary somatosensory area, unassigned, layer 6b"
+	"Primary somatosensory area, unassigned, layer 6b" [label="SSp-un6b: 753"]
+	"Somatosensory areas" -> "Supplemental somatosensory area"
+	"Supplemental somatosensory area" [label="SSs: 754"]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 2/3"
+	"Supplemental somatosensory area, layer 2/3" [label="SSs2/3: 755"]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 6a"
+	"Supplemental somatosensory area, layer 6a" [label="SSs6a: 756"]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 1"
+	"Supplemental somatosensory area, layer 1" [label="SSs1: 757"]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 6b"
+	"Supplemental somatosensory area, layer 6b" [label="SSs6b: 758"]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 4"
+	"Supplemental somatosensory area, layer 4" [label="SSs4: 759"]
+	"Supplemental somatosensory area" -> "Supplemental somatosensory area, layer 5"
+	"Supplemental somatosensory area, layer 5" [label="SSs5: 760"]
+	"Somatosensory areas" -> "Somatosensory areas, layer 1"
+	"Somatosensory areas, layer 1" [label="SS1: 761"]
+	"Somatosensory areas" -> "Somatosensory areas, layer 2/3"
+	"Somatosensory areas, layer 2/3" [label="SS2/3: 762"]
+	"Somatosensory areas" -> "Somatosensory areas, layer 4"
+	"Somatosensory areas, layer 4" [label="SS4: 763"]
+	"Somatosensory areas" -> "Somatosensory areas, layer 5"
+	"Somatosensory areas, layer 5" [label="SS5: 764"]
+	"Somatosensory areas" -> "Somatosensory areas, layer 6a"
+	"Somatosensory areas, layer 6a" [label="SS6a: 765"]
+	"Somatosensory areas" -> "Somatosensory areas, layer 6b"
+	"Somatosensory areas, layer 6b" [label="SS6b: 766"]
+	Isocortex -> "Somatomotor areas"
+	"Somatomotor areas" [label="MO: 767"]
+	"Somatomotor areas" -> "Somatomotor areas, Layer 1"
+	"Somatomotor areas, Layer 1" [label="MO1: 768"]
+	"Somatomotor areas" -> "Somatomotor areas, Layer 2/3"
+	"Somatomotor areas, Layer 2/3" [label="MO2/3: 769"]
+	"Somatomotor areas" -> "Somatomotor areas, Layer 5"
+	"Somatomotor areas, Layer 5" [label="MO5: 770"]
+	"Somatomotor areas" -> "Somatomotor areas, Layer 6a"
+	"Somatomotor areas, Layer 6a" [label="MO6a: 771"]
+	"Somatomotor areas" -> "Somatomotor areas, Layer 6b"
+	"Somatomotor areas, Layer 6b" [label="MO6b: 772"]
+	"Somatomotor areas" -> "Primary motor area"
+	"Primary motor area" [label="MOp: 773"]
+	"Primary motor area" -> "Primary motor area, Layer 1"
+	"Primary motor area, Layer 1" [label="MOp1: 774"]
+	"Primary motor area" -> "Primary motor area, Layer 5"
+	"Primary motor area, Layer 5" [label="MOp5: 775"]
+	"Primary motor area" -> "Primary motor area, Layer 6a"
+	"Primary motor area, Layer 6a" [label="MOp6a: 776"]
+	"Primary motor area" -> "Primary motor area, Layer 6b"
+	"Primary motor area, Layer 6b" [label="MOp6b: 777"]
+	"Primary motor area" -> "Primary motor area, Layer 2/3"
+	"Primary motor area, Layer 2/3" [label="MOp2/3: 778"]
+	"Somatomotor areas" -> "Secondary motor area"
+	"Secondary motor area" [label="MOs: 779"]
+	"Secondary motor area" -> "Secondary motor area, layer 1"
+	"Secondary motor area, layer 1" [label="MOs1: 780"]
+	"Secondary motor area" -> "Secondary motor area, layer 5"
+	"Secondary motor area, layer 5" [label="MOs5: 781"]
+	"Secondary motor area" -> "Secondary motor area, layer 2/3"
+	"Secondary motor area, layer 2/3" [label="MOs2/3: 782"]
+	"Secondary motor area" -> "Secondary motor area, layer 6a"
+	"Secondary motor area, layer 6a" [label="MOs6a: 783"]
+	"Secondary motor area" -> "Secondary motor area, layer 6b"
+	"Secondary motor area, layer 6b" [label="MOs6b: 784"]
+	Isocortex -> "Temporal association areas"
+	"Temporal association areas" [label="TEa: 785"]
+	"Temporal association areas" -> "Temporal association areas, layer 1"
+	"Temporal association areas, layer 1" [label="TEa1: 786"]
+	"Temporal association areas" -> "Temporal association areas, layer 4"
+	"Temporal association areas, layer 4" [label="TEa4: 787"]
+	"Temporal association areas" -> "Temporal association areas, layer 5"
+	"Temporal association areas, layer 5" [label="TEa5: 788"]
+	"Temporal association areas" -> "Temporal association areas, layer 6a"
+	"Temporal association areas, layer 6a" [label="TEa6a: 789"]
+	"Temporal association areas" -> "Temporal association areas, layer 6b"
+	"Temporal association areas, layer 6b" [label="TEa6b: 790"]
+	"Temporal association areas" -> "Temporal association areas, layer 2/3"
+	"Temporal association areas, layer 2/3" [label="TEa2/3: 791"]
+	Isocortex -> "Visual areas"
+	"Visual areas" [label="VIS: 792"]
+	"Visual areas" -> "Primary visual area"
+	"Primary visual area" [label="VISp: 793"]
+	"Primary visual area" -> "Primary visual area, layer 6a"
+	"Primary visual area, layer 6a" [label="VISp6a: 794"]
+	"Primary visual area" -> "Primary visual area, layer 6b"
+	"Primary visual area, layer 6b" [label="VISp6b: 795"]
+	"Primary visual area" -> "Primary visual area, layer 1"
+	"Primary visual area, layer 1" [label="VISp1: 796"]
+	"Primary visual area" -> "Primary visual area, layer 4"
+	"Primary visual area, layer 4" [label="VISp4: 797"]
+	"Primary visual area" -> "Primary visual area, layer 5"
+	"Primary visual area, layer 5" [label="VISp5: 798"]
+	"Primary visual area" -> "Primary visual area, layer 2/3"
+	"Primary visual area, layer 2/3" [label="VISp2/3: 799"]
+	"Visual areas" -> "Anteromedial visual area"
+	"Anteromedial visual area" [label="VISam: 800"]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 1"
+	"Anteromedial visual area, layer 1" [label="VISam1: 801"]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 4"
+	"Anteromedial visual area, layer 4" [label="VISam4: 802"]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 5"
+	"Anteromedial visual area, layer 5" [label="VISam5: 803"]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 6b"
+	"Anteromedial visual area, layer 6b" [label="VISam6b: 804"]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 6a"
+	"Anteromedial visual area, layer 6a" [label="VISam6a: 805"]
+	"Anteromedial visual area" -> "Anteromedial visual area, layer 2/3"
+	"Anteromedial visual area, layer 2/3" [label="VISam2/3: 806"]
+	"Visual areas" -> "Anterolateral visual area"
+	"Anterolateral visual area" [label="VISal: 807"]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 5"
+	"Anterolateral visual area, layer 5" [label="VISal5: 808"]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 6a"
+	"Anterolateral visual area, layer 6a" [label="VISal6a: 809"]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 6b"
+	"Anterolateral visual area, layer 6b" [label="VISal6b: 810"]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 2/3"
+	"Anterolateral visual area, layer 2/3" [label="VISal2/3: 811"]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 1"
+	"Anterolateral visual area, layer 1" [label="VISal1: 812"]
+	"Anterolateral visual area" -> "Anterolateral visual area, layer 4"
+	"Anterolateral visual area, layer 4" [label="VISal4: 813"]
+	"Visual areas" -> "Lateral visual area"
+	"Lateral visual area" [label="VISl: 814"]
+	"Lateral visual area" -> "Lateral visual area, layer 6a"
+	"Lateral visual area, layer 6a" [label="VISl6a: 815"]
+	"Lateral visual area" -> "Lateral visual area, layer 6b"
+	"Lateral visual area, layer 6b" [label="VISl6b: 816"]
+	"Lateral visual area" -> "Lateral visual area, layer 1"
+	"Lateral visual area, layer 1" [label="VISl1: 817"]
+	"Lateral visual area" -> "Lateral visual area, layer 4"
+	"Lateral visual area, layer 4" [label="VISl4: 818"]
+	"Lateral visual area" -> "Lateral visual area, layer 5"
+	"Lateral visual area, layer 5" [label="VISl5: 819"]
+	"Lateral visual area" -> "Lateral visual area, layer 2/3"
+	"Lateral visual area, layer 2/3" [label="VISl2/3: 820"]
+	"Visual areas" -> "Posterolateral visual area"
+	"Posterolateral visual area" [label="VISpl: 821"]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 2/3"
+	"Posterolateral visual area, layer 2/3" [label="VISpl2/3: 822"]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 6a"
+	"Posterolateral visual area, layer 6a" [label="VISpl6a: 823"]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 6b"
+	"Posterolateral visual area, layer 6b" [label="VISpl6b: 824"]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 1"
+	"Posterolateral visual area, layer 1" [label="VISpl1: 825"]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 4"
+	"Posterolateral visual area, layer 4" [label="VISpl4: 826"]
+	"Posterolateral visual area" -> "Posterolateral visual area, layer 5"
+	"Posterolateral visual area, layer 5" [label="VISpl5: 827"]
+	"Visual areas" -> "Visual areas, layer 6a"
+	"Visual areas, layer 6a" [label="VIS6a: 828"]
+	"Visual areas" -> "Visual areas, layer 6b"
+	"Visual areas, layer 6b" [label="VIS6b: 829"]
+	"Visual areas" -> "posteromedial visual area"
+	"posteromedial visual area" [label="VISpm: 830"]
+	"posteromedial visual area" -> "posteromedial visual area, layer 2/3"
+	"posteromedial visual area, layer 2/3" [label="VISpm2/3: 831"]
+	"posteromedial visual area" -> "posteromedial visual area, layer 6a"
+	"posteromedial visual area, layer 6a" [label="VISpm6a: 832"]
+	"posteromedial visual area" -> "posteromedial visual area, layer 6b"
+	"posteromedial visual area, layer 6b" [label="VISpm6b: 833"]
+	"posteromedial visual area" -> "posteromedial visual area, layer 4"
+	"posteromedial visual area, layer 4" [label="VISpm4: 834"]
+	"posteromedial visual area" -> "posteromedial visual area, layer 5"
+	"posteromedial visual area, layer 5" [label="VISpm5: 835"]
+	"posteromedial visual area" -> "posteromedial visual area, layer 1"
+	"posteromedial visual area, layer 1" [label="VISpm1: 836"]
+	"Visual areas" -> "Visual areas, layer 2/3"
+	"Visual areas, layer 2/3" [label="VIS2/3: 837"]
+	"Visual areas" -> "Visual areas, layer 1"
+	"Visual areas, layer 1" [label="VIS1: 838"]
+	"Visual areas" -> "Visual areas, layer 4"
+	"Visual areas, layer 4" [label="VIS4: 839"]
+	"Visual areas" -> "Visual areas, layer 5"
+	"Visual areas, layer 5" [label="VIS5: 840"]
+	"Visual areas" -> "Laterointermediate area"
+	"Laterointermediate area" [label="VISli: 841"]
+	"Laterointermediate area" -> "Laterointermediate area, layer 1"
+	"Laterointermediate area, layer 1" [label="VISli1: 842"]
+	"Laterointermediate area" -> "Laterointermediate area, layer 2/3"
+	"Laterointermediate area, layer 2/3" [label="VISli2/3: 843"]
+	"Laterointermediate area" -> "Laterointermediate area, layer 4"
+	"Laterointermediate area, layer 4" [label="VISli4: 844"]
+	"Laterointermediate area" -> "Laterointermediate area, layer 5"
+	"Laterointermediate area, layer 5" [label="VISli5: 845"]
+	"Laterointermediate area" -> "Laterointermediate area, layer 6a"
+	"Laterointermediate area, layer 6a" [label="VISli6a: 846"]
+	"Laterointermediate area" -> "Laterointermediate area, layer 6b"
+	"Laterointermediate area, layer 6b" [label="VISli6b: 847"]
+	"Visual areas" -> "Postrhinal area"
+	"Postrhinal area" [label="VISpor: 848"]
+	"Postrhinal area" -> "Postrhinal area, layer 1"
+	"Postrhinal area, layer 1" [label="VISpor1: 849"]
+	"Postrhinal area" -> "Postrhinal area, layer 2/3"
+	"Postrhinal area, layer 2/3" [label="VISpor2/3: 850"]
+	"Postrhinal area" -> "Postrhinal area, layer 4"
+	"Postrhinal area, layer 4" [label="VISpor4: 851"]
+	"Postrhinal area" -> "Postrhinal area, layer 6a"
+	"Postrhinal area, layer 6a" [label="VISpor6a: 852"]
+	"Postrhinal area" -> "Postrhinal area, layer 6b"
+	"Postrhinal area, layer 6b" [label="VISpor6b: 853"]
+	"Postrhinal area" -> "Postrhinal area, layer 5"
+	"Postrhinal area, layer 5" [label="VISpor5: 854"]
+	Isocortex -> "Visceral area"
+	"Visceral area" [label="VISC: 855"]
+	"Visceral area" -> "Visceral area, layer 6b"
+	"Visceral area, layer 6b" [label="VISC6b: 856"]
+	"Visceral area" -> "Visceral area, layer 6a"
+	"Visceral area, layer 6a" [label="VISC6a: 857"]
+	"Visceral area" -> "Visceral area, layer 1"
+	"Visceral area, layer 1" [label="VISC1: 858"]
+	"Visceral area" -> "Visceral area, layer 4"
+	"Visceral area, layer 4" [label="VISC4: 859"]
+	"Visceral area" -> "Visceral area, layer 5"
+	"Visceral area, layer 5" [label="VISC5: 860"]
+	"Visceral area" -> "Visceral area, layer 2/3"
+	"Visceral area, layer 2/3" [label="VISC2/3: 861"]
+	Isocortex -> "Orbital area"
+	"Orbital area" [label="ORB: 862"]
+	"Orbital area" -> "Orbital area, layer 1"
+	"Orbital area, layer 1" [label="ORB1: 863"]
+	"Orbital area" -> "Orbital area, layer 5"
+	"Orbital area, layer 5" [label="ORB5: 864"]
+	"Orbital area" -> "Orbital area, layer 6a"
+	"Orbital area, layer 6a" [label="ORB6a: 865"]
+	"Orbital area" -> "Orbital area, layer 2/3"
+	"Orbital area, layer 2/3" [label="ORB2/3: 866"]
+	"Orbital area" -> "Orbital area, layer 6b"
+	"Orbital area, layer 6b" [label="ORB6b: 867"]
+	"Orbital area" -> "Orbital area, lateral part"
+	"Orbital area, lateral part" [label="ORBl: 868"]
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 2/3"
+	"Orbital area, lateral part, layer 2/3" [label="ORBl2/3: 869"]
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 6a"
+	"Orbital area, lateral part, layer 6a" [label="ORBl6a: 870"]
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 1"
+	"Orbital area, lateral part, layer 1" [label="ORBl1: 871"]
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 6b"
+	"Orbital area, lateral part, layer 6b" [label="ORBl6b: 872"]
+	"Orbital area, lateral part" -> "Orbital area, lateral part, layer 5"
+	"Orbital area, lateral part, layer 5" [label="ORBl5: 873"]
+	"Orbital area" -> "Orbital area, medial part"
+	"Orbital area, medial part" [label="ORBm: 874"]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 1"
+	"Orbital area, medial part, layer 1" [label="ORBm1: 875"]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 2"
+	"Orbital area, medial part, layer 2" [label="ORBm2: 876"]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 2/3"
+	"Orbital area, medial part, layer 2/3" [label="ORBm2/3: 877"]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 5"
+	"Orbital area, medial part, layer 5" [label="ORBm5: 878"]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 6a"
+	"Orbital area, medial part, layer 6a" [label="ORBm6a: 879"]
+	"Orbital area, medial part" -> "Orbital area, medial part, layer 6b"
+	"Orbital area, medial part, layer 6b" [label="ORBm6b: 880"]
+	"Orbital area" -> "Orbital area, ventral part"
+	"Orbital area, ventral part" [label="ORBv: 881"]
+	"Orbital area" -> "Orbital area, ventrolateral part"
+	"Orbital area, ventrolateral part" [label="ORBvl: 882"]
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 2/3"
+	"Orbital area, ventrolateral part, layer 2/3" [label="ORBvl2/3: 883"]
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 6a"
+	"Orbital area, ventrolateral part, layer 6a" [label="ORBvl6a: 884"]
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 6b"
+	"Orbital area, ventrolateral part, layer 6b" [label="ORBvl6b: 885"]
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 1"
+	"Orbital area, ventrolateral part, layer 1" [label="ORBvl1: 886"]
+	"Orbital area, ventrolateral part" -> "Orbital area, ventrolateral part, layer 5"
+	"Orbital area, ventrolateral part, layer 5" [label="ORBvl5: 887"]
+	Isocortex -> "Ectorhinal area"
+	"Ectorhinal area" [label="ECT: 888"]
+	"Ectorhinal area" -> "Ectorhinal area/Layer 2/3"
+	"Ectorhinal area/Layer 2/3" [label="ECT2/3: 889"]
+	"Ectorhinal area" -> "Ectorhinal area/Layer 1"
+	"Ectorhinal area/Layer 1" [label="ECT1: 890"]
+	"Ectorhinal area" -> "Ectorhinal area/Layer 6a"
+	"Ectorhinal area/Layer 6a" [label="ECT6a: 891"]
+	"Ectorhinal area" -> "Ectorhinal area/Layer 5"
+	"Ectorhinal area/Layer 5" [label="ECT5: 892"]
+	"Ectorhinal area" -> "Ectorhinal area/Layer 6b"
+	"Ectorhinal area/Layer 6b" [label="ECT6b: 893"]
+	Isocortex -> "Perirhinal area"
+	"Perirhinal area" [label="PERI: 894"]
+	"Perirhinal area" -> "Perirhinal area, layer 6a"
+	"Perirhinal area, layer 6a" [label="PERI6a: 895"]
+	"Perirhinal area" -> "Perirhinal area, layer 6b"
+	"Perirhinal area, layer 6b" [label="PERI6b: 896"]
+	"Perirhinal area" -> "Perirhinal area, layer 1"
+	"Perirhinal area, layer 1" [label="PERI1: 897"]
+	"Perirhinal area" -> "Perirhinal area, layer 5"
+	"Perirhinal area, layer 5" [label="PERI5: 898"]
+	"Perirhinal area" -> "Perirhinal area, layer 2/3"
+	"Perirhinal area, layer 2/3" [label="PERI2/3: 899"]
+	Isocortex -> "Prelimbic area"
+	"Prelimbic area" [label="PL: 900"]
+	"Prelimbic area" -> "Prelimbic area, layer 6a"
+	"Prelimbic area, layer 6a" [label="PL6a: 901"]
+	"Prelimbic area" -> "Prelimbic area, layer 6b"
+	"Prelimbic area, layer 6b" [label="PL6b: 902"]
+	"Prelimbic area" -> "Prelimbic area, layer 1"
+	"Prelimbic area, layer 1" [label="PL1: 903"]
+	"Prelimbic area" -> "Prelimbic area, layer 2"
+	"Prelimbic area, layer 2" [label="PL2: 904"]
+	"Prelimbic area" -> "Prelimbic area, layer 2/3"
+	"Prelimbic area, layer 2/3" [label="PL2/3: 905"]
+	"Prelimbic area" -> "Prelimbic area, layer 5"
+	"Prelimbic area, layer 5" [label="PL5: 906"]
+	Isocortex -> "Gustatory areas"
+	"Gustatory areas" [label="GU: 907"]
+	"Gustatory areas" -> "Gustatory areas, layer 1"
+	"Gustatory areas, layer 1" [label="GU1: 908"]
+	"Gustatory areas" -> "Gustatory areas, layer 4"
+	"Gustatory areas, layer 4" [label="GU4: 909"]
+	"Gustatory areas" -> "Gustatory areas, layer 2/3"
+	"Gustatory areas, layer 2/3" [label="GU2/3: 910"]
+	"Gustatory areas" -> "Gustatory areas, layer 5"
+	"Gustatory areas, layer 5" [label="GU5: 911"]
+	"Gustatory areas" -> "Gustatory areas, layer 6a"
+	"Gustatory areas, layer 6a" [label="GU6a: 912"]
+	"Gustatory areas" -> "Gustatory areas, layer 6b"
+	"Gustatory areas, layer 6b" [label="GU6b: 913"]
+	"Cortical plate" -> "Olfactory areas"
+	"Olfactory areas" [label="OLF: 914"]
+	"Olfactory areas" -> "Accessory olfactory bulb"
+	"Accessory olfactory bulb" [label="AOB: 915"]
+	"Accessory olfactory bulb" -> "Accessory olfactory bulb, glomerular layer"
+	"Accessory olfactory bulb, glomerular layer" [label="AOBgl: 916"]
+	"Accessory olfactory bulb" -> "Accessory olfactory bulb, granular layer"
+	"Accessory olfactory bulb, granular layer" [label="AOBgr: 917"]
+	"Accessory olfactory bulb" -> "Accessory olfactory bulb, mitral layer"
+	"Accessory olfactory bulb, mitral layer" [label="AOBmi: 918"]
+	"Olfactory areas" -> "Anterior olfactory nucleus"
+	"Anterior olfactory nucleus" [label="AON: 919"]
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, layer 1"
+	"Anterior olfactory nucleus, layer 1" [label="AON1: 920"]
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, dorsal part"
+	"Anterior olfactory nucleus, dorsal part" [label="AONd: 921"]
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, layer 2"
+	"Anterior olfactory nucleus, layer 2" [label="AON2: 922"]
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, external part"
+	"Anterior olfactory nucleus, external part" [label="AONe: 923"]
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, lateral part"
+	"Anterior olfactory nucleus, lateral part" [label="AONl: 924"]
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, medial part"
+	"Anterior olfactory nucleus, medial part" [label="AONm: 925"]
+	"Anterior olfactory nucleus" -> "Anterior olfactory nucleus, posteroventral part"
+	"Anterior olfactory nucleus, posteroventral part" [label="AONpv: 926"]
+	"Olfactory areas" -> "Main olfactory bulb"
+	"Main olfactory bulb" [label="MOB: 927"]
+	"Main olfactory bulb" -> "Main olfactory bulb, glomerular layer"
+	"Main olfactory bulb, glomerular layer" [label="MOBgl: 928"]
+	"Main olfactory bulb" -> "Main olfactory bulb, granule layer"
+	"Main olfactory bulb, granule layer" [label="MOBgr: 929"]
+	"Main olfactory bulb" -> "Main olfactory bulb, inner plexiform layer"
+	"Main olfactory bulb, inner plexiform layer" [label="MOBipl: 930"]
+	"Main olfactory bulb" -> "Main olfactory bulb, mitral layer"
+	"Main olfactory bulb, mitral layer" [label="MOBmi: 931"]
+	"Main olfactory bulb" -> "Main olfactory bulb, outer plexiform layer"
+	"Main olfactory bulb, outer plexiform layer" [label="MOBopl: 932"]
+	"Olfactory areas" -> "Postpiriform transition area"
+	"Postpiriform transition area" [label="TR: 933"]
+	"Postpiriform transition area" -> "Postpiriform transition area, layers 1-3"
+	"Postpiriform transition area, layers 1-3" [label="TR1-3: 934"]
+	"Postpiriform transition area" -> "Postpiriform transition area, layers 1"
+	"Postpiriform transition area, layers 1" [label="TR1: 935"]
+	"Postpiriform transition area" -> "Postpiriform transition area, layers 2"
+	"Postpiriform transition area, layers 2" [label="TR2: 936"]
+	"Postpiriform transition area" -> "Postpiriform transition area, layers 3"
+	"Postpiriform transition area, layers 3" [label="TR3: 937"]
+	"Olfactory areas" -> "Taenia tecta"
+	"Taenia tecta" [label="TT: 938"]
+	"Taenia tecta" -> "Taenia tecta, dorsal part"
+	"Taenia tecta, dorsal part" [label="TTd: 939"]
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layers 1-4"
+	"Taenia tecta, dorsal part, layers 1-4" [label="TTd1-4: 940"]
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layer 1"
+	"Taenia tecta, dorsal part, layer 1" [label="TTd1: 941"]
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layer 2"
+	"Taenia tecta, dorsal part, layer 2" [label="TTd2: 942"]
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layer 3"
+	"Taenia tecta, dorsal part, layer 3" [label="TTd3: 943"]
+	"Taenia tecta, dorsal part" -> "Taenia tecta, dorsal part, layer 4"
+	"Taenia tecta, dorsal part, layer 4" [label="TTd4: 944"]
+	"Taenia tecta" -> "Taenia tecta, ventral part"
+	"Taenia tecta, ventral part" [label="TTv: 945"]
+	"Taenia tecta, ventral part" -> "Taenia tecta, ventral part, layers 1-3"
+	"Taenia tecta, ventral part, layers 1-3" [label="TTv1-3: 946"]
+	"Taenia tecta, ventral part" -> "Taenia tecta, ventral part, layer 1"
+	"Taenia tecta, ventral part, layer 1" [label="TTv1: 947"]
+	"Taenia tecta, ventral part" -> "Taenia tecta, ventral part, layer 2"
+	"Taenia tecta, ventral part, layer 2" [label="TTv2: 948"]
+	"Taenia tecta, ventral part" -> "Taenia tecta, ventral part, layer 3"
+	"Taenia tecta, ventral part, layer 3" [label="TTv3: 949"]
+	"Olfactory areas" -> "Nucleus of the lateral olfactory tract"
+	"Nucleus of the lateral olfactory tract" [label="NLOT: 950"]
+	"Nucleus of the lateral olfactory tract" -> "Nucleus of the lateral olfactory tract, molecular layer"
+	"Nucleus of the lateral olfactory tract, molecular layer" [label="NLOT1: 951"]
+	"Nucleus of the lateral olfactory tract" -> "Nucleus of the lateral olfactory tract, pyramidal layer"
+	"Nucleus of the lateral olfactory tract, pyramidal layer" [label="NLOT2: 952"]
+	"Nucleus of the lateral olfactory tract" -> "Nucleus of the lateral olfactory tract, layers 1-3"
+	"Nucleus of the lateral olfactory tract, layers 1-3" [label="NLOT1-3: 953"]
+	"Nucleus of the lateral olfactory tract" -> "Nucleus of the lateral olfactory tract, layer 3"
+	"Nucleus of the lateral olfactory tract, layer 3" [label="NLOT3: 954"]
+	"Olfactory areas" -> "Cortical amygdalar area"
+	"Cortical amygdalar area" [label="COA: 955"]
+	"Cortical amygdalar area" -> "Cortical amygdalar area, anterior part"
+	"Cortical amygdalar area, anterior part" [label="COAa: 956"]
+	"Cortical amygdalar area, anterior part" -> "Cortical amygdalar area, anterior part, layer 1"
+	"Cortical amygdalar area, anterior part, layer 1" [label="COAa1: 957"]
+	"Cortical amygdalar area, anterior part" -> "Cortical amygdalar area, anterior part, layer 2"
+	"Cortical amygdalar area, anterior part, layer 2" [label="COAa2: 958"]
+	"Cortical amygdalar area, anterior part" -> "Cortical amygdalar area, anterior part, layer 3"
+	"Cortical amygdalar area, anterior part, layer 3" [label="COAa3: 959"]
+	"Cortical amygdalar area" -> "Cortical amygdalar area, posterior part"
+	"Cortical amygdalar area, posterior part" [label="COAp: 960"]
+	"Cortical amygdalar area, posterior part" -> "Cortical amygdalar area, posterior part, lateral zone"
+	"Cortical amygdalar area, posterior part, lateral zone" [label="COApl: 961"]
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layer 1"
+	"Cortical amygdalar area, posterior part, lateral zone, layer 1" [label="COApl1: 962"]
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layer 2"
+	"Cortical amygdalar area, posterior part, lateral zone, layer 2" [label="COApl2: 963"]
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layer 3"
+	"Cortical amygdalar area, posterior part, lateral zone, layer 3" [label="COApl3: 964"]
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layers 1-3"
+	"Cortical amygdalar area, posterior part, lateral zone, layers 1-3" [label="COApl1-3: 965"]
+	"Cortical amygdalar area, posterior part, lateral zone" -> "Cortical amygdalar area, posterior part, lateral zone, layers 1-2"
+	"Cortical amygdalar area, posterior part, lateral zone, layers 1-2" [label="COApl1-2: 966"]
+	"Cortical amygdalar area, posterior part" -> "Cortical amygdalar area, posterior part, medial zone"
+	"Cortical amygdalar area, posterior part, medial zone" [label="COApm: 967"]
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layer 1"
+	"Cortical amygdalar area, posterior part, medial zone, layer 1" [label="COApm1: 968"]
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layer 2"
+	"Cortical amygdalar area, posterior part, medial zone, layer 2" [label="COApm2: 969"]
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layer 3"
+	"Cortical amygdalar area, posterior part, medial zone, layer 3" [label="COApm3: 970"]
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layers 1-3"
+	"Cortical amygdalar area, posterior part, medial zone, layers 1-3" [label="COApm1-3: 971"]
+	"Cortical amygdalar area, posterior part, medial zone" -> "Cortical amygdalar area, posterior part, medial zone, layers 1-2"
+	"Cortical amygdalar area, posterior part, medial zone, layers 1-2" [label="COApm1-2: 972"]
+	"Olfactory areas" -> "Piriform-amygdalar area"
+	"Piriform-amygdalar area" [label="PAA: 973"]
+	"Piriform-amygdalar area" -> "Piriform-amygdalar area, layers 1-3"
+	"Piriform-amygdalar area, layers 1-3" [label="PAA1-3: 974"]
+	"Piriform-amygdalar area" -> "Piriform-amygdalar area, molecular layer"
+	"Piriform-amygdalar area, molecular layer" [label="PAA1: 975"]
+	"Piriform-amygdalar area" -> "Piriform-amygdalar area, pyramidal layer"
+	"Piriform-amygdalar area, pyramidal layer" [label="PAA2: 976"]
+	"Piriform-amygdalar area" -> "Piriform-amygdalar area, polymorph layer"
+	"Piriform-amygdalar area, polymorph layer" [label="PAA3: 977"]
+	"Olfactory areas" -> "Dorsal peduncular area"
+	"Dorsal peduncular area" [label="DP: 978"]
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 6a"
+	"Dorsal peduncular area, layer 6a" [label="DP6a: 979"]
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 2/3"
+	"Dorsal peduncular area, layer 2/3" [label="DP2/3: 980"]
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 1"
+	"Dorsal peduncular area, layer 1" [label="DP1: 981"]
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 2"
+	"Dorsal peduncular area, layer 2" [label="DP2: 982"]
+	"Dorsal peduncular area" -> "Dorsal peduncular area, layer 5"
+	"Dorsal peduncular area, layer 5" [label="DP5: 983"]
+	"Olfactory areas" -> "Piriform area"
+	"Piriform area" [label="PIR: 984"]
+	"Piriform area" -> "Piriform area, layers 1-3"
+	"Piriform area, layers 1-3" [label="PIR1-3: 985"]
+	"Piriform area" -> "Piriform area, molecular layer"
+	"Piriform area, molecular layer" [label="PIR1: 986"]
+	"Piriform area" -> "Piriform area, pyramidal layer"
+	"Piriform area, pyramidal layer" [label="PIR2: 987"]
+	"Piriform area" -> "Piriform area, polymorph layer"
+	"Piriform area, polymorph layer" [label="PIR3: 988"]
+	"Cortical plate" -> "Hippocampal formation"
+	"Hippocampal formation" [label="HPF: 989"]
+	"Hippocampal formation" -> "Retrohippocampal region"
+	"Retrohippocampal region" [label="RHP: 990"]
+	"Retrohippocampal region" -> Subiculum
+	Subiculum [label="SUB: 991"]
+	Subiculum -> "Subiculum, dorsal part"
+	"Subiculum, dorsal part" [label="SUBd: 992"]
+	"Subiculum, dorsal part" -> "Subiculum, dorsal part, molecular layer"
+	"Subiculum, dorsal part, molecular layer" [label="SUBd-m: 993"]
+	"Subiculum, dorsal part" -> "Subiculum, dorsal part, stratum radiatum"
+	"Subiculum, dorsal part, stratum radiatum" [label="SUBd-sr: 994"]
+	"Subiculum, dorsal part" -> "Subiculum, dorsal part, pyramidal layer"
+	"Subiculum, dorsal part, pyramidal layer" [label="SUBd-sp: 995"]
+	Subiculum -> "Subiculum, ventral part"
+	"Subiculum, ventral part" [label="SUBv: 996"]
+	"Subiculum, ventral part" -> "Subiculum, ventral part, molecular layer"
+	"Subiculum, ventral part, molecular layer" [label="SUBv-m: 997"]
+	"Subiculum, ventral part" -> "Subiculum, ventral part, stratum radiatum"
+	"Subiculum, ventral part, stratum radiatum" [label="SUBv-sr: 998"]
+	"Subiculum, ventral part" -> "Subiculum, ventral part, pyramidal layer"
+	"Subiculum, ventral part, pyramidal layer" [label="SUBv-sp: 999"]
+	"Retrohippocampal region" -> Parasubiculum
+	Parasubiculum [label="PAR: 1000"]
+	Parasubiculum -> "Parasubiculum, layer 1"
+	"Parasubiculum, layer 1" [label="PAR1: 1001"]
+	Parasubiculum -> "Parasubiculum, layer 2"
+	"Parasubiculum, layer 2" [label="PAR2: 1002"]
+	Parasubiculum -> "Parasubiculum, layer 3"
+	"Parasubiculum, layer 3" [label="PAR3: 1003"]
+	"Retrohippocampal region" -> "Entorhinal area"
+	"Entorhinal area" [label="ENT: 1004"]
+	"Entorhinal area" -> "Entorhinal area, lateral part"
+	"Entorhinal area, lateral part" [label="ENTl: 1005"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 2"
+	"Entorhinal area, lateral part, layer 2" [label="ENTl2: 1006"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 6a"
+	"Entorhinal area, lateral part, layer 6a" [label="ENTl6a: 1007"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 3"
+	"Entorhinal area, lateral part, layer 3" [label="ENTl3: 1008"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 6b"
+	"Entorhinal area, lateral part, layer 6b" [label="ENTl6b: 1009"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 4"
+	"Entorhinal area, lateral part, layer 4" [label="ENTl4: 1010"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 5"
+	"Entorhinal area, lateral part, layer 5" [label="ENTl5: 1011"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 4/5"
+	"Entorhinal area, lateral part, layer 4/5" [label="ENTl4/5: 1012"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 5/6"
+	"Entorhinal area, lateral part, layer 5/6" [label="ENTl5/6: 1013"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 2a"
+	"Entorhinal area, lateral part, layer 2a" [label="ENTl2a: 1014"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 2b"
+	"Entorhinal area, lateral part, layer 2b" [label="ENTl2b: 1015"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 2/3"
+	"Entorhinal area, lateral part, layer 2/3" [label="ENTl2/3: 1016"]
+	"Entorhinal area, lateral part" -> "Entorhinal area, lateral part, layer 1"
+	"Entorhinal area, lateral part, layer 1" [label="ENTl1: 1017"]
+	"Entorhinal area" -> "Entorhinal area, medial part, dorsal zone"
+	"Entorhinal area, medial part, dorsal zone" [label="ENTm: 1018"]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 2a"
+	"Entorhinal area, medial part, dorsal zone, layer 2a" [label="ENTm2a: 1019"]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 2b"
+	"Entorhinal area, medial part, dorsal zone, layer 2b" [label="ENTm2b: 1020"]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 1"
+	"Entorhinal area, medial part, dorsal zone, layer 1" [label="ENTm1: 1021"]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 2"
+	"Entorhinal area, medial part, dorsal zone, layer 2" [label="ENTm2: 1022"]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 5/6"
+	"Entorhinal area, medial part, dorsal zone, layer 5/6" [label="ENTm5/6: 1023"]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 3"
+	"Entorhinal area, medial part, dorsal zone, layer 3" [label="ENTm3: 1024"]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 4"
+	"Entorhinal area, medial part, dorsal zone, layer 4" [label="ENTm4: 1025"]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 5"
+	"Entorhinal area, medial part, dorsal zone, layer 5" [label="ENTm5: 1026"]
+	"Entorhinal area, medial part, dorsal zone" -> "Entorhinal area, medial part, dorsal zone, layer 6"
+	"Entorhinal area, medial part, dorsal zone, layer 6" [label="ENTm6: 1027"]
+	"Entorhinal area" -> "Entorhinal area, medial part, ventral zone"
+	"Entorhinal area, medial part, ventral zone" [label="ENTmv: 1028"]
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 1"
+	"Entorhinal area, medial part, ventral zone, layer 1" [label="ENTmv1: 1029"]
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 2"
+	"Entorhinal area, medial part, ventral zone, layer 2" [label="ENTmv2: 1030"]
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 3"
+	"Entorhinal area, medial part, ventral zone, layer 3" [label="ENTmv3: 1031"]
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 4"
+	"Entorhinal area, medial part, ventral zone, layer 4" [label="ENTmv4: 1032"]
+	"Entorhinal area, medial part, ventral zone" -> "Entorhinal area, medial part, ventral zone, layer 5/6"
+	"Entorhinal area, medial part, ventral zone, layer 5/6" [label="ENTmv5/6: 1033"]
+	"Retrohippocampal region" -> Postsubiculum
+	Postsubiculum [label="POST: 1034"]
+	Postsubiculum -> "Postsubiculum, layer 1"
+	"Postsubiculum, layer 1" [label="POST1: 1035"]
+	Postsubiculum -> "Postsubiculum, layer 2"
+	"Postsubiculum, layer 2" [label="POST2: 1036"]
+	Postsubiculum -> "Postsubiculum, layer 3"
+	"Postsubiculum, layer 3" [label="POST3: 1037"]
+	"Retrohippocampal region" -> Presubiculum
+	Presubiculum [label="PRE: 1038"]
+	Presubiculum -> "Presubiculum, layer 1"
+	"Presubiculum, layer 1" [label="PRE1: 1039"]
+	Presubiculum -> "Presubiculum, layer 2"
+	"Presubiculum, layer 2" [label="PRE2: 1040"]
+	Presubiculum -> "Presubiculum, layer 3"
+	"Presubiculum, layer 3" [label="PRE3: 1041"]
+	"Retrohippocampal region" -> Prosubiculum
+	Prosubiculum [label="ProS: 1042"]
+	Prosubiculum -> "Prosubiculum, dorsal part"
+	"Prosubiculum, dorsal part" [label="ProSd: 1043"]
+	"Prosubiculum, dorsal part" -> "Prosubiculum, dorsal part, molecular layer"
+	"Prosubiculum, dorsal part, molecular layer" [label="ProSd-m: 1044"]
+	"Prosubiculum, dorsal part" -> "Prosubiculum, dorsal part, pyramidal layer"
+	"Prosubiculum, dorsal part, pyramidal layer" [label="ProSd-sp: 1045"]
+	"Prosubiculum, dorsal part" -> "Prosubiculum, dorsal part, stratum radiatum"
+	"Prosubiculum, dorsal part, stratum radiatum" [label="ProSd-sr: 1046"]
+	Prosubiculum -> "Prosubiculum, ventral part"
+	"Prosubiculum, ventral part" [label="ProSv: 1047"]
+	"Prosubiculum, ventral part" -> "Prosubiculum, ventral part, molecular layer"
+	"Prosubiculum, ventral part, molecular layer" [label="ProSv-m: 1048"]
+	"Prosubiculum, ventral part" -> "Prosubiculum, ventral part, pyramidal layer"
+	"Prosubiculum, ventral part, pyramidal layer" [label="ProSv-sp: 1049"]
+	"Prosubiculum, ventral part" -> "Prosubiculum, ventral part, stratum radiatum"
+	"Prosubiculum, ventral part, stratum radiatum" [label="Prosv-sr: 1050"]
+	"Retrohippocampal region" -> "Area prostriata"
+	"Area prostriata" [label="APr: 1051"]
+	"Retrohippocampal region" -> "Hippocampo-amygdalar transition area"
+	"Hippocampo-amygdalar transition area" [label="HATA: 1052"]
+	"Hippocampal formation" -> "Hippocampal region"
+	"Hippocampal region" [label="HIP: 1053"]
+	"Hippocampal region" -> "Induseum griseum"
+	"Induseum griseum" [label="IG: 1054"]
+	"Hippocampal region" -> "Ammon's horn"
+	"Ammon's horn" [label="CA: 1055"]
+	"Ammon's horn" -> "Field CA1"
+	"Field CA1" [label="CA1: 1056"]
+	"Field CA1" -> "Field CA1, stratum lacunosum-moleculare"
+	"Field CA1, stratum lacunosum-moleculare" [label="CA1slm: 1057"]
+	"Field CA1" -> "Field CA1, stratum oriens"
+	"Field CA1, stratum oriens" [label="CA1so: 1058"]
+	"Field CA1" -> "Field CA1, pyramidal layer"
+	"Field CA1, pyramidal layer" [label="CA1sp: 1059"]
+	"Field CA1" -> "Field CA1, stratum radiatum"
+	"Field CA1, stratum radiatum" [label="CA1sr: 1060"]
+	"Ammon's horn" -> "Field CA2"
+	"Field CA2" [label="CA2: 1061"]
+	"Field CA2" -> "Field CA2, stratum lacunosum-moleculare"
+	"Field CA2, stratum lacunosum-moleculare" [label="CA2slm: 1062"]
+	"Field CA2" -> "Field CA2, stratum oriens"
+	"Field CA2, stratum oriens" [label="CA2so: 1063"]
+	"Field CA2" -> "Field CA2, pyramidal layer"
+	"Field CA2, pyramidal layer" [label="CA2sp: 1064"]
+	"Field CA2" -> "Field CA2, stratum radiatum"
+	"Field CA2, stratum radiatum" [label="CA2sr: 1065"]
+	"Ammon's horn" -> "Field CA3"
+	"Field CA3" [label="CA3: 1066"]
+	"Field CA3" -> "Field CA3, stratum lacunosum-moleculare"
+	"Field CA3, stratum lacunosum-moleculare" [label="CA3slm: 1067"]
+	"Field CA3" -> "Field CA3, stratum lucidum"
+	"Field CA3, stratum lucidum" [label="CA3slu: 1068"]
+	"Field CA3" -> "Field CA3, stratum oriens"
+	"Field CA3, stratum oriens" [label="CA3so: 1069"]
+	"Field CA3" -> "Field CA3, pyramidal layer"
+	"Field CA3, pyramidal layer" [label="CA3sp: 1070"]
+	"Field CA3" -> "Field CA3, stratum radiatum"
+	"Field CA3, stratum radiatum" [label="CA3sr: 1071"]
+	"Hippocampal region" -> "Dentate gyrus"
+	"Dentate gyrus" [label="DG: 1072"]
+	"Dentate gyrus" -> "Dentate gyrus, granule cell layer"
+	"Dentate gyrus, granule cell layer" [label="DG-sg: 1073"]
+	"Dentate gyrus" -> "Dentate gyrus crest"
+	"Dentate gyrus crest" [label="DGcr: 1074"]
+	"Dentate gyrus crest" -> "Dentate gyrus crest, molecular layer"
+	"Dentate gyrus crest, molecular layer" [label="DGcr-mo: 1075"]
+	"Dentate gyrus crest" -> "Dentate gyrus crest, polymorph layer"
+	"Dentate gyrus crest, polymorph layer" [label="DGcr-po: 1076"]
+	"Dentate gyrus crest" -> "Dentate gyrus crest, granule cell layer"
+	"Dentate gyrus crest, granule cell layer" [label="DGcr-sg: 1077"]
+	"Dentate gyrus" -> "Dentate gyrus lateral blade"
+	"Dentate gyrus lateral blade" [label="DGlb: 1078"]
+	"Dentate gyrus lateral blade" -> "Dentate gyrus lateral blade, molecular layer"
+	"Dentate gyrus lateral blade, molecular layer" [label="DGlb-mo: 1079"]
+	"Dentate gyrus lateral blade" -> "Dentate gyrus lateral blade, polymorph layer"
+	"Dentate gyrus lateral blade, polymorph layer" [label="DGlb-po: 1080"]
+	"Dentate gyrus lateral blade" -> "Dentate gyrus lateral blade, granule cell layer"
+	"Dentate gyrus lateral blade, granule cell layer" [label="DGlb-sg: 1081"]
+	"Dentate gyrus" -> "Dentate gyrus medial blade"
+	"Dentate gyrus medial blade" [label="DGmb: 1082"]
+	"Dentate gyrus medial blade" -> "Dentate gyrus medial blade, molecular layer"
+	"Dentate gyrus medial blade, molecular layer" [label="DGmb-mo: 1083"]
+	"Dentate gyrus medial blade" -> "Dentate gyrus medial blade, polymorph layer"
+	"Dentate gyrus medial blade, polymorph layer" [label="DGmb-po: 1084"]
+	"Dentate gyrus medial blade" -> "Dentate gyrus medial blade, granule cell layer"
+	"Dentate gyrus medial blade, granule cell layer" [label="DGmb-sg: 1085"]
+	"Dentate gyrus" -> "Dentate gyrus, subgranular zone"
+	"Dentate gyrus, subgranular zone" [label="DG-sgz: 1086"]
+	"Dentate gyrus" -> "Dentate gyrus, molecular layer"
+	"Dentate gyrus, molecular layer" [label="DG-mo: 1087"]
+	"Dentate gyrus" -> "Dentate gyrus, polymorph layer"
+	"Dentate gyrus, polymorph layer" [label="DG-po: 1088"]
+	"Hippocampal region" -> "Fasciola cinerea"
+	"Fasciola cinerea" [label="FC: 1089"]
+	"Cerebral cortex" -> "Cortical subplate"
+	"Cortical subplate" [label="CTXsp: 1090"]
+	"Cortical subplate" -> "Layer 6b, isocortex"
+	"Layer 6b, isocortex" [label="6b: 1091"]
+	"Cortical subplate" -> "Lateral amygdalar nucleus"
+	"Lateral amygdalar nucleus" [label="LA: 1092"]
+	"Cortical subplate" -> "Basolateral amygdalar nucleus"
+	"Basolateral amygdalar nucleus" [label="BLA: 1093"]
+	"Basolateral amygdalar nucleus" -> "Basolateral amygdalar nucleus, anterior part"
+	"Basolateral amygdalar nucleus, anterior part" [label="BLAa: 1094"]
+	"Basolateral amygdalar nucleus" -> "Basolateral amygdalar nucleus, posterior part"
+	"Basolateral amygdalar nucleus, posterior part" [label="BLAp: 1095"]
+	"Basolateral amygdalar nucleus" -> "Basolateral amygdalar nucleus, ventral part"
+	"Basolateral amygdalar nucleus, ventral part" [label="BLAv: 1096"]
+	"Cortical subplate" -> "Basomedial amygdalar nucleus"
+	"Basomedial amygdalar nucleus" [label="BMA: 1097"]
+	"Basomedial amygdalar nucleus" -> "Basomedial amygdalar nucleus, anterior part"
+	"Basomedial amygdalar nucleus, anterior part" [label="BMAa: 1098"]
+	"Basomedial amygdalar nucleus" -> "Basomedial amygdalar nucleus, posterior part"
+	"Basomedial amygdalar nucleus, posterior part" [label="BMAp: 1099"]
+	"Cortical subplate" -> Claustrum
+	Claustrum [label="CLA: 1100"]
+	"Cortical subplate" -> "Posterior amygdalar nucleus"
+	"Posterior amygdalar nucleus" [label="PA: 1101"]
+	"Cortical subplate" -> "Endopiriform nucleus"
+	"Endopiriform nucleus" [label="EP: 1102"]
+	"Endopiriform nucleus" -> "Endopiriform nucleus, dorsal part"
+	"Endopiriform nucleus, dorsal part" [label="EPd: 1103"]
+	"Endopiriform nucleus" -> "Endopiriform nucleus, ventral part"
+	"Endopiriform nucleus, ventral part" [label="EPv: 1104"]
+	root -> "ventricular systems"
+	"ventricular systems" [label="VS: 1105"]
+	"ventricular systems" -> "lateral ventricle"
+	"lateral ventricle" [label="VL: 1106"]
+	"lateral ventricle" -> rhinocele
+	rhinocele [label="RC: 1107"]
+	"lateral ventricle" -> "subependymal zone"
+	"subependymal zone" [label="SEZ: 1108"]
+	"lateral ventricle" -> "choroid plexus"
+	"choroid plexus" [label="chpl: 1109"]
+	"lateral ventricle" -> "choroid fissure"
+	"choroid fissure" [label="chfl: 1110"]
+	"ventricular systems" -> "interventricular foramen"
+	"interventricular foramen" [label="IVF: 1111"]
+	"ventricular systems" -> "third ventricle"
+	"third ventricle" [label="V3: 1112"]
+	"ventricular systems" -> "cerebral aqueduct"
+	"cerebral aqueduct" [label="AQ: 1113"]
+	"ventricular systems" -> "fourth ventricle"
+	"fourth ventricle" [label="V4: 1114"]
+	"fourth ventricle" -> "lateral recess"
+	"lateral recess" [label="V4r: 1115"]
+	"ventricular systems" -> "central canal, spinal cord/medulla"
+	"central canal, spinal cord/medulla" [label="c: 1116"]
+	root -> "fiber tracts"
+	"fiber tracts" [label="fiber tracts: 1117"]
+	"fiber tracts" -> "cerebellum related fiber tracts"
+	"cerebellum related fiber tracts" [label="cbf: 1118"]
+	"cerebellum related fiber tracts" -> "arbor vitae"
+	"arbor vitae" [label="arb: 1119"]
+	"cerebellum related fiber tracts" -> "cerebellar commissure"
+	"cerebellar commissure" [label="cbc: 1120"]
+	"cerebellum related fiber tracts" -> "cerebellar peduncles"
+	"cerebellar peduncles" [label="cbp: 1121"]
+	"cerebellar peduncles" -> "middle cerebellar peduncle"
+	"middle cerebellar peduncle" [label="mcp: 1122"]
+	"cerebellar peduncles" -> "superior cerebelar peduncles"
+	"superior cerebelar peduncles" [label="scp: 1123"]
+	"superior cerebelar peduncles" -> "superior cerebellar peduncle decussation"
+	"superior cerebellar peduncle decussation" [label="dscp: 1124"]
+	"superior cerebellar peduncle decussation" -> "spinocerebellar tract"
+	"spinocerebellar tract" [label="sct: 1125"]
+	"superior cerebelar peduncles" -> "uncinate fascicle"
+	"uncinate fascicle" [label="uf: 1126"]
+	"superior cerebelar peduncles" -> "ventral spinocerebellar tract"
+	"ventral spinocerebellar tract" [label="sctv: 1127"]
+	"cerebellar peduncles" -> "trigeminocerebellar tract"
+	"trigeminocerebellar tract" [label="tct: 1128"]
+	"cerebellar peduncles" -> "inferior cerebellar peduncle"
+	"inferior cerebellar peduncle" [label="icp: 1129"]
+	"inferior cerebellar peduncle" -> "bulbocerebellar tract"
+	"bulbocerebellar tract" [label="bct: 1130"]
+	"bulbocerebellar tract" -> "olivocerebellar tract"
+	"olivocerebellar tract" [label="oct: 1131"]
+	"bulbocerebellar tract" -> "reticulocerebellar tract"
+	"reticulocerebellar tract" [label="rct: 1132"]
+	"inferior cerebellar peduncle" -> "cuneocerebellar tract"
+	"cuneocerebellar tract" [label="cct: 1133"]
+	"inferior cerebellar peduncle" -> "dorsal spinocerebellar tract"
+	"dorsal spinocerebellar tract" [label="sctd: 1134"]
+	"inferior cerebellar peduncle" -> "juxtarestiform body"
+	"juxtarestiform body" [label="jrb: 1135"]
+	"fiber tracts" -> "cranial nerves"
+	"cranial nerves" [label="cm: 1136"]
+	"cranial nerves" -> "abducens nerve"
+	"abducens nerve" [label="VIn: 1137"]
+	"cranial nerves" -> "accessory spinal nerve"
+	"accessory spinal nerve" [label="XIn: 1138"]
+	"cranial nerves" -> "dorsal roots"
+	"dorsal roots" [label="drt: 1139"]
+	"dorsal roots" -> "cervicothalamic tract"
+	"cervicothalamic tract" [label="cett: 1140"]
+	"cervicothalamic tract" -> "dorsal column"
+	"dorsal column" [label="dc: 1141"]
+	"dorsal column" -> "cuneate fascicle"
+	"cuneate fascicle" [label="cuf: 1142"]
+	"dorsal column" -> "gracile fascicle"
+	"gracile fascicle" [label="grf: 1143"]
+	"dorsal column" -> "internal arcuate fibers"
+	"internal arcuate fibers" [label="iaf: 1144"]
+	"cervicothalamic tract" -> "dorsal commissure of the spinal cord"
+	"dorsal commissure of the spinal cord" [label="dcm: 1145"]
+	"cervicothalamic tract" -> "dorsolateral fascicle"
+	"dorsolateral fascicle" [label="dl: 1146"]
+	"cervicothalamic tract" -> "fasciculus proprius"
+	"fasciculus proprius" [label="fpr: 1147"]
+	"cervicothalamic tract" -> "medial lemniscus"
+	"medial lemniscus" [label="ml: 1148"]
+	"cervicothalamic tract" -> "ventral commissure of the spinal cord"
+	"ventral commissure of the spinal cord" [label="vc: 1149"]
+	"cranial nerves" -> "facial nerve"
+	"facial nerve" [label="VIIn: 1150"]
+	"facial nerve" -> "genu of the facial nerve"
+	"genu of the facial nerve" [label="gVIIn: 1151"]
+	"facial nerve" -> "intermediate nerve"
+	"intermediate nerve" [label="iVIIn: 1152"]
+	"cranial nerves" -> "glossopharyngeal nerve"
+	"glossopharyngeal nerve" [label="IXn: 1153"]
+	"cranial nerves" -> "hypoglossal nerve"
+	"hypoglossal nerve" [label="XIIn: 1154"]
+	"cranial nerves" -> "oculomotor nerve"
+	"oculomotor nerve" [label="IIIn: 1155"]
+	"oculomotor nerve" -> "medial longitudinal fascicle"
+	"medial longitudinal fascicle" [label="mlf: 1156"]
+	"oculomotor nerve" -> "posterior commissure"
+	"posterior commissure" [label="pc: 1157"]
+	"cranial nerves" -> "olfactory nerve"
+	"olfactory nerve" [label="In: 1158"]
+	"olfactory nerve" -> "lateral olfactory tract, general"
+	"lateral olfactory tract, general" [label="lotg: 1159"]
+	"lateral olfactory tract, general" -> "accessory olfactory tract"
+	"accessory olfactory tract" [label="aolt: 1160"]
+	"lateral olfactory tract, general" -> "dorsal limb"
+	"dorsal limb" [label="lotd: 1161"]
+	"lateral olfactory tract, general" -> "lateral olfactory tract, body"
+	"lateral olfactory tract, body" [label="lot: 1162"]
+	"olfactory nerve" -> "anterior commissure, olfactory limb"
+	"anterior commissure, olfactory limb" [label="aco: 1163"]
+	"olfactory nerve" -> "olfactory nerve layer of main olfactory bulb"
+	"olfactory nerve layer of main olfactory bulb" [label="onl: 1164"]
+	"cranial nerves" -> "optic nerve"
+	"optic nerve" [label="IIn: 1165"]
+	"optic nerve" -> "optic chiasm"
+	"optic chiasm" [label="och: 1166"]
+	"optic nerve" -> "optic tract"
+	"optic tract" [label="opt: 1167"]
+	"optic nerve" -> "superior colliculus commissure"
+	"superior colliculus commissure" [label="csc: 1168"]
+	"optic nerve" -> "tectothalamic pathway"
+	"tectothalamic pathway" [label="ttp: 1169"]
+	"optic nerve" -> "accessory optic tract"
+	"accessory optic tract" [label="aot: 1170"]
+	"optic nerve" -> "brachium of the superior colliculus"
+	"brachium of the superior colliculus" [label="bsc: 1171"]
+	"cranial nerves" -> "spinothalamic tract"
+	"spinothalamic tract" [label="sst: 1172"]
+	"spinothalamic tract" -> "lateral spinothalamic tract"
+	"lateral spinothalamic tract" [label="sttl: 1173"]
+	"spinothalamic tract" -> "spinocervical tract"
+	"spinocervical tract" [label="scrt: 1174"]
+	"spinothalamic tract" -> "spinohypothalamic pathway"
+	"spinohypothalamic pathway" [label="shp: 1175"]
+	"spinothalamic tract" -> "spino-olivary pathway"
+	"spino-olivary pathway" [label="sop: 1176"]
+	"spinothalamic tract" -> "spinoreticular pathway"
+	"spinoreticular pathway" [label="srp: 1177"]
+	"spinothalamic tract" -> "spinotectal pathway"
+	"spinotectal pathway" [label="stp: 1178"]
+	"spinothalamic tract" -> "spinotelenchephalic pathway"
+	"spinotelenchephalic pathway" [label="step: 1179"]
+	"spinotelenchephalic pathway" -> "hypothalamohypophysial tract"
+	"hypothalamohypophysial tract" [label="hht: 1180"]
+	"spinothalamic tract" -> "spinovestibular pathway"
+	"spinovestibular pathway" [label="svp: 1181"]
+	"spinothalamic tract" -> "ventral spinothalamic tract"
+	"ventral spinothalamic tract" [label="sttv: 1182"]
+	"cranial nerves" -> "terminal nerve"
+	"terminal nerve" [label="tn: 1183"]
+	"cranial nerves" -> "trigeminal nerve"
+	"trigeminal nerve" [label="Vn: 1184"]
+	"trigeminal nerve" -> "motor root of the trigeminal nerve"
+	"motor root of the trigeminal nerve" [label="moV: 1185"]
+	"trigeminal nerve" -> "sensory root of the trigeminal nerve"
+	"sensory root of the trigeminal nerve" [label="sV: 1186"]
+	"sensory root of the trigeminal nerve" -> "midbrain tract of the trigeminal nerve"
+	"midbrain tract of the trigeminal nerve" [label="mtV: 1187"]
+	"sensory root of the trigeminal nerve" -> "spinal tract of the trigeminal nerve"
+	"spinal tract of the trigeminal nerve" [label="sptV: 1188"]
+	"cranial nerves" -> "trochlear nerve"
+	"trochlear nerve" [label="IVn: 1189"]
+	"trochlear nerve" -> "trochlear nerve decussation"
+	"trochlear nerve decussation" [label="IVd: 1190"]
+	"cranial nerves" -> "vagus nerve"
+	"vagus nerve" [label="Xn: 1191"]
+	"vagus nerve" -> "solitary tract"
+	"solitary tract" [label="ts: 1192"]
+	"cranial nerves" -> "ventral roots"
+	"ventral roots" [label="vrt: 1193"]
+	"cranial nerves" -> "vestibulocochlear nerve"
+	"vestibulocochlear nerve" [label="VIIIn: 1194"]
+	"vestibulocochlear nerve" -> "vestibular nerve"
+	"vestibular nerve" [label="vVIIIn: 1195"]
+	"vestibulocochlear nerve" -> "cochlear nerve"
+	"cochlear nerve" [label="cVIIIn: 1196"]
+	"cochlear nerve" -> "brachium of the inferior colliculus"
+	"brachium of the inferior colliculus" [label="bic: 1197"]
+	"cochlear nerve" -> "dorsal acoustic stria"
+	"dorsal acoustic stria" [label="das: 1198"]
+	"cochlear nerve" -> "inferior colliculus commissure"
+	"inferior colliculus commissure" [label="cic: 1199"]
+	"cochlear nerve" -> "intermediate acoustic stria"
+	"intermediate acoustic stria" [label="ias: 1200"]
+	"cochlear nerve" -> "lateral lemniscus"
+	"lateral lemniscus" [label="ll: 1201"]
+	"cochlear nerve" -> "trapezoid body"
+	"trapezoid body" [label="tb: 1202"]
+	"vestibulocochlear nerve" -> "efferent cochleovestibular bundle"
+	"efferent cochleovestibular bundle" [label="cvb: 1203"]
+	"cranial nerves" -> "vomeronasal nerve"
+	"vomeronasal nerve" [label="von: 1204"]
+	"fiber tracts" -> "lateral forebrain bundle system"
+	"lateral forebrain bundle system" [label="lfbs: 1205"]
+	"lateral forebrain bundle system" -> "corpus callosum"
+	"corpus callosum" [label="cc: 1206"]
+	"corpus callosum" -> "corpus callosum, anterior forceps"
+	"corpus callosum, anterior forceps" [label="fa: 1207"]
+	"corpus callosum, anterior forceps" -> "external capsule"
+	"external capsule" [label="ec: 1208"]
+	"corpus callosum" -> "corpus callosum, extreme capsule"
+	"corpus callosum, extreme capsule" [label="ee: 1209"]
+	"corpus callosum" -> "corpus callosum, posterior forceps"
+	"corpus callosum, posterior forceps" [label="fp: 1210"]
+	"corpus callosum" -> "corpus callosum, rostrum"
+	"corpus callosum, rostrum" [label="ccr: 1211"]
+	"corpus callosum" -> "corpus callosum, splenium"
+	"corpus callosum, splenium" [label="ccs: 1212"]
+	"corpus callosum" -> "genu of corpus callosum"
+	"genu of corpus callosum" [label="ccg: 1213"]
+	"corpus callosum" -> "corpus callosum, body"
+	"corpus callosum, body" [label="ccb: 1214"]
+	"lateral forebrain bundle system" -> "corticospinal tract"
+	"corticospinal tract" [label="cst: 1215"]
+	"corticospinal tract" -> "internal capsule"
+	"internal capsule" [label="int: 1216"]
+	"corticospinal tract" -> pyramid
+	pyramid [label="py: 1217"]
+	"corticospinal tract" -> "pyramidal decussation"
+	"pyramidal decussation" [label="pyd: 1218"]
+	"corticospinal tract" -> "cerebal peduncle"
+	"cerebal peduncle" [label="cpd: 1219"]
+	"corticospinal tract" -> "corticobulbar tract"
+	"corticobulbar tract" [label="cbt: 1220"]
+	"corticospinal tract" -> "corticopontine tract"
+	"corticopontine tract" [label="cpt: 1221"]
+	"corticospinal tract" -> "corticorubral tract"
+	"corticorubral tract" [label="crt: 1222"]
+	"corticospinal tract" -> "corticospinal tract, crossed"
+	"corticospinal tract, crossed" [label="cstc: 1223"]
+	"corticospinal tract" -> "corticospinal tract, uncrossed"
+	"corticospinal tract, uncrossed" [label="cstu: 1224"]
+	"corticospinal tract" -> "corticotectal tract"
+	"corticotectal tract" [label="cte: 1225"]
+	"lateral forebrain bundle system" -> "thalamus related"
+	"thalamus related" [label="lfbst: 1226"]
+	"thalamus related" -> "internal medullary lamina of the thalamus"
+	"internal medullary lamina of the thalamus" [label="im: 1227"]
+	"thalamus related" -> "middle thalamic commissure"
+	"middle thalamic commissure" [label="mtc: 1228"]
+	"thalamus related" -> "thalamic peduncles"
+	"thalamic peduncles" [label="tp: 1229"]
+	"thalamus related" -> "external medullary lamina of the thalamus"
+	"external medullary lamina of the thalamus" [label="em: 1230"]
+	"thalamus related" -> "optic radiation"
+	"optic radiation" [label="or: 1231"]
+	"thalamus related" -> "auditory radiation"
+	"auditory radiation" [label="ar: 1232"]
+	"fiber tracts" -> "medial forebrain bundle system"
+	"medial forebrain bundle system" [label="mfbs: 1233"]
+	"medial forebrain bundle system" -> "cerebrum related"
+	"cerebrum related" [label="mfbc: 1234"]
+	"cerebrum related" -> "longitudinal association bundle"
+	"longitudinal association bundle" [label="lab: 1235"]
+	"cerebrum related" -> "stria terminalis"
+	"stria terminalis" [label="st: 1236"]
+	"stria terminalis" -> "commissural branch of stria terminalis"
+	"commissural branch of stria terminalis" [label="stc: 1237"]
+	"cerebrum related" -> "amygdalar capsule"
+	"amygdalar capsule" [label="amc: 1238"]
+	"cerebrum related" -> "ansa peduncularis"
+	"ansa peduncularis" [label="apd: 1239"]
+	"cerebrum related" -> "anterior commissure, temporal limb"
+	"anterior commissure, temporal limb" [label="act: 1240"]
+	"cerebrum related" -> "cingulum bundle"
+	"cingulum bundle" [label="cing: 1241"]
+	"cerebrum related" -> "fornix system"
+	"fornix system" [label="fxs: 1242"]
+	"fornix system" -> alveus
+	alveus [label="alv: 1243"]
+	"fornix system" -> "angular path"
+	"angular path" [label="ab: 1244"]
+	"fornix system" -> "dorsal fornix"
+	"dorsal fornix" [label="df: 1245"]
+	"fornix system" -> fimbria
+	fimbria [label="fi: 1246"]
+	"fornix system" -> "hippocampal commissures"
+	"hippocampal commissures" [label="hc: 1247"]
+	"hippocampal commissures" -> "dorsal hippocampal commissure"
+	"dorsal hippocampal commissure" [label="dhc: 1248"]
+	"hippocampal commissures" -> "ventral hippocampal commissure"
+	"ventral hippocampal commissure" [label="vhc: 1249"]
+	"fornix system" -> "perforant path"
+	"perforant path" [label="per: 1250"]
+	"fornix system" -> "postcommissural fornix"
+	"postcommissural fornix" [label="fxpo: 1251"]
+	"postcommissural fornix" -> "medial corticohypothalamic tract"
+	"medial corticohypothalamic tract" [label="mct: 1252"]
+	"postcommissural fornix" -> "columns of the fornix"
+	"columns of the fornix" [label="fx: 1253"]
+	"fornix system" -> "precommissural fornix, general"
+	"precommissural fornix, general" [label="fxprg: 1254"]
+	"precommissural fornix, general" -> "precommissural fornix diagonal band"
+	"precommissural fornix diagonal band" [label="db: 1255"]
+	"medial forebrain bundle system" -> "hypothalamus related"
+	"hypothalamus related" [label="mfsbshy: 1256"]
+	"hypothalamus related" -> "mammillary related"
+	"mammillary related" [label="mfbsma: 1257"]
+	"mammillary related" -> "mammillary peduncle"
+	"mammillary peduncle" [label="mp: 1258"]
+	"mammillary related" -> "mammillotegmental tract"
+	"mammillotegmental tract" [label="mtg: 1259"]
+	"mammillary related" -> "mammillothalamic tract"
+	"mammillothalamic tract" [label="mtt: 1260"]
+	"mammillary related" -> "principal mammillary tract"
+	"principal mammillary tract" [label="pm: 1261"]
+	"hypothalamus related" -> "medial forebrain bundle"
+	"medial forebrain bundle" [label="mfb: 1262"]
+	"hypothalamus related" -> "midbrain related"
+	"midbrain related" [label="mfbsm: 1263"]
+	"midbrain related" -> "dorsal longitudinal fascicle"
+	"dorsal longitudinal fascicle" [label="dlf: 1264"]
+	"midbrain related" -> "dorsal tegmental tract"
+	"dorsal tegmental tract" [label="dtt: 1265"]
+	"hypothalamus related" -> "periventricular bundle of the hypothalamus"
+	"periventricular bundle of the hypothalamus" [label="pvbh: 1266"]
+	"hypothalamus related" -> "premammillary commissure"
+	"premammillary commissure" [label="pmx: 1267"]
+	"hypothalamus related" -> "preoptic commissure"
+	"preoptic commissure" [label="poc: 1268"]
+	"hypothalamus related" -> "propriohypothalamic pathways"
+	"propriohypothalamic pathways" [label="php: 1269"]
+	"propriohypothalamic pathways" -> "propriohypothalamic pathways, dorsal"
+	"propriohypothalamic pathways, dorsal" [label="phpd: 1270"]
+	"propriohypothalamic pathways" -> "propriohypothalamic pathways, lateral"
+	"propriohypothalamic pathways, lateral" [label="phpl: 1271"]
+	"propriohypothalamic pathways" -> "propriohypothalamic pathways, medial"
+	"propriohypothalamic pathways, medial" [label="phpm: 1272"]
+	"propriohypothalamic pathways" -> "propriohypothalamic pathways, ventral"
+	"propriohypothalamic pathways, ventral" [label="phpv: 1273"]
+	"hypothalamus related" -> "supramammillary decussation"
+	"supramammillary decussation" [label="smd: 1274"]
+	"hypothalamus related" -> "supraoptic commissures"
+	"supraoptic commissures" [label="sup: 1275"]
+	"supraoptic commissures" -> "supraoptic commissures, anterior"
+	"supraoptic commissures, anterior" [label="supa: 1276"]
+	"supraoptic commissures" -> "supraoptic commissures, dorsal"
+	"supraoptic commissures, dorsal" [label="supd: 1277"]
+	"supraoptic commissures" -> "supraoptic commissures, ventral"
+	"supraoptic commissures, ventral" [label="supv: 1278"]
+	"hypothalamus related" -> "ventrolateral hypothalamic tract"
+	"ventrolateral hypothalamic tract" [label="vlt: 1279"]
+	"hypothalamus related" -> "dorsal thalamus related"
+	"dorsal thalamus related" [label="mfbst: 1280"]
+	"dorsal thalamus related" -> "periventricular bundle of the thalamus"
+	"periventricular bundle of the thalamus" [label="pvbt: 1281"]
+	"hypothalamus related" -> "epithalamus related"
+	"epithalamus related" [label="mfbse: 1282"]
+	"epithalamus related" -> "fasciculus retroflexus"
+	"fasciculus retroflexus" [label="fr: 1283"]
+	"epithalamus related" -> "habenular commissure"
+	"habenular commissure" [label="hbc: 1284"]
+	"epithalamus related" -> "pineal stalk"
+	"pineal stalk" [label="PIS: 1285"]
+	"epithalamus related" -> "stria medullaris"
+	"stria medullaris" [label="sm: 1286"]
+	"fiber tracts" -> "extrapyramidal fiber systems"
+	"extrapyramidal fiber systems" [label="eps: 1287"]
+	"extrapyramidal fiber systems" -> "central tegmental bundle"
+	"central tegmental bundle" [label="ctb: 1288"]
+	"extrapyramidal fiber systems" -> "cerebral nuclei related"
+	"cerebral nuclei related" [label="epsc: 1289"]
+	"cerebral nuclei related" -> "nigrostriatal tract"
+	"nigrostriatal tract" [label="nst: 1290"]
+	"cerebral nuclei related" -> "nigrothalamic fibers"
+	"nigrothalamic fibers" [label="ntt: 1291"]
+	"cerebral nuclei related" -> "pallidotegmental fascicle"
+	"pallidotegmental fascicle" [label="ptf: 1292"]
+	"cerebral nuclei related" -> "pallidothalamic pathway"
+	"pallidothalamic pathway" [label="pap: 1293"]
+	"cerebral nuclei related" -> "striatonigral pathway"
+	"striatonigral pathway" [label="snp: 1294"]
+	"cerebral nuclei related" -> "subthalamic fascicle"
+	"subthalamic fascicle" [label="stf: 1295"]
+	"extrapyramidal fiber systems" -> "retriculospinal tract"
+	"retriculospinal tract" [label="rst: 1296"]
+	"retriculospinal tract" -> "retriculospinal tract, lateral part"
+	"retriculospinal tract, lateral part" [label="rstl: 1297"]
+	"retriculospinal tract" -> "retriculospinal tract, medial part"
+	"retriculospinal tract, medial part" [label="rstm: 1298"]
+	"extrapyramidal fiber systems" -> "rubrospinal tract"
+	"rubrospinal tract" [label="rust: 1299"]
+	"rubrospinal tract" -> "rubroreticular tract"
+	"rubroreticular tract" [label="rrt: 1300"]
+	"rubrospinal tract" -> "ventral tegmental decussation"
+	"ventral tegmental decussation" [label="vtd: 1301"]
+	"extrapyramidal fiber systems" -> "tectospinal pathway"
+	"tectospinal pathway" [label="tsp: 1302"]
+	"tectospinal pathway" -> "crossed tectospinal pathway"
+	"crossed tectospinal pathway" [label="tspc: 1303"]
+	"tectospinal pathway" -> "direct tectospinal pathway"
+	"direct tectospinal pathway" [label="tspd: 1304"]
+	"tectospinal pathway" -> "doral tegmental decussation"
+	"doral tegmental decussation" [label="dtd: 1305"]
+	"extrapyramidal fiber systems" -> "vestibulospinal pathway"
+	"vestibulospinal pathway" [label="vsp: 1306"]
+	"fiber tracts" -> "supra-callosal cerebral white matter"
+	"supra-callosal cerebral white matter" [label="scwm: 1307"]
+	root -> grooves
+	grooves [label="grv: 1308"]
+	grooves -> "Interpeduncular fossa"
+	"Interpeduncular fossa" [label="IPF: 1309"]
+	grooves -> "grooves of the cerebral cortex"
+	"grooves of the cerebral cortex" [label="grv of CTX: 1310"]
+	"grooves of the cerebral cortex" -> "endorhinal groove"
+	"endorhinal groove" [label="eg: 1311"]
+	"grooves of the cerebral cortex" -> "hippocampal fissure"
+	"hippocampal fissure" [label="hf: 1312"]
+	"grooves of the cerebral cortex" -> "rhinal fissure"
+	"rhinal fissure" [label="rf: 1313"]
+	"grooves of the cerebral cortex" -> "rhinal incisure"
+	"rhinal incisure" [label="ri: 1314"]
+	grooves -> "grooves of the cerebellar cortex"
+	"grooves of the cerebellar cortex" [label="grv of CBX: 1315"]
+	"grooves of the cerebellar cortex" -> "secondary fissure"
+	"secondary fissure" [label="sec: 1316"]
+	"grooves of the cerebellar cortex" -> "posterolateral fissure"
+	"posterolateral fissure" [label="plf: 1317"]
+	"grooves of the cerebellar cortex" -> "nodular fissure"
+	"nodular fissure" [label="nf: 1318"]
+	"grooves of the cerebellar cortex" -> "simplex fissure"
+	"simplex fissure" [label="sif: 1319"]
+	"grooves of the cerebellar cortex" -> "intercrural fissure"
+	"intercrural fissure" [label="icf: 1320"]
+	"grooves of the cerebellar cortex" -> "ansoparamedian fissure"
+	"ansoparamedian fissure" [label="apf: 1321"]
+	"grooves of the cerebellar cortex" -> "intraparafloccular fissure"
+	"intraparafloccular fissure" [label="ipf: 1322"]
+	"grooves of the cerebellar cortex" -> "paramedian sulcus"
+	"paramedian sulcus" [label="pms: 1323"]
+	"grooves of the cerebellar cortex" -> "parafloccular sulcus"
+	"parafloccular sulcus" [label="pfs: 1324"]
+	"grooves of the cerebellar cortex" -> "precentral fissure"
+	"precentral fissure" [label="pce: 1325"]
+	"grooves of the cerebellar cortex" -> "preculminate fissure"
+	"preculminate fissure" [label="pcf: 1326"]
+	"grooves of the cerebellar cortex" -> "primary fissure"
+	"primary fissure" [label="pri: 1327"]
+	"grooves of the cerebellar cortex" -> "posterior superior fissure"
+	"posterior superior fissure" [label="psf: 1328"]
+	"grooves of the cerebellar cortex" -> "prepyramidal fissure"
+	"prepyramidal fissure" [label="ppf: 1329"]
+	root -> retina
+	retina [label="retina: 1330"]
+}

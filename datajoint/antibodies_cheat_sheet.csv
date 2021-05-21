@@ -1,0 +1,15 @@
+Brief exp description,Animal model,Primary antibody,Primary order info,Primary concentration used,Secondary antibody,Secondary order info,Secondary concentration used,Notes
+anterotrap,B6/C57,chicken antiGFP,Aves,1 : 1500,Donkey antiChicken 647,,1 : 500,dilute powder in 400 ul water
+cFos,B6/C57,Synaptic Systems rabbit anti cFos,SySy,1 : 1000,Donkey antiRabbit 647,,1 : 200,dilute powder in 50 ul water
+DREADDs for mcherry cerebellar expression,B6/C57,rabbit antiRFP,rockland,1 : 1000,Donkey antiRabbit 647,,1 : 450,
+EAAT4,EAAT4,chicken antiGFP,Aves,1 : 500,Donkey antiChicken 647,,1 : 750,dilute powder in 400 ul water
+HSV H129,B6/C57,rabbit antiHSV,DAKO,1 : 350,Donkey antiRabbit 647,,1 : 250,
+Php.eb virus Esteban test with mcherry,B6/C57,rabbit antiRFP,Rockland,1 : 1000,Donkey antiRabbit 647,,1 : 450,
+PRV,B6/C57,chicken antiGFP,Aves,1 : 500,Donkey antiChicken 647,,1 : 300,dilute powder in 400 ul water
+Rabies,B6/C57,antiHA,,1 : 1000,Donkey antiChicken 647,,1 : 500,dilute powder in 400 ul water
+Rabies,B6/C57,chicken antiGFP,Aves,1 : 2000,Donkey antiRabbit 555,,1 : 200,
+thy1 GCAMP,thy1 GCAMP,chicken antiGFP,Aves,1 : 500,Donkey antiChicken 647,,1 : 500,dilute powder in 400 ul water
+Tsc1 + YFP,Tsc1 + YFP,chicken antiGFP,Aves,1 : 500,Donkey antiChicken 647,,1 : 500,dilute powder in 400 ul water
+zebrin,B6/C57,goat antialdolase C,,1 : 1000,Donkey antiGoat 647,,1 : 100,Variable staining - I would suggest finding a different one
+soCoChR-GFP,B6/C57,chicken antiGFP,Aves,1 : 1000,Donkey antiChicken 647,,1 : 750,
+tdTomato for cerebellar expression,B6/C57,rabbit antiRFP,rockland,1 : 1000,Donkey antiRabbit 647,,1 : 450,

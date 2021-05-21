@@ -8,7 +8,7 @@ Created on Wed Oct  2 16:14:37 2019
 
 import os, subprocess as sp, tifffile, numpy as np, sys, matplotlib.pyplot as plt, matplotlib as mpl, pandas as pd
 from collections import Counter
-sys.path.append("/jukebox/wang/zahra/python/lightsheet_py3")
+sys.path.append("/jukebox/wang/zahra/python/BrainPipe")
 from tools.imageprocessing.orientation import fix_orientation
 
 mpl.rcParams["pdf.fonttype"] = 42
