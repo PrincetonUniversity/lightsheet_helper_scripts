@@ -16,13 +16,13 @@ mpl.rcParams["xtick.major.size"] = 6
 mpl.rcParams["ytick.major.size"] = 6
 
 #figure dest 
-dst = "/Users/zahra/Desktop"
+dst = "/home/wanglab/Desktop"
 
 ###############################################################RUN AS IS#######################################################
 #bucket path for data
-src = "/Volumes/wang/zahra/h129_contra_vs_ipsi/data"
-df_pth = "/Volumes/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
-ontology_file = "/Volumes/LightSheetTransfer/atlas/allen_atlas/allen.json"
+src = "/jukebox/wang/zahra/h129_contra_vs_ipsi/data"
+df_pth = "/jukebox/LightSheetTransfer/atlas/ls_id_table_w_voxelcounts.xlsx"
+ontology_file = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 cells_regions_pth = os.path.join(src, "nc_contra_counts_33_brains_pma.csv")
 
@@ -115,6 +115,43 @@ pcounts = np.array([xx/sum(xx) for xx in counts_per_struct.T])*100
 sois = np.array(sois)[np.argsort(vol)]
 pcounts = pcounts.T[np.argsort(vol)].T
 density_l56 = density_l56.T[np.argsort(vol)].T
+
+#%%
+#weighted sum of injection site
+#idea is to make a boxplot/barplot of each region by injection site
+#where the region is weighted by the injection fraction of that
+#cerebellar region across brains
+
+weighted_sum = [density_l56.T[i]*frac_of_inj_pool.T for i in range(len(sois))]
+for i in range(len(sois)):
+    plt.figure(figsize = (5,4))
+    df = pd.DataFrame(weighted_sum[i].T)
+    df.columns = ak_pool
+    g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+    h = sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+                boxprops={"facecolor":"None"})
+    plt.xlabel("%s\n\n cells / mm$^3$ x \nfraction of cerebellar region covered in injection" % sois[i])
+    plt.ylabel("Cerebellar region")
+    h.set_xlim([-0.5, 1000])
+    h.set_xscale("symlog")
+    plt.savefig(os.path.join(dst, "%s weighted_sum_density.pdf" % sois[i]), bbox_inches="tight")
+    plt.close()
+
+#pcounts
+weighted_sum = [pcounts.T[i]*frac_of_inj_pool.T for i in range(len(sois))]
+for i in range(len(sois)):
+    plt.figure(figsize = (5,4))
+    df = pd.DataFrame(weighted_sum[i].T)
+    df.columns = ak_pool
+    g = sns.stripplot(data = df,  color = "dimgrey", orient = "h")
+    h = sns.boxplot(data = df, orient = "h", showfliers=False, showcaps=False, 
+                boxprops={"facecolor":"None"})
+    plt.xlabel("%s\n\n cells / mm$^3$ x \nfraction of cerebellar region covered in injection" % sois[i])
+    plt.ylabel("Cerebellar region")
+    h.set_xlim([-0.5, 100])
+    h.set_xscale("symlog")
+    plt.savefig(os.path.join(dst, "%s weighted_sum_pcount.pdf" % sois[i]), bbox_inches="tight")
+    plt.close()
 #%%
 
 #make injection site heatmap only

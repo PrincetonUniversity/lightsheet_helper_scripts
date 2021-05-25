@@ -222,7 +222,7 @@ fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (5,7), sharex = True, g
 
 #sort inj fractions by primary lob
 sort_pcounts = [pcounts[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
-sort_pcounts = c
+sort_pcounts = list(itertools.chain.from_iterable(sort_pcounts))
 sort_brains = [np.asarray(brains)[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_inj = [frac_of_inj_pool[np.where(primary_pool == idx)[0]] for idx in np.unique(primary_pool)]
 sort_brains = list(itertools.chain.from_iterable(sort_brains))
