@@ -118,143 +118,200 @@ density_l56 = density_l56.T[np.argsort(vol)].T
 #where the region is weighted by the injection fraction of that
 #cerebellar region across brains
 #plot mean and STANDARD ERROR OF MEAN
-from scipy.stats import sem
+# from scipy.stats import sem
 
-#get dcn CONTRALATERAL counts for normalization
-nuclei = ["Dentate nucleus", "Interposed nucleus", "Fastigial nucleus"]
+# #get dcn CONTRALATERAL counts for normalization
+# nuclei = ["Dentate nucleus", "Interposed nucleus", "Fastigial nucleus"]
 
-dcn = []
-for nuc in nuclei:
-    dcn.append([cells_regions.loc[cells_regions.Structure == nuc, brain].values[0] for brain in brains])
-dcn = np.array(dcn).sum(axis = 0)
-#get volumes
-dcnvol = []
-for nuc in nuclei:
-    dcnvol.append(ann_df.loc[ann_df.name == nuc, "voxels_in_structure"].values[0]/2)
-dcnvol = np.array(dcnvol).sum(axis=0)        
+# dcn = []
+# for nuc in nuclei:
+#     dcn.append([cells_regions.loc[cells_regions.Structure == nuc, brain].values[0] for brain in brains])
+# dcn = np.array(dcn).sum(axis = 0)
+# #get volumes
+# dcnvol = []
+# for nuc in nuclei:
+#     dcnvol.append(ann_df.loc[ann_df.name == nuc, "voxels_in_structure"].values[0]/2)
+# dcnvol = np.array(dcnvol).sum(axis=0)        
 
-density_dcn = np.array((dcn/(dcnvol)*(scale_factor**3)))
+# density_dcn = np.array((dcn/(dcnvol)*(scale_factor**3)))
 
-#normalize
-norm = frac_of_inj_pool.T/density_dcn
-frac_of_inj_pool_norm = np.array([xx/np.sum(xx) for xx in norm.T]) #other normalization
+# #normalize
+# norm = frac_of_inj_pool.T/density_dcn
+# frac_of_inj_pool_norm = np.array([xx/np.sum(xx) for xx in norm.T]) #other normalization
 
-weighted_sum = [density_l56.T[i]*norm for i in range(len(sois))]
-for i in range(len(sois)):
-    plt.figure(figsize = (5,4))
-    df = pd.DataFrame(weighted_sum[i].T)
-    df.columns = ak_pool
-    ax = sns.stripplot(data = df,  color = "k", size=3)
-    pax = sns.pointplot(data = df, color = "dimgrey", ci=68, alpha=0.2)
-    # distance across the "X" or "Y" stipplot column to span, in this case 40%
-    # median_width = 0.3
-    # for tick, text in zip(ax.get_xticks(), ax.get_xticklabels()):
-    #     sample_name = text.get_text()  # "X" or "Y"
-    #     # calculate the mean value for all replicates of either X or Y
-    #     mean_val = df[sample_name].values.mean()
-    #     stderr = sem(df[sample_name].values)
-    #     # plot horizontal lines across the column, centered on the tick
-    #     ax.plot([tick-median_width/2, tick+median_width/2], [mean_val, mean_val],
-    #             lw=4, color="dimgrey")
-    plt.ylabel("%s\n\n cells / mm$^3$ x \nfraction of cerebellar region covered in injection" % sois[i])
-    plt.xlabel("Cerebellar region")
-    #ax.set_ylim([-0.5, 1000])
-    #ax.set_yscale("symlog")
-    ax.set_xticklabels(ax.get_xticklabels(), rotation = 45)
-    plt.savefig(os.path.join(dst, "%s weighted_sum_density.pdf" % sois[i]), bbox_inches="tight")
-    plt.close()
+# weighted_sum = [density_l56.T[i]*norm for i in range(len(sois))]
+# for i in range(len(sois)):
+#     plt.figure(figsize = (5,4))
+#     df = pd.DataFrame(weighted_sum[i].T)
+#     df.columns = ak_pool
+#     ax = sns.stripplot(data = df,  color = "k", size=3)
+#     pax = sns.pointplot(data = df, color = "dimgrey", ci=68, alpha=0.2)
+#     # distance across the "X" or "Y" stipplot column to span, in this case 40%
+#     # median_width = 0.3
+#     # for tick, text in zip(ax.get_xticks(), ax.get_xticklabels()):
+#     #     sample_name = text.get_text()  # "X" or "Y"
+#     #     # calculate the mean value for all replicates of either X or Y
+#     #     mean_val = df[sample_name].values.mean()
+#     #     stderr = sem(df[sample_name].values)
+#     #     # plot horizontal lines across the column, centered on the tick
+#     #     ax.plot([tick-median_width/2, tick+median_width/2], [mean_val, mean_val],
+#     #             lw=4, color="dimgrey")
+#     plt.ylabel("%s\n\n cells / mm$^3$ x \nfraction of cerebellar region covered in injection" % sois[i])
+#     plt.xlabel("Cerebellar region")
+#     #ax.set_ylim([-0.5, 1000])
+#     #ax.set_yscale("symlog")
+#     ax.set_xticklabels(ax.get_xticklabels(), rotation = 45)
+#     plt.savefig(os.path.join(dst, "%s weighted_sum_density.pdf" % sois[i]), bbox_inches="tight")
+#     plt.close()
 
-#pcounts
-weighted_sum = [pcounts.T[i]*norm for i in range(len(sois))]
-for i in range(len(sois)):
-    plt.figure(figsize = (5,4))
-    df = pd.DataFrame(weighted_sum[i].T)
-    df.columns = ak_pool
-    ax = sns.stripplot(data = df,  color = "k", size=3)
-    pax = sns.pointplot(data = df, color = "dimgrey", ci=68, alpha=0.2)
-    # distance across the "X" or "Y" stipplot column to span, in this case 40%
-    # median_width = 0.3
-    # for tick, text in zip(ax.get_xticks(), ax.get_xticklabels()):
-    #     sample_name = text.get_text()  # "X" or "Y"
-    #     # calculate the mean value for all replicates of either X or Y
-    #     mean_val = df[sample_name].values.mean()
-    #     # plot horizontal lines across the column, centered on the tick
-    #     ax.plot([tick-median_width/2, tick+median_width/2], [mean_val, mean_val],
-    #             lw=4, color="dimgrey")
-    plt.ylabel("%s\n\n percent cell count x \nfraction of cerebellar region covered in injection" % sois[i])
-    plt.xlabel("Cerebellar region")
-    # if df.values.max()<10:
-    #     ax.set_ylim([-0.5, 10])
-    # elif df.values.max()<5:
-    #     ax.set_ylim([-0.5, 5])
-    # elif df.values.max()<1:
-    #     ax.set_ylim([-0.5, 1])
-    # else:
-    #     ax.set_ylim([-0.5, 50])
-    #ax.set_yscale("symlog")
-    ax.set_xticklabels(ax.get_xticklabels(), rotation = 45)
-    plt.savefig(os.path.join(dst, "%s weighted_sum_pcount.pdf" % sois[i]), bbox_inches="tight")
-    plt.close()
+# #pcounts
+# weighted_sum = [pcounts.T[i]*norm for i in range(len(sois))]
+# for i in range(len(sois)):
+#     plt.figure(figsize = (5,4))
+#     df = pd.DataFrame(weighted_sum[i].T)
+#     df.columns = ak_pool
+#     ax = sns.stripplot(data = df,  color = "k", size=3)
+#     pax = sns.pointplot(data = df, color = "dimgrey", ci=68, alpha=0.2)
+#     # distance across the "X" or "Y" stipplot column to span, in this case 40%
+#     # median_width = 0.3
+#     # for tick, text in zip(ax.get_xticks(), ax.get_xticklabels()):
+#     #     sample_name = text.get_text()  # "X" or "Y"
+#     #     # calculate the mean value for all replicates of either X or Y
+#     #     mean_val = df[sample_name].values.mean()
+#     #     # plot horizontal lines across the column, centered on the tick
+#     #     ax.plot([tick-median_width/2, tick+median_width/2], [mean_val, mean_val],
+#     #             lw=4, color="dimgrey")
+#     plt.ylabel("%s\n\n percent cell count x \nfraction of cerebellar region covered in injection" % sois[i])
+#     plt.xlabel("Cerebellar region")
+#     # if df.values.max()<10:
+#     #     ax.set_ylim([-0.5, 10])
+#     # elif df.values.max()<5:
+#     #     ax.set_ylim([-0.5, 5])
+#     # elif df.values.max()<1:
+#     #     ax.set_ylim([-0.5, 1])
+#     # else:
+#     #     ax.set_ylim([-0.5, 50])
+#     #ax.set_yscale("symlog")
+#     ax.set_xticklabels(ax.get_xticklabels(), rotation = 45)
+#     plt.savefig(os.path.join(dst, "%s weighted_sum_pcount.pdf" % sois[i]), bbox_inches="tight")
+#     plt.close()
     
-#%%
-#hierarchical clustering
-brains = np.array(brains)
-df = pd.DataFrame(pcounts)
-df.index = brains
-df.columns = sois
-#set cmap
-maxpcount = 8
-cmap = copy.copy(plt.cm.Blues)
-cmap.set_over(cmap(1.0))
-cmap.set_under("white")
-vmin = 0
-vmax = maxpcount
+# #%%
+# #hierarchical clustering
+# brains = np.array(brains)
+# df = pd.DataFrame(pcounts)
+# df.index = brains
+# df.columns = sois
+# #set cmap
+# maxpcount = 8
+# cmap = copy.copy(plt.cm.Blues)
+# cmap.set_over(cmap(1.0))
+# cmap.set_under("white")
+# vmin = 0
+# vmax = maxpcount
 
-h = sns.clustermap(df.T, cmap = cmap, row_cluster = False)
-sns.despine(fig=None, ax=None, top=False, right=False, left=False, bottom=False, offset=None, trim=False)
-plt.savefig(os.path.join(dst, "hierarchical_clustering_pcount_nc.pdf"), bbox_inches="tight")
-plt.savefig(os.path.join(dst, "hierarchical_clustering_pcount_nc.svg"), bbox_inches="tight")
-plt.close()
+# h = sns.clustermap(df.T, cmap = cmap, row_cluster = False)
+# sns.despine(fig=None, ax=None, top=False, right=False, left=False, bottom=False, offset=None, trim=False)
+# plt.savefig(os.path.join(dst, "hierarchical_clustering_pcount_nc.pdf"), bbox_inches="tight")
+# plt.savefig(os.path.join(dst, "hierarchical_clustering_pcount_nc.svg"), bbox_inches="tight")
+# plt.close()
 
-#order inj map by clusters
-ind = h.dendrogram_col.reordered_ind
-sort_inj = frac_of_inj_pool[ind]
-sort_brains = brains[ind]
-#make injection site heatmap only
-fig, ax = plt.subplots(figsize = (5,2))
-#inj fractions
-show = np.fliplr(sort_inj).T
-#colormap settings
-cmap = copy.copy(plt.cm.Reds)
-cmap.set_over(cmap(1.0))
-cmap.set_under("white")
-vmin = 0.05
-vmax = 0.8
-#colormap
-pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
-cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.8)#
-cb.set_label("Injection % coverage of region", fontsize="small", labelpad=5)
-cb.ax.tick_params(labelsize="small")
-cb.ax.set_visible(True) #TP
-ax.set_yticks(np.arange(len(ak_pool))+.5)
-ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
-lbls = np.asarray(sort_brains)
-ax.set_xticklabels(lbls, rotation=90)
-ax.tick_params(length=6)
-plt.savefig(os.path.join(dst, "hierarchical_clustering_pcount_nc_inj.svg"), bbox_inches = "tight")
-plt.close()   
+# #order inj map by clusters
+# ind = h.dendrogram_col.reordered_ind
+# sort_inj = frac_of_inj_pool[ind]
+# sort_brains = brains[ind]
+# #make injection site heatmap only
+# fig, ax = plt.subplots(figsize = (5,2))
+# #inj fractions
+# show = np.fliplr(sort_inj).T
+# #colormap settings
+# cmap = copy.copy(plt.cm.Reds)
+# cmap.set_over(cmap(1.0))
+# cmap.set_under("white")
+# vmin = 0.05
+# vmax = 0.8
+# #colormap
+# pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+# cb = plt.colorbar(pc, ax=ax, format="%0.1f", shrink=0.8)#
+# cb.set_label("Injection % coverage of region", fontsize="small", labelpad=5)
+# cb.ax.tick_params(labelsize="small")
+# cb.ax.set_visible(True) #TP
+# ax.set_yticks(np.arange(len(ak_pool))+.5)
+# ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+# lbls = np.asarray(sort_brains)
+# ax.set_xticklabels(lbls, rotation=90)
+# ax.tick_params(length=6)
+# plt.savefig(os.path.join(dst, "hierarchical_clustering_pcount_nc_inj.svg"), bbox_inches = "tight")
+# plt.close()   
+# #%%
+# #group into injection clusters based on drawn rectangles
+# cluster_num = [0, 3, 6, 14, 19, 24, 27, 33]
+# sort_pcount = pcounts[ind]
+# cluster_brains = [sort_brains[cluster_num[i]:cluster_num[i+1]] for i in range(len(cluster_num)-1)]
+# cluster_pcount = np.array([np.mean(sort_pcount[cluster_num[i]:cluster_num[i+1]],axis=0) for i in range(len(cluster_num)-1)]).T
+# cluster_inj = np.array([np.mean(sort_inj[cluster_num[i]:cluster_num[i+1]],axis=0) for i in range(len(cluster_num)-1)]).T
+
+# #make % counts map 
+# ## display
+# fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (1.3,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+#                          "height_ratios": [1.5,5]})
+# #inj fractions
+# ax = axes[0]
+# show = np.fliplr(cluster_inj)
+# cmap = copy.copy(plt.cm.Reds)
+# cmap.set_over(cmap(1.0))
+# cmap.set_under("white")
+# vmin = 0.05
+# vmax = 0.5
+# #colormap
+# pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+# cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
+# cb.set_label("Injection % coverage\n of region", fontsize="small", labelpad=5)
+# cb.ax.tick_params(labelsize="small")
+# cb.ax.set_visible(True) #TP
+# ax.set_yticks(np.arange(len(ak_pool))+.5)
+# ax.set_yticklabels(np.flipud(ak_pool), fontsize="x-small")
+# ax.tick_params(length=6)
+
+# ax = axes[1]
+# show = cluster_pcount
+# # SET COLORMAP
+# vmin = 0
+# vmax = 8
+# cmap = copy.copy(plt.cm.Blues)
+# cmap.set_over(cmap(1.0))
+# #colormap
+# pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+# cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.4)
+# cb.set_label("% of neocortical neurons", fontsize="small", labelpad=5)
+# cb.ax.tick_params(labelsize="small")
+# cb.ax.set_visible(True)
+# # aesthetics
+# # yticks
+# ax.set_yticks(np.arange(len(sois))+.5)
+# ax.set_yticklabels(sois, fontsize="x-small")
+# ax.set_xticks(np.arange(0, len(cluster_num)-1)+.5)
+# ax.set_xticklabels(np.arange(0, len(cluster_num)-1)+1)
+# plt.savefig(os.path.join(dst, "hclustering_mean_hsv_pcounts_nc.svg"), bbox_inches = "tight")
+# plt.close()
+
 #%%
-#group into injection clusters based on drawn rectangles
-cluster_num = [0, 3, 6, 14, 19, 24, 27, 33]
-sort_pcount = pcounts[ind]
-cluster_brains = [sort_brains[cluster_num[i]:cluster_num[i+1]] for i in range(len(cluster_num)-1)]
-cluster_pcount = np.array([np.mean(sort_pcount[cluster_num[i]:cluster_num[i+1]],axis=0) for i in range(len(cluster_num)-1)]).T
-cluster_inj = np.array([np.mean(sort_inj[cluster_num[i]:cluster_num[i+1]],axis=0) for i in range(len(cluster_num)-1)]).T
+#clustering based on sam's MDS
+cluster_num=[0]*6
+cluster_num[0] = [21,28,20]
+cluster_num[1] = [0,3,5,6,16,17,19,3,26]
+cluster_num[2] = [15,24,9,32,27,29,8]
+cluster_num[3] = [14,25,1]
+cluster_num[4] = [11,23,31,20,4,2,18]
+cluster_num[5] = [7,12,13,10]
+cluster_brains = [brains[cluster_num[i]] for i in range(len(cluster_num))]
+cluster_pcount = np.array([np.mean(pcounts[cluster_num[i]],axis=0) for i in range(len(cluster_num))]).T
+cluster_inj = np.array([np.mean(frac_of_inj_pool[cluster_num[i]],axis=0) for i in range(len(cluster_num))]).T
 
 #make % counts map 
 ## display
 fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (1.3,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
-                         "height_ratios": [1.5,5]})
+                         "height_ratios": [2,5]})
 #inj fractions
 ax = axes[0]
 show = np.fliplr(cluster_inj)
@@ -262,7 +319,7 @@ cmap = copy.copy(plt.cm.Reds)
 cmap.set_over(cmap(1.0))
 cmap.set_under("white")
 vmin = 0.05
-vmax = 0.5
+vmax = 0.35
 #colormap
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%0.1f", shrink=0.8)#
@@ -277,26 +334,118 @@ ax = axes[1]
 show = cluster_pcount
 # SET COLORMAP
 vmin = 0
-vmax = 8
+vmax = 10
 cmap = copy.copy(plt.cm.Blues)
 cmap.set_over(cmap(1.0))
 #colormap
 pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
 cb = plt.colorbar(pc, ax=ax, cmap=cmap, format="%d", shrink=0.4)
-cb.set_label("% of neocortical neurons", fontsize="small", labelpad=5)
+cb.set_label("mean % of\nneocortical neurons", fontsize="small", labelpad=5)
 cb.ax.tick_params(labelsize="small")
 cb.ax.set_visible(True)
 # aesthetics
 # yticks
 ax.set_yticks(np.arange(len(sois))+.5)
 ax.set_yticklabels(sois, fontsize="x-small")
-ax.set_xticks(np.arange(0, len(cluster_num)-1)+.5)
-ax.set_xticklabels(np.arange(0, len(cluster_num)-1)+1)
-plt.savefig(os.path.join(dst, "hclustering_mean_hsv_pcounts_nc.svg"), bbox_inches = "tight")
-plt.close()
-    
+ax.set_xticks(np.arange(0, len(cluster_num))+.5)
+ax.set_xticklabels(["A", "B", "C", "D", "E", "outliers"], rotation=90)
+plt.savefig(os.path.join(dst, "mds_mean_hsv_pcounts_nc.svg"), bbox_inches = "tight")
+plt.close()    
 #%%
-
+#ordered group heatmap
+#cluster inds
+cinds = list(itertools.chain.from_iterable(cluster_num))
+#get pcounts per cluster
+sort_pcounts = [pcounts[cluster_num[i]] for i in range(len(cluster_num))]
+#get primary inj site per cluster
+sort_pinj = [primary_pool[cluster_num[i]] for i in range(len(cluster_num))]
+#sort primary inj site per cluster
+sort_pcounts_ = [sort_pcounts[i][np.argsort(sort_pinj[i])] for i in range(len(sort_pcounts))]
+#sort inj per cluster, and then by primary inj site per cluster
+sort_inj = [frac_of_inj_pool[cluster_num[i]] for i in range(len(cluster_num))]
+sort_inj_ = [sort_inj[i][np.argsort(sort_pinj[i])] for i in range(len(sort_inj))]
+#load ml distances
+from scipy.io import loadmat
+mldist = loadmat("/jukebox/wang/zahra/tracing_projects/mapping_paper/count_data_final/hsv_nc_mldist.mat")["inj"]
+#flatten arr
+mldist = np.array([xx[0] for xx in mldist])
+#sort the same way by primary injection site
+sort_ml = [mldist[cluster_num[i]] for i in range(len(cluster_num))]
+sort_ml_ = [sort_ml[i][np.argsort(sort_pinj[i])] for i in range(len(sort_ml))]
+#do for brains too..
+sort_br = [brains[cluster_num[i]] for i in range(len(cluster_num))]
+sort_br_ = [sort_br[i][np.argsort(sort_pinj[i])] for i in range(len(sort_br))]
+#flatten for maps
+sort_pcounts__ = np.array(list(itertools.chain.from_iterable(sort_pcounts_)))
+sort_inj__ = np.array(list(itertools.chain.from_iterable(sort_inj_)))
+sort_ml__ = np.array(list(itertools.chain.from_iterable(sort_ml_)))
+sort_br__ = np.array(list(itertools.chain.from_iterable(sort_br_)))
+## display
+fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (6,9), 
+                         sharex = False, gridspec_kw = {"wspace":0,"hspace":0,
+                         "height_ratios": [1.5,0.6,8]})
+#inj fractions
+ax = axes[0]
+show = np.fliplr(sort_inj__).T
+#SET COLORMAP HERE
+cmap = copy.copy(plt.cm.Reds)
+cmap.set_over(cmap(1.0))
+cmap.set_under("white")
+vmin = 0.05
+vmax = 0.8
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)
+cb = plt.colorbar(pc, shrink=0.5, orientation="horizontal")#
+cb.set_label("Injection % coverage\n of region", fontsize="small")
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True) #TP
+ax.set_yticks(np.arange(len(ak_pool))+.5)
+ax.set_yticklabels(np.flipud(ak_pool), fontsize="small")
+ax.set_xticks([])
+ax.tick_params(length=6)
+#ml distances
+ax = axes[1]
+ax.scatter(np.arange(len(sort_ml__)),sort_ml__,marker="|", LineWidth=2, color="k"); 
+ax.set_xlim([0,32])
+ax.axis("off")
+ax.set_yticks([70])
+ax.set_yticklabels(["Ml-distance"],fontsize="small")
+# show = np.absolute(pad) #absolute value bc the side of laterality doesn't matter
+# #colormap settings
+# cmap = copy.copy(plt.cm.Greens)
+# #colormap
+# pc = ax.pcolor(show, cmap=cmap)
+# cb = plt.colorbar(pc, shrink=0.5)
+# cb.set_label("Medio-lateral distance (px)", fontsize="small")
+# cb.ax.tick_params(labelsize="small")
+# cb.ax.set_visible(True) #TP
+# ax.set_xticks([])
+# ax.set_yticks([1])
+# ax.set_yticklabels(["Ml-distance"],fontsize="small")
+# ax.tick_params(length=6)
+#pcounts
+ax = axes[2]
+show = np.flipud(np.fliplr(sort_pcounts__).T)
+# SET COLORMAP
+vmin = 0
+vmax = 30
+cmap = copy.copy(plt.cm.Blues)
+cmap.set_over(cmap(1.0))
+#colormap
+pc = ax.pcolor(show, cmap=cmap, vmin=vmin, vmax=vmax)#, norm=norm)
+cb = plt.colorbar(pc, shrink=0.4, orientation="horizontal")
+cb.set_label("% of neocortical neurons", fontsize="small")
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True)
+# aesthetics
+# yticks
+ax.set_yticks(np.arange(len(sois))+.5)
+ax.set_yticklabels(sois, fontsize="small")
+ax.set_xticks([])
+ax.set_xticklabels([])
+ax.tick_params(length=6)
+plt.savefig(os.path.join(dst, "mds_sorted_hsv_pcounts_nc.svg"), bbox_inches="tight")
+#%%
 #make injection site heatmap only
 fig, ax = plt.subplots(figsize = (5,2))
 
