@@ -297,20 +297,19 @@ density_l56 = density_l56.T[np.argsort(vol)].T
 
 #%%
 #clustering based on sam's MDS
-cluster_num=[0]*6
+cluster_num=[0]*4
 cluster_num[0] = [21,28,20]
 cluster_num[1] = [0,3,5,6,16,17,19,3,26]
-cluster_num[2] = [15,24,9,32,27,29,8]
-cluster_num[3] = [14,25,1]
-cluster_num[4] = [11,23,31,20,4,2,18]
-cluster_num[5] = [7,12,13,10]
-cluster_brains = [brains[cluster_num[i]] for i in range(len(cluster_num))]
+cluster_num[2] = [15,24,9,32,27,29,8,14,25,1,11,
+                  23,31,20,4,2,18]
+cluster_num[3] = [7,12,13,10]
+cluster_brains = [np.array(brains)[cluster_num[i]] for i in range(len(cluster_num))]
 cluster_pcount = np.array([np.mean(pcounts[cluster_num[i]],axis=0) for i in range(len(cluster_num))]).T
 cluster_inj = np.array([np.mean(frac_of_inj_pool[cluster_num[i]],axis=0) for i in range(len(cluster_num))]).T
 
 #make % counts map 
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (1.3,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
+fig, axes = plt.subplots(ncols = 1, nrows = 2, figsize = (0.8,4), sharex = True, gridspec_kw = {"wspace":0, "hspace":0,
                          "height_ratios": [2,5]})
 #inj fractions
 ax = axes[0]
@@ -348,7 +347,7 @@ cb.ax.set_visible(True)
 ax.set_yticks(np.arange(len(sois))+.5)
 ax.set_yticklabels(sois, fontsize="x-small")
 ax.set_xticks(np.arange(0, len(cluster_num))+.5)
-ax.set_xticklabels(["A", "B", "C", "D", "E", "outliers"], rotation=90)
+ax.set_xticklabels(["A", "B", "C", "outliers"], rotation=90)
 plt.savefig(os.path.join(dst, "mds_mean_hsv_pcounts_nc.svg"), bbox_inches = "tight")
 plt.close()    
 #%%
@@ -373,7 +372,7 @@ mldist = np.array([xx[0] for xx in mldist])
 sort_ml = [mldist[cluster_num[i]] for i in range(len(cluster_num))]
 sort_ml_ = [sort_ml[i][np.argsort(sort_pinj[i])] for i in range(len(sort_ml))]
 #do for brains too..
-sort_br = [brains[cluster_num[i]] for i in range(len(cluster_num))]
+sort_br = [np.array(brains)[cluster_num[i]] for i in range(len(cluster_num))]
 sort_br_ = [sort_br[i][np.argsort(sort_pinj[i])] for i in range(len(sort_br))]
 #flatten for maps
 sort_pcounts__ = np.array(list(itertools.chain.from_iterable(sort_pcounts_)))
@@ -381,9 +380,9 @@ sort_inj__ = np.array(list(itertools.chain.from_iterable(sort_inj_)))
 sort_ml__ = np.array(list(itertools.chain.from_iterable(sort_ml_)))
 sort_br__ = np.array(list(itertools.chain.from_iterable(sort_br_)))
 ## display
-fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (6,9), 
+fig, axes = plt.subplots(ncols = 1, nrows = 3, figsize = (6,12), 
                          sharex = False, gridspec_kw = {"wspace":0,"hspace":0,
-                         "height_ratios": [1.5,0.6,8]})
+                         "height_ratios": [1,0.15,8]})
 #inj fractions
 ax = axes[0]
 show = np.fliplr(sort_inj__).T
@@ -405,24 +404,27 @@ ax.set_xticks([])
 ax.tick_params(length=6)
 #ml distances
 ax = axes[1]
-ax.scatter(np.arange(len(sort_ml__)),sort_ml__,marker="|", LineWidth=2, color="k"); 
-ax.set_xlim([0,32])
-ax.axis("off")
-ax.set_yticks([70])
-ax.set_yticklabels(["Ml-distance"],fontsize="small")
-# show = np.absolute(pad) #absolute value bc the side of laterality doesn't matter
-# #colormap settings
-# cmap = copy.copy(plt.cm.Greens)
-# #colormap
-# pc = ax.pcolor(show, cmap=cmap)
-# cb = plt.colorbar(pc, shrink=0.5)
-# cb.set_label("Medio-lateral distance (px)", fontsize="small")
-# cb.ax.tick_params(labelsize="small")
-# cb.ax.set_visible(True) #TP
-# ax.set_xticks([])
-# ax.set_yticks([1])
+# ax.scatter(np.arange(len(sort_ml__)),sort_ml__,marker="|", LineWidth=2, color="k"); 
+# ax.set_xlim([0,32])
+# ax.axis("off")
+# ax.set_yticks([70])
 # ax.set_yticklabels(["Ml-distance"],fontsize="small")
-# ax.tick_params(length=6)
+pad = np.zeros((2,len(sort_ml__)))
+pad[0] = sort_ml__
+pad[1] = sort_ml__
+show = np.absolute(pad) #absolute value bc the side of laterality doesn't matter
+#colormap settings
+cmap = copy.copy(plt.cm.Greens)
+#colormap
+pc = ax.pcolor(show, cmap=cmap)
+cb = plt.colorbar(pc, shrink=0.5, orientation="horizontal")
+cb.set_label("Medio-lateral distance (px)", fontsize="small")
+cb.ax.tick_params(labelsize="small")
+cb.ax.set_visible(True) #TP
+ax.set_xticks([])
+ax.set_yticks([1])
+ax.set_yticklabels(["Ml-distance"],fontsize="small")
+ax.tick_params(length=6)
 #pcounts
 ax = axes[2]
 show = np.flipud(np.fliplr(sort_pcounts__).T)
