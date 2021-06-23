@@ -194,8 +194,15 @@ points_file = point_transformix(pretransform_text_file, transformfiles[-1], tran
 #convert registered points into structure counts
 converted_points = unpack_pnts(points_file, transformed_dst)
 #%%
+atl_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
+atl = tif.imread(atl_pth)
+z,y,x = atl.shape
 #check
+if isinstance(converted_points, str):
+    converted_points = np.load(converted_points)
 arr=converted_points.astype(int)
+cell=np.zeros((z,y,x)) #init cellmap
+miss = 0
 for pnt in arr:
     z,y,x=pnt
     try:
