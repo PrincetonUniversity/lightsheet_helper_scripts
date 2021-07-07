@@ -8,7 +8,7 @@ Created on Tue Jun  8 16:57:14 2021
 
 from scipy.io import loadmat
 import tifffile as tif, numpy as np, os, matplotlib.pyplot as plt, sys
-import shutil 
+import shutil, itertools 
 
 def transformix_command_line_call(src, dst, transformfile):
     '''Wrapper Function to call transformix using the commandline, this can be time consuming
@@ -161,53 +161,91 @@ def unpack_pnts(points_file, dst):
         
     return dst_fl
 
-#path to mat file
-mat = "/jukebox/LightSheetData/wang-mouse/seagravesk/20200901_15_27_24_f37077_demonstrator_20171011/Ex_785_Em_3/corrected/sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat"
-pnts = loadmat(mat)["cell_centers_orig_coord"].astype(int)
-#for resize dimensions
-downsized = "/jukebox/LightSheetData/wang-mouse/seagravesk/20200901_15_27_24_f37077_demonstrator_20171011/Ex_785_Em_3/reg_downsized_for_atlas.tif"
-downsized = tif.imread(downsized) #sagittal
-zd,yd,xd = downsized.shape #sagittal
-#reorient pnts
-pnts_sag = np.array([[xx[2],xx[1],xx[0]] for xx in pnts])
-#get full size dims
-stitched = "/jukebox/LightSheetData/wang-mouse/seagravesk/20200901_15_27_24_f37077_demonstrator_20171011/Ex_785_Em_3/stitched/RES(7565x5726x2961)/098550/098550_104079"
-y,z = tif.imread(os.path.join(stitched, os.listdir(stitched)[0])).shape #sagittal
-x = len([xx for xx in os.listdir(stitched) if ".tif" in xx]) #sagittal
-f = ((zd/z),(yd/y),(xd/x))
-downsized_pnts_sag = np.array([[xx[0]*f[0],xx[1]*f[1],xx[2]*f[2]] for xx in pnts_sag]).astype(int)
+def fast_scandir(dirname):
+    """ gets all folders recursively """
+    subfolders= [f.path for f in os.scandir(dirname) if f.is_dir()]
+    for dirname in list(subfolders):
+        subfolders.extend(fast_scandir(dirname))
+    return subfolders
 
-#transform
-#make into transformix-friendly text file
-transformed_dst = "/jukebox/LightSheetData/wang-mouse/seagravesk/20200901_15_27_24_f37077_demonstrator_20171011/Ex_785_Em_3/points"
-if not os.path.exists(transformed_dst): os.mkdir(transformed_dst)
-pretransform_text_file = create_text_file_for_elastix(downsized_pnts_sag, transformed_dst)
-transformfiles = ["/jukebox/LightSheetData/wang-mouse/seagravesk/20200901_15_27_24_f37077_demonstrator_20171011/elastix_inverse_transform/TransformParameters.0.txt",                  
-                  "/jukebox/LightSheetData/wang-mouse/seagravesk/20200901_15_27_24_f37077_demonstrator_20171011/elastix_inverse_transform/TransformParameters.1.txt",                  
-                  "/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration/f37077_demons/elastix_inverse_transform/cellch_f37077_demonstrator_20171011_790_015na_1hfsds_z5um_1000msec/f37077_demonstrator_20171011_488_015na_1hfsds_z5um_150msec_resized_ch00_resampledforelastix_atlas2reg/TransformParameters.0.txt",
-                  "/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration/f37077_demons/elastix_inverse_transform/cellch_f37077_demonstrator_20171011_790_015na_1hfsds_z5um_1000msec/f37077_demonstrator_20171011_488_015na_1hfsds_z5um_150msec_resized_ch00_resampledforelastix_atlas2reg/TransformParameters.1.txt"]
-#copy over elastix files
-transformfiles = modify_transform_files(transformfiles, transformed_dst) 
-change_transform_parameter_initial_transform(transformfiles[0], 'NoInitialTransform')
-#run transformix on points
-points_file = point_transformix(pretransform_text_file, transformfiles[-1], transformed_dst)
-#convert registered points into structure counts
-converted_points = unpack_pnts(points_file, transformed_dst)
-#%%
-atl_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
-atl = tif.imread(atl_pth)
-z,y,x = atl.shape
-#check
-if isinstance(converted_points, str):
-    converted_points = np.load(converted_points)
-arr=converted_points.astype(int)
-cell=np.zeros((z,y,x)) #init cellmap
-miss = 0
-for pnt in arr:
-    z,y,x=pnt
-    try:
-        cell[z,y,x] = 1
-    except:
-        miss+=1
+if __name__ == "__main__":
+    
+    #pipeline to loop thru all brains with detected cells
+    src = "/jukebox/LightSheetData/wang-mouse/seagravesk"
+    #list of animals
+    animals = ["20200810_13_10_58_f37080_mouse2_20171015_slow_focus", "20200901_14_20_11_f37073_mouse1_20171010", "20200901_15_27_24_f37077_demonstrator_20171011",
+               "20200901_16_34_36_m37112_observer_20171010", "20200901_17_43_19_f37106_mouse2_20171011", "20200902_13_04_58_m37083_demonstrator_20171018",
+               "20200902_14_13_54_f37078_observer_20171014","20200902_16_50_10_f37073_mouse2_20171010", "20200902_17_53_21_m37111_demonstrator_20171012",
+               "20200903_11_51_58_m37111_observer_20171012", "20200903_12_51_14_m37110_demonstrator_20171016", "20200903_14_01_08_m37072_demonstrator_20171008",
+               "20200909_13_16_53_m37109_mouse2_20171018", "20200909_14_54_45_f37104_observer_20171016", "20200909_15_59_15_f37105_observer_20171012",
+               "20200909_17_01_50_m37112_demonstrator_20171010","20200911_14_01_24_m37079_mouse2_20171014","20200911_14_57_36_m37081_observer_20171014",
+               "20200911_16_45_49_m37081_demonstrator_20171014","20200911_17_46_51_f37105_demonstrator_20171012","20200916_14_37_19_f37107_demonstrator_20171007",
+               "20200916_16_42_48_m37109_mouse1_20171018","20200916_18_21_42_f37078_demonstrator_20171014","20200916_19_25_35_f37080_mouse1_20171015",
+               "20200917_12_27_13_m37072_observer_20171008","20200917_13_24_45_m37071_demonstrator_20171006","20200917_14_22_17_f37104_demonstrator_20171016",
+               "20200921_12_14_34_m37110_observer_20171016","20200921_13_13_19_f37070_demonstrator_20171007","20200921_14_31_11_m37071_observer_20171006",
+               "20200921_15_37_17_f37107_observer_20171007","20200921_16_45_26_m37113_mouse1_20171007","20200923_10_56_13_f37070_observer_20171007",
+               "20200923_12_05_45_f37077_observer_20171011","20200923_13_21_40_m37083_observer_20171018","20200923_14_37_00_m37079_mouse1_20171014",
+               "20200924_13_33_09_m37113_mouse2_20171007","20200924_14_33_12_f37106_mouse1_20171011","20201102_16_29_12_m37110_demonstrator_20171016"]
+    missing = []
+    for animal in animals:
+        try:
+            name = animal[18:]
+            #path to mat file
+            mat = os.path.join(src, animal, "Ex_785_Em_3/corrected/sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
+            pnts = loadmat(mat)["cell_centers_orig_coord"].astype(int)
+            #for resize dimensions
+            downsized = os.path.join(src, animal, "Ex_785_Em_3/reg_downsized_for_atlas.tif")
+            downsized = tif.imread(downsized) #sagittal
+            zd,yd,xd = downsized.shape #sagittal
+            #reorient pnts
+            pnts_sag = np.array([[xx[2],xx[1],xx[0]] for xx in pnts])
+            #get full size dims
+            stitched = os.path.join(src, animal, "Ex_785_Em_3/stitched")
+            stiched = fast_scandir(stitched)[-1] #gets to the end of directory tree
+            y,z = tif.imread(os.path.join(stitched, os.listdir(stitched)[0])).shape #sagittal
+            x = len([xx for xx in os.listdir(stitched) if ".tif" in xx]) #sagittal
+            f = ((zd/z),(yd/y),(xd/x))
+            downsized_pnts_sag = np.array([[xx[0]*f[0],xx[1]*f[1],xx[2]*f[2]] for xx in pnts_sag]).astype(int)
+            
+            #transform
+            #make into transformix-friendly text file
+            transformed_dst = os.path.join(src, animal, "Ex_785_Em_3/{}_points".format(name))
+            if not os.path.exists(transformed_dst): os.mkdir(transformed_dst)
+            pretransform_text_file = create_text_file_for_elastix(downsized_pnts_sag, transformed_dst)
+            #get old atlas transform fils
+            oldr = "/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration"
+            oldinvertransform = os.path.join(oldr, "{}/elastix_inverse_transform".format(name[:13]))
+            cellchtransform = [os.path.join(oldinvertransform,xx) for xx in os.listdir(oldinvertransform) if "cellch" in xx][0]
+            atlas2reg = [os.path.join(cellchtransform, xx) for xx in os.listdir(oldinvertransform) if "atlas2reg" in xx][0]
+            transformfiles = [os.path.join(src, animal, "elastix_inverse_transform/TransformParameters.0.txt"),                  
+                              os.path.join(src, animal, "elastix_inverse_transform/TransformParameters.1.txt"),
+                              [os.path.join(atlas2reg,xx) for xx in os.listdir(atlas2reg)]]
+            transformfiles  = list(itertools.chain.from_iterable(transformfiles))                         
+            #copy over elastix files
+            transformfiles = modify_transform_files(transformfiles, transformed_dst) 
+            change_transform_parameter_initial_transform(transformfiles[0], 'NoInitialTransform')
+            #run transformix on points
+            points_file = point_transformix(pretransform_text_file, transformfiles[-1], transformed_dst)
+            #convert registered points into structure counts
+            converted_points = unpack_pnts(points_file, transformed_dst)
+        except:
+            missing(animal)
+# #%%
+# #check
+# atl_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
+# atl = tif.imread(atl_pth)
+# z,y,x = atl.shape
+# #check
+# if isinstance(converted_points, str):
+#     converted_points = np.load(converted_points)
+# arr=converted_points.astype(int)
+# cell=np.zeros((z,y,x)) #init cellmap
+# miss = 0
+# for pnt in arr:
+#     z,y,x=pnt
+#     try:
+#         cell[z,y,x] = 1
+#     except:
+#         miss+=1
 
-plt.imshow(cell[300])
+# plt.imshow(cell[300])
