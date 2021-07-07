@@ -188,8 +188,9 @@ if __name__ == "__main__":
                "20200924_13_33_09_m37113_mouse2_20171007","20200924_14_33_12_f37106_mouse1_20171011","20201102_16_29_12_m37110_demonstrator_20171016"]
     missing = []
     for animal in animals:
-        try:
+        # try:
             name = animal[18:]
+            print("\n\n **********{}********* \n\n".format(name))
             #path to mat file
             mat = os.path.join(src, animal, "Ex_785_Em_3/corrected/sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
             pnts = loadmat(mat)["cell_centers_orig_coord"].astype(int)
@@ -201,7 +202,7 @@ if __name__ == "__main__":
             pnts_sag = np.array([[xx[2],xx[1],xx[0]] for xx in pnts])
             #get full size dims
             stitched = os.path.join(src, animal, "Ex_785_Em_3/stitched")
-            stiched = fast_scandir(stitched)[-1] #gets to the end of directory tree
+            stitched = fast_scandir(stitched)[-1] #gets to the end of directory tree
             y,z = tif.imread(os.path.join(stitched, os.listdir(stitched)[0])).shape #sagittal
             x = len([xx for xx in os.listdir(stitched) if ".tif" in xx]) #sagittal
             f = ((zd/z),(yd/y),(xd/x))
@@ -216,11 +217,11 @@ if __name__ == "__main__":
             oldr = "/jukebox/wang/seagravesk/lightsheet/201710_cfos_left_side_only_registration"
             oldinvertransform = os.path.join(oldr, "{}/elastix_inverse_transform".format(name[:13]))
             cellchtransform = [os.path.join(oldinvertransform,xx) for xx in os.listdir(oldinvertransform) if "cellch" in xx][0]
-            atlas2reg = [os.path.join(cellchtransform, xx) for xx in os.listdir(oldinvertransform) if "atlas2reg" in xx][0]
+            atlas2reg = [os.path.join(cellchtransform, xx) for xx in os.listdir(cellchtransform) if "atlas2reg" in xx][0]
+            trlst = [os.path.join(atlas2reg,xx) for xx in os.listdir(atlas2reg) if "TransformParameters" in xx]; trlst.sort()
             transformfiles = [os.path.join(src, animal, "elastix_inverse_transform/TransformParameters.0.txt"),                  
                               os.path.join(src, animal, "elastix_inverse_transform/TransformParameters.1.txt"),
-                              [os.path.join(atlas2reg,xx) for xx in os.listdir(atlas2reg)]]
-            transformfiles  = list(itertools.chain.from_iterable(transformfiles))                         
+                              trlst[0],trlst[1]]
             #copy over elastix files
             transformfiles = modify_transform_files(transformfiles, transformed_dst) 
             change_transform_parameter_initial_transform(transformfiles[0], 'NoInitialTransform')
@@ -228,8 +229,8 @@ if __name__ == "__main__":
             points_file = point_transformix(pretransform_text_file, transformfiles[-1], transformed_dst)
             #convert registered points into structure counts
             converted_points = unpack_pnts(points_file, transformed_dst)
-        except:
-            missing(animal)
+        # except:
+            # missing.append(animal)
 # #%%
 # #check
 # atl_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
