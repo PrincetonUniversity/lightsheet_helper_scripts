@@ -10,6 +10,7 @@ from scipy.io import loadmat
 import tifffile as tif, numpy as np, os, matplotlib.pyplot as plt, sys, pandas as pd
 import shutil, itertools 
 from collections import Counter
+import datetime
 
 def transformix_command_line_call(src, dst, transformfile):
     '''Wrapper Function to call transformix using the commandline, this can be time consuming
@@ -219,20 +220,20 @@ if __name__ == "__main__":
     #pipeline to loop thru all brains with detected cells
     src = "/jukebox/LightSheetData/wang-mouse/seagravesk"
     #list of animals
-    # animals = ["20200916_19_25_35_f37080_mouse1_20171015"]
-    animals = ["20200810_13_10_58_f37080_mouse2_20171015_slow_focus", "20200901_14_20_11_f37073_mouse1_20171010", "20200901_15_27_24_f37077_demonstrator_20171011",
-                "20200901_16_34_36_m37112_observer_20171010", "20200901_17_43_19_f37106_mouse2_20171011", "20200902_13_04_58_m37083_demonstrator_20171018",
-                "20200902_14_13_54_f37078_observer_20171014","20200902_16_50_10_f37073_mouse2_20171010", "20200902_17_53_21_m37111_demonstrator_20171012",
-                "20200903_11_51_58_m37111_observer_20171012", "20200903_12_51_14_m37110_demonstrator_20171016", "20200903_14_01_08_m37072_demonstrator_20171008",
-                "20200909_13_16_53_m37109_mouse2_20171018", "20200909_14_54_45_f37104_observer_20171016", "20200909_15_59_15_f37105_observer_20171012",
-                "20200909_17_01_50_m37112_demonstrator_20171010","20200911_14_01_24_m37079_mouse2_20171014","20200911_14_57_36_m37081_observer_20171014",
-                "20200911_16_45_49_m37081_demonstrator_20171014","20200911_17_46_51_f37105_demonstrator_20171012","20200916_14_37_19_f37107_demonstrator_20171007",
-                "20200916_16_42_48_m37109_mouse1_20171018","20200916_19_25_35_f37080_mouse1_20171015",
-                "20200917_12_27_13_m37072_observer_20171008","20200917_13_24_45_m37071_demonstrator_20171006","20200917_14_22_17_f37104_demonstrator_20171016",
-                "20200921_12_14_34_m37110_observer_20171016","20200921_13_13_19_f37070_demonstrator_20171007","20200921_14_31_11_m37071_observer_20171006",
-                "20200921_15_37_17_f37107_observer_20171007","20200921_16_45_26_m37113_mouse1_20171007","20200923_10_56_13_f37070_observer_20171007",
-                "20200923_12_05_45_f37077_observer_20171011","20200923_13_21_40_m37083_observer_20171018","20200923_14_37_00_m37079_mouse1_20171014",
-                "20200924_13_33_09_m37113_mouse2_20171007","20200924_14_33_12_f37106_mouse1_20171011","20201102_16_29_12_m37110_demonstrator_20171016"]
+    animals = ["20200916_19_25_35_f37080_mouse1_20171015"]
+    # animals = ["20200810_13_10_58_f37080_mouse2_20171015_slow_focus", "20200901_14_20_11_f37073_mouse1_20171010", "20200901_15_27_24_f37077_demonstrator_20171011",
+    #             "20200901_16_34_36_m37112_observer_20171010", "20200901_17_43_19_f37106_mouse2_20171011", "20200902_13_04_58_m37083_demonstrator_20171018",
+    #             "20200902_14_13_54_f37078_observer_20171014","20200902_16_50_10_f37073_mouse2_20171010", "20200902_17_53_21_m37111_demonstrator_20171012",
+    #             "20200903_11_51_58_m37111_observer_20171012", "20200903_12_51_14_m37110_demonstrator_20171016", "20200903_14_01_08_m37072_demonstrator_20171008",
+    #             "20200909_13_16_53_m37109_mouse2_20171018", "20200909_14_54_45_f37104_observer_20171016", "20200909_15_59_15_f37105_observer_20171012",
+    #             "20200909_17_01_50_m37112_demonstrator_20171010","20200911_14_01_24_m37079_mouse2_20171014","20200911_14_57_36_m37081_observer_20171014",
+    #             "20200911_16_45_49_m37081_demonstrator_20171014","20200911_17_46_51_f37105_demonstrator_20171012","20200916_14_37_19_f37107_demonstrator_20171007",
+    #             "20200916_16_42_48_m37109_mouse1_20171018","20200916_19_25_35_f37080_mouse1_20171015",
+    #             "20200917_12_27_13_m37072_observer_20171008","20200917_13_24_45_m37071_demonstrator_20171006","20200917_14_22_17_f37104_demonstrator_20171016",
+    #             "20200921_12_14_34_m37110_observer_20171016","20200921_13_13_19_f37070_demonstrator_20171007","20200921_14_31_11_m37071_observer_20171006",
+    #             "20200921_15_37_17_f37107_observer_20171007","20200921_16_45_26_m37113_mouse1_20171007","20200923_10_56_13_f37070_observer_20171007",
+    #             "20200923_12_05_45_f37077_observer_20171011","20200923_13_21_40_m37083_observer_20171018","20200923_14_37_00_m37079_mouse1_20171014",
+    #             "20200924_13_33_09_m37113_mouse2_20171007","20200924_14_33_12_f37106_mouse1_20171011","20201102_16_29_12_m37110_demonstrator_20171016"]
     missing = []
     for animal in animals:
         try:
@@ -248,11 +249,9 @@ if __name__ == "__main__":
                 mat = os.path.join(matpth, "sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
                 if not os.path.exists(mat):
                     #move 1 folder up, for brain with extra folder
-                    try:
-                        mat = os.path.join(fast_scandir(correctedpth)[-2], "sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
-                    except:
-                        mat = os.path.join(fast_scandir(correctedpth)[-3], "sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
-                pnts = loadmat(mat)["cell_centers_orig_coord"].astype(int)
+                    mat = os.path.join(fast_scandir(correctedpth)[-2], "sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
+                    if not os.path.exists(mat): mat = os.path.join(fast_scandir(correctedpth)[-3], "sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
+            pnts = loadmat(mat)["cell_centers_orig_coord"].astype(int)
             #for resize dimensions
             downsized = os.path.join(src, animal, "Ex_785_Em_3/reg_downsized_for_atlas.tif")
             downsized = tif.imread(downsized) #sagittal
