@@ -7,8 +7,9 @@ Created on Tue Jun  8 16:57:14 2021
 """
 
 from scipy.io import loadmat
-import tifffile as tif, numpy as np, os, matplotlib.pyplot as plt, sys
+import tifffile as tif, numpy as np, os, matplotlib.pyplot as plt, sys, pandas as pd
 import shutil, itertools 
+from collections import Counter
 
 def transformix_command_line_call(src, dst, transformfile):
     '''Wrapper Function to call transformix using the commandline, this can be time consuming
@@ -168,21 +169,65 @@ def fast_scandir(dirname):
         subfolders.extend(fast_scandir(dirname))
     return subfolders
 
+def transformed_pnts_to_allen_helper_func(arr, ann, order = "XYZ"):
+    """Function to transform given array of indices and return the atlas pixel ID from the annotation file
+    
+    Input
+    --------------
+    numpy array of Nx3 dimensions corresponding to ***XYZ*** coordinates
+    ann = numpy array of annotation file
+    order = "XYZ" or "ZYX" representing the dimension order of arr"s input
+    
+    Returns
+    -------------
+    Pixel value at those indices of the annotation file
+    """        
+    ########procecss
+    pnt_lst=[]; badpntlst = []
+    for i in range(len(arr)):
+        try:        
+            pnt=[int(x) for x in arr[i]]
+            if order == "XYZ": pnt_lst.append(ann[pnt[2], pnt[1], pnt[0]]) ###find pixel id; arr=XYZ; ann=ZYX
+            elif order == "ZYX": pnt_lst.append(ann[pnt[0], pnt[1], pnt[2]]) ###find pixel id; arr=ZYX; ann=ZYX
+        except IndexError:
+            badpntlst.append([pnt[2], pnt[1], pnt[0]]) #ZYX
+            pass ######THIS NEEDS TO BE CHECKED BUT I BELIEVE INDEXES WILL BE OUT OF 
+    sys.stdout.write("\n*************{} points do not map to atlas*********\n".format(len(badpntlst))); sys.stdout.flush()
+    return pnt_lst
+
+def count_structure_lister(allen_id_table, *args):
+    """Function that generates a pd table of structures where contour detection has been observed
+    Inputs:
+        allen_id_table=annotation file as np.array
+        *args=list of allen ID pixel values ZYX
+    """
+    #make dictionary of pixel id:#num of the id
+    cnt = Counter()
+    for i in args:
+        cnt[i]+=1
+    #generate df + empty column
+    if type(allen_id_table) == str: allen_id_table = pd.read_excel(allen_id_table, index_col=None) #df=allen_id_table.assign(count= [0]*len(allen_id_table)) #add count columns to df
+    df=allen_id_table
+    df["cell_count"]=0
+    #populate cell count in dataframe
+    for pix_id, count in cnt.items():
+        df.loc[df.id==pix_id, "cell_count"]=count
+    return df
+
 if __name__ == "__main__":
     
     #pipeline to loop thru all brains with detected cells
     src = "/jukebox/LightSheetData/wang-mouse/seagravesk"
     #list of animals
-    # animals = ["20200901_16_34_36_m37112_observer_20171010"]
-    # animals = ["20200810_13_10_58_f37080_mouse2_20171015_slow_focus", "20200901_14_20_11_f37073_mouse1_20171010", "20200901_15_27_24_f37077_demonstrator_20171011",
-    #             "20200901_16_34_36_m37112_observer_20171010", "20200901_17_43_19_f37106_mouse2_20171011", "20200902_13_04_58_m37083_demonstrator_20171018",
-    #             "20200902_14_13_54_f37078_observer_20171014","20200902_16_50_10_f37073_mouse2_20171010", "20200902_17_53_21_m37111_demonstrator_20171012",
-    #             "20200903_11_51_58_m37111_observer_20171012", "20200903_12_51_14_m37110_demonstrator_20171016", "20200903_14_01_08_m37072_demonstrator_20171008",
-    #             "20200909_13_16_53_m37109_mouse2_20171018", "20200909_14_54_45_f37104_observer_20171016", "20200909_15_59_15_f37105_observer_20171012",
-    #             "20200909_17_01_50_m37112_demonstrator_20171010","20200911_14_01_24_m37079_mouse2_20171014","20200911_14_57_36_m37081_observer_20171014",
-    #             "20200911_16_45_49_m37081_demonstrator_20171014","20200911_17_46_51_f37105_demonstrator_20171012","20200916_14_37_19_f37107_demonstrator_20171007",
-    #             "20200916_16_42_48_m37109_mouse1_20171018",
-    animals = ["20200916_18_21_42_f37078_demonstrator_20171014","20200916_19_25_35_f37080_mouse1_20171015",
+    # animals = ["20200916_19_25_35_f37080_mouse1_20171015"]
+    animals = ["20200810_13_10_58_f37080_mouse2_20171015_slow_focus", "20200901_14_20_11_f37073_mouse1_20171010", "20200901_15_27_24_f37077_demonstrator_20171011",
+                "20200901_16_34_36_m37112_observer_20171010", "20200901_17_43_19_f37106_mouse2_20171011", "20200902_13_04_58_m37083_demonstrator_20171018",
+                "20200902_14_13_54_f37078_observer_20171014","20200902_16_50_10_f37073_mouse2_20171010", "20200902_17_53_21_m37111_demonstrator_20171012",
+                "20200903_11_51_58_m37111_observer_20171012", "20200903_12_51_14_m37110_demonstrator_20171016", "20200903_14_01_08_m37072_demonstrator_20171008",
+                "20200909_13_16_53_m37109_mouse2_20171018", "20200909_14_54_45_f37104_observer_20171016", "20200909_15_59_15_f37105_observer_20171012",
+                "20200909_17_01_50_m37112_demonstrator_20171010","20200911_14_01_24_m37079_mouse2_20171014","20200911_14_57_36_m37081_observer_20171014",
+                "20200911_16_45_49_m37081_demonstrator_20171014","20200911_17_46_51_f37105_demonstrator_20171012","20200916_14_37_19_f37107_demonstrator_20171007",
+                "20200916_16_42_48_m37109_mouse1_20171018","20200916_19_25_35_f37080_mouse1_20171015",
                 "20200917_12_27_13_m37072_observer_20171008","20200917_13_24_45_m37071_demonstrator_20171006","20200917_14_22_17_f37104_demonstrator_20171016",
                 "20200921_12_14_34_m37110_observer_20171016","20200921_13_13_19_f37070_demonstrator_20171007","20200921_14_31_11_m37071_observer_20171006",
                 "20200921_15_37_17_f37107_observer_20171007","20200921_16_45_26_m37113_mouse1_20171007","20200923_10_56_13_f37070_observer_20171007",
@@ -202,8 +247,11 @@ if __name__ == "__main__":
                 matpth = fast_scandir(correctedpth)[-1]
                 mat = os.path.join(matpth, "sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
                 if not os.path.exists(mat):
-                    matpth = fast_scandir(correctedpth)[-2] #move 1 folder up, for brain with extra folder
-                    mat = os.path.join(matpth, "sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
+                    #move 1 folder up, for brain with extra folder
+                    try:
+                        mat = os.path.join(fast_scandir(correctedpth)[-2], "sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
+                    except:
+                        mat = os.path.join(fast_scandir(correctedpth)[-3], "sliding_diff_peak_find_99percentile_test20200806_all_coord_format2.mat")
                 pnts = loadmat(mat)["cell_centers_orig_coord"].astype(int)
             #for resize dimensions
             downsized = os.path.join(src, animal, "Ex_785_Em_3/reg_downsized_for_atlas.tif")
@@ -241,6 +289,29 @@ if __name__ == "__main__":
             points_file = point_transformix(pretransform_text_file, transformfiles[-1], transformed_dst)
             #convert registered points into structure counts
             converted_points = unpack_pnts(points_file, transformed_dst)
+            #align to annotation
+            ann_pth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_template_25_sagittal_forDVscans.tif"
+            id_table = "/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table.xlsx"
+            point_lst = transformed_pnts_to_allen_helper_func(np.load(converted_points), 
+                        tif.imread(ann_pth), order = "ZYX")
+            #zmd added 20190312 - these should be in order of points inputted from raw space
+            np.save(os.path.join(transformed_dst, "annotation_pixel_value_coordinates.npy"), point_lst)            
+            df = count_structure_lister(id_table, *point_lst).fillna(0)
+            df = df.drop(columns = ["Unnamed: 0"])
+            df.to_csv(os.path.join(transformed_dst, os.path.basename(id_table).replace(".xlsx", "")+"_with_anatomical_assignment_of_cell_counts.csv"),
+                      index = None)
+            with open(os.path.join(transformed_dst, "info_from_zahras_code.txt"), "w") as fl:
+                fl.write("FILES AND PATHS USED TO GENERATE ANALYSIS:\n")
+                fl.write("\n")
+                fl.write("path_to_csv_file: {}\n".format(os.path.join(transformed_dst, os.path.basename(id_table).replace(".xlsx", "")+"_with_anatomical_assignment_of_cell_counts.csv")))
+                fl.write("ann_pth: {}\n".format(ann_pth))
+                fl.write("id_table: {}\n".format(id_table))
+                fl.write("dst: {}\n".format(transformed_dst))
+                fl.write("cell_centers_path: {}\n".format(mat))
+                fl.write("\n")
+                fl.write("\n")
+                fl.write("Date code was run: {}\n".format(datetime.datetime.today().strftime("%Y-%m-%d")))
+                fl.close()
         except:
             missing.append(animal)
 # #%%
