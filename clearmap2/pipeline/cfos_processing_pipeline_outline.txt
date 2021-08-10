@@ -1,0 +1,25 @@
+# This pipeline will have the usual file structure, i.e.:
+# a shell script (cfos_procsesing_pipeline.sh) that calls sbatch scripts in a slurm_files/ directory
+# which call python scripts
+
+# For a visual overview of this pipeline and each job dependency see the image in this folder: cfos_cell_detection_pipeline.png
+
+# This pipeline assumes we have corrected images already made. These are the inputs to this pipeline. Their location should be standardized across all samples in a request
+
+# Note that the conda environment needed to run all of these steps will need to be the clearmap environment with some additional packages installed via pip:
+# pandas
+# brain-atlas-toolkit
+# tifffile
+# SimpleITK
+
+# The shell script will need to
+## STEP 1: Launch the cell detection in raw space
+
+## STEP 2: Launch the downsizing (see smartspim_pipeline_AH/downsizing)
+
+## STEP 3: Launch the registration from 642 -> 488 -> Princeton Mouse Brain Atlas using downsized outputs of STEP2 as inputs (see smartspim_pipeline_AH/registration). So STEP2 is a dependency of STEP2 (use the --dependency flag of sbatch command)
+
+## STEP 4: Use the TransformParameters txt files obtained in STEP 3 to register the detected cells obtained in STEP 1 to the atlas. To use multiple dependencies use the syntax: --dependency=afterok:${OUT1}:${OUT3}, where ${OUT1} is a variable that you stored the output of the STEP 1 sbatch command into - it's just the jobid FYI.
+# See the notebook in clearmap2/notebooks/clearmap2_demo_smartspim-aligncells.ipynb for doing the actual alignment of cells to the atlas
+
+## STEP 5: Use the registered cells obtained in STEP 4 to make a pandas dataframe and CSV file containing the cell counts in each brain region. See the notebook in clearmap2/notebooks/make_cfos_cell_df.ipynb  
