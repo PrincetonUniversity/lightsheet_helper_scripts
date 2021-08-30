@@ -36,7 +36,7 @@ if __name__ == "__main__":
         pth = src #if images already in first directory
     print("\nPath to stitched images: %s\n" % pth)
     #path to store downsized images
-    dst = os.path.join(os.path.dirname(src), "downsized")
+    dst = str(sys.argv[2])
     print("\nPath to storage directory: %s\n\n" % dst)
     if not os.path.exists(dst): os.mkdir(dst)
     imgs = [os.path.join(pth, xx) for xx in os.listdir(pth) if "tif" in xx]
@@ -52,7 +52,8 @@ if __name__ == "__main__":
     z = len(imgs)
     y,x = sitk.GetArrayFromImage(sitk.ReadImage(imgs[0])).shape
     arr = np.zeros((z,y,x))
-    atlpth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
+    #atlpth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
+    atlpth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
     atl = sitk.GetArrayFromImage(sitk.ReadImage(atlpth))
     atlz,atly,atlx = atl.shape #get shape, sagittal
     #read all the downsized images
@@ -66,6 +67,8 @@ if __name__ == "__main__":
     print("\n**********downsizing....heavy!**********\n")
     
     arrsagd = zoom(arrsag, ((atlz*1.4/z),(atly*1.4/y),(atlx*1.4/x)), order=1)
-    tif.imsave(os.path.join(os.path.dirname(dst), "downsized_for_atlas.tif"), arrsagd.astype("uint16"))
+    shutil.rmtree(dst)
+    os.mkdir(dst)
+    tif.imsave(os.path.join(dst, "downsized_for_atlas.tif"), arrsagd.astype("uint16"))
+
     # print("\ndeleting storage directory after making volume...\n %s" % dst)
-    # shutil.rmtree(dst)

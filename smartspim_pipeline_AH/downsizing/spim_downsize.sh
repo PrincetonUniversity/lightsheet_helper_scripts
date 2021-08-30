@@ -18,5 +18,6 @@ module load anacondapy/2020.11
 . activate lightsheet
 
 echo "Storage directory:" "$1"
+echo "Destination directory:" "$2"
 
-python spim_downsize.py "$1" 
+python spim_downsize.py "$1" "$2"
