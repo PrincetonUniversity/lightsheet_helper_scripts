@@ -8,8 +8,8 @@ Created on Mon Oct 21 14:19:28 2019
 
 import os, numpy as np, sys
 from concurrent.futures import ProcessPoolExecutor
-from skimage.external import tifffile
-sys.path.append("/jukebox/wang/ahoag/brainpipe")
+import tifffile
+sys.path.append("/jukebox/wang/sanjeev/BrainPipe")
 from tools.utils.io import makedir
 from tools.registration.register import change_interpolation_order, transformix_command_line_call
 from tools.registration.transform_list_of_points import modify_transform_files

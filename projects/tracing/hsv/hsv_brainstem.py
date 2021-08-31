@@ -15,15 +15,25 @@ mpl.rcParams["ps.fonttype"] = 42
 mpl.rcParams["xtick.major.size"] = 6
 mpl.rcParams["ytick.major.size"] = 6
 
+sois =  ["Pontine gray",
+        "Tegmental reticular nucleus", "Lateral reticular nucleus",
+        "Spinal nucleus of the trigeminal, caudal part",
+        "Spinal nucleus of the trigeminal, interpolar part",
+        "Spinal nucleus of the trigeminal, oral part",
+        # "Principal sensory nucleus of the trigeminal",
+        "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus",
+        "Inferior olivary complex"
+        ]
+
 #only get lobvi counts
 lobvi = False
-src =  r"Z:\zahra\h129_contra_vs_ipsi"
-df_pth = r"Y:\atlas\allen_atlas\allen_id_table_w_voxel_counts.xlsx" #"/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
+src =  r"W:\zahra\h129_contra_vs_ipsi"
+df_pth = r"Z:\atlas\allen_atlas\allen_id_table_w_voxel_counts.xlsx" #"/jukebox/LightSheetTransfer/atlas/allen_atlas/allen_id_table_w_voxel_counts.xlsx"
 cells_regions_pth_contra = os.path.join(src, r"data\thal_contra_counts_23_brains_80um_ventric_erosion.csv")
 cells_regions_pth_ipsi = os.path.join(src, r"data\thal_ipsi_counts_23_brains_80um_ventric_erosion.csv")
-dst = r"C:\Users\lvbt\Desktop"#"/home/wanglab/Desktop"
+dst = r"C:\Users\SmartSPIM\Desktop"#"/home/wanglab/Desktop"
 #get progeny of all large structures
-ontology_file = r"Y:\atlas\allen_atlas\allen.json" #"/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
+ontology_file = r"Z:\atlas\allen_atlas\allen.json" #"/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json"
 
 #collect 
 data_pth = os.path.join(src, r"data\thal_hsv_maps_contra_allen.p")
@@ -73,16 +83,6 @@ def get_progeny(dic,parent_structure,progeny_list):
 with open(ontology_file) as json_file:
     ontology_dict = json.load(json_file)
 
-#sois = ["Cerebellar nuclei", "Vestibular nuclei", 
-sois =  ["Pontine gray",
-        "Tegmental reticular nucleus", "Lateral reticular nucleus",
-        "Spinal nucleus of the trigeminal, caudal part",
-        "Spinal nucleus of the trigeminal, interpolar part",
-        "Spinal nucleus of the trigeminal, oral part",
-        # "Principal sensory nucleus of the trigeminal",
-        "External cuneate nucleus", "Gracile nucleus", "Cuneate nucleus",
-        "Inferior olivary complex"
-        ]
 
 #first calculate counts across entire region
 counts_per_struct = []

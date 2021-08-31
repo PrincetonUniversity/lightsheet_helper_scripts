@@ -36,10 +36,10 @@ if __name__ == "__main__":
     brains = [os.path.join(src,xx) for xx in os.listdir(src) if os.path.exists(os.path.join(src,xx,ch,"stitched"))]
     brains.sort()
     #paralellize across brains
-    print(os.environ["SLURM_ARRAY_TASK_ID"])
-    jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
+    # print(os.environ["SLURM_ARRAY_TASK_ID"])
+    # jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
     #select brain to run
-    brain = brains[jobid]
+    brain = os.path.join(src, "20200916_19_25_35_f37080_mouse1_20171015")#brains[jobid]
     #use corrected images if available
     try:
         pth = fast_scandir(os.path.join(brain,ch,"corrected"))[-1]

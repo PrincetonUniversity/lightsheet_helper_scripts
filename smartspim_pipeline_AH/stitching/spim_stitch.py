@@ -13,6 +13,7 @@ def stitch_step0(volin):
             stderr=PIPE)
     """ terastitcher uses stdout for stderr and doesn't return a proper exit code
     so to catch errors we just need to check if stdout has anything in it """
+    print(result)
     if b'ERROR' in result.stdout:
         raise Exception(result.stdout)
    
