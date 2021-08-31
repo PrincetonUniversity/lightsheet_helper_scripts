@@ -15,11 +15,12 @@ DOWNSIZED_CHANNELS = ["Ex_488_Em_0_downsized", "Ex_561_Em_1_downsized", "Ex_642_
 
 class LS_tools:
     
-    def __init__(self, user, request_name, imaging_request, resolution):
+    def __init__(self, user, request_name, imaging_request, resolution, processing_request="processing_request_1"):
         self.user = user
         self.request_name = request_name
         self.imaging_request = "imaging_request_" + str(imaging_request)
         self.resolution = resolution
+        self.processing_request = processing_request
         self.working_path=os.path.join(WK_DIR, self.user, self.request_name) 
         
         all_samples = [d for d in os.listdir(self.working_path)] 
@@ -32,19 +33,23 @@ class LS_tools:
     def get_samples(self):
         return self.samples 
 
-    def get_rawdata_sample_path(self, sample_ind, channel_type, laser):
-        if (sample_ind > len(self.get_samples())-1):
-           print("Only " + str(len(self.get_samples())-1) + " samples")
-           return
+    def get_rawdata_sample_path(self, sample_ind, channel_type=None, laser=None):
+        self.__check_sample_ind(sample_ind)
  
         sample = self.get_samples()[sample_ind]
-        channel = self.__get_channel_type(channel_type, laser)
         if (self.resolution in SS_RES):
+           channel = self.__get_channel_type(channel_type, laser)
            return os.path.join(self.working_path, sample, self.imaging_request, RAWDATA, self.resolution, channel)
         else:
            return os.path.join(self.working_path, sample, self.imaging_request, RAWDATA, self.resolution, sample)
    
+    def get_output_sample_path(self, sample_ind):
+        self.__check_sample_ind(sample_ind)
         
+        if (self.resolution in SS_LV):
+           return os.path.join(self.working_path, sample, self.imaging_request, OUTPUT, self.processing_request,
+                               self.resolution)  
+ 
     #working_path: stitched or corrected path
     def get_nested_tif_dir(self, sample_ind, channel_type, laser): 
         output_path = None
@@ -63,8 +68,7 @@ class LS_tools:
         #channel_type: "raw", "stitched", or "corrected"
         #laser: 0, 1, or 2
         if (not laser in [0, 1, 2]):
-           print("Laser must be 0, 1, or 2")
-           return
+           raise ValueError("Laser must be 0, 1, or 2")
  
         if (channel_type.lower() == "raw"):
            return RAW_CHANNELS[laser]
@@ -75,7 +79,10 @@ class LS_tools:
         elif (channel_type.lower() == "downsized"):
            return DOWNSIZED_CHANNELS[laser]
         else:
-           print("Channel type must be raw, stitched, or corrected")
-           return  
+           raise ValueError("Channel type must be raw, stitched, or corrected")
+
+   def __check_sample_ind(self, sample_ind):
+       if (sample_ind > len(self.get_samples())-1):
+           raise ValueError("Only " + str(len(self.get_samples())-1) + " samples")  
 
 
