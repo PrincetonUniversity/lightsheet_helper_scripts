@@ -7,7 +7,7 @@ Created on Tue Jul 21 16:01:17 2020
 """
 
 import sys,os
-sys.path.append("/jukebox/wang/ahoag/brainpipe")
+sys.path.append("/jukebox/wang/sanjeev/BrainPipe")
 from tools.registration.register import elastix_command_line_call
 
 if __name__ == '__main__':
@@ -25,20 +25,22 @@ if __name__ == '__main__':
     #     param_fld = "/jukebox/wang/ahoag/brainpipe/parameterfolder" #change if using rat
     # except:
     param_fld = "/jukebox/wang/ahoag/brainpipe/parameterfolder" #change if using rat
-    # atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif" # PMA 20 micron isotropic
-    atl = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif" # allen atlas 25 micron isotropic
+    atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif" # PMA 20 micron isotropic
+    # atl = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif" # allen atlas 25 micron isotropic
     print(src)
     print(reg)
     assert os.path.exists(param_fld)
     if stepid == 0:
         print("Doing normal registration")
         mv = os.path.join(src, reg, "downsized_for_atlas.tif")
+        print(mv)
+        assert os.path.exists(mv)
         print("\nPath to downsized vol for registration to atlas: %s" % mv)
         fx = atl
+        assert os.path.exists(fx)
         print("\nPath to atlas: %s" % fx)
-        out = os.path.join(os.path.dirname(src), "elastix")
+        out = os.path.join(src, "elastix")
         if not os.path.exists(out): os.mkdir(out)
-        
         params = [os.path.join(param_fld, xx) for xx in os.listdir(param_fld)]
         #run
         e_out, transformfiles = elastix_command_line_call(fx, mv, out, params)
@@ -47,8 +49,8 @@ if __name__ == '__main__':
             #cell vol to registration vol
             print("\nCell channel specified: %s" % cell)
             mv = os.path.join(src, cell+"/downsized_for_atlas.tif")
-            fx = os.path.join(src, reg+"/downsized_for_atlas.tif")
-            
+            fx = os.path.join(src, reg+"/downsized_for_atlas.tif")            
+
             out = os.path.join(src, "elastix/%s_to_%s" % (cell, reg))
             if not os.path.exists(out): os.mkdir(out)
             

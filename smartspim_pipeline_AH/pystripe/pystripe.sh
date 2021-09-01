@@ -16,7 +16,7 @@ cat /proc/$$/status | grep Cpus_allowed_list
 
 #required
 module load anacondapy/2020.11
-. activate lightsheet
+conda activate lightsheet
 
 echo "Input directory (path to stitched images):" "$1"
 echo "Path to flat.tiff file generated using 'Generate Flat' software:" "$2"

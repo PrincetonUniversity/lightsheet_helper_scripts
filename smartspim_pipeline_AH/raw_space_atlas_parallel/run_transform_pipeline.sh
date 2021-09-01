@@ -3,12 +3,12 @@
 # run_transform_pipeline.sh
 
 # Define where the raw/blended files to which you want to register the atlas live 
-raw_dir=/jukebox/wang/Jess/lightsheet_output/202010_cfos/processed/an001/full_sizedatafld/072420_jv_ymazelearn_an1_1_3x_647_008na_1hfds_z10um_50msec_ch00
+raw_dir=/jukebox/LightSheetData/lightserv/oostland/MO_May2021_Tsc1_part1/MO_May2021_Tsc1_part1-521/imaging_request_1/output/processing_request_1/resolution_1.3x/full_sizedatafld/MO_521_3_AKA_20111303_flipped_ch01
 # Define the path to where elastix inverse transformations were run
-elastix_atlas_to_auto_dir=/jukebox/wang/Jess/lightsheet_output/202010_cfos/processed/an001/ClearMapClusterOutput/elastix_auto_to_atlas
-elastix_auto_to_cell_dir=/jukebox/wang/Jess/lightsheet_output/202010_cfos/processed/an001/ClearMapClusterOutput/elastix_cfos_to_auto
+elastix_atlas_to_auto_dir=/jukebox/LightSheetData/lightserv/oostland/MO_May2021_Tsc1_part1/MO_May2021_Tsc1_part1-521/imaging_request_1/output/processing_request_1/resolution_1.3x/elastix_inverse_transform/injch_MO_521_3_AKA_20111303_flipped/MO_521_3_AKA_20111303_flipped_resized_ch00_resampledforelastix_atlas2reg
+elastix_auto_to_cell_dir=/jukebox/LightSheetData/lightserv/oostland/MO_May2021_Tsc1_part1/MO_May2021_Tsc1_part1-521/imaging_request_1/output/processing_request_1/resolution_1.3x/elastix_inverse_transform/injch_MO_521_3_AKA_20111303_flipped/MO_521_3_AKA_20111303_flipped_resized_ch01_resampledforelastix_reg2sig
 # Define where you want your aligned raw atlas files to live
-output_dir=/jukebox/wang/ahoag/test_raw_atlas
+output_dir=/jukebox/LightSheetData/lightserv/oostland/MO_May2021_Tsc1_part1/MO_May2021_Tsc1_part1-521/imaging_request_1/output/processing_request_1/resolution_1.3x/raw_atlas
 # The raw-space atlas z planes will live in ${output_dir}/transformed_annotations/single_tifs/
 
 
