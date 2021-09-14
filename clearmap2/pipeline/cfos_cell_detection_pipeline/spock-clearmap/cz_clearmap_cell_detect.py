@@ -40,7 +40,7 @@ def process_block(block,savedir,params,verbose):
 if __name__ == '__main__':
     output_rootpath = '/jukebox/wang/ahoag/for_cz/clearmap2_test_output'
     sample_dir = sys.argv[1].strip().rstrip("/")
-    jobid = int(os.environ["SLURM_ARRAY_TASK_ID"])
+    array_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
     
     request_name,sample_name = sample_dir.split('/')[-2:]
     dst_dir = os.path.join(output_rootpath,request_name,sample_name,
@@ -73,8 +73,8 @@ if __name__ == '__main__':
     if not os.path.exists(result_dir):
         os.mkdir(result_dir)
 
-    block = blocks[jobid]
-    print(f"Running cell detection on block {jobid}")
+    block = blocks[array_id]
+    print(f"Running cell detection on block {array_id}")
     sys.stdout.flush()
     block_result = process_block(block,savedir=result_dir,
         params=cell_detection_parameter,verbose=True)

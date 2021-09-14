@@ -1,18 +1,16 @@
 # General imports
 import os,sys,glob,shutil,json
-
+cwd = os.getcwd()
+utils_fld = os.path.join(cwd,"utils")
+sys.path.append(utils_fld)
+from pipeline_utils import fast_scandir
 # ClearMap2 imports
 sys.path.append('/jukebox/braininit/lightsheet/ClearMap2')
 import ClearMap.IO.Workspace as wsp
 import ClearMap.IO.IO as io
 import ClearMap.ParallelProcessing.BlockProcessing as bp
 
-def fast_scandir(dirname):
-	""" gets all folders recursively """
-	subfolders= [f.path for f in os.scandir(dirname) if f.is_dir()]
-	for dirname in list(subfolders):
-		subfolders.extend(fast_scandir(dirname))
-	return subfolders
+
 
 # Select datasets to analyze
 if __name__ == "__main__":

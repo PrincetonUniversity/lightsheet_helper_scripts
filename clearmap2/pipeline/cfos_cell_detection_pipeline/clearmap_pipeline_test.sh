@@ -15,8 +15,8 @@ for sample_dir in "${arr[@]}"
 do
 	echo $sample_dir
 	# # First link over raw 488 and 642 files to destination directory
-	# echo "Running preprocessing step synchronously"
-	# python spock-clearmap/cz_clearmap_preprocessing.py ${sample_dir} 2>&1 | tee
+	echo "Running preprocessing step synchronously"
+	python spock-clearmap/cz_clearmap_preprocessing.py ${sample_dir} 2>&1 | tee
 
 	# sample_name=$(basename ${sample_dir})
 	# blockfile="${output_rootpath}/$1/${sample_name}/imaging_request_1/rawdata/resolution_3.6x/block_processing_info.json"		
@@ -48,8 +48,21 @@ do
 	### Merge the blocks
 	# OUT3=$(sbatch --parsable --dependency=afterok:${OUT2##* } \
 	# --export=ALL,sample_dir=${sample_dir} spock-clearmap/slurm_scripts/merge_blocks_test.sh)
-	OUT3=$(sbatch --parsable \
-	--export=ALL,sample_dir=${sample_dir} spock-clearmap/slurm_scripts/merge_blocks_test.sh)
+	# OUT3=$(sbatch --parsable \
+	# --export=ALL,sample_dir=${sample_dir} spock-clearmap/slurm_scripts/merge_blocks_test.sh)
+	# echo $OUT3
+
+	# #Downsizing, both channels one per array job
+	OUT3=$(sbatch --parsable --export=ALL,sample_dir=${sample_dir} --array=0-1 downsizing/spim_downsize.sh)
+	echo $OUT3
+
+	# #Inverse registration
+	# OUT4=$(sbatch --parsable --dependency=afterok:${OUT3##* } --export=ALL,src=$3,reg=$4,cell=$5 registration/slurm_scripts/spim_inverse_register.sh)
+	# echo $OUT4
+
+	# #Register cells and make CSV data frame of counts in each region
+	# OUT5=$(sbatch --parsable --dependency=afterok:${OUT2##* }:${OUT4##* } --export=ALL,request_name=$2 spock-clearmap/slurm_scripts/postprocessing.sh)
+	# echo $OUT5
 done
 
 
