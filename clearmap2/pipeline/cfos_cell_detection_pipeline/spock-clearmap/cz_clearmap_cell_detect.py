@@ -10,7 +10,7 @@ import ClearMap.ParallelProcessing.BlockProcessing as bp
 import ClearMap.Utils.HierarchicalDict as hdict
 import ClearMap.ImageProcessing.Experts.Cells as cells
 
-def process_block(block,savedir,params):
+def process_block(block,savedir,params,verbose):
     """
     ---PURPOSE---
     A function that takes a block (chunk of volume) as input and 
@@ -23,13 +23,14 @@ def process_block(block,savedir,params):
     savedir                     The directory in which to save the detected cells from this block
     params                      The cell detection parameter dictionary 
                                 that you feed into detect_cells_block()
+    verbose                     True or False
     ---OUTPUT---
     block_result      The tuple containing the cell coordinates, shape, intensities 
     It also saves this block_result as a file in your savedir called:
                       "cells_block{block_index}.p" where block_index is ranges from 0 to the number of blocks-1
     """
     block_index = block.index[-1]
-    block_result = cells.detect_cells_block(block, parameter=params)
+    block_result = cells.detect_cells_block(block, parameter=params,verbose=verbose)
     block_savename = os.path.join(savedir,f'cells_block{block_index}.p')
     with open(block_savename,'wb') as pkl:
         pickle.dump(block_result,pkl)
@@ -67,14 +68,16 @@ if __name__ == '__main__':
                     size_max=30,
                     overlap=5,
                     verbose=True)
-    # create output directory
-    output_dir = os.path.join(directory,'cells_blocks')
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    # create output directory if it does not already exist
+    result_dir = os.path.join(dst_dir,'cells_blocks')
+    if not os.path.exists(result_dir):
+        os.mkdir(result_dir)
 
     block = blocks[jobid]
     print(f"Running cell detection on block {jobid}")
-    block_result = process_block(block,params=cell_detection_parameter)
+    sys.stdout.flush()
+    block_result = process_block(block,savedir=result_dir,
+        params=cell_detection_parameter,verbose=True)
     print("Done running cell detection on this block")
     sys.stdout.flush()
 

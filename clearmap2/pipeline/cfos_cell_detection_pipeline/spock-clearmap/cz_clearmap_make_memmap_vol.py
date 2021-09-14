@@ -75,11 +75,24 @@ if __name__ == "__main__":
 	ws.debug = False
 	print()
 	ws.info()
+
+	# Create combined npy volume -- this is CPU heavy
+	source = ws.source('raw')
+	sink = ws.filename('stitched')
+	sys.stdout.flush()
+	if not os.path.exists(sink):
+		print("Converting raw files into single stitched.npy file")
+		sys.stdout.flush()
+		io.convert(source,sink,verbose=True)
+		print("Successfully created stitched.npy file")
+	else:
+		print("Stitched.npy file already exists")
+	sys.stdout.flush()
 	
 	# Finally, figure out how many blocks there so we can know how many array jobs to make
 	print("Determining number of blocks")
 	sys.stdout.flush()
-	blocks = bp.split_into_blocks(ws.source('raw'),
+	blocks = bp.split_into_blocks(ws.source('stitched'),
                     processes='serial',
                     axes=[2],
                     size_min=10,
