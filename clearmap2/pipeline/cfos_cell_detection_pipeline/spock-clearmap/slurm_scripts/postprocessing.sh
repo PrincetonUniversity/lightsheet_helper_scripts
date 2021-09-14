@@ -11,4 +11,4 @@
 module load anacondapy/2020.11
 conda activate clearmap
 
-xvfb-run -d python cz_clearmap_postprocessing.py ${sample_dir}
+xvfb-run -d python cz_clearmap_postprocessing.py ${sample_name}
