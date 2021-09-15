@@ -2,7 +2,7 @@
 #
 #SBATCH -p all                # partition (queue)
 #SBATCH -c 6                      # number of cores
-#SBATCH -t 100
+#SBATCH -t 60
 #SBATCH -o logs/downsize_%A_%a.out        # STDOUT #add _%a to see each array job
 #SBATCH -e logs/downsize_%A_%a.err        # STDERR #add _%a to see each array job
 #SBATCH --contiguous #used to try and get cpu mem to be contigous

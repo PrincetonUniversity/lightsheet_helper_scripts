@@ -53,11 +53,12 @@ do
 	# echo $OUT3
 
 	# #Downsizing, both channels one per array job
-	OUT3=$(sbatch --parsable --export=ALL,sample_dir=${sample_dir} --array=0-1 downsizing/spim_downsize.sh)
-	echo $OUT3
+	# OUT3=$(sbatch --parsable --export=ALL,sample_dir=${sample_dir} --array=0-1 downsizing/spim_downsize_test.sh)
+	# echo $OUT3
 
-	# #Inverse registration
-	# OUT4=$(sbatch --parsable --dependency=afterok:${OUT3##* } --export=ALL,src=$3,reg=$4,cell=$5 registration/slurm_scripts/spim_inverse_register.sh)
+	# #Inverse registration, both transformations one per array job
+	# OUT4=$(sbatch --parsable --dependency=afterok:${OUT3##* } --array=0-1\
+	# --export=ALL,sample_dir=${sample_dir} registration/slurm_scripts/spim_inverse_register_test.sh)
 	# echo $OUT4
 
 	# #Register cells and make CSV data frame of counts in each region
