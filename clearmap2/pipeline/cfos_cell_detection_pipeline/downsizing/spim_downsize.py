@@ -6,7 +6,7 @@ Created on Mon Jul 20 12:04:02 2020
 @author: wanglab
 """
 
-import os, numpy as np, tifffile, SimpleITK as sitk, cv2, multiprocessing as mp, shutil, sys
+import os, numpy as np, tifffile, cv2, multiprocessing as mp, shutil, sys
 from scipy.ndimage import zoom
 
 cwd = os.getcwd()
@@ -57,11 +57,9 @@ if __name__ == "__main__":
 	dst_dir_downsized = os.path.join(dst_dir,f"{smartspim_prefix}_downsized")
 	print("\nPath to storage directory: %s\n\n" % dst_dir_downsized)
 	
-	if not os.path.exists(dst_dir_downsized):
-		os.mkdir(dst_dir_downsized)
+	os.makedirs(dst_dir_downsized,exist_ok=True)
 	dst_dir_downsized_planes = os.path.join(dst_dir_downsized,"downsized_planes")
-	if not os.path.exists(dst_dir_downsized_planes):
-		os.mkdir(dst_dir_downsized_planes)
+	os.makedirs(dst_dir_downsized_planes,exist_ok=True)
 		
 	imgs = [os.path.join(corrected_dir, xx) for xx in os.listdir(corrected_dir) if xx.endswith("tif") ]
 	# print(imgs[-10:])
@@ -100,6 +98,4 @@ if __name__ == "__main__":
 	sys.stdout.flush()
 	
 	arrsagd = zoom(arrsag, ((atlz*1.4/z),(atly*1.4/y),(atlx*1.4/x)), order=1)
-	# shutil.rmtree(dst)
-	# os.mkdir(dst)
 	tifffile.imsave(os.path.join(dst_dir_downsized, f"downsized_for_atlas_ch{channel}.tif"), arrsagd.astype("uint16"))

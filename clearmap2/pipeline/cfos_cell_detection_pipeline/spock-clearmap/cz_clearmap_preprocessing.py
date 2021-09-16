@@ -11,7 +11,6 @@ import ClearMap.IO.IO as io
 import ClearMap.ParallelProcessing.BlockProcessing as bp
 
 
-
 # Select datasets to analyze
 if __name__ == "__main__":
 	sample_dir = sys.argv[1].strip().rstrip("/")
@@ -22,6 +21,7 @@ if __name__ == "__main__":
 		'imaging_request_1/rawdata/resolution_3.6x')
 	dst_dir = os.path.join(output_rootpath,request_name,
 		sample_name,'imaging_request_1/rawdata/resolution_3.6x')
+	
 	if not os.path.exists(dst_dir):
 		os.makedirs(dst_dir)
 		print(f"Creating dst dir: {dst_dir}")
@@ -32,14 +32,14 @@ if __name__ == "__main__":
 		src_642 = fast_scandir(os.path.join(src_dir,'Ex_642_Em_2_corrected'))[-1]
 	except:
 		src_642 = os.path.join(src_dir,'Ex_642_Em_2_corrected')
-
+	# print(src_642)
 	dst_642 = os.path.join(dst_dir,'Ex_642_Em_2_corrected')
 
-	if not os.path.exists(dst_642):
-		print(f"Creating 642 dst dir: {dst_642}")
-		os.mkdir(dst_642)
+	os.makedirs(dst_642,exist_ok=True)
 		
 	src_files_642 = sorted(glob.glob(src_642 + '/*tif'))
+	n_src_files_642 = len(src_files_642)
+	print(f"have {n_src_files_642} ch642 corrected planes")
 	print()
 	print("Sym linking Ch 642 files if not done already")
 	for ii,src in enumerate(src_files_642):
@@ -53,9 +53,7 @@ if __name__ == "__main__":
 		src_488 = os.path.join(src_dir,'Ex_488_Em_0_corrected')
 
 	dst_488 = os.path.join(dst_dir,'Ex_488_Em_0_corrected')
-	if not os.path.exists(dst_488):
-		print(f"Creating 488 dst dir: {dst_488}")
-		os.mkdir(dst_488)
+	os.makedirs(dst_488,exist_ok=True)
 
 	print("Sym linking Ch 488 files if not done already")
 	src_files_488 = sorted(glob.glob(src_488 + '/*tif'))

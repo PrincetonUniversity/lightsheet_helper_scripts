@@ -1,16 +1,20 @@
 # General imports
-import os,sys,pickle,time,subprocess,random,shutil
-import numpy as np
+import os,sys,pickle
 
 # ClearMap2 imports
-sys.path.append('/jukebox/witten/Chris/python/ClearMap2-master')
+sys.path.append('/jukebox/braininit/lightsheet/ClearMap2')
 import ClearMap.IO.Workspace as wsp
-import ClearMap.IO.IO as io
 import ClearMap.ParallelProcessing.BlockProcessing as bp
 import ClearMap.Utils.HierarchicalDict as hdict
-import ClearMap.ImageProcessing.Experts.Cells as cells
+try:
+    import ClearMap.ImageProcessing.Experts.Cells as cells
+except Exception as e:
+    raise Exception(e)
 
-def process_block(block,savedir,params,verbose):
+from functools import partial    
+from concurrent.futures import ProcessPoolExecutor
+
+def process_block(savedir,params,block_index):
     """
     ---PURPOSE---
     A function that takes a block (chunk of volume) as input and 
@@ -29,17 +33,22 @@ def process_block(block,savedir,params,verbose):
     It also saves this block_result as a file in your savedir called:
                       "cells_block{block_index}.p" where block_index is ranges from 0 to the number of blocks-1
     """
-    block_index = block.index[-1]
-    block_result = cells.detect_cells_block(block, parameter=params,verbose=verbose)
+    # block_index = block.index[-1]
+    print("Processing block: ", block_index)
+    block = blocks[block_index]
+    sys.stdout.flush()
+    block_result = cells.detect_cells_block(block, parameter=params)
     block_savename = os.path.join(savedir,f'cells_block{block_index}.p')
     with open(block_savename,'wb') as pkl:
         pickle.dump(block_result,pkl)
     print(f"Saved {block_savename}")
-    return block_result
+    return "success"
 
 if __name__ == '__main__':
+    n_cores = os.cpu_count()
     output_rootpath = '/jukebox/wang/ahoag/for_cz/clearmap2_test_output'
     sample_dir = sys.argv[1].strip().rstrip("/")
+    blocks_per_job = int(sys.argv[2])
     array_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
     
     request_name,sample_name = sample_dir.split('/')[-2:]
@@ -57,10 +66,11 @@ if __name__ == '__main__':
     with open(fname,'rb') as f:
         cell_detection_parameter = pickle.load(f)
     # print('path                    : ' + fname)
+    cell_detection_parameter['verbose']=True
     hdict.pprint(cell_detection_parameter)
     print()
 
-    # Split into blocks
+    # Get the blocks
     blocks = bp.split_into_blocks(ws.source('stitched'),
                     processes='serial',
                     axes=[2],
@@ -72,40 +82,28 @@ if __name__ == '__main__':
     result_dir = os.path.join(dst_dir,'cells_blocks')
     if not os.path.exists(result_dir):
         os.mkdir(result_dir)
+    block_mindex = array_id*blocks_per_job
+    block_maxdex = block_mindex + blocks_per_job
+    block_indices = list(range(block_mindex,block_maxdex))
+    # blocks_this_job = blocks[block_mindex:block_maxdex]
 
-    block = blocks[array_id]
-    print(f"Running cell detection on block {array_id}")
+    # Process 1 block per core 
+    print("Running cell detection on blocks: ", block_indices)
     sys.stdout.flush()
-    block_result = process_block(block,savedir=result_dir,
-        params=cell_detection_parameter,verbose=True)
-    print("Done running cell detection on this block")
-    sys.stdout.flush()
+    process_block_par = partial(process_block,
+        result_dir,cell_detection_parameter)
+    with ProcessPoolExecutor(max_workers=n_cores) as executor:
+        for block_result in executor.map(process_block_par,block_indices):
+            try:
+                print(block_result)
+                sys.stdout.flush()
+            except Exception as exc:
+                print(f'generated an exception: {exc}')
 
-
-#     block_result_list = []
-#     print()
-#     print('Merging block results into a single data file...')
-#     for block in blocks:
-#         block_index = block.index[-1]
-#         #print(f"Working on block {block_index}")
-#         block_savename = os.path.join(directory,f'cells_blocks',f'cells_block{block_index}.p')
-#         with open(block_savename,'rb') as pkl:
-#             block_result = pickle.load(pkl)
-#             block_result_list.append(block_result)
-#             header = ['x','y','z']
-#             dtypes = [int, int, int]
-#             if cell_detection_parameter['shape_detection'] is not None:
-#                 header += ['size']
-#                 dtypes += [int]
-#             measures = cell_detection_parameter['intensity_detection']['measure']
-#             header +=  measures
-#             dtypes += [float] * len(measures)
-#     final_results = np.vstack([np.hstack(r) for r in block_result_list])
-#     dt = {'names' : header, 'formats' : dtypes}
-#     cells_allblocks = np.zeros(len(final_results), dtype=dt)
-#     for i,h in enumerate(header):
-#         cells_allblocks[h] = final_results[:,i]
-#     savename = ws.filename('cells',postfix='raw')
-#     io.write(savename,cells_allblocks)
-# print('Saving raw cell detection results to:\n/jukebox/witten/Chris/data/clearmap2/' + fpath + '/cells_raw.npy')
-# print()
+    # for block in blocks_thisjob:
+    #     print(f"Running cell detection on block {block.index[-1]}")
+    #     sys.stdout.flush()
+    #     block_result = process_block(block,savedir=result_dir,
+    #         params=cell_detection_parameter)
+    #     print("Done running cell detection on this block")
+    #     sys.stdout.flush()

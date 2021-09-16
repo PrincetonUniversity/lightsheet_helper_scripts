@@ -28,8 +28,7 @@ if __name__ == '__main__':
 	atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif" # PMA 20 micron isotropic
 
 	out1 = os.path.join(src, "elastix_inverse_transform")
-	if not os.path.exists(out1):
-		os.mkdir(out1)
+	os.makedirs(out1, exist_ok=True)
 	
 	if array_id == 0:
 
@@ -60,9 +59,8 @@ if __name__ == '__main__':
 		assert os.path.exists(mv2)
 		
 		out2 = os.path.join(out1,"488_to_642")
-		if not os.path.exists(out2): 
-			os.mkdir(out2)
-		
+		os.makedirs(out2, exist_ok=True)
+					
 		params = [os.path.join(param_fld, xx) for xx in os.listdir(param_fld)]
 		#run
 		e_out, transformfiles = elastix_command_line_call(fx2, mv2, out2, params)

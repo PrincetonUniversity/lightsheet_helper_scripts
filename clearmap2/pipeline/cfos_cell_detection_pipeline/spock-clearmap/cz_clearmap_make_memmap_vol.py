@@ -24,9 +24,8 @@ if __name__ == "__main__":
 		'imaging_request_1/rawdata/resolution_3.6x')
 	dst_dir = os.path.join(output_rootpath,request_name,
 		sample_name,'imaging_request_1/rawdata/resolution_3.6x')
-	if not os.path.exists(dst_dir):
-		os.makedirs(dst_dir)
-		print(f"Creating dst dir: {dst_dir}")
+	os.makedirs(dst_dir,exist_ok=True)
+	print(f"Creating dst dir: {dst_dir}")
 
 	# Link and rename image files
 
@@ -37,9 +36,7 @@ if __name__ == "__main__":
 
 	dst_642 = os.path.join(dst_dir,'Ex_642_Em_2_corrected')
 
-	if not os.path.exists(dst_642):
-		print(f"Creating 642 dst dir: {dst_642}")
-		os.mkdir(dst_642)
+	os.makedirs(dst_642,exist_ok=True)
 		
 	src_files_642 = sorted(glob.glob(src_642 + '/*tif'))
 	print()
@@ -55,9 +52,7 @@ if __name__ == "__main__":
 		src_488 = os.path.join(src_dir,'Ex_488_Em_0_corrected')
 
 	dst_488 = os.path.join(dst_dir,'Ex_488_Em_0_corrected')
-	if not os.path.exists(dst_488):
-		print(f"Creating 488 dst dir: {dst_488}")
-		os.mkdir(dst_488)
+	os.makedirs(dst_488,exist_ok=True)
 
 	print("Sym linking Ch 488 files if not done already")
 	src_files_488 = sorted(glob.glob(src_488 + '/*tif'))
@@ -88,23 +83,3 @@ if __name__ == "__main__":
 	else:
 		print("Stitched.npy file already exists")
 	sys.stdout.flush()
-	
-	# Finally, figure out how many blocks there so we can know how many array jobs to make
-	print("Determining number of blocks")
-	sys.stdout.flush()
-	blocks = bp.split_into_blocks(ws.source('stitched'),
-                    processes='serial',
-                    axes=[2],
-                    size_min=10,
-                    size_max=30,
-                    overlap=5,
-                    verbose=True)
-	
-	n_blocks = len(blocks)
-	block_json_file = os.path.join(dst_dir,'block_processing_info.json')
-	block_data = {
-		'n_blocks':n_blocks
-		}
-	with open(block_json_file,'w') as outfile:
-		json.dump(block_data,outfile)
-	print(f"Wrote block info to file: {block_json_file}")

@@ -65,9 +65,9 @@ if __name__ == '__main__':
     print()
     print('Merging block results into a single data file...')
     sys.stdout.flush()
-    for block in blocks[40:42]:
+    for block in blocks:
         block_index = block.index[-1]
-        #print(f"Working on block {block_index}")
+        print(f"Working on block {block_index}")
         block_savename = os.path.join(result_dir,f'cells_block{block_index}.p')
         with open(block_savename,'rb') as pkl:
             block_result = pickle.load(pkl)
