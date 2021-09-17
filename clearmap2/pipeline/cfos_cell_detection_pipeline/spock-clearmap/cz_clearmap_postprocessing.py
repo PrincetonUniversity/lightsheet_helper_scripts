@@ -187,16 +187,16 @@ if __name__ == "__main__":
 	get_count_and_volume_par = partial(get_count_and_volume,
 		region_idx,segment_name_dict,eroded_atlas_vol)
 	with ProcessPoolExecutor(max_workers=n_cores) as executor:
-	    for count_dict_i,volume_dict_i in executor.map(get_count_and_volume_par,chunked_segment_lists):
-	        try:
-	            for key in count_dict_i:
-	                count_dict_names[key] = count_dict_i[key]
-	            for key in volume_dict_i:
-	                volume_dict_names[key] = volume_dict_i[key]
-	        except Exception as exc:
-	            print(f'generated an exception: {exc}')
+		for count_dict_i,volume_dict_i in executor.map(get_count_and_volume_par,chunked_segment_lists):
+			try:
+				for key in count_dict_i:
+					count_dict_names[key] = count_dict_i[key]
+				for key in volume_dict_i:
+					volume_dict_names[key] = volume_dict_i[key]
+			except Exception as exc:
+				print(f'generated an exception: {exc}')
 	sys.stdout.flush()
-    print()
+	print()
 	print("Correcting counts")
 	# Correct counts by adding sum of counts in progeny regions
 	ontology_graph = graph_tools.Graph(ontology_dict)
@@ -219,7 +219,7 @@ if __name__ == "__main__":
 		except ZeroDivisionError:
 			corrected_density_dict[region] = float('NaN')
 	print("Corrected counts. Now saving out final CSV file")
-	sys.stdout.flusH()
+	sys.stdout.flush()
 	# Save region cell counts to region_cell_counts.csv
 	df = pd.DataFrame([corrected_count_dict,corrected_density_dict])
 	basename_csv = f"region_cell_counts_filtered_{minsize_thresh}px.csv"
