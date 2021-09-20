@@ -8,3 +8,4 @@ logs/
 *.ipynb_checkpoints/
 *.DS_Store
 *.log
+**/icon*.png
