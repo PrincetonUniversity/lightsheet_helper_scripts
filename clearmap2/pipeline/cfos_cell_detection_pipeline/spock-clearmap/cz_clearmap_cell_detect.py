@@ -46,9 +46,11 @@ def process_block(savedir,params,block_index):
 
 if __name__ == '__main__':
     n_cores = os.cpu_count()
-    output_rootpath = '/jukebox/wang/ahoag/for_cz/clearmap2_test_output'
+
     sample_dir = sys.argv[1].strip().rstrip("/")
     blocks_per_job = int(sys.argv[2])
+    output_rootpath = sys.argv[3].strip().rstrip("/")
+
     array_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
     
     request_name,sample_name = sample_dir.split('/')[-2:]

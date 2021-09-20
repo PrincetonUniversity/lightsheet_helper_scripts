@@ -2,7 +2,7 @@
 #
 #BATCH -p all                # partition (queue)
 #SBATCH -c 2                      # number of cores
-#SBATCH -t 20                 # time (minutes)
+#SBATCH -t 30                 # time (minutes)
 #SBATCH -o logs/clearmap_cell_detect_%A_%a.out        # STDOUT #add _%a to see each array job
 #SBATCH -e logs/clearmap_cell_detect_%A_%a.err        # STDERR #add _%a to see each array job
 #SBATCH --contiguous #used to try and get cpu mem to be contigous
@@ -26,6 +26,6 @@ conda activate ClearMap
 tsleep=`echo "$SLURM_ARRAY_TASK_ID*2" | bc`
 echo "Sleeping for $tsleep seconds"
 sleep $tsleep
-xvfb-run -d python spock-clearmap/cz_clearmap_cell_detect.py ${sample_dir} ${blocks_per_job}
+xvfb-run -d python spock-clearmap/cz_clearmap_cell_detect.py ${sample_dir} ${blocks_per_job} ${output_rootpath}
 echo "Removing tmp dir"
 rm -rf $tmpdir

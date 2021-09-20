@@ -29,9 +29,10 @@ def resize_helper(img, dst, resizef):
 
 if __name__ == "__main__":
 	#takes 1 command line args
-	output_rootpath = '/jukebox/wang/ahoag/for_cz/clearmap2_test_output'
 
 	sample_dir = sys.argv[1].strip().rstrip("/")
+	output_rootpath = sys.argv[2].strip().rstrip("/")
+
 	n_cores = os.cpu_count()
 	# Princeton Mouse Atlas
 	atlpth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"

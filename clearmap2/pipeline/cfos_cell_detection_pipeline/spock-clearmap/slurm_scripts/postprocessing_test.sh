@@ -9,4 +9,4 @@
 module load anacondapy/2020.11
 conda activate ClearMap
 
-xvfb-run -d python spock-clearmap/cz_clearmap_postprocessing.py ${sample_dir}
+xvfb-run -d python spock-clearmap/cz_clearmap_postprocessing.py ${sample_dir} ${output_rootpath}

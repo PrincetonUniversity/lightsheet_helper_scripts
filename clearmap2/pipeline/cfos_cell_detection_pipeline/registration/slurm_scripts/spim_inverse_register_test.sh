@@ -16,4 +16,4 @@ module load anacondapy/2020.11
 module load elastix/4.8
 . activate lightsheet
 
-xvfb-run -d python registration/spim_inverse_register.py ${sample_dir}
+xvfb-run -d python registration/spim_inverse_register.py ${sample_dir} ${output_rootpath}

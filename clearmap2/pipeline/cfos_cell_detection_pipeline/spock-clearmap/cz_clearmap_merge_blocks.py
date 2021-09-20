@@ -3,7 +3,7 @@ import os,sys,pickle,time,subprocess,random,shutil
 import numpy as np
 
 # ClearMap2 imports
-sys.path.append('/jukebox/witten/Chris/python/ClearMap2-master')
+sys.path.append('/jukebox/braininit/lightsheet/ClearMap2')
 import ClearMap.IO.Workspace as wsp
 import ClearMap.IO.IO as io
 import ClearMap.ParallelProcessing.BlockProcessing as bp
@@ -36,9 +36,8 @@ def process_block(block,savedir,params,verbose):
     return block_result
 
 if __name__ == '__main__':
-    output_rootpath = '/jukebox/wang/ahoag/for_cz/clearmap2_test_output'
     sample_dir = sys.argv[1].strip().rstrip("/")
-    
+    output_rootpath = sys.argv[2].strip().rstrip("/")
     request_name,sample_name = sample_dir.split('/')[-2:]
     dst_dir = os.path.join(output_rootpath,request_name,sample_name,
         'imaging_request_1/rawdata/resolution_3.6x')

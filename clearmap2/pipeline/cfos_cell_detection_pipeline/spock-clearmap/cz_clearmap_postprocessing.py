@@ -56,7 +56,7 @@ def get_count_and_volume(region_idx,segment_name_dict,eroded_atlas_vol,segment_l
 if __name__ == "__main__":
 	n_cores = os.cpu_count()
 	sample_dir = sys.argv[1].strip().rstrip("/")
-	output_rootpath = '/jukebox/wang/ahoag/for_cz/clearmap2_test_output'
+	output_rootpath = sys.argv[2].strip().rstrip("/")
 
 	request_name,sample_name = sample_dir.split('/')[-2:]
 	workspace_dir =  os.path.join(output_rootpath,
