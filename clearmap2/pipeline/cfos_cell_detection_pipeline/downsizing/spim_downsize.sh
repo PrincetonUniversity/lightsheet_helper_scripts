@@ -2,15 +2,13 @@
 #
 #SBATCH -p all                # partition (queue)
 #SBATCH -c 6                      # number of cores
-#SBATCH -t 150
-#SBATCH -o logs/smartspim_downsize_%j.out        # STDOUT #add _%a to see each array job
-#SBATCH -e logs/smartspim_downsize_%j.err        # STDERR #add _%a to see each array job
+#SBATCH -t 60
+#SBATCH -o logs/downsize_%A_%a.out        # STDOUT #add _%a to see each array job
+#SBATCH -e logs/downsize_%A_%a.err        # STDERR #add _%a to see each array job
 #SBATCH --contiguous #used to try and get cpu mem to be contigous
-#SBATCH --mem 80000
-
-cat /proc/$$/status | grep Cpus_allowed_list
+#SBATCH --mem 100000 # 100gbs
 
 module load anacondapy/2020.11
 . activate lightsheet
 
-python spim_downsize.py ${corrected_dir} ${downsized_dir}
+xvfb-run -d python downsizing/spim_downsize.py ${sample_dir} ${output_rootpath}
