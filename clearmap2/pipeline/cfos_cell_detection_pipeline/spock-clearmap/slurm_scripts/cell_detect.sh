@@ -17,6 +17,7 @@ if [ ! -d "$tmpdir" ]; then
   ls -ld $tmpdir
 fi
 export XDG_RUNTIME_DIR=$tmpdir
+export TMPDIR=$tmpdir
 
 module load anacondapy/2020.11
 conda activate ClearMap
@@ -25,6 +26,13 @@ conda activate ClearMap
 tsleep=`echo "$SLURM_ARRAY_TASK_ID*2" | bc`
 echo "Sleeping for $tsleep seconds"
 sleep $tsleep
-xvfb-run -d python spock-clearmap/cz_clearmap_cell_detect.py ${sample_dir} ${blocks_per_job} ${output_rootpath}
+xvfb-run -d -f ${tmpdir}/clearmap2_block${SLURM_ARRAY_TASK_ID} python spock-clearmap/cz_clearmap_cell_detect.py ${sample_dir} ${blocks_per_job} ${output_rootpath}
+EXIT=$?
 echo "Removing tmp dir"
 rm -rf $tmpdir
+if [[ "${EXIT}" -eq 135 ]]; then
+	echo "Exempting exit status 135; instead exiting with 0"
+	exit 0
+else
+	exit $EXIT
+fi
