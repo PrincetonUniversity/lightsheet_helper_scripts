@@ -37,10 +37,11 @@ def process_block(block,savedir,params,verbose):
 
 if __name__ == '__main__':
     sample_dir = sys.argv[1].strip().rstrip("/")
-    output_rootpath = sys.argv[2].strip().rstrip("/")
+    imaging_request = sys.argv[2].strip().rstrip("/")
+    output_rootpath = sys.argv[3].strip().rstrip("/")
     request_name,sample_name = sample_dir.split('/')[-2:]
     dst_dir = os.path.join(output_rootpath,request_name,sample_name,
-        'imaging_request_1/rawdata/resolution_3.6x')
+        imaging_request,'rawdata/resolution_3.6x')
     
     # Initialize ClearMap2 workspace object
     ws = wsp.Workspace('CellMap',directory=dst_dir)

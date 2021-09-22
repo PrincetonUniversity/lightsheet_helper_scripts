@@ -31,7 +31,8 @@ if __name__ == "__main__":
 	#takes 1 command line args
 
 	sample_dir = sys.argv[1].strip().rstrip("/")
-	output_rootpath = sys.argv[2].strip().rstrip("/")
+	imaging_request = sys.argv[2].strip().rstrip("/")
+	output_rootpath = sys.argv[3].strip().rstrip("/")
 
 	n_cores = os.cpu_count()
 	# Princeton Mouse Atlas
@@ -39,9 +40,9 @@ if __name__ == "__main__":
 
 	request_name,sample_name = sample_dir.split('/')[-2:]
 	src_dir = os.path.join(sample_dir,
-		'imaging_request_1/rawdata/resolution_3.6x')
+		imaging_request,'rawdata/resolution_3.6x')
 	dst_dir = os.path.join(output_rootpath,request_name,
-		sample_name,'imaging_request_1/rawdata/resolution_3.6x')
+		sample_name,imaging_request,'rawdata/resolution_3.6x')
 	channels = ['488','642']
 	smartspim_prefix_dict = {
 		'488':"Ex_488_Em_0",
@@ -52,7 +53,7 @@ if __name__ == "__main__":
 	smartspim_prefix = smartspim_prefix_dict[channel]
 	print(f"Downsizing Channel: {channel}")
 	corrected_dir = os.path.join(output_rootpath,request_name,sample_name,
-		f"imaging_request_1/rawdata/resolution_3.6x/{smartspim_prefix}_corrected")
+		imaging_request,f"rawdata/resolution_3.6x/{smartspim_prefix}_corrected")
 	print("\nPath to corrected images: %s\n" % corrected_dir)
 	#path to store downsized images
 	dst_dir_downsized = os.path.join(dst_dir,f"{smartspim_prefix}_downsized")

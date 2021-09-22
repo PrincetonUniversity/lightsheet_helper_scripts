@@ -13,13 +13,14 @@ from tools.registration.register import elastix_command_line_call
 if __name__ == '__main__':
 	#takes 6 command line arguments max
 	array_id = int(os.environ["SLURM_ARRAY_TASK_ID"]) # 0 = atlas -> reg, 1 = reg -> cell
-	# array_id = 1 # 0 = atlas -> reg, 1 = reg -> cell
-	output_rootpath = '/jukebox/wang/ahoag/for_cz/clearmap2_test_output'
 
 	sample_dir = sys.argv[1].strip().rstrip("/")
+	imaging_request = sys.argv[2].strip().rstrip("/")
+	output_rootpath = sys.argv[3].strip().rstrip("/")
+
 	request_name,sample_name = sample_dir.split('/')[-2:]
 	src = os.path.join(output_rootpath,request_name,sample_name,
-		"imaging_request_1/rawdata/resolution_3.6x")
+		imaging_request,"rawdata/resolution_3.6x")
 	reg = "Ex_488_Em_0"
 	cell = "Ex_642_Em_2"
 	n_cores = os.cpu_count()

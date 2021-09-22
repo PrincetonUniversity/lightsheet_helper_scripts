@@ -23,10 +23,10 @@ module load anacondapy/2020.11
 conda activate ClearMap
 
 # Sleep for 2*array_job_id seconds to avoid collisions between array jobs
-tsleep=`echo "$SLURM_ARRAY_TASK_ID*2" | bc`
+tsleep=`echo "$SLURM_ARRAY_TASK_ID*3" | bc`
 echo "Sleeping for $tsleep seconds"
 sleep $tsleep
-xvfb-run -d -f ${tmpdir}/clearmap2_block${SLURM_ARRAY_TASK_ID} python spock-clearmap/cz_clearmap_cell_detect.py ${sample_dir} ${blocks_per_job} ${output_rootpath}
+xvfb-run -d -f ${tmpdir}/clearmap2_block${SLURM_ARRAY_TASK_ID} python spock-clearmap/cz_clearmap_cell_detect.py ${sample_dir} ${imaging_request} ${output_rootpath} ${blocks_per_job}
 EXIT=$?
 echo "Removing tmp dir"
 rm -rf $tmpdir
