@@ -6,8 +6,8 @@ This directory contains the pipeline for creating a raw space atlas, using paral
 The raw space atlas is useful for cases when you want to look at your data in its full resolution but with the atlas regions overlaid. A common use case for this is c-fos, where it is important to be able to see cells at the highest resolution possible with the atlas boundaries. In normal registration, we register data to the atlas and it gets downsized significantly because the atlases we use are lower resolution (typically 20-25 micron resolution isotropic) than the raw data (which range from 1-5 micron resolution). The trick here is that we are registering the atlas to the data, i.e. going in reverse.
 
 Prerequisites for this are having run the elastix inverse transformations, i.e. the two transformations:
-1. resampled regch 488 (fixed) -> resampled cellch 642 (moving)
-2. atlas (fixed) -> resampled regch 488 (moving)
+1. resampled regch 488 (moving) -> resampled cellch 642 (fixed)
+2. atlas (moving) -> resampled regch 488 (moving)
 
 Where the resampling (aka downsizing) of both regch and cellch is assumed to have been done ahead of time.
 

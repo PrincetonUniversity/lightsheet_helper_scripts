@@ -14,13 +14,14 @@ import ClearMap.ParallelProcessing.BlockProcessing as bp
 # Select datasets to analyze
 if __name__ == "__main__":
 	sample_dir = sys.argv[1].strip().rstrip("/")
-	output_rootpath = '/jukebox/wang/ahoag/for_cz/clearmap2_test_output'
+	imaging_request = sys.argv[2].strip().rstrip("/")
+	output_rootpath = sys.argv[3].strip().rstrip("/")
 
 	request_name,sample_name = sample_dir.split('/')[-2:]
-	src_dir = os.path.join(sample_dir,
-		'imaging_request_1/rawdata/resolution_3.6x')
+	src_dir = os.path.join(sample_dir,imaging_request,
+		'rawdata/resolution_3.6x')
 	dst_dir = os.path.join(output_rootpath,request_name,
-		sample_name,'imaging_request_1/rawdata/resolution_3.6x')
+		sample_name,imaging_request,'rawdata/resolution_3.6x')
 	
 	if not os.path.exists(dst_dir):
 		os.makedirs(dst_dir)

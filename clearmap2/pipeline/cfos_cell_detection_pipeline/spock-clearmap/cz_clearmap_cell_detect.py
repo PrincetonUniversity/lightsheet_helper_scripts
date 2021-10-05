@@ -6,10 +6,7 @@ sys.path.append('/jukebox/braininit/lightsheet/ClearMap2')
 import ClearMap.IO.Workspace as wsp
 import ClearMap.ParallelProcessing.BlockProcessing as bp
 import ClearMap.Utils.HierarchicalDict as hdict
-try:
-    import ClearMap.ImageProcessing.Experts.Cells as cells
-except Exception as e:
-    raise Exception(e)
+import ClearMap.ImageProcessing.Experts.Cells as cells
 
 from functools import partial    
 from concurrent.futures import ProcessPoolExecutor
@@ -46,14 +43,17 @@ def process_block(savedir,params,block_index):
 
 if __name__ == '__main__':
     n_cores = os.cpu_count()
-    output_rootpath = '/jukebox/wang/ahoag/for_cz/clearmap2_test_output'
+
     sample_dir = sys.argv[1].strip().rstrip("/")
-    blocks_per_job = int(sys.argv[2])
+    imaging_request = sys.argv[2].strip().rstrip("/")
+    output_rootpath = sys.argv[3].strip().rstrip("/")
+    blocks_per_job = int(sys.argv[4])
+
     array_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
     
     request_name,sample_name = sample_dir.split('/')[-2:]
     dst_dir = os.path.join(output_rootpath,request_name,sample_name,
-        'imaging_request_1/rawdata/resolution_3.6x')
+        imaging_request,'rawdata/resolution_3.6x')
     # Initialize ClearMap2 workspace object
    
     ws = wsp.Workspace('CellMap',directory=dst_dir)
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     if not os.path.exists(result_dir):
         os.mkdir(result_dir)
     block_mindex = array_id*blocks_per_job
-    block_maxdex = block_mindex + blocks_per_job
+    block_maxdex = min(block_mindex + blocks_per_job,len(blocks))
     block_indices = list(range(block_mindex,block_maxdex))
     # blocks_this_job = blocks[block_mindex:block_maxdex]
 
