@@ -62,7 +62,8 @@ done
 echo ""
 # Loop through all sample dirs in the request folder and run the full pipeline for each 
 
-blocks_per_job=1 # number of cell blocks to process in a single array job
+blocks_per_job=1 # number of cell blocks to process in a single array job. Currently only works with 1 right now
+# due to slurm error. TODO - allow parallel processing in each array job 
 
 # for sample_dir in "${request_dir}"/*
 for sample_dir in "${arr[@]}"
@@ -129,7 +130,8 @@ output_rootpath=${output_rootpath},clearmap_params_file=${clearmap_params_file} 
 	# ## Merge the blocks
 	OUT3=$(sbatch --parsable --dependency=afterok:${OUT2##* } \
 	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
+imaging_request=${imaging_request},output_rootpath=${output_rootpath},\
+clearmap_params_file=${clearmap_params_file} \
 	spock-clearmap/slurm_scripts/merge_blocks.sh)
 	echo "Step 3: Merge cell detection blocks:"
 	echo $OUT3

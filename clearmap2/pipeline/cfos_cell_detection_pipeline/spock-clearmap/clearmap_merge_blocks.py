@@ -39,6 +39,8 @@ if __name__ == '__main__':
     sample_dir = sys.argv[1].strip().rstrip("/")
     imaging_request = sys.argv[2].strip().rstrip("/")
     output_rootpath = sys.argv[3].strip().rstrip("/")
+    clearmap_params_file = sys.argv[4].strip().rstrip('/')
+
     request_name,sample_name = sample_dir.split('/')[-2:]
     dst_dir = os.path.join(output_rootpath,request_name,sample_name,
         imaging_request,'rawdata/resolution_3.6x')
@@ -56,8 +58,7 @@ if __name__ == '__main__':
                     overlap=5,
                     verbose=False)
     # Load ClearMap2 cell detection parameters
-    fname = '/jukebox/witten/Chris/data/clearmap2/utilities/cell_detection_parameter.p'
-    with open(fname,'rb') as f:
+    with open(clearmap_params_file,'rb') as f:
         cell_detection_parameter = pickle.load(f)
 
     result_dir = os.path.join(dst_dir,'cells_blocks')

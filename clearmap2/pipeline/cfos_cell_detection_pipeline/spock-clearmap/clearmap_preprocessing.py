@@ -10,7 +10,6 @@ import ClearMap.IO.Workspace as wsp
 import ClearMap.IO.IO as io
 import ClearMap.ParallelProcessing.BlockProcessing as bp
 
-
 # Select datasets to analyze
 if __name__ == "__main__":
 	sample_dir = sys.argv[1].strip().rstrip("/")
@@ -27,12 +26,22 @@ if __name__ == "__main__":
 		os.makedirs(dst_dir)
 		print(f"Creating dst dir: {dst_dir}")
 
-	# Link and rename image files
+	# Link and rename image files. Need to check if files are in old 
+	# old folder convention e.g. Ex_642_Em_2
+	# or new folder convention e.g. Ex_647_Em_680
+	old_src_642 = os.path.join(src_dir,'Ex_642_Em_2_corrected')
+	new_src_642 = os.path.join(src_dir,'Ex_647_Em_680_stitched')
+	if os.path.exists(old_src_642):
+		try:
+			src_642 = fast_scandir(old_src_642)[-1]
+		except:
+			src_642 = old_src_642
+	elif os.path.exists(new_src_642):
+		try:
+			src_642 = fast_scandir(new_src_642)[-1]
+		except:
+			src_642 = new_src_642
 
-	try:
-		src_642 = fast_scandir(os.path.join(src_dir,'Ex_642_Em_2_corrected'))[-1]
-	except:
-		src_642 = os.path.join(src_dir,'Ex_642_Em_2_corrected')
 	# print(src_642)
 	dst_642 = os.path.join(dst_dir,'Ex_642_Em_2_corrected')
 
@@ -48,10 +57,19 @@ if __name__ == "__main__":
 		dst = os.path.join(dst_642,dst_basename)
 		if not os.path.exists(dst):
 			os.symlink(src,dst)
-	try:
-		src_488 = fast_scandir(os.path.join(src_dir,'Ex_488_Em_0_corrected'))[-1]
-	except:
-		src_488 = os.path.join(src_dir,'Ex_488_Em_0_corrected')
+	## Now 488
+	old_src_488 = os.path.join(src_dir,'Ex_488_Em_0_corrected')
+	new_src_488 = os.path.join(src_dir,'Ex_488_Em_525_stitched')
+	if os.path.exists(old_src_488):
+		try:
+			src_488 = fast_scandir(old_src_488)[-1]
+		except:
+			src_488 = old_src_488
+	elif os.path.exists(new_src_488):
+		try:
+			src_488 = fast_scandir(new_src_488)[-1]
+		except:
+			src_488 = new_src_488
 
 	dst_488 = os.path.join(dst_dir,'Ex_488_Em_0_corrected')
 	os.makedirs(dst_488,exist_ok=True)

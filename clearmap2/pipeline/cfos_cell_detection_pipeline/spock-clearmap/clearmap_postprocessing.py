@@ -26,7 +26,6 @@ eroded_atlas_file = '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas
 segment_props_file = '/jukebox/witten/Chris/data/clearmap2/utilities/princeton-atlas/pma_segment_properties_info'
 ontology_json_file = '/jukebox/witten/Chris/data/clearmap2/utilities/princeton-atlas/PMA_ontology.json'
 
-
 def get_count_and_volume(region_idx,segment_name_dict,eroded_atlas_vol,segment_list,):
 	""" 
 	---PURPOSE---
