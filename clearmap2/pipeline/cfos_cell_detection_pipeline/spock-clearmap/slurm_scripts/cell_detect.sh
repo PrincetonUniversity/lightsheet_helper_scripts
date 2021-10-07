@@ -20,7 +20,7 @@ conda activate ClearMap
 tsleep=`echo "$SLURM_ARRAY_TASK_ID*2+1" | bc`
 echo "Sleeping for $tsleep seconds"
 sleep $tsleep
-python spock-clearmap/clearmap_cell_detect_debug.py ${sample_dir} ${blocks_per_job} ${output_rootpath} ${clearmap_params_file}
+python spock-clearmap/clearmap_cell_detect_debug.py ${sample_dir} ${imaging_request} ${blocks_per_job} ${output_rootpath} ${clearmap_params_file}
 # Capture exit code and exit gracefully since there are some weird 135 Bus Errors that don't affect the python job 
 # but seem to stem from the code finishing
 EXIT=$?
