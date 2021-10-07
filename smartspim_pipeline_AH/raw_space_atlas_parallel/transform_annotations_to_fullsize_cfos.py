@@ -39,13 +39,12 @@ if __name__ == '__main__':
     elastix_atlas_to_auto_dir = sys.argv[3]
     elastix_auto_to_cell_dir = sys.argv[4]
     output_dir = sys.argv[5]
+    annotation_volume_path = sys.argv[6]
 
     print(f"raw_dir is: {raw_dir}")
     print(f"raw_dir is: {raw_dir}")
     assert os.path.exists(raw_dir)
     assert len(os.listdir(raw_dir)) > 0
-    #set which annotation atlas you want to align to raw space. e.g. Allen or PMA
-    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_16bit_hierarch_labels.tif" # Princeton Mouse Annotation Atlas, 16 bit
 
     # Set up output directories    
     makedir(output_dir) # Makes it if it doesn't exist already
@@ -91,7 +90,7 @@ if __name__ == '__main__':
         print("running transformix")
         transformed_ann = os.path.join(aldst, "result.tif")
         if not os.path.exists(transformed_ann):
-            transformix_command_line_call(ann, aldst, transformfiles[-1])
+            transformix_command_line_call(annotation_volume_path, aldst, transformfiles[-1])
             print("ran transformix successfully!")
         else:
             print("transformix was already run before")
