@@ -14,7 +14,7 @@ The cell detector is: [ClearMap2](https://github.com/ChristophKirst/ClearMap2). 
 $ mkdir authfiles
 $ mkdir logs
 ```
-- Make sure that for each sample in your request there is a 
+- Make sure that for each sample in your request there is stitched+corrected data folder for both 488 channel and 642/647 channel in your resolution_3.6x/ folder
 
 Also:
 - Make a conda environment called `ClearMap` with clearmap2 installed.
