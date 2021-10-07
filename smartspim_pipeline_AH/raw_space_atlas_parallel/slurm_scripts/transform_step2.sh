@@ -18,4 +18,6 @@ module load anacondapy/2020.11
 module load elastix/4.8
 . activate lightsheet
 
-python transform_annotations_to_fullsize_cfos.py step2 ${raw_dir} ${elastix_atlas_to_auto_dir} ${elastix_auto_to_cell_dir} ${output_dir}
+python transform_annotations_to_fullsize_cfos.py step2 ${raw_dir} \
+	${elastix_atlas_to_auto_dir} ${elastix_auto_to_cell_dir} ${output_dir} \
+	${annotation_volume_path}

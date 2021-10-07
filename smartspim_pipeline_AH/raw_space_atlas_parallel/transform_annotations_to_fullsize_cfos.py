@@ -6,7 +6,7 @@ Created on Mon Oct 21 14:19:28 2019
 @author: wanglab
 """
 
-import os, numpy as np, sys
+import os, numpy as np, sys, glob
 from concurrent.futures import ProcessPoolExecutor
 import tifffile
 sys.path.append("/jukebox/wang/sanjeev/BrainPipe")
@@ -39,13 +39,12 @@ if __name__ == '__main__':
     elastix_atlas_to_auto_dir = sys.argv[3]
     elastix_auto_to_cell_dir = sys.argv[4]
     output_dir = sys.argv[5]
+    annotation_volume_path = sys.argv[6]
 
     print(f"raw_dir is: {raw_dir}")
     print(f"raw_dir is: {raw_dir}")
     assert os.path.exists(raw_dir)
     assert len(os.listdir(raw_dir)) > 0
-    #set which annotation atlas you want to align to raw space. e.g. Allen or PMA
-    ann = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_16bit_hierarch_labels.tif" # Princeton Mouse Annotation Atlas, 16 bit
 
     # Set up output directories    
     makedir(output_dir) # Makes it if it doesn't exist already
@@ -91,7 +90,7 @@ if __name__ == '__main__':
         print("running transformix")
         transformed_ann = os.path.join(aldst, "result.tif")
         if not os.path.exists(transformed_ann):
-            transformix_command_line_call(ann, aldst, transformfiles[-1])
+            transformix_command_line_call(annotation_volume_path, aldst, transformfiles[-1])
             print("ran transformix successfully!")
         else:
             print("transformix was already run before")
@@ -102,8 +101,10 @@ if __name__ == '__main__':
         print("Now zooming out in z first. This can take a while")
         transformed_ann = os.path.join(aldst, "result.tif")
         tann = tifffile.imread(transformed_ann)
-        pl0 = tifffile.imread(os.path.join(raw_dir, os.listdir(raw_dir)[0])) # Z=0 plane
-        dv0,ap0,ml0 = len(os.listdir(raw_dir)), pl0.shape[0], pl0.shape[1] # dimensions of original raw data, z, y, z
+        raw_planes = sorted(glob.glob(raw_dir + '/*tif'))
+        pl0 = tifffile.imread(raw_planes[0]) # Z=0 plane
+        dv0 = len(raw_planes)
+        ap0,ml0 = pl0.shape[0], pl0.shape[1] # dimensions of original raw data, z, y, z
         ml1,ap1,dv1 = tann.shape # dimensions of downsized raw data
         #scale in dv only first and rotate to hor orientation
         # bigdvann = np.flip(np.swapaxes(zoom(tann, [1,1,dv0/float(dv1)], order=0),0,2),0) #ALSO REVERSE IN Z FOR VENTRAL TO DORSAL IMAGING
