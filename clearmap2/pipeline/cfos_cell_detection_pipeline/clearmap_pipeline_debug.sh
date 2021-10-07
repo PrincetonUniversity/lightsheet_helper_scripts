@@ -21,10 +21,10 @@
 ###
 ### NOTE: This script will only work on one imaging request at a time. 
 ###
-### NOTE2: Set the username, output_rootpath and clearmap_params_file below
-### You can make a new clearmap params pickle file of custom parameters using the script:
+### NOTE2: Set the output_rootpath below to where you want all of the results to be saved:
+### NOTE3: Set the path to the clearmap parameters pickle file that you want to use 
+### for cell detection. You can make a new pickle file of custom parameters using the script:
 ### spock-clearmap/clearmap_parameters.py
-username=cz15
 output_rootpath="/jukebox/wang/ahoag/for_cz/clearmap2_test_output"
 clearmap_params_file='/jukebox/witten/Chris/data/clearmap2/utilities/cell_detection_parameter.p'
 
@@ -40,14 +40,14 @@ fi
 
 request_name=$1
 imaging_request=$2 
-request_dir="/jukebox/LightSheetData/lightserv/${username}/$1"
+request_dir="/jukebox/LightSheetData/lightserv/cz15/$1"
 
 # Check to see if sample_name argument was provided 
 if [ "$#" -eq 3 ]
 then
 	sample_name=$3
 	echo "Running script for Request name: $1, Imaging request: $2, Sample name: $3"
-	declare -a arr=("/jukebox/LightSheetData/lightserv/${username}/${request_name}/${sample_name}")
+	declare -a arr=("/jukebox/LightSheetData/lightserv/cz15/${request_name}/${sample_name}")
 else
 	echo "Running script for Request name: $1, Imaging request: $2, all samples"
 	declare -a arr=(${request_dir}/*)

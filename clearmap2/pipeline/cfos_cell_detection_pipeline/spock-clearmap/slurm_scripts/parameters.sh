@@ -11,4 +11,4 @@
 module load anacondapy/2020.11
 conda activate clearmap
 
-xvfb-run -d python cz_clearmap_parameters.py
+xvfb-run -d python clearmap_parameters.py
