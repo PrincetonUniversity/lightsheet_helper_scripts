@@ -21,10 +21,7 @@ import ClearMap.Alignment.Elastix as elx
 from functools import partial
 
 
-# Resource files
-eroded_atlas_file = '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_16bit_hierarch_labels_60um_edge_80um_vent_erosion.tif'
-segment_props_file = '/jukebox/witten/Chris/data/clearmap2/utilities/princeton-atlas/pma_segment_properties_info'
-ontology_json_file = '/jukebox/witten/Chris/data/clearmap2/utilities/princeton-atlas/PMA_ontology.json'
+
 
 def get_count_and_volume(region_idx,segment_name_dict,eroded_atlas_vol,segment_list,):
 	""" 
@@ -57,6 +54,21 @@ if __name__ == "__main__":
 	sample_dir = sys.argv[1].strip().rstrip("/")
 	imaging_request = sys.argv[2].strip().rstrip("/")
 	output_rootpath = sys.argv[3].strip().rstrip("/")
+	atlas = sys.argv[4].strip().rstrip("/")
+
+	if atlas == 'Princeton':
+		# Princeton Mouse Atlas
+		eroded_atlas_file = '/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_16bit_hierarch_labels_60um_edge_80um_vent_erosion.tif'
+		segment_props_file = '/jukebox/LightSheetTransfer/atlas/PMA_16bit_hierarch_labels_segment_properties_info'
+		ontology_json_file = '/jukebox/LightSheetTransfer/atlas/PMA_ontology.json'
+	elif atlas == 'Allen':
+		# Allen Mouse Brain Atlas
+		eroded_atlas_file = '/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_16bit_hierarch_labels_fillmissing_60um_edge_80um_vent_erosion.tif'
+		segment_props_file = '/jukebox/LightSheetTransfer/atlas/allen_atlas/allenatlas_2017_16bit_hierarch_labels_segment_properties_info'
+		ontology_json_file = '/jukebox/LightSheetTransfer/atlas/allen_atlas/allen.json'
+	else:
+		sys.exit(f"Atlas provided: {atlas} is not accepted. Must be one of ['Princeton','Allen']")
+
 
 	request_name,sample_name = sample_dir.split('/')[-2:]
 	workspace_dir =  os.path.join(output_rootpath,

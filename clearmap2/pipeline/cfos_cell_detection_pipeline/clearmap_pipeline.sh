@@ -21,13 +21,13 @@
 ###
 ### NOTE: This script will only work on one imaging request at a time. 
 ###
-### NOTE2: Set the username, output_rootpath and clearmap_params_file below
+### NOTE2: Set the username, output_rootpath, clearmap_params_file and atlas below
 ### You can make a new clearmap params pickle file of custom parameters using the script:
 ### spock-clearmap/clearmap_parameters.py
 username=cz15
 output_rootpath="/jukebox/wang/ahoag/for_cz/clearmap2_test_output"
 clearmap_params_file='/jukebox/witten/Chris/data/clearmap2/utilities/cell_detection_parameter.p'
-
+atlas='Princeton' # 'Princeton' or 'Allen'
 # Makes sure that you supplied at least two command line arguments 
 if [ "$#" -lt 2 ]
 then
@@ -146,8 +146,8 @@ imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
 
 	## Downsizing, both channels one per array job, can start without dependency
 	OUT4=$(sbatch --parsable --export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	--array=0-1 downsizing/spim_downsize.sh)
+imaging_request=${imaging_request},output_rootpath=${output_rootpath},\
+atlas=${atlas} --array=0-1 downsizing/spim_downsize.sh)
 	echo "Step 4: Downsizing:"
 	echo $OUT4
 
@@ -162,8 +162,8 @@ imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
 	## Inverse registration, both transformations one per array job
 	OUT5=$(sbatch --parsable --dependency=afterok:${OUT4##* } --array=0-1 \
 	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	registration/slurm_scripts/spim_inverse_register.sh)
+imaging_request=${imaging_request},output_rootpath=${output_rootpath},\
+atlas=${atlas} registration/slurm_scripts/spim_inverse_register.sh)
 	echo "Step 5: Inverse registration:"
 	echo $OUT5
 

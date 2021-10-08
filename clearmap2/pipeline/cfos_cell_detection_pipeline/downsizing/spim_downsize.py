@@ -33,11 +33,16 @@ if __name__ == "__main__":
 	sample_dir = sys.argv[1].strip().rstrip("/")
 	imaging_request = sys.argv[2].strip().rstrip("/")
 	output_rootpath = sys.argv[3].strip().rstrip("/")
-
+	atlas = sys.argv[4].strip()
 	n_cores = os.cpu_count()
-	# Princeton Mouse Atlas
-	atlpth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
-
+	if atlas == 'Princeton':
+		# Princeton Mouse Atlas
+		atlpth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+	elif atlas == 'Allen':
+		# Allen Mouse Brain Atlas
+		atlpth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
+	else:
+		sys.exit(f"Atlas provided: {atlas} is not accepted. Must be one of ['Princeton','Allen']" )
 	request_name,sample_name = sample_dir.split('/')[-2:]
 	src_dir = os.path.join(sample_dir,
 		imaging_request,'rawdata/resolution_3.6x')

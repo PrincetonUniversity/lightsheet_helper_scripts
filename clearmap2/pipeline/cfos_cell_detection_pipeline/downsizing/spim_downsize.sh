@@ -11,4 +11,4 @@
 module load anacondapy/2020.11
 . activate lightsheet
 
-xvfb-run -d python downsizing/spim_downsize.py ${sample_dir} ${imaging_request} ${output_rootpath}
+xvfb-run -d python downsizing/spim_downsize.py ${sample_dir} ${imaging_request} ${output_rootpath} ${atlas}
