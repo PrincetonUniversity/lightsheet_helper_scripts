@@ -9,4 +9,4 @@
 module load anacondapy/2020.11
 conda activate ClearMap
 
-xvfb-run -d python spock-clearmap/cz_clearmap_make_memmap_vol.py ${sample_dir} ${imaging_request} ${output_rootpath}
+xvfb-run -d python spock-clearmap/clearmap_make_memmap_vol.py ${sample_dir} ${imaging_request} ${output_rootpath}

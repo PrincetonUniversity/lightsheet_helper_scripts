@@ -17,6 +17,7 @@ if __name__ == '__main__':
 	sample_dir = sys.argv[1].strip().rstrip("/")
 	imaging_request = sys.argv[2].strip().rstrip("/")
 	output_rootpath = sys.argv[3].strip().rstrip("/")
+	atlas = sys.argv[4].strip().rstrip("/")
 
 	request_name,sample_name = sample_dir.split('/')[-2:]
 	src = os.path.join(output_rootpath,request_name,sample_name,
@@ -26,7 +27,14 @@ if __name__ == '__main__':
 	n_cores = os.cpu_count()
 	
 	param_fld = "/jukebox/wang/ahoag/brainpipe/parameterfolder" 
-	atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif" # PMA 20 micron isotropic
+	if atlas == 'Princeton':
+		# Princeton Mouse Atlas
+		atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+	elif atlas == 'Allen':
+		# Allen Mouse Brain Atlas
+		atl = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
+	else:
+		sys.exit(f"Atlas provided: {atlas} is not accepted. Must be one of ['Princeton','Allen']")
 
 	out1 = os.path.join(src, "elastix_inverse_transform")
 	os.makedirs(out1, exist_ok=True)
