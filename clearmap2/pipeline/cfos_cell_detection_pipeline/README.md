@@ -17,7 +17,10 @@ $ mkdir logs
 - Make sure that for each sample in your request there is stitched+corrected data folder for both 488 channel and 642/647 channel in your resolution_3.6x/ folder
 
 Also:
-- Make a conda environment called `ClearMap` with clearmap2 installed.
+- Make a conda environment called `ClearMap` with clearmap2 installed. Then add these packages to that environment:
+```
+pip install pandas brain-atlas-toolkit
+```
 - Make a conda environment called `lightsheet` with the following packages installed:
 ```
 pip install numpy scipy tifffile opencv-python 
@@ -27,3 +30,4 @@ pip install numpy scipy tifffile opencv-python
     -`username`: your netid
     -`output_rootpath`: the root location where you want to save the results
     -`clearmap_params_file`: the clearmap parameter pickle file containing the cell detection parameters
+    -`atlas`: The string representing the atlas you want to use, options are `Princeton` or `Allen`
