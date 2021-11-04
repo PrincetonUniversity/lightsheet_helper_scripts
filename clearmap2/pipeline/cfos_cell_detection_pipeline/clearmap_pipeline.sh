@@ -171,7 +171,7 @@ atlas=${atlas} registration/slurm_scripts/spim_inverse_register.sh)
 	# Dependent on merge block step and inverse registration step
 	OUT6=$(sbatch --parsable --dependency=afterok:${OUT3##* }:${OUT5##* } \
 	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
+imaging_request=${imaging_request},output_rootpath=${output_rootpath},atlas=${atlas} \
 	spock-clearmap/slurm_scripts/postprocessing.sh)
 	echo "Step 6: Register cells to atlas and create brain region count dataframe"
 	echo $OUT6
