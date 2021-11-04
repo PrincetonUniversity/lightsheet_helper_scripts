@@ -21,13 +21,13 @@
 ###
 ### NOTE: This script will only work on one imaging request at a time. 
 ###
-### NOTE2: Set the output_rootpath below to where you want all of the results to be saved:
-### NOTE3: Set the path to the clearmap parameters pickle file that you want to use 
-### for cell detection. You can make a new pickle file of custom parameters using the script:
+### NOTE2: Set the username, output_rootpath, clearmap_params_file and atlas below
+### You can make a new clearmap params pickle file of custom parameters using the script:
 ### spock-clearmap/clearmap_parameters.py
+username=cz15
 output_rootpath="/jukebox/wang/ahoag/for_cz/clearmap2_test_output"
 clearmap_params_file='/jukebox/witten/Chris/data/clearmap2/utilities/cell_detection_parameter.p'
-
+atlas='Princeton' # 'Princeton' or 'Allen'
 # Makes sure that you supplied at least two command line arguments 
 if [ "$#" -lt 2 ]
 then
@@ -40,14 +40,14 @@ fi
 
 request_name=$1
 imaging_request=$2 
-request_dir="/jukebox/LightSheetData/lightserv/cz15/$1"
+request_dir="/jukebox/LightSheetData/lightserv/${username}/$1"
 
 # Check to see if sample_name argument was provided 
 if [ "$#" -eq 3 ]
 then
 	sample_name=$3
 	echo "Running script for Request name: $1, Imaging request: $2, Sample name: $3"
-	declare -a arr=("/jukebox/LightSheetData/lightserv/cz15/${request_name}/${sample_name}")
+	declare -a arr=("/jukebox/LightSheetData/lightserv/${username}/${request_name}/${sample_name}")
 else
 	echo "Running script for Request name: $1, Imaging request: $2, all samples"
 	declare -a arr=(${request_dir}/*)
@@ -62,7 +62,8 @@ done
 echo ""
 # Loop through all sample dirs in the request folder and run the full pipeline for each 
 
-blocks_per_job=1 # number of cell blocks to process in a single array job
+blocks_per_job=1 # number of cell blocks to process in a single array job. Currently only works with 1 right now
+# due to slurm error. TODO - allow parallel processing in each array job 
 
 # for sample_dir in "${request_dir}"/*
 for sample_dir in "${arr[@]}"
@@ -70,12 +71,12 @@ do
 	echo "Working on sample: $sample_dir"
 	# Step 0: Link over raw 488 and 642 files to destination directory.
 	# Also creates a JSON file (the blockfile) which just contains the number of blocks to do cell detection
-	echo "Step 0: Synchronous preprocessing"
-	module load anacondapy/2020.11
-	conda activate ClearMap
-	python spock-clearmap/clearmap_preprocessing.py ${sample_dir} ${imaging_request} ${output_rootpath} 2>&1 | tee
-	conda deactivate 
-	module unload anacondapy/2020.11
+	# echo "Step 0: Synchronous preprocessing"
+	# module load anacondapy/2020.11
+	# conda activate ClearMap
+	# python spock-clearmap/clearmap_preprocessing.py ${sample_dir} ${imaging_request} ${output_rootpath} 2>&1 | tee
+	# conda deactivate 
+	# module unload anacondapy/2020.11
 	sample_name=$(basename ${sample_dir})
 	blockfile="${output_rootpath}/$1/${sample_name}/${imaging_request}/rawdata/resolution_3.6x/block_processing_info.json"		
 	
@@ -94,94 +95,104 @@ do
 	# echo "Max array job for cell detection: ${max_array_job}"
 	echo "Submitting batch jobs:" 
 	
-	## Diagnostic plot for corrected planes
-	OUT0_dg=$(sbatch --parsable --export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	spock-clearmap/slurm_scripts/diagnostic_corrected_planes.sh)
-	echo "Step 0-diag: Diagnostic plots of corrected planes:"
-	echo $OUT0_dg
+# 	## Diagnostic plot for corrected planes
+# 	OUT0_dg=$(sbatch --parsable --export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
+# 	spock-clearmap/slurm_scripts/diagnostic_corrected_planes.sh)
+# 	echo "Step 0-diag: Diagnostic plots of corrected planes:"
+# 	echo $OUT0_dg
 
-	## Create stitched.npy memmap volume file 
+# 	## Create stitched.npy memmap volume file 
 	OUT1=$(sbatch --parsable --export=ALL,sample_dir=${sample_dir},\
 imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	spock-clearmap/slurm_scripts/create_memmap_vol.sh)
+	spock-clearmap/slurm_scripts/create_memmap_vol_debug.sh)
 	echo "Step 1: Memmmap volume step"
 	echo $OUT1
 
-	## Diagnostic plot for memmap vol
-	OUT1_dg=$(sbatch --parsable --dependency=afterok:${OUT1##* } \
-	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	spock-clearmap/slurm_scripts/diagnostic_memmap_vol.sh)
-	echo "Step 1-diag: Diagnostic plots of memmap volume:"
-	echo $OUT1_dg
+
+# 	## Diagnostic plot for memmap vol
+# 	OUT1_dg=$(sbatch --parsable --dependency=afterok:${OUT1##* } \
+# 	--export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
+# 	spock-clearmap/slurm_scripts/diagnostic_memmap_vol.sh)
+# 	echo "Step 1-diag: Diagnostic plots of memmap volume:"
+# 	echo $OUT1_dg
 
 	# # ## Run the individual blocks in array jobs
-	OUT2=$(sbatch --parsable --dependency=afterok:${OUT1##* } \
-	--exclude=./bad_nodenames.txt \
-	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},blocks_per_job=${blocks_per_job},\
-output_rootpath=${output_rootpath},clearmap_params_file=${clearmap_params_file} \
-	--array=0-${max_array_job} spock-clearmap/slurm_scripts/cell_detect.sh)
-	echo "Step 2: Cell detection on blocks:"
-	echo $OUT2
+# 	OUT2=$(sbatch --parsable --dependency=afterok:${OUT1##* } \
+# 	--exclude=./bad_nodenames.txt \
+# 	--export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},blocks_per_job=${blocks_per_job},\
+# output_rootpath=${output_rootpath},clearmap_params_file=${clearmap_params_file} \
+# 	--array=0-${max_array_job} spock-clearmap/slurm_scripts/cell_detect.sh)
+# 	echo "Step 2: Cell detection on blocks:"
+# 	echo $OUT2
+# 	OUT2=$(sbatch --parsable \
+# 	--exclude=./bad_nodenames.txt \
+# 	--export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},blocks_per_job=${blocks_per_job},\
+# output_rootpath=${output_rootpath},clearmap_params_file=${clearmap_params_file} \
+# 	--array=0-5 spock-clearmap/slurm_scripts/cell_detect_debug.sh)
+# 	echo "Step 2: Cell detection on blocks:"
+# 	echo $OUT2
 	
-	# ## Merge the blocks
-	OUT3=$(sbatch --parsable --dependency=afterok:${OUT2##* } \
-	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	spock-clearmap/slurm_scripts/merge_blocks.sh)
-	echo "Step 3: Merge cell detection blocks:"
-	echo $OUT3
+# 	# ## Merge the blocks
+# 	OUT3=$(sbatch --parsable --dependency=afterok:${OUT2##* } \
+# 	--export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},output_rootpath=${output_rootpath},\
+# clearmap_params_file=${clearmap_params_file} \
+# 	spock-clearmap/slurm_scripts/merge_blocks.sh)
+# 	echo "Step 3: Merge cell detection blocks:"
+# 	echo $OUT3
 
-	# Diagnostic plot for merged cells
-	OUT3_dg=$(sbatch --parsable --dependency=afterok:${OUT3##* } \
-	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	spock-clearmap/slurm_scripts/diagnostic_merged_cells.sh)
-	echo "Step 3-diag: Diagnostic plots of merged cells:"
-	echo $OUT3_dg
+# 	# Diagnostic plot for merged cells
+# 	OUT3_dg=$(sbatch --parsable --dependency=afterok:${OUT3##* } \
+# 	--export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
+# 	spock-clearmap/slurm_scripts/diagnostic_merged_cells.sh)
+# 	echo "Step 3-diag: Diagnostic plots of merged cells:"
+# 	echo $OUT3_dg
 
-	## Downsizing, both channels one per array job, can start without dependency
-	OUT4=$(sbatch --parsable --export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	--array=0-1 downsizing/spim_downsize.sh)
-	echo "Step 4: Downsizing:"
-	echo $OUT4
+# 	## Downsizing, both channels one per array job, can start without dependency
+# 	OUT4=$(sbatch --parsable --export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},output_rootpath=${output_rootpath},\
+# atlas=${atlas} --array=0-1 downsizing/spim_downsize.sh)
+# 	echo "Step 4: Downsizing:"
+# 	echo $OUT4
 
-	## Diagnostic plot for downsized sagittal planes
-	OUT4_dg=$(sbatch --parsable --dependency=afterok:${OUT4##* } \
-	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	downsizing/diagnostic_downsize.sh)
-	echo "Step 4-diag: Diagnostic plots of downsized planes:"
-	echo $OUT4_dg
+# 	## Diagnostic plot for downsized sagittal planes
+# 	OUT4_dg=$(sbatch --parsable --dependency=afterok:${OUT4##* } \
+# 	--export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
+# 	downsizing/diagnostic_downsize.sh)
+# 	echo "Step 4-diag: Diagnostic plots of downsized planes:"
+# 	echo $OUT4_dg
 
-	## Inverse registration, both transformations one per array job
-	OUT5=$(sbatch --parsable --dependency=afterok:${OUT4##* } --array=0-1 \
-	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	registration/slurm_scripts/spim_inverse_register.sh)
-	echo "Step 5: Inverse registration:"
-	echo $OUT5
+# 	## Inverse registration, both transformations one per array job
+# 	OUT5=$(sbatch --parsable --dependency=afterok:${OUT4##* } --array=0-1 \
+# 	--export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},output_rootpath=${output_rootpath},\
+# atlas=${atlas} registration/slurm_scripts/spim_inverse_register.sh)
+# 	echo "Step 5: Inverse registration:"
+# 	echo $OUT5
 
-	## Register cells to atlas space and make CSV data frame of counts in each region
-	# Dependent on merge block step and inverse registration step
-	OUT6=$(sbatch --parsable --dependency=afterok:${OUT3##* }:${OUT5##* } \
-	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	spock-clearmap/slurm_scripts/postprocessing.sh)
-	echo "Step 6: Register cells to atlas and create brain region count dataframe"
-	echo $OUT6
+# 	## Register cells to atlas space and make CSV data frame of counts in each region
+# 	# Dependent on merge block step and inverse registration step
+# 	OUT6=$(sbatch --parsable --dependency=afterok:${OUT3##* }:${OUT5##* } \
+# 	--export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
+# 	spock-clearmap/slurm_scripts/postprocessing.sh)
+# 	echo "Step 6: Register cells to atlas and create brain region count dataframe"
+# 	echo $OUT6
 
-	## Diagnostic plot for final data products (registered cells and brain region count dataframe)
-	OUT6_dg=$(sbatch --parsable --dependency=afterok:${OUT6##* } \
-	--export=ALL,sample_dir=${sample_dir},\
-imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
-	spock-clearmap/diagnostic_postprocessing.sh)
-	echo "Step 6-diag: Diagnostic plots of registered cells and brain region count dataframe:"
-	echo $OUT6_dg
-	echo ""
+# 	## Diagnostic plot for final data products (registered cells and brain region count dataframe)
+# 	OUT6_dg=$(sbatch --parsable --dependency=afterok:${OUT6##* } \
+# 	--export=ALL,sample_dir=${sample_dir},\
+# imaging_request=${imaging_request},output_rootpath=${output_rootpath} \
+# 	spock-clearmap/diagnostic_postprocessing.sh)
+# 	echo "Step 6-diag: Diagnostic plots of registered cells and brain region count dataframe:"
+# 	echo $OUT6_dg
+# 	echo ""
 done
 
 
