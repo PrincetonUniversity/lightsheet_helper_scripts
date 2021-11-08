@@ -10,7 +10,7 @@ import ClearMap.IO.IO as io
 
 if __name__ == "__main__":
 	sample_dir = sys.argv[1].strip().rstrip("/")
-    imaging_request = sys.argv[2].strip().rstrip("/")
+	imaging_request = sys.argv[2].strip().rstrip("/")
 	output_rootpath = sys.argv[3].strip().rstrip("/")
 
 	request_name,sample_name = sample_dir.split('/')[-2:]
