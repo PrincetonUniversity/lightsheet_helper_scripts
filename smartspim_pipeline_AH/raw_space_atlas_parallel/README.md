@@ -7,7 +7,7 @@ The raw space atlas is useful for cases when you want to look at your data in it
 
 Prerequisites for this are having run the elastix inverse transformations, i.e. the two transformations:
 1. resampled regch 488 (moving) -> resampled cellch 642 (fixed)
-2. atlas (moving) -> resampled regch 488 (moving)
+2. atlas (moving) -> resampled regch 488 (fixed)
 
 Where the resampling (aka downsizing) of both regch and cellch is assumed to have been done ahead of time.
 
