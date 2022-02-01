@@ -19,12 +19,13 @@ Where the resampling (aka downsizing) of both regch and cellch is assumed to hav
 
 At the top of this file you need to set the following variables:
 ```
-raw_dir=/jukebox/wang/Jess/lightsheet_output/202010_cfos/processed/an001/full_sizedatafld/072420_jv_ymazelearn_an1_1_3x_647_008na_1hfds_z10um_50msec_ch00
+raw_dir # path to raw data Z stack tif files
 # Define the path to where elastix inverse transformations were run
-elastix_atlas_to_auto_dir=/jukebox/wang/Jess/lightsheet_output/202010_cfos/processed/an001/ClearMapClusterOutput/elastix_auto_to_atlas
-elastix_auto_to_cell_dir=/jukebox/wang/Jess/lightsheet_output/202010_cfos/processed/an001/ClearMapClusterOutput/elastix_cfos_to_auto
+elastix_atlas_to_auto_dir
+elastix_auto_to_cell_dir
 # Define where you want your aligned raw atlas files to live
-output_dir=/jukebox/wang/ahoag/test_raw_atlas
+output_dir 
+annotation_volume_path # path to annotation volume file you want transformed to raw space
 ```
 
 **Files that are optional to modify:**
