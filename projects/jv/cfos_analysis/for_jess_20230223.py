@@ -6,7 +6,7 @@ Created on Thu Feb 23 14:08:51 2023
 """
 
 import pandas as pd, pickle as pckl, numpy as np
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 ######################################################################################################
 # lobule VI
@@ -22,25 +22,39 @@ regions = dct['regions']
 #pool regions in jess dataset
 #removed frontal pole for now due to outlier
 df=df[(df['Condition']=='DREADDs')]
-av_densities_cfos = []
+av_densities_cfos = []; av_pcounts_cfos = [];
 fp = df[df['name'].str.contains("Infralimbic") | df['name'].str.contains("Prelimbic area") | df['name'].str.contains("Orbital area") | df['name'].str.contains("Anterior cingulate")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
 # fp = df[df['name'].str.contains("Frontal pole")].groupby("Brain").sum()
 # av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
 fp = df[df['name'].str.contains("Agranular insular area")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Gustatory") | df['name'].str.contains("Visceral")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("somatomotor") | df['name'].str.contains("somatosensory")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Retrosplenial")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Visual") ].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Temporal") | df['name'].str.contains("Auditory")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Peririhinal") | df['name'].str.contains("Ectorhinal")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
 regions_cfos = ['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital',
     'Agranular insula', 'Gustatory, Visceral',
        'Somatomotor, \n Somatosensory', 'Retrosplenial', 'Visual',
@@ -49,24 +63,29 @@ weights_wo_pp = np.delete(weights, (1,7))
 
 
 #%%
+# correlation between HSV model weights and DREADDs cfos 
 fig, ax = plt.subplots()
-ax.scatter(weights_wo_pp, np.array(av_densities_cfos),s=80, alpha=0.3)
+ax.scatter(weights_wo_pp, np.array(av_pcounts_cfos),s=80, alpha=0.3)
 for i, txt in enumerate(regions_cfos):
-    ax.annotate(txt, (weights_wo_pp[i], av_densities_cfos[i]),size=8,
+    ax.annotate(txt, (weights_wo_pp[i], av_pcounts_cfos[i]),size=8,
                 xytext=(-1.5,1.5),textcoords='offset points',
                 horizontalalignment='right',
             verticalalignment='bottom')
 
-r,pval = spearmanr(weights_wo_pp, av_densities_cfos)
-ax.annotate(f"r={r:01f}", xy=(7,55), size=15)
-ax.annotate(f"p-value={pval:01f}", xy=(7,50), size=10)
+r,pvalr = spearmanr(weights_wo_pp, av_pcounts_cfos)
+p,pvalp = pearsonr(weights_wo_pp, av_pcounts_cfos)
+ax.annotate(f"Spearman's r={r:01f}", xy=(7,0.05), size=15)
+ax.annotate(f"Spearman's p-value={pvalr:01f}", xy=(7,0.045), size=10)
+ax.annotate(f"Pearson's r={p:01f}", xy=(7,0.04), size=15)
+ax.annotate(f"Pearson's p-value={pvalp:01f}", xy=(7,0.035), size=10)
 #find line of best fit
-# a, b = np.polyfit(weights_wo_pp, av_densities_cfos, 1)
-# ax.plot(weights_wo_pp, a*weights_wo_pp+b, 'gray', linewidth=0.8)
+a, b = np.polyfit(weights_wo_pp, av_pcounts_cfos, 1)
+ax.plot(weights_wo_pp, a*weights_wo_pp+b, 'gray', linewidth=0.8)
 
-ax.set_ylim([20,60])
+# ax.set_ylim([20,60])
 plt.xlabel("Model weights for lobule VI/VII HSV injections")
-plt.ylabel("Average C-fos densities for lobule VI DREADDs")
+plt.ylabel("Average C-fos % counts for lobule VI DREADDs")
+
 # %%
 ######################################################################################################
 # crus I
@@ -80,49 +99,70 @@ weights=dct['mat'][:,-2] # only crura (ak_pool = -2)
 regions = dct['regions']
 
 #pool regions in jess dataset
+# frontal pole removed here too
 df=df[(df['Condition']=='DREADDs')]
-av_densities_cfos = []
+av_densities_cfos = [];av_pcounts_cfos = []; 
 fp = df[df['name'].str.contains("Infralimbic") | df['name'].str.contains("Prelimbic area") | df['name'].str.contains("Orbital area") | df['name'].str.contains("Anterior cingulate")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
-fp = df[df['name'].str.contains("Frontal pole")].groupby("Brain").sum()
-av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
+# fp = df[df['name'].str.contains("Frontal pole")].groupby("Brain").sum()
+# av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+# av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Agranular insular area")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Gustatory") | df['name'].str.contains("Visceral")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("somatomotor") | df['name'].str.contains("somatosensory")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Retrosplenial")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Visual") ].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Temporal") | df['name'].str.contains("Auditory")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 fp = df[df['name'].str.contains("Peririhinal") | df['name'].str.contains("Ectorhinal")].groupby("Brain").sum()
 av_densities_cfos.append(np.array(fp["counts"]/(fp["voxels_in_structure"]*(0.020**3))).mean())
+av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())
+
 regions_cfos = ['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital',
-       'Frontal pole', 'Agranular insula', 'Gustatory, Visceral',
+       'Agranular insula', 'Gustatory, Visceral',
        'Somatomotor, \n Somatosensory', 'Retrosplenial', 'Visual',
          'Temporal, Auditory', 'Peririhinal, Ectorhinal']
-weights_wo_pp = np.delete(weights, 7)
+weights_wo_pp = np.delete(weights, (1,7))
 
 
 #%%
 fig, ax = plt.subplots()
-ax.scatter(weights_wo_pp, np.array(av_densities_cfos),s=80, alpha=0.3)
+ax.scatter(weights_wo_pp, np.array(av_pcounts_cfos),s=80, alpha=0.3)
 for i, txt in enumerate(regions_cfos):
-    ax.annotate(txt, (weights_wo_pp[i], av_densities_cfos[i]),size=7,
+    ax.annotate(txt, (weights_wo_pp[i], av_pcounts_cfos[i]),size=7,
                 xytext=(-1.5,1.5),textcoords='offset points',
                 horizontalalignment='right',
             verticalalignment='bottom')
 
-r,pval = spearmanr(weights_wo_pp, av_densities_cfos)
-ax.annotate(f"r={r:02f}", xy=(7,400), size=15)
-ax.annotate(f"p-value={pval:02f}", xy=(7,300), size=10)
+r,pvalr = spearmanr(weights_wo_pp, av_pcounts_cfos)
+p,pvalp = pearsonr(weights_wo_pp, av_pcounts_cfos)
+ax.annotate(f"Spearman's r={r:01f}", xy=(7,0.05), size=15)
+ax.annotate(f"Spearman's p-value={pvalr:01f}", xy=(7,0.045), size=10)
+ax.annotate(f"Pearson's r={p:01f}", xy=(7,0.04), size=15)
+ax.annotate(f"Pearson's p-value={pvalp:01f}", xy=(7,0.035), size=10)
 #find line of best fit
-# a, b = np.polyfit(weights_wo_pp, av_densities_cfos, 1)
-# ax.plot(weights_wo_pp, a*weights_wo_pp+b, 'gray', linewidth=0.8)
-
+a, b = np.polyfit(weights_wo_pp, av_pcounts_cfos, 1)
+ax.plot(weights_wo_pp, a*weights_wo_pp+b, 'gray', linewidth=0.8)
 
 plt.xlabel("Model weights for Crus I/II HSV injections")
-plt.ylabel("Average C-fos densities for Crus I DREADDs")
+plt.ylabel("Average C-fos % counts for Crus I DREADDs")
