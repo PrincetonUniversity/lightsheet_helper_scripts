@@ -119,10 +119,11 @@ for soi in sois:
     vol.append(np.array(counts).sum(axis = 0))
 vol = np.array(vol)        
 
-combined_vol = np.array([vol[0]+vol[1], vol[2], vol[3]+vol[4]+vol[5],
-                 vol[6]+vol[7]+vol[8], vol[9]]).T
 density = np.nan_to_num(np.array([xx/(vol[i]*(scale_factor**3)) for i, xx in enumerate(counts_per_struct)]).T) 
-combined_density = np.nan_to_num(np.array([xx/(combined_vol[i]*(scale_factor**3)) for i, xx in enumerate(combined_counts)]).T) 
+pcounts_pool = np.asarray([[brain[0]+brain[1]+brain[2]+brain[4], brain[3], brain[6], brain[5]+brain[7], 
+                                          brain[8]+brain[9], brain[10], brain[12], brain[11], 
+                                          brain[13]+brain[14], brain[15]+brain[16]] for brain in pcounts])
+
 
 #%%
 #display
