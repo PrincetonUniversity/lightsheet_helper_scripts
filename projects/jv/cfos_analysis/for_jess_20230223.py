@@ -9,7 +9,7 @@ import pandas as pd, pickle as pckl, numpy as np
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import json 
+import json
 
 mpl.rcParams["pdf.fonttype"] = 42
 mpl.rcParams["ps.fonttype"] = 42
@@ -18,9 +18,9 @@ mpl.rcParams["ytick.major.size"] = 6
 #%%
 ######################################################################################################
 # lobule VI
-pth = r'C:/Users/Han/Desktop/lobuleVI_cellcounts.csv'
+pth = r'C:/Users/Han/Desktop/jess_df.xlsx'
 ontology_file = r'C:/Users/Han/Desktop/allen_id_table.json'
-df = pd.read_csv(pth, index_col = None)
+df = pd.read_excel(pth, index_col = None)
 
 model_pth='C:/Users/Han/Desktop/model_data_contra_pma.p'
 
@@ -28,284 +28,112 @@ dct=pckl.load(open(model_pth  , "rb"), encoding = "latin1")
 weights=dct['mat'][:,1] # only lob vi/vii (ak_pool = 1)
 regions = dct['regions']
 
-df=df[(df['Condition']=='control')]
-
-def get_progeny(dic,parent_structure,progeny_list):
-   
-    if "msg" in list(dic.keys()): dic = dic["msg"][0]
-    
-    name = dic.get("name")
-    children = dic.get("children")
-    if name == parent_structure:
-        for child in children: # child is a dict
-            child_name = child.get("name")
-            progeny_list.append(child_name)
-            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
-        return
-    
-    for child in children:
-        child_name = child.get("name")
-        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
-    return 
-
-with open(ontology_file) as json_file:
-    ontology_dict = json.load(json_file)
-
 sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
+            "Gustatory areas", "Visceral area", "Somatosensory areas", "Somatomotor areas",
             "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
             "Auditory areas", "Ectorhinal area", "Perirhinal area"]
 
-#first calculate counts across entire nc region
-av_pcounts_cfos=[];
-for soi in sois:
-    progeny = []
-    get_progeny(ontology_dict, soi, progeny)
-    dfs=[]
-    for progen in progeny:
-        dfs.append(df[df['name'].str.contains(progen)].groupby("Brain").sum())
-    fp=pd.concat(dfs)
-    fp=fp.groupby("Brain").sum() # sum up all progeny
-    av_pcounts_cfos.append(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"]).mean())        
-av_pcounts_cfos=np.array(av_pcounts_cfos)
+#per condition
+dfgroup=df.groupby("condition").mean()[sois]
+dfgroup['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital']=dfgroup[["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Orbital area"]].sum(axis=1)
+dfgroup['Gustatory, Visceral']=dfgroup[["Gustatory areas", "Visceral area"]].sum(axis=1)
+dfgroup['Somatomotor, Somatosensory']=dfgroup[["Somatosensory areas", "Somatomotor areas"]].sum(axis=1)
+dfgroup['Tenporal, Auditory']=dfgroup[["Temporal association areas","Auditory areas"]].sum(axis=1)
+dfgroup['Peririhinal, Ectorhinal']=dfgroup[["Ectorhinal area", "Perirhinal area"]].sum(axis=1)
 #sum regions per brain to get density
 
-av_pcounts_cfos_pool = np.asarray([av_pcounts_cfos[0]+av_pcounts_cfos[1]+av_pcounts_cfos[2]+av_pcounts_cfos[3], 
-        av_pcounts_cfos[5], av_pcounts_cfos[4]+av_pcounts_cfos[6], 
-        av_pcounts_cfos[7]+av_pcounts_cfos[8], av_pcounts_cfos[9], av_pcounts_cfos[11], av_pcounts_cfos[10], 
-        av_pcounts_cfos[12]+av_pcounts_cfos[13], av_pcounts_cfos[14]+av_pcounts_cfos[15]])
-
-
-regions_cfos = ['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital',
-    'Agranular insula', 'Gustatory, Visceral',
-       'Somatomotor, \n Somatosensory', 'Retrosplenial', 'Visual','Post. parietal',
+regions_cfos = ['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital','Gustatory, Visceral',
+       'Somatomotor, Somatosensory', 'Retrosplenial', 'Visual','Post. parietal',
          'Temporal, Auditory', 'Peririhinal, Ectorhinal']
-weights_wo_pp = np.delete(weights, (1)) #dropped frontal pole
-
+weights_wo_pp = np.delete(weights, (1,2)) #dropped frontal pole and insula
+av_pcounts = dfgroup[['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital','Gustatory, Visceral',
+       'Somatomotor, Somatosensory',"Retrosplenial area", 
+        "Visual areas", "Posterior parietal association areas",  'Tenporal, Auditory',
+        'Peririhinal, Ectorhinal']]
 
 #%%
 # correlation between HSV model weights and DREADDs cfos 
+weights=dct['mat'][:,1] # only lob vi/vii (ak_pool = 1) or crus I (ak_pool=-2)
+weights=dct['mat'][:,-2] # only lob vi/vii (ak_pool = 1) or crus I (ak_pool=-2)
+weights_wo_pp = np.delete(weights, (1,2)) #dropped frontal pole and insula
+
 fig, ax = plt.subplots()
-ax.scatter(weights_wo_pp, np.array(av_pcounts_cfos_pool),s=80, alpha=0.3)
+Y = av_pcounts[av_pcounts.index=='CNO_control_reversal'].values[0] #change condition
+
+ax.scatter(weights_wo_pp, Y,
+           s=80, alpha=0.3)
 for i, txt in enumerate(regions_cfos):
-    ax.annotate(txt, (weights_wo_pp[i], av_pcounts_cfos_pool[i]),size=8,
+    ax.annotate(txt, (weights_wo_pp[i], Y[i]),size=8,
                 xytext=(1.5,1.5),textcoords='offset points')
 
-r,pvalr = spearmanr(weights_wo_pp, av_pcounts_cfos_pool)
-p,pvalp = pearsonr(weights_wo_pp, av_pcounts_cfos_pool)
+r,pvalr = spearmanr(weights_wo_pp, Y)
+p,pvalp = pearsonr(weights_wo_pp, Y)
 ax.annotate(f"Spearman's r={r:01f}", xy=(7,0.17), size=15)
 ax.annotate(f"Spearman's p-value={pvalr:01f}", xy=(7,0.15), size=10)
 ax.annotate(f"Pearson's r={p:01f}", xy=(7,0.12), size=15)
 ax.annotate(f"Pearson's p-value={pvalp:01f}", xy=(7,0.10), size=10)
 #find line of best fit
-a, b = np.polyfit(weights_wo_pp, av_pcounts_cfos_pool, 1)
+a, b = np.polyfit(weights_wo_pp, Y, 1)
 ax.plot(weights_wo_pp, a*weights_wo_pp+b, 'gray', linewidth=0.8)
-ax.set_ylim([0, 0.3])
 # ax.set_ylim([20,60])
-plt.xlabel("Model weights for lobule VI/VII HSV injections")
-plt.ylabel("Average C-fos % counts for all lobule VI")
+# plt.xlabel("Model weights for crus I/II HSV injections") #lobule VI/VII
+# plt.ylabel("Average C-fos % counts for crus I") #lobule VI
+plt.xlabel("Model weights for lobule VI/VII HSV injections") #
+plt.ylabel("Average C-fos % counts for lobule VI") #
+
 
 #%%
-# lobule VI thalamus
+# thalamus
 model_pth='C:/Users/Han/Desktop/thal_model_data_contra_allen.p'
 
 dct=pckl.load(open(model_pth  , "rb"), encoding = "latin1")
-weights=dct['mat'][:,1] # only lob vi/vii (ak_pool = 1)
 regions = dct['regions']
 
 #pool regions in jess dataset
-sois = regions
-
-#first calculate counts across entire nc region
-av_pcounts_cfos=[];
-for soi in sois:
-    progeny = []
-    get_progeny(ontology_dict, soi, progeny)
-    dfs=[]
-    progeny.append(soi) # to account for thalamic nuclei with no children        
-    for progen in progeny:
-        dfs.append(df[df['name'].str.contains(progen)].groupby("Brain").sum())
-    try:
-        fp=pd.concat(dfs)
-        fp=fp.groupby("Brain").sum() # sum up all progeny
-        av_pcounts_cfos.append(np.nanmean(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"])))
-        # nanmean to account for brains with no thalamic nuclei counts
-    except:
-        print(progen)
-av_pcounts_cfos=np.array(av_pcounts_cfos)
-
+sois = ['Ventral posteromedial nucleus of the thalamus',
+       'Ventral posterolateral nucleus of the thalamus',
+       'Ventral anterior-lateral complex of the thalamus',
+       'Anteroventral nucleus of thalamus',
+       'Lateral dorsal nucleus of thalamus',
+       'Paraventricular nucleus of the thalamus', 'Medial habenula',
+       'Lateral posterior nucleus of the thalamus',
+       'Posterior triangular thalamic nucleus',
+       'Posterior complex of the thalamus',
+       'Ventral medial nucleus of the thalamus',
+       'Reticular nucleus of the thalamus']
+av_pcounts=df.groupby("condition").mean()[sois]
 #abbreviations
 regions_cfos = np.array(["VPM", "VPL","VA-L", "AV",  "LD",
        "PV", "MedHab", "LP",
-       "PoT", "MD", "Po",
+       "PoT", "Po",
        "VM", "RTN"])
 
 #%%
-# correlation between HSV model weights and DREADDs cfos 
-fig, ax = plt.subplots()
-ax.scatter(weights, np.array(av_pcounts_cfos),s=80, alpha=0.3)
-for i, txt in enumerate(regions_cfos):
-    ax.annotate(txt, (weights[i], av_pcounts_cfos[i]),size=8,
-                xytext=(-1.5,1.5),textcoords='offset points',
-                horizontalalignment='right',
-            verticalalignment='bottom')
-
-r,pvalr = spearmanr(weights, av_pcounts_cfos)
-p,pvalp = pearsonr(weights, av_pcounts_cfos)
-ax.annotate(f"Spearman's r={r:01f}", xy=(4.5,0.008), size=15)
-ax.annotate(f"Spearman's p-value={pvalr:01f}", xy=(4.5,0.007), size=10)
-ax.annotate(f"Pearson's r={p:01f}", xy=(4.5,0.006), size=15)
-ax.annotate(f"Pearson's p-value={pvalp:01f}", xy=(4.5,0.005), size=10)
-#find line of best fit
-a, b = np.polyfit(weights, av_pcounts_cfos, 1)
-ax.plot(weights, a*weights+b, 'gray', linewidth=0.8)
-
-# ax.set_ylim([20,60])
-plt.xlabel("Model weights for lobule VI/VII HSV injections")
-plt.ylabel("Average C-fos % counts for lobule VI controls")
-
-# %%
-######################################################################################################
-# crus I neocortex
-pth = r'C:/Users/Han/Desktop/cell_counts_dataframe_w_percents_density_somecrusI.csv'
-df = pd.read_csv(pth, index_col = None)
-
-model_pth='C:/Users/Han/Desktop/model_data_contra_pma.p'
-
-dct=pckl.load(open(model_pth  , "rb"), encoding = "latin1")
+# plot
 weights=dct['mat'][:,1] # only lob vi/vii (ak_pool = 1)
-regions = dct['regions']
+weights_wo_pp = np.delete(weights, 4) # dropped md
 
-df=df[(df['Condition']=='DREADDs')]
-
-def get_progeny(dic,parent_structure,progeny_list):
-   
-    if "msg" in list(dic.keys()): dic = dic["msg"][0]
-    
-    name = dic.get("name")
-    children = dic.get("children")
-    if name == parent_structure:
-        for child in children: # child is a dict
-            child_name = child.get("name")
-            progeny_list.append(child_name)
-            get_progeny(child,parent_structure=child_name,progeny_list=progeny_list)
-        return
-    
-    for child in children:
-        child_name = child.get("name")
-        get_progeny(child,parent_structure=parent_structure,progeny_list=progeny_list)
-    return 
-
-with open(ontology_file) as json_file:
-    ontology_dict = json.load(json_file)
-
-sois = ["Infralimbic area", "Prelimbic area", "Anterior cingulate area", "Orbital area", 
-            "Gustatory areas", "Agranular insular area", "Visceral area", "Somatosensory areas", "Somatomotor areas",
-            "Retrosplenial area", "Posterior parietal association areas", "Visual areas", "Temporal association areas",
-            "Auditory areas", "Ectorhinal area", "Perirhinal area"]
-
-#first calculate counts across entire nc region
-av_pcounts_cfos=[];
-for soi in sois:
-    progeny = []
-    get_progeny(ontology_dict, soi, progeny)
-    dfs=[]
-    for progen in progeny:
-        dfs.append(df[df['name'].str.contains(progen)].groupby("Brain").sum())
-    fp=pd.concat(dfs)
-    fp=fp.groupby("Brain").sum() # sum up all progeny
-    av_pcounts_cfos.append(np.nanmean(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"])))        
-av_pcounts_cfos=np.array(av_pcounts_cfos)
-#sum regions per brain to get density
-
-av_pcounts_cfos_pool = np.asarray([av_pcounts_cfos[0]+av_pcounts_cfos[1]+av_pcounts_cfos[2]+av_pcounts_cfos[3], 
-        av_pcounts_cfos[5], av_pcounts_cfos[4]+av_pcounts_cfos[6], 
-        av_pcounts_cfos[7]+av_pcounts_cfos[8], av_pcounts_cfos[9], av_pcounts_cfos[11], av_pcounts_cfos[10], 
-        av_pcounts_cfos[12]+av_pcounts_cfos[13], av_pcounts_cfos[14]+av_pcounts_cfos[15]])
-
-
-regions_cfos = ['Infralimbic, Prelimbic,\n Ant. Cingulate, Orbital',
-    'Agranular insula', 'Gustatory, Visceral',
-       'Somatomotor, \n Somatosensory', 'Retrosplenial', 'Visual','Post. parietal',
-         'Temporal, Auditory', 'Peririhinal, Ectorhinal']
-weights_wo_pp = np.delete(weights, (1)) #dropped frontal pole
-
-
-#%%
 fig, ax = plt.subplots()
-ax.scatter(weights_wo_pp, np.array(av_pcounts_cfos_pool),s=80, alpha=0.3)
+Y = av_pcounts[av_pcounts.index=='CNO_control_reversal'].values[0]
+
+ax.scatter(weights_wo_pp, Y,
+           s=80, alpha=0.3)
 for i, txt in enumerate(regions_cfos):
-    ax.annotate(txt, (weights_wo_pp[i], av_pcounts_cfos_pool[i]),size=8,
+    ax.annotate(txt, (weights_wo_pp[i], Y[i]),size=8,
                 xytext=(1.5,1.5),textcoords='offset points')
 
-r,pvalr = spearmanr(weights_wo_pp, av_pcounts_cfos_pool)
-p,pvalp = pearsonr(weights_wo_pp, av_pcounts_cfos_pool)
-ax.annotate(f"Spearman's r={r:01f}", xy=(7,0.17), size=15)
-ax.annotate(f"Spearman's p-value={pvalr:01f}", xy=(7,0.15), size=10)
-ax.annotate(f"Pearson's r={p:01f}", xy=(7,0.12), size=15)
-ax.annotate(f"Pearson's p-value={pvalp:01f}", xy=(7,0.10), size=10)
+r,pvalr = spearmanr(weights_wo_pp, Y)
+p,pvalp = pearsonr(weights_wo_pp, Y)
+ax.annotate(f"Spearman's r={r:01f}", xy=(4,0.003), size=15)
+ax.annotate(f"Spearman's p-value={pvalr:01f}", xy=(4,0.0025), size=10)
+ax.annotate(f"Pearson's r={p:01f}", xy=(4,0.002), size=15)
+ax.annotate(f"Pearson's p-value={pvalp:01f}", xy=(4,0.0015), size=10)
 #find line of best fit
-a, b = np.polyfit(weights_wo_pp, av_pcounts_cfos_pool, 1)
+a, b = np.polyfit(weights_wo_pp, Y, 1)
 ax.plot(weights_wo_pp, a*weights_wo_pp+b, 'gray', linewidth=0.8)
-ax.set_ylim([0, 0.3])
-plt.xlabel("Model weights for Crus I/II HSV injections")
-plt.ylabel("Average C-fos % counts for Crus I CN0 reversal controls")
+# ax.set_ylim([0,0.01])
+# plt.xlabel("Model weights for crus I/II HSV injections") #lobule VI/VII
+# plt.ylabel("Average C-fos % counts for crus I") #lobule VI
+plt.xlabel("Model weights for lobule VI/VII HSV injections") #
+plt.ylabel("Average C-fos % counts for lobule VI") #
 
-#%%
-# crus I thalamus
-model_pth='C:/Users/Han/Desktop/thal_model_data_contra_allen.p'
-
-dct=pckl.load(open(model_pth  , "rb"), encoding = "latin1")
-weights=dct['mat'][:,1] # only lob vi/vii (ak_pool = 1)
-regions = dct['regions']
-
-#pool regions in jess dataset
-sois = regions
-
-#first calculate counts across entire nc region
-av_pcounts_cfos=[];
-for soi in sois:
-    progeny = []
-    get_progeny(ontology_dict, soi, progeny)
-    dfs=[]
-    progeny.append(soi) # to account for thalamic nuclei with no children        
-    for progen in progeny:
-        dfs.append(df[df['name'].str.contains(progen)].groupby("Brain").sum())
-    try:
-        fp=pd.concat(dfs)
-        fp=fp.groupby("Brain").sum() # sum up all progeny
-        av_pcounts_cfos.append(np.nanmean(np.array(fp["counts"]/df.groupby("Brain").sum()["counts"])))
-        # nanmean to account for brains with no thalamic nuclei counts
-    except:
-        print(progen)
-av_pcounts_cfos=np.array(av_pcounts_cfos)
-
-#abbreviations
-regions_cfos = np.array(["VPM", "VPL","VA-L", "AV",  "LD",
-       "PV", "MedHab", "LP",
-       "PoT", "MD", "Po",
-       "VM", "RTN"])
-
-#%%
-# correlation between HSV model weights and DREADDs cfos 
-fig, ax = plt.subplots()
-ax.scatter(weights, np.array(av_pcounts_cfos),s=80, alpha=0.3)
-for i, txt in enumerate(regions_cfos):
-    ax.annotate(txt, (weights[i], av_pcounts_cfos[i]),size=8,
-                xytext=(-1.5,1.5),textcoords='offset points',
-                horizontalalignment='right',
-            verticalalignment='bottom')
-
-r,pvalr = spearmanr(weights, av_pcounts_cfos)
-p,pvalp = pearsonr(weights, av_pcounts_cfos)
-ax.annotate(f"Spearman's r={r:01f}", xy=(4.5,0.008), size=15)
-ax.annotate(f"Spearman's p-value={pvalr:01f}", xy=(4.5,0.007), size=10)
-ax.annotate(f"Pearson's r={p:01f}", xy=(4.5,0.006), size=15)
-ax.annotate(f"Pearson's p-value={pvalp:01f}", xy=(4.5,0.005), size=10)
-#find line of best fit
-a, b = np.polyfit(weights, av_pcounts_cfos, 1)
-ax.plot(weights, a*weights+b, 'gray', linewidth=0.8)
-
-ax.set_ylim([0,0.01])
-plt.xlabel("Model weights for crus I/II HSV injections")
-plt.ylabel("Average C-fos % counts for Crus I DREADDs")
