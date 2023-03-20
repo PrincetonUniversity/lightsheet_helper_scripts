@@ -76,10 +76,10 @@ ax.annotate(f"Pearson's p-value={pvalp:01f}", xy=(7,0.10), size=10)
 a, b = np.polyfit(weights_wo_pp, Y, 1)
 ax.plot(weights_wo_pp, a*weights_wo_pp+b, 'gray', linewidth=0.8)
 # ax.set_ylim([20,60])
-# plt.xlabel("Model weights for crus I/II HSV injections") #lobule VI/VII
-# plt.ylabel("Average C-fos % counts for crus I") #lobule VI
-plt.xlabel("Model weights for lobule VI/VII HSV injections") #
-plt.ylabel("Average C-fos % counts for lobule VI") #
+plt.xlabel("Model weights for crus I/II HSV injections") #lobule VI/VII
+plt.ylabel("Average C-fos % counts for crus I") #lobule VI
+# plt.xlabel("Model weights for lobule VI/VII HSV injections") #
+# plt.ylabel("Average C-fos % counts for lobule VI") #
 
 
 #%%
