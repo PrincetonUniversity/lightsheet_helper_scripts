@@ -14,7 +14,8 @@ elastix_auto_to_cell_dir=/jukebox/LightSheetData/wang-mouse/seagravesk/20200901_
 output_dir=/jukebox/LightSheetData/wang-mouse/seagravesk/20200901_14_20_11_f37073_mouse1_20171010/Ex_785_Em_3/raw_atlas
 
 # Set the atlas annotation volume that you want to warp to raw space
-annotation_volume_path=/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_16bit_hierarch_labels_fillmissing.tif
+#annotation_volume_path=/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_16bit_hierarch_labels_fillmissing.tif
+annotation_volume_path=/jukebox/LightSheetData/atlas/annotation_sagittal_atlas_20um_16bit_hierarch_labels.tif
 
 # STEP 1: copies TransformParameters.*.txt files, run transformix to get atlas into downsized space Single core 
 OUT1=$(sbatch --parsable \

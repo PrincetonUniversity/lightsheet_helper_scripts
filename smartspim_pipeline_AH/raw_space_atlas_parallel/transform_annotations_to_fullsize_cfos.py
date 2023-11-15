@@ -35,11 +35,37 @@ def process_slice(z):
 if __name__ == '__main__':
     # Read in the path to the brain whose raw data you want the atlas aligned to
     step = sys.argv[1]
-    raw_dir = sys.argv[2]
-    elastix_atlas_to_auto_dir = sys.argv[3]
-    elastix_auto_to_cell_dir = sys.argv[4]
-    output_dir = sys.argv[5]
-    annotation_volume_path = sys.argv[6]
+    raw_dir = str(sys.argv[2])
+    elastix_atlas_to_auto_dir = str(sys.argv[3])
+    elastix_auto_to_cell_dir = str(sys.argv[4])
+    output_dir = str(sys.argv[5])
+    atl = str(sys.argv[6])
+
+    annotation_volume_path = ""
+    if atl == "Allen":
+        annotation_volume_path="/jukebox/LightSheetTransfer/atlas/allen_atlas/annotation_2017_25um_sagittal_16bit_hierarch_labels_fillmissing.tif"
+    elif atl == "PMA":
+        annotation_volume_path = "/jukebox/LightSheetTransfer/atlas/annotation_sagittal_atlas_20um_16bit_hierarch_labels.tif" # Princeton Mouse Annotation Atlas, 16 bit
+    elif atl == "SF":
+        annotation_volume_path="/jukebox/LightSheetTransfer/atlas/annotation_saggital_atlas_IOannotated_20um_iso_16bit.tif" #SF Atlas
+    elif atl == "cb":
+        #annotation_volume_path="/jukebox/LightSheetTransfer/atlas/cb_annotation_sagittal_atlas_20um_iso.tif"
+        #annotation_volume_path = "/jukebox/LightSheetTransfer/pma_ann_cropped_atlas.tif"
+        annotation_volume_path="/jukebox/LightSheetTransfer/atlas/cb_crop_annotation_sagittal_atlas_20um_16bit_hierarch_labels.tif"
+    elif atl == "PRA_sigma":
+        annotation_volume_path="/jukebox/brody/lightsheet/atlasdir/mPRA_sigma_annotations.tif"
+    elif atl == "PRA_fischer":
+        annotation_volume_path="/jukebox/brody/lightsheet/atlasdir/mPRA_fischer_annotations.tif"
+    elif atl == "PRA_WHS":
+        annotation_volume_path="/jukebox/brody/lightsheet/atlasdir/mPRA_WHS_v4_anns.tif"
+    elif atl =="cz":
+        annotation_volume_path="/jukebox/witten/Chris/data/clearmap2/utilities/allen-atlas-cz/annotation_2017_25um_sagittal_16bit_hierarch_labels_fillmissing_cz_v2.tif"
+    elif atl =="cz_boundaries":
+        annotation_volume_path="/jukebox/wang/sanjeev/cz_atlas/cz_boundaries.tif"
+    elif atl =="hem":
+        annotation_volume_path="/jukebox/LightSheetTransfer/hem_sagittal_annotation.tif"
+    else:
+        raise ValueError("Specified atlas does not exist")
 
     print(f"raw_dir is: {raw_dir}")
     print(f"raw_dir is: {raw_dir}")
@@ -69,9 +95,23 @@ if __name__ == '__main__':
         # atlas -> reg, transform 1
         r2s1 = os.path.join(elastix_atlas_to_auto_dir,"TransformParameters.1.txt")
 
+        # ADD PRA
+        if atl in ["PRA_sigma", "PRA_fischer", "PRA_WHS"]:
+            # atlas -> reg, transform 0
+            r2s2 = os.path.join(elastix_atlas_to_auto_dir,"TransformParameters.2.txt")
+            # atlas -> reg, transform 1
+            r2s3 = os.path.join(elastix_atlas_to_auto_dir,"TransformParameters.3.txt")     
+
         ## transformix
         # first copy over files to new location
-        transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0, r2s1], dst = aldst)
+        if elastix_auto_to_cell_dir == "NA":
+            if atl in ["PRA_sigma", "PRA_fischer", "PRA_WHS"]:
+                transformfiles = modify_transform_files(transformfiles=[r2s0, r2s1, r2s2, r2s3], dst = aldst)
+            else:    
+                transformfiles = modify_transform_files(transformfiles=[r2s0, r2s1], dst = aldst)
+        else:
+            transformfiles = modify_transform_files(transformfiles=[a2r0, a2r1, r2s0, r2s1], dst = aldst)
+            
         # change order of interpolation in new copied files
         [change_interpolation_order(xx,0) for xx in transformfiles]
 
@@ -107,12 +147,16 @@ if __name__ == '__main__':
         ap0,ml0 = pl0.shape[0], pl0.shape[1] # dimensions of original raw data, z, y, z
         ml1,ap1,dv1 = tann.shape # dimensions of downsized raw data
         #scale in dv only first and rotate to hor orientation
-        # bigdvann = np.flip(np.swapaxes(zoom(tann, [1,1,dv0/float(dv1)], order=0),0,2),0) #ALSO REVERSE IN Z FOR VENTRAL TO DORSAL IMAGING
-        bigdvann = np.swapaxes(zoom(tann, [1,1,dv0/float(dv1)], order=0),0,2)
+        dv = str(sys.argv[7])
+        bigdvann = None
+        if dv == "v":
+            bigdvann = np.flip(np.swapaxes(zoom(tann, [1,1,dv0/float(dv1)], order=0),0,2),0) #ALSO REVERSE IN Z FOR VENTRAL TO DORSAL IMAGING
+        else:
+            bigdvann = np.swapaxes(zoom(tann, [1,1,dv0/float(dv1)], order=0),0,2)
         #remove np.flip if imaging_request_1g D --> V
         print("zoomed out in DV first")
         sys.stdout.flush()
-
+        
         #now rotate and scale each in ap and ml
         to_process = list(range(0,len(bigdvann)))
         print(to_process)

@@ -2,7 +2,7 @@
 #
 #SBATCH -p all                # partition (queue)
 #SBATCH -c 1                      # number of cores
-#SBATCH -t 60                # time (minutes)
+#SBATCH -t 150                # time (minutes)
 #SBATCH -o logs/transform_step1_%j.out        # STDOUT #add _%a to see each array job
 #SBATCH -e logs/transform_step1_%j.err        # STDERR #add _%a to see each array job
 #SBATCH --contiguous #used to try and get cpu mem to be contigous

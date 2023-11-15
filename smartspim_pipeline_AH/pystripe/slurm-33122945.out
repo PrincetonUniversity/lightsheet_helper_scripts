@@ -1,0 +1,7 @@
+In the directory: /mnt/cup/labs/wang/sanjeev/lightsheet_helper_scripts/smartspim_pipeline_AH/pystripe 
+As the user: pnilsadmin 
+on host: redshirt-n27 
+Cpus_allowed_list:	0-11,16-27
+Input directory (path to stitched images): /jukebox/LightSheetData/lightserv/abondy/A324/A324-001/imaging_request_1/rawdata/resolution_3.6x/Ex_488_Em_525_stitched/RES(11573x7222x891)/375250/375250_460980
+Output directory (path to destriped images): /jukebox/LightSheetData/lightserv/abondy/A324/A324-001/imaging_request_1/rawdata/resolution_3.6x/488_destriped
+slurmstepd: error: *** JOB 33122945 ON redshirt-n27 CANCELLED AT 2023-10-03T16:50:51 ***

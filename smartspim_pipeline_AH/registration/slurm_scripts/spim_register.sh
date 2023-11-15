@@ -18,7 +18,7 @@ module load anacondapy/5.3.1
 module load elastix/4.8
 . activate lightsheet
 
-python spim_register.py 0 ${src} ${reg} ${cell}
+python spim_register_kelly.py 0 ${src} ${reg} ${cell}
 
 #functionality
 #takes 3 command line arguments max

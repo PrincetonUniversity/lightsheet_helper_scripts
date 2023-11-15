@@ -25,8 +25,8 @@ if __name__ == '__main__':
     #     param_fld = "/jukebox/wang/ahoag/brainpipe/parameterfolder" #change if using rat
     # except:
     param_fld = "/jukebox/wang/ahoag/brainpipe/parameterfolder" #change if using rat
-    atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif" # PMA 20 micron isotropic
-    # atl = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif" # allen atlas 25 micron isotropic
+    #atl = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif" # PMA 20 micron isotropic
+    atl = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif" # allen atlas 25 micron isotropic
     print(src)
     print(reg)
     assert os.path.exists(param_fld)

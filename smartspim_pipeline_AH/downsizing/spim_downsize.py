@@ -48,12 +48,33 @@ if __name__ == "__main__":
     p.terminate()
     
     #now downsample to 140% of pma atlas
-    imgs = [os.path.join(dst, xx) for xx in os.listdir(dst) if "tif" in xx]; imgs.sort()
+    imgs = [os.path.join(dst, xx) for xx in os.listdir(dst) if "tif" in xx] 
+    imgs.sort() 
+    dv = str(sys.argv[3])
+    if (dv == 'v'): 
+        imgs.reverse()
+    
     z = len(imgs)
     y,x = sitk.GetArrayFromImage(sitk.ReadImage(imgs[0])).shape
     arr = np.zeros((z,y,x))
-    #atlpth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
-    atlpth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+
+    atl_name=str(sys.argv[4])
+    atlpth = ""
+    if (atl_name == "PMA"):
+        atlpth = "/jukebox/LightSheetTransfer/atlas/sagittal_atlas_20um_iso.tif"
+    elif (atl_name == "Allen"):
+        atlpth = "/jukebox/LightSheetTransfer/atlas/allen_atlas/average_template_25_sagittal_forDVscans.tif"
+    elif (atl_name == "cb"):
+        atlpth = "/jukebox/LightSheetTransfer/atlas/cb_sagittal_atlas_20um_iso.tif"
+    elif (atl_name == "PRA"):
+        atlpth = "/jukebox/brody/lightsheet/atlasdir/mPRA.tif"
+    elif (atl_name == "cz"):
+        atlpth = "/jukebox/witten/Chris/data/clearmap2/utilities/allen-atlas-cz/average_template_25_sagittal_forDVscans_cz.tif"
+    elif (atl_name == "hem"):
+        atlpth = "/jukebox/LightSheetTransfer/hem_sagittal_atlas.tif"
+    else:
+        raise ValueError("Specified atlas does not exist")
+
     atl = sitk.GetArrayFromImage(sitk.ReadImage(atlpth))
     atlz,atly,atlx = atl.shape #get shape, sagittal
     #read all the downsized images
